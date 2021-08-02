@@ -30,6 +30,8 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Dimensional;
 using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -39,6 +41,11 @@ namespace BH.Revit.Engine.Core
         /****             Interface methods             ****/
         /***************************************************/
 
+        [Description("Postprocess the BHoM object orginating from the convert of a Revit element.")]
+        [Input("obj", "BHoM object to postprocess.")]
+        [Input("transform", "Optional, transformation to be applied to the BHoM object.")]
+        [Input("settings", "Revit adapter settings to be used while performing the postprocessing.")]
+        [Output("object", "Postprocessed BHoM object.")]
         public static IBHoMObject IPostprocess(this IBHoMObject obj, Transform transform, RevitSettings settings)
         {
             return Postprocess(obj as dynamic, transform, settings);
@@ -49,6 +56,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Postprocess the BHoM IElement orginating from the convert of a Revit element.")]
+        [Input("element", "BHoM IElement to postprocess.")]
+        [Input("transform", "Optional, transformation to be applied to the BHoM IElement.")]
+        [Input("settings", "Revit adapter settings to be used while performing the postprocessing.")]
+        [Output("element", "Postprocessed BHoM IElement.")]
         public static IElement Postprocess(this IElement element, Transform transform, RevitSettings settings)
         {
             if (element == null)
@@ -67,6 +79,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Postprocess the BHoM ModelInstance orginating from the convert of a Revit element.")]
+        [Input("instance", "BHoM ModelInstance to postprocess.")]
+        [Input("transform", "Optional, transformation to be applied to the BHoM ModelInstance.")]
+        [Input("settings", "Revit adapter settings to be used while performing the postprocessing.")]
+        [Output("instance", "Postprocessed BHoM ModelInstance.")]
         public static IInstance Postprocess(this ModelInstance instance, Transform transform, RevitSettings settings)
         {
             if (instance == null)
@@ -85,6 +102,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Postprocess the BHoM Level orginating from the convert of a Revit element.")]
+        [Input("level", "BHoM Level to postprocess.")]
+        [Input("transform", "Optional, transformation to be applied to the BHoM Level.")]
+        [Input("settings", "Revit adapter settings to be used while performing the postprocessing.")]
+        [Output("level", "Postprocessed BHoM Level.")]
         public static BH.oM.Geometry.SettingOut.Level Postprocess(this BH.oM.Geometry.SettingOut.Level level, Transform transform, RevitSettings settings)
         {
             if (level == null)
@@ -107,7 +129,7 @@ namespace BH.Revit.Engine.Core
         /****             Fallback methods              ****/
         /***************************************************/
         
-        public static IBHoMObject Postprocess(this IBHoMObject obj, TransformMatrix transform, RevitSettings settings)
+        private static IBHoMObject Postprocess(this IBHoMObject obj, TransformMatrix transform, RevitSettings settings)
         {
             return obj;
         }
