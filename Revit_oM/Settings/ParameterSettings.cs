@@ -28,7 +28,7 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Settings
 {
-    [Description("An entity holding information about the enforced convert relationships between Revit families and BHoM types on Pull as well as mapping between Revit parameters and BHoM object properties.")]
+    [Description("An entity holding information about the enforced convert relationships between Revit families and BHoM types on Pull as well as mapping between Revit parameters and BHoM object properties on Push/Pull.")]
     public class ParameterSettings : BHoMObject
     {
         /***************************************************/

@@ -20,15 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 using Autodesk.Revit.DB;
-
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Physical.Constructions;
-
+using BH.oM.Reflection.Attributes;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -38,6 +37,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the glazing property in a form of Physical.Constructions.Construction from the given FamilyInstance.")]
+        [Input("familyInstance", "Revit FamilyInstance to be queried for its glazing property.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("construction", "Glazing property of the input Revit FamilyInstance, in a form of Physical.Constructions.Construction.")]
         public static oM.Physical.Constructions.Construction GlazingConstruction(this FamilyInstance familyInstance, RevitSettings settings = null)
         {
             if (familyInstance == null)
