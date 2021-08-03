@@ -21,21 +21,19 @@
  */
 
 using BH.oM.Base;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Parameters
 {
     [Description("An entity containing identifiers of Revit element correspondent to the BHoM object that carries it.")]
-    public class RevitIdentifiers : IObject, IFragment, IImmutable
+    public class RevitIdentifiers : IPersistentAdapterId, IImmutable
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("UniqueId of the Revit element correspondent to the BHoM object that carries this fragment.")]
-        public virtual string UniqueId { get; } = "";
+        [Description("PersistentId, known also as UniqueId of the Revit element correspondent to the BHoM object that carries this fragment.")]
+        public virtual object PersistentId { get; } = "";
 
         [Description("ElementId of the Revit element correspondent to the BHoM object that carries this fragment.")]
         public virtual int ElementId { get; } = -1;
@@ -74,7 +72,7 @@ namespace BH.oM.Adapters.Revit.Parameters
 
         public RevitIdentifiers(string uniqueId = "", int elementId = -1, string categoryName = "", string familyName = "", string familyTypeName = "", int familyTypeId = -1, string workset = "", int hostId = -1, int ownerViewId = -1, int parentElementId = -1, string linkPath = "")
         {
-            UniqueId = uniqueId;
+            PersistentId = uniqueId;
             ElementId = elementId;
             CategoryName = categoryName;
             FamilyName = familyName;
