@@ -131,6 +131,8 @@ namespace BH.Revit.Engine.Core
             if (type == typeof(Window))
                 elementIds = elementIds.RemoveEmptyPanelIds(document);
 
+            type.CheckFamilyMapUsage(document, settings.ParameterSettings);
+
             return elementIds;
         }
 
