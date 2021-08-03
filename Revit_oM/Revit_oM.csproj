@@ -156,10 +156,6 @@
     <Compile Include="Settings\RevitSettings.cs" />
     <Compile Include="Elements\Sheet.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Versioning_43.json" />
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\\ProgramData\\BHoM\\Assemblies" /Y</PostBuildEvent>
