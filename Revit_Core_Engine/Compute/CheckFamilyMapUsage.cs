@@ -43,6 +43,18 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "ParameterSettings containing the ParameterMaps to be checked.")]
         public static void CheckFamilyMapUsage(this Type bHoMType, Document document, ParameterSettings settings)
         {
+            if (bHoMType == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("A null BHoM type cannot be checked against unused family maps.");
+                return;
+            }
+
+            if (document == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("A null Revit document cannot be checked against unused family maps.");
+                return;
+            }
+
             List<string> familyNames = settings?.MappedFamilyNames(bHoMType);
             if (familyNames == null || familyNames.Count == 0)
                 return;
