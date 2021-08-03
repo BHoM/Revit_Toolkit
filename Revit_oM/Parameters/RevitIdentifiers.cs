@@ -70,9 +70,9 @@ namespace BH.oM.Adapters.Revit.Parameters
         /****            Public Constructors            ****/
         /***************************************************/
 
-        public RevitIdentifiers(string uniqueId = "", int elementId = -1, string categoryName = "", string familyName = "", string familyTypeName = "", int familyTypeId = -1, string workset = "", int hostId = -1, int ownerViewId = -1, int parentElementId = -1, string linkPath = "")
+        public RevitIdentifiers(string persistentId = "", int elementId = -1, string categoryName = "", string familyName = "", string familyTypeName = "", int familyTypeId = -1, string workset = "", int hostId = -1, int ownerViewId = -1, int parentElementId = -1, string linkPath = "")
         {
-            PersistentId = uniqueId;
+            PersistentId = persistentId;
             ElementId = elementId;
             CategoryName = categoryName;
             FamilyName = familyName;
