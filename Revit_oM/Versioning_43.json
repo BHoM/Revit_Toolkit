@@ -1,0 +1,32 @@
+﻿{
+  "Namespace": {
+    "ToNew": 
+	{
+
+    },
+    "ToOld": 
+	{
+
+    }
+  },
+  "Type": {
+    "ToNew": 
+	{
+
+    },
+    "ToOld": 
+	{
+
+    }
+  },
+  "Property": {
+    "ToNew":
+	{
+      "BH.oM.Adapters.Revit.Parameters.RevitIdentifiers.UniqueId": "BH.oM.Adapters.Revit.Parameters.RevitIdentifiers.PersistentId"
+    },
+    "ToOld":
+	{
+      "BH.oM.Adapters.Revit.Parameters.RevitIdentifiers.PersistentId": "BH.oM.Adapters.Revit.Parameters.RevitIdentifiers.UniqueId"
+    }
+  }
+}
