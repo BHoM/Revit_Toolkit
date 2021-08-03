@@ -157,8 +157,7 @@
     <Compile Include="Elements\Sheet.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Versioning_40.json" />
-    <None Include="Versioning_32.json" />
+    <None Include="Versioning_43.json" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
