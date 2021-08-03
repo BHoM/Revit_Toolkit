@@ -23,8 +23,10 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -35,6 +37,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Checks whether all Revit family names included in FamilyMaps relevant to a given BHoM type are present in the Revit document. If not, a warning is raised.")]
+        [Input("bHoMType", "BHoM type to be checked against unused family maps.")]
+        [Input("document", "Revit document to be checked against unused family maps.")]
+        [Input("settings", "ParameterSettings containing the ParameterMaps to be checked.")]
         public static void CheckFamilyMapUsage(this Type bHoMType, Document document, ParameterSettings settings)
         {
             List<string> familyNames = settings?.MappedFamilyNames(bHoMType);
