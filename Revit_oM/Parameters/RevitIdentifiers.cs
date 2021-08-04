@@ -32,7 +32,7 @@ namespace BH.oM.Adapters.Revit.Parameters
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("PersistentId, known also as UniqueId of the Revit element correspondent to the BHoM object that carries this fragment.")]
+        [Description("The PersistentId property stores the UniqueId of the Revit element correspondent to the BHoM object that owns this fragment. The PersistentId can be used for Diffing purposes.")]
         public virtual object PersistentId { get; } = "";
 
         [Description("ElementId of the Revit element correspondent to the BHoM object that carries this fragment.")]
