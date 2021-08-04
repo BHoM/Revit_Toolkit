@@ -32,8 +32,8 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        [Description("Returns UniqueId of Revit element correspondent to given BHoMObject. This value is stored in RevitIdentifiers fragment.")]
+
+        [Description("Retrieves the Revit UniqueId stored on a BHoMObject, if found, otherwise returns null. The UniqueId is stored in the `PersistentId` property of a `RevitIdentifiers` fragment.")]
         [Input("bHoMObject", "BHoMObject to be queried.")]
         [Output("uniqueId")]
         public static string UniqueId(this IBHoMObject bHoMObject)
