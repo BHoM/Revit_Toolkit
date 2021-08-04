@@ -160,7 +160,7 @@ namespace BH.Revit.Engine.Core
                 case Discipline.Environmental:
                     return typeof(BH.oM.Environment.Elements.Panel);
                 case Discipline.Structural:
-                    if (wall.LookupParameterInteger(BuiltInParameter.WALL_STRUCTURAL_SIGNIFICANT) == 0)
+                    if (wall.LookupParameterInteger(BuiltInParameter.WALL_STRUCTURAL_SIGNIFICANT) == 1)
                         return typeof(BH.oM.Structure.Elements.Panel);
                     break;
                 case Discipline.Facade:
@@ -212,7 +212,7 @@ namespace BH.Revit.Engine.Core
                 case Discipline.Environmental:
                     return typeof(BH.oM.Environment.Elements.Panel);
                 case Discipline.Structural:
-                    if (floor.LookupParameterInteger(BuiltInParameter.FLOOR_PARAM_IS_STRUCTURAL) == 0)
+                    if (floor.LookupParameterInteger(BuiltInParameter.FLOOR_PARAM_IS_STRUCTURAL) == 1)
                         return typeof(BH.oM.Structure.Elements.Panel);
                     break;
                 case Discipline.Facade:
