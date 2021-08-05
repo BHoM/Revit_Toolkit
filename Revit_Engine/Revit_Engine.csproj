@@ -132,8 +132,10 @@
     <Compile Include="Create\Elements\DraftingInstance.cs" />
     <Compile Include="Create\Elements\ViewPlan.cs" />
     <Compile Include="Create\Elements\ModelInstance.cs" />
+    <Compile Include="Create\IParameterLink\ElementParameterLink.cs" />
+    <Compile Include="Create\IParameterLink\ElementTypeParameterLink.cs" />
     <Compile Include="Create\Requests\FilterByLink.cs" />
-    <Compile Include="Create\Generic\ParameterLinks.cs" />
+    <Compile Include="Create\IParameterLink\ParameterLinks.cs" />
     <Compile Include="Create\Properties\InstanceProperties.cs" />
     <Compile Include="Create\Requests\FilterByFamilyType.cs" />
     <Compile Include="Create\Requests\FilterMemberElements.cs" />
