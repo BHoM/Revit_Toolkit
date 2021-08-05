@@ -20,16 +20,16 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-
+using BH.Engine.Adapters.Revit;
+using BH.Engine.Environment;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
-using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Environment.Fragments;
-using BH.Engine.Environment;
-using BH.Engine.Adapters.Revit;
+using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -39,6 +39,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit ProjectInfo to BH.oM.Environment.Elements.Building.")]
+        [Input("projectInfo", "Revit ProjectInfo to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("building", "BH.oM.Environment.Elements.Building resulting from converting the input Revit ProjectInfo.")]
         public static Building BuildingFromRevit(this ProjectInfo projectInfo, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();

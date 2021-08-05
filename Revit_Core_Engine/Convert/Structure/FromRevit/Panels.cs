@@ -26,9 +26,11 @@ using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 using BH.oM.Structure.SurfaceProperties;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using BHS = BH.Engine.Structure;
 
@@ -40,25 +42,50 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit Wall to a collection of BH.oM.Structure.Elements.Panels.")]
+        [Input("wall", "Revit Wall to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("panels", "Collection of BH.oM.Structure.Elements.Panels resulting from converting the input Revit Wall.")]
         public static List<oM.Structure.Elements.Panel> StructuralPanelsFromRevit(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             return (wall as HostObject).StructuralPanelsFromRevit(settings, refObjects);
         }
-        
+
+        /***************************************************/
+
+        [Description("Converts a Revit Floor to a collection of BH.oM.Structure.Elements.Panels.")]
+        [Input("floor", "Revit Floor to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("panels", "Collection of BH.oM.Structure.Elements.Panels resulting from converting the input Revit Floor.")]
         public static List<oM.Structure.Elements.Panel> StructuralPanelsFromRevit(this Floor floor, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             return (floor as HostObject).StructuralPanelsFromRevit(settings, refObjects);
         }
-        
+
+        /***************************************************/
+
+        [Description("Converts a Revit RoofBase to a collection of BH.oM.Structure.Elements.Panels.")]
+        [Input("roofBase", "Revit RoofBase to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("panels", "Collection of BH.oM.Structure.Elements.Panels resulting from converting the input Revit RoofBase.")]
         public static List<oM.Structure.Elements.Panel> StructuralPanelsFromRevit(this RoofBase roofBase, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             return (roofBase as HostObject).StructuralPanelsFromRevit(settings, refObjects);
         }
 
+
         /***************************************************/
         /****              Private Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit HostObject to a collection of BH.oM.Structure.Elements.Panels.")]
+        [Input("hostObject", "Revit HostObject to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("panels", "Collection of BH.oM.Structure.Elements.Panels resulting from converting the input Revit HostObject.")]
         private static List<oM.Structure.Elements.Panel> StructuralPanelsFromRevit(this HostObject hostObject, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();

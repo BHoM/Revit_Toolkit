@@ -24,7 +24,9 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -34,6 +36,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit Viewport to BH.oM.Adapters.Revit.Elements.Viewport.")]
+        [Input("revitViewPort", "Revit Viewport to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("viewport", "BH.oM.Adapters.Revit.Elements.Viewport resulting from converting the input Revit Viewport.")]
         public static oM.Adapters.Revit.Elements.Viewport ViewportFromRevit(this Viewport revitViewPort, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();

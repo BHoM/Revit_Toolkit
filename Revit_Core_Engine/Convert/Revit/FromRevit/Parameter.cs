@@ -23,7 +23,9 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Mapping;
 using BH.oM.Adapters.Revit.Parameters;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -33,6 +35,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit Parameter to BH.oM.Adapters.Revit.Parameters.RevitParameter.")]
+        [Input("parameter", "Revit Parameter to be converted.")]
+        [Input("parameterLinks", "A collection of names of RevitParameters and sets of their correspondent Revit parameter names to be used on name mapping.")]
+        [Input("onlyLinked", "If true, there needs to be a valid, relevant parameter link in parameterLinks in order for convert to succeed.")]
+        [Output("parameter", "BH.oM.Adapters.Revit.Parameters.RevitParameter resulting from converting the input Revit Parameter.")]
         public static RevitParameter ParameterFromRevit(this Parameter parameter, IEnumerable<IParameterLink> parameterLinks = null, bool onlyLinked = false)
         {
             if (parameter == null)

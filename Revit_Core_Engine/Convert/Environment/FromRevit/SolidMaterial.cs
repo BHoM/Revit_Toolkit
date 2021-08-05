@@ -25,7 +25,9 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Environment.MaterialFragments;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -35,6 +37,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit Material to BH.oM.Environment.MaterialFragments.SolidMaterial.")]
+        [Input("material", "Revit Material to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("material", "BH.oM.Environment.MaterialFragments.SolidMaterial resulting from converting the input Revit Material.")]
         public static SolidMaterial SolidMaterialFromRevit(this Material material, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (material == null)

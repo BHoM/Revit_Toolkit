@@ -24,13 +24,15 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Environment;
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Fragments;
-using System.Collections.Generic;
 using BH.oM.Geometry;
-using BH.Engine.Geometry;
+using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -41,6 +43,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit SpatialElement to BH.oM.Environment.Elements.Space.")]
+        [Input("spatialElement", "Revit SpatialElement to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("space", "BH.oM.Environment.Elements.Space resulting from converting the input Revit SpatialElement.")]
         public static Space SpaceFromRevit(this SpatialElement spatialElement, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -53,7 +60,13 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-        
+
+        [Description("Converts a Revit SpatialElement to BH.oM.Environment.Elements.Space.")]
+        [Input("spatialElement", "Revit SpatialElement to be converted.")]
+        [Input("spatialElementBoundaryOptions", "Revit SpatialElementBoundaryOptions while performing the convert.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("space", "BH.oM.Environment.Elements.Space resulting from converting the input Revit SpatialElement.")]
         public static Space SpaceFromRevit(this SpatialElement spatialElement, SpatialElementBoundaryOptions spatialElementBoundaryOptions, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (spatialElement == null || spatialElementBoundaryOptions == null)
@@ -66,6 +79,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit SpatialElement to BH.oM.Environment.Elements.Space.")]
+        [Input("spatialElement", "Revit SpatialElement to be converted.")]
+        [Input("spatialElementGeometryCalculator", "Revit SpatialElementGeometryCalculator while performing the convert.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("space", "BH.oM.Environment.Elements.Space resulting from converting the input Revit SpatialElement.")]
         public static Space SpaceFromRevit(this SpatialElement spatialElement, SpatialElementGeometryCalculator spatialElementGeometryCalculator, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (spatialElement == null || spatialElementGeometryCalculator == null)
@@ -117,6 +136,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit EnergyAnalysisSpace to BH.oM.Environment.Elements.Space.")]
+        [Input("energyAnalysisSpace", "Revit EnergyAnalysisSpace to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("space", "BH.oM.Environment.Elements.Space resulting from converting the input Revit EnergyAnalysisSpace.")]
         public static Space SpaceFromRevit(this EnergyAnalysisSpace energyAnalysisSpace, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (energyAnalysisSpace == null)

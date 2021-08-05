@@ -28,7 +28,9 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Environment.Fragments;
 using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -38,6 +40,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit FamilyInstance to BH.oM.Environment.Elements.Panel.")]
+        [Input("familyInstance", "Revit FamilyInstance to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("panel", "BH.oM.Environment.Elements.Panel resulting from converting the input Revit FamilyInstance.")]
         public static oM.Environment.Elements.Panel EnvironmentPanelFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             //Create a BuildingElement from the familyInstance geometry
@@ -96,6 +103,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit Ceiling to BH.oM.Environment.Elements.Panel.")]
+        [Input("ceiling", "Revit Ceiling to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("panel", "BH.oM.Environment.Elements.Panel resulting from converting the input Revit Ceiling.")]
         public static List<oM.Environment.Elements.Panel> EnvironmentPanelsFromRevit(this Ceiling ceiling, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -159,6 +171,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit Floor to BH.oM.Environment.Elements.Panel.")]
+        [Input("floor", "Revit Floor to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("panel", "BH.oM.Environment.Elements.Panel resulting from converting the input Revit Floor.")]
         public static List<oM.Environment.Elements.Panel> EnvironmentPanelsFromRevit(this Floor floor, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -223,6 +240,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit RoofBase to BH.oM.Environment.Elements.Panel.")]
+        [Input("roofBase", "Revit RoofBase to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("panel", "BH.oM.Environment.Elements.Panel resulting from converting the input Revit RoofBase.")]
         public static List<oM.Environment.Elements.Panel> EnvironmentPanelsFromRevit(this RoofBase roofBase, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -286,6 +308,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit Wall to BH.oM.Environment.Elements.Panel.")]
+        [Input("wall", "Revit Wall to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("panel", "BH.oM.Environment.Elements.Panel resulting from converting the input Revit Wall.")]
         public static List<oM.Environment.Elements.Panel> EnvironmentPanelsFromRevit(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -352,64 +379,15 @@ namespace BH.Revit.Engine.Core
 
 
         /***************************************************/
-        /****             Internal Methods              ****/
+        /****             Private Methods               ****/
         /***************************************************/
 
-        internal static oM.Environment.Elements.Panel EnvironmentPanelFromRevit(this Element element, ICurve crv, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            settings = settings.DefaultIfNull();
-
-            oM.Environment.Elements.Panel panel = refObjects.GetValue<oM.Environment.Elements.Panel>(element.Id);
-            if (panel != null)
-                return panel;
-
-            ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
-
-            panel = new oM.Environment.Elements.Panel()
-            {
-                ExternalEdges = crv.ToEdges(),
-                Name = element.FamilyTypeFullName(),
-            };
-
-            //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.IntegerValue.ToString(), TypeName = element.FamilyTypeFullName() };
-            originContext.SetProperties(element, settings.MappingSettings);
-            originContext.SetProperties(elementType, settings.MappingSettings);
-            panel.Fragments.Add(originContext);
-
-            PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
-            panelAnalytical.SetProperties(element, settings.MappingSettings);
-            panelAnalytical.SetProperties(elementType, settings.MappingSettings);
-            panel.Fragments.Add(panelAnalytical);
-
-            PanelContextFragment panelContext = new PanelContextFragment();
-            panelContext.SetProperties(element, settings.MappingSettings);
-            panelContext.SetProperties(elementType, settings.MappingSettings);
-            panel.Fragments.Add(panelContext);
-
-            BuildingResultFragment buildingResults = new BuildingResultFragment();
-            buildingResults.SetProperties(element, settings.MappingSettings);
-            buildingResults.SetProperties(elementType, settings.MappingSettings);
-            panel.Fragments.Add(buildingResults);
-
-            oM.Environment.Elements.PanelType? panelType = element.Category.PanelType();
-            if (panelType.HasValue)
-                panel.Type = panelType.Value;
-            else
-                panel.Type = oM.Environment.Elements.PanelType.Undefined;
-
-            //Set identifiers, parameters & custom data
-            panel.SetIdentifiers(element);
-            panel.CopyParameters(element, settings.MappingSettings);
-            panel.SetProperties(element, settings.MappingSettings);
-
-            refObjects.AddOrReplace(element.Id, panel);
-            return panel;
-        }
-
-        /***************************************************/
-
-        internal static oM.Environment.Elements.Panel EnvironmentPanelFromRevit(this EnergyAnalysisSurface energyAnalysisSurface, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Description("Converts a Revit EnergyAnalysisSurface to BH.oM.Environment.Elements.Panel.")]
+        [Input("energyAnalysisSurface", "Revit EnergyAnalysisSurface to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("panel", "BH.oM.Environment.Elements.Panel resulting from converting the input Revit EnergyAnalysisSurface.")]
+        private static oM.Environment.Elements.Panel EnvironmentPanelFromRevit(this EnergyAnalysisSurface energyAnalysisSurface, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 

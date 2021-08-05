@@ -23,10 +23,11 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Architecture.Elements;
 using BH.oM.Base;
 using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -37,7 +38,12 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Architecture.Elements.Ceiling CeilingFromRevit(this Autodesk.Revit.DB.Ceiling ceiling, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Description("Converts a Revit Ceiling to BH.oM.Architecture.Elements.Ceiling.")]
+        [Input("ceiling", "Revit Ceiling to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("ceiling", "BH.oM.Architecture.Elements.Ceiling resulting from converting the input Revit Ceiling.")]
+        public static oM.Architecture.Elements.Ceiling CeilingFromRevit(this Ceiling ceiling, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (ceiling == null)
                 return null;

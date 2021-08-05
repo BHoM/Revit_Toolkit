@@ -25,7 +25,9 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -35,6 +37,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit ElementType to BH.oM.Adapters.Revit.Properties.InstanceProperties.")]
+        [Input("elementType", "Revit ElementType to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("properties", "BH.oM.Adapters.Revit.Properties.InstanceProperties resulting from converting the input Revit ElementType.")]
         public static InstanceProperties InstancePropertiesFromRevit(this ElementType elementType, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -57,6 +64,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit GraphicsStyle to BH.oM.Adapters.Revit.Properties.InstanceProperties.")]
+        [Input("graphicStyle", "Revit GraphicsStyle to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("properties", "BH.oM.Adapters.Revit.Properties.InstanceProperties resulting from converting the input Revit GraphicsStyle.")]
         public static InstanceProperties InstancePropertiesFromRevit(this GraphicsStyle graphicStyle, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();

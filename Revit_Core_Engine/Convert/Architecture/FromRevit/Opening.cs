@@ -37,11 +37,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Converts a Revit FamilyInstance to an Architecture.BuildersWork.Opening.")]
+        [Description("Converts a Revit FamilyInstance to BH.oM.Architecture.BuildersWork.Opening.")]
         [Input("instance", "Revit FamilyInstance to be converted.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("opening", "Architecture.BuildersWork.Opening resulting from converting the input Revit FamilyInstance.")]
+        [Output("opening", "BH.oM.Architecture.BuildersWork.Opening resulting from converting the input Revit FamilyInstance.")]
         public static oM.Architecture.BuildersWork.Opening OpeningFromRevit(this FamilyInstance instance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (instance == null)
