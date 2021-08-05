@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -20,52 +20,30 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using System;
+using BH.oM.Adapters.Revit.Mapping;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using System.ComponentModel;
 
-namespace BH.Revit.Engine.Core
+namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Modify
+    public static partial class Create
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        public static void SetProperties(this IObject iObject, Element element, MappingSettings settings = null)
+        [Description("Creates an entity defining the relationship between property name of an object (or name of a RevitParameter attached to it) and sets of their correspondent Revit element type parameter names.")]
+        [InputFromProperty("propertyName")]
+        [InputFromProperty("parameterNames")]
+        [Output("parameterLink")]
+        public static ElementTypeParameterLink ElementTypeParameterLink(string propertyName, IEnumerable<string> parameterNames)
         {
-            if (iObject == null || settings == null || settings.ParameterMaps == null || settings.ParameterMaps.Count == 0 || element == null)
-                return;
-
-            Type type = iObject.GetType();
-
-            IEnumerable<PropertyInfo> propertyInfos = type.MapPropertyInfos();
-            if (propertyInfos == null || propertyInfos.Count() == 0)
-                return;
-
-            Element elementType = element.Document.GetElement(element.GetTypeId());
-
-            foreach (PropertyInfo pInfo in propertyInfos)
-            {
-                HashSet<string> parameterNames = settings.ParameterNames(type, pInfo.Name, false);
-                if (parameterNames != null && iObject.SetProperty(pInfo, element, parameterNames))
-                    continue;
-
-                if (elementType == null)
-                    continue;
-
-                parameterNames = settings.ParameterNames(type, pInfo.Name, true);
-                if (parameterNames != null)
-                    iObject.SetProperty(pInfo, elementType, parameterNames);
-            }
+            return new ElementTypeParameterLink { PropertyName = propertyName, ParameterNames = new HashSet<string>(parameterNames) };
         }
-        
+
         /***************************************************/
     }
 }
+
 
