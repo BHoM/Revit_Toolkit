@@ -38,7 +38,7 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Removes ParameterMaps correspondent to given types from existing MappingSettings.")]
         [Input("mappingSettings", "MappingSettings to be modified.")]
-        [Input("type", "Type related to ParameterMap meant to be removed.")]
+        [Input("types", "Types related to ParameterMaps meant to be removed.")]
         [Output("mappingSettings")]
         public static MappingSettings RemoveParameterMaps(this MappingSettings mappingSettings, IEnumerable<Type> types)
         {
