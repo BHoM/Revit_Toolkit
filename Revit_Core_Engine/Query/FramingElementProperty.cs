@@ -21,14 +21,16 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Spatial.ShapeProfiles;
 using BH.oM.Physical.FramingProperties;
+using BH.oM.Reflection.Attributes;
+using BH.oM.Spatial.ShapeProfiles;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using BH.Engine.Geometry;
 
 namespace BH.Revit.Engine.Core
 {
@@ -38,6 +40,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the framing element property from a Revit FamilyInstance.")]
+        [Input("familyInstance", "Revit FamilyInstance to be queried.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("property", "BHoM framing element property extracted from the input Revit FamilyInstance.")]
         public static IFramingElementProperty FramingElementProperty(this FamilyInstance familyInstance, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (familyInstance == null || familyInstance.Symbol == null)
