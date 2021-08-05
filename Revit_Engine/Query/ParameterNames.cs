@@ -40,6 +40,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("mappingSettings", "MappingSettings to be queried.")]
         [Input("type", "Type to be sought for.")]
         [Input("name", "Name of property (or RevitParameter) to be sought for.")]
+        [Input("typeParameters", "If true, mapped Revit type parameter names will be returned instead of the instance ones.")]
         [Output("names")]
         public static HashSet<string> ParameterNames(this MappingSettings mappingSettings, Type type, string name, bool typeParameters = false)
         {
