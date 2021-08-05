@@ -45,6 +45,9 @@ namespace BH.Revit.Engine.Core
         [Output("success", "True if an existing parameter has been found under one of the names and got successfully copied to the BHoM object, otherwise false.")]
         public static bool SetProperty(this IObject iObject, PropertyInfo propertyInfo, Element element, IEnumerable<string> parameterNames)
         {
+            if (iObject == null || element == null || parameterNames == null)
+                return false;
+
             foreach (string name in parameterNames)
             {
                 Parameter parameter = element.LookupParameter(name);
@@ -66,6 +69,9 @@ namespace BH.Revit.Engine.Core
         [Input("parameter", "Source Revit Parameter to copy the value from.")]
         public static void SetProperty(this IObject iObject, PropertyInfo propertyInfo, Parameter parameter)
         {
+            if (iObject == null || propertyInfo == null || parameter == null)
+                return;
+
             Type typePropertyInfo = propertyInfo.PropertyType;
 
             if (typePropertyInfo.IsEnum)

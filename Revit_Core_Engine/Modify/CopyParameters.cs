@@ -156,6 +156,9 @@ namespace BH.Revit.Engine.Core
         [Input("toSkip", "Collection of parameter identifiers to be skipped in the process of copying.")]
         public static void CopyParameters(this Element elementFrom, Element elementTo, IEnumerable<BuiltInParameter> toSkip = null)
         {
+            if (elementFrom == null || elementTo == null)
+                return;
+
             List<Parameter> fromParams = elementFrom.GetOrderedParameters().ToList<Parameter>();
             List<Parameter> toParams = elementTo.GetOrderedParameters().ToList<Parameter>();
 

@@ -40,6 +40,18 @@ namespace BH.Engine.Adapters.Revit
         [Output("parameterLinks")]
         public static IEnumerable<IParameterLink> ParameterLinks(string propertyName, IEnumerable<string> parameterNames)
         {
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                BH.Engine.Reflection.Compute.RecordError("It is impossible to create parameter links for an empty property name.");
+                return new List<IParameterLink>();
+            }
+
+            if (parameterNames == null || !parameterNames.Any())
+            {
+                BH.Engine.Reflection.Compute.RecordError("It is impossible to create parameter links for an empty parameter name collection.");
+                return new List<IParameterLink>();
+            }
+
             List<IParameterLink> result = new List<IParameterLink>();
 
             List<string> elementTypeParameterNames = parameterNames.Where(x => x.Replace(" ", "").ToLower().StartsWith("type:")).ToList();
