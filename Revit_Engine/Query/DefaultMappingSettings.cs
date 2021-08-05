@@ -21,7 +21,6 @@
  */
 
 using BH.oM.Adapters.Revit.Mapping;
-using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
@@ -36,6 +35,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("4.3", "BH.Engine.Adapters.Revit.Query.DefaultParameterSettings()")]
         [Description("Creates an instance of MappingSettings with all ParameterMaps and FamilyMaps stored in BHoM/DataSets/Revit/ParameterMaps folder.")]
         [Output("mappingSettings")]
         public static MappingSettings DefaultMappingSettings()

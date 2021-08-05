@@ -21,7 +21,6 @@
  */
 
 using BH.oM.Adapters.Revit.Mapping;
-using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
@@ -35,7 +34,8 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-
+        
+        [PreviousVersion("4.3", "BH.Engine.Adapters.Revit.Create.ParameterSettings(System.Collections.Generic.IEnumerable<BH.oM.Adapters.Revit.Mapping.ParameterMap>, System.Collections.Generic.IEnumerable<BH.oM.Adapters.Revit.Mapping.FamilyMap>, System.String, System.String)")]
         [Description("Creates an entity holding information about the enforced convert relationships between Revit families and BHoM types on Pull as well as mapping between Revit parameters and BHoM object properties.")]
         [InputFromProperty("parameterMaps")]
         [InputFromProperty("familyMaps")]
@@ -59,6 +59,7 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [PreviousVersion("4.3", "BH.Engine.Adapters.Revit.Create.ParameterSettings(System.Collections.Generic.IEnumerable<BH.oM.Adapters.Revit.Mapping.ParameterMap>, System.String, System.String)")]
         [Deprecated("4.3", "More up to date version with a larger number of parameters has been added.")]
         [Description("Created an entity holding information about conversion-specific Revit parameter names as well as relationships between object's property names (or names of RevitParameters attached to it) and Revit parameter names.")]
         [InputFromProperty("parameterMaps")]
