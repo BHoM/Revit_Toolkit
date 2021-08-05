@@ -22,6 +22,8 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,6 +33,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the material grade information from a Revit element. The grade is extracted from a Revit parameter under the name specified in the MappingSettings.")]
+        [Input("settings", "Revit adapter settings containing the information about the name of the parameter that stores the material grade information.")]
+        [Output("grade", "Material grade extracted from the Revit element.")]
         public static string MaterialGrade(this Element element, RevitSettings settings)
         {
             if (element == null)

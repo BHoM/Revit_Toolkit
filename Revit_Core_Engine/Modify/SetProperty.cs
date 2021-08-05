@@ -22,8 +22,10 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -35,6 +37,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Iterates over a given collection of parameter names on a Revit element until an existing parameter is found. Then copies its value to a given property of a BHoM object.")]
+        [Input("iObject", "Target BHoM object to copy the parameter value to.")]
+        [Input("propertyInfo", "Target property of a BHoM object to copy the parameter value to.")]
+        [Input("element", "Source Revit Element to copy the parameter value from.")]
+        [Input("parameterNames", "Collection of parameter names to iterate over in search for one to copy.")]
+        [Output("success", "True if an existing parameter has been found under one of the names and got successfully copied to the BHoM object, otherwise false.")]
         public static bool SetProperty(this IObject iObject, PropertyInfo propertyInfo, Element element, IEnumerable<string> parameterNames)
         {
             foreach (string name in parameterNames)
@@ -52,6 +60,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Copies a value of Revit parameter to a given property of a BHoM object.")]
+        [Input("iObject", "Target BHoM object to copy the parameter value to.")]
+        [Input("propertyInfo", "Target property of a BHoM object to copy the parameter value to.")]
+        [Input("parameter", "Source Revit Parameter to copy the value from.")]
         public static void SetProperty(this IObject iObject, PropertyInfo propertyInfo, Parameter parameter)
         {
             Type typePropertyInfo = propertyInfo.PropertyType;

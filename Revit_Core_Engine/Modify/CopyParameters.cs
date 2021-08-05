@@ -26,9 +26,11 @@ using BH.oM.Adapters.Revit.Mapping;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -40,6 +42,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Copies parameter values from a Revit Element to a BHoM object (more precisely, to collection of RevitParameters stored in its IRevitParameterFragment).")]
+        [Input("bHoMObject", "Target BHoM object to copy the parameter values to.")]
+        [Input("element", "Source Revit element to copy the parameter values from.")]
+        [Input("settings", "MappingSettings containing the information about the relationships between parameter names as they stand on BHoM objects and parameter names of correspondent Revit elements.")]
         public static void CopyParameters(this IBHoMObject bHoMObject, Element element, MappingSettings settings = null)
         {
             if (bHoMObject == null || element == null)
@@ -79,6 +85,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Copies parameter values from a BHoM object (more precisely, from collection of RevitParameters stored in its IRevitParameterFragment) to a Revit Element.")]
+        [Input("element", "Target Revit element to copy the parameter values to.")]
+        [Input("bHoMObject", "Source BHoM object to copy the parameter values from.")]
+        [Input("settings", "MappingSettings containing the information about the relationships between parameter names as they stand on BHoM objects and parameter names of correspondent Revit elements.")]
         public static void CopyParameters(this Element element, IBHoMObject bHoMObject, RevitSettings settings = null)
         {
             if (bHoMObject == null || element == null)
@@ -139,7 +149,11 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-
+        
+        [Description("Copies parameter values from one Revit Element to another.")]
+        [Input("elementFrom", "Source Revit element to copy the parameter values from.")]
+        [Input("elementTo", "Target Revit element to copy the parameter values to.")]
+        [Input("toSkip", "Collection of parameter identifiers to be skipped in the process of copying.")]
         public static void CopyParameters(this Element elementFrom, Element elementTo, IEnumerable<BuiltInParameter> toSkip = null)
         {
             List<Parameter> fromParams = elementFrom.GetOrderedParameters().ToList<Parameter>();
@@ -171,6 +185,8 @@ namespace BH.Revit.Engine.Core
                 }
             }
         }
+
+        /***************************************************/
     }
 }
 

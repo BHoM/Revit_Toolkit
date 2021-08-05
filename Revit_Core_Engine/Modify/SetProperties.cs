@@ -24,8 +24,10 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -37,6 +39,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Copies parameter values from a Revit Element to properties of a BHoM object.")]
+        [Input("bHoMObject", "Target BHoM object to copy the parameter values to.")]
+        [Input("element", "Source Revit element to copy the parameter values from.")]
+        [Input("settings", "MappingSettings containing the information about the relationships between property names of BHoM types and parameter names of correspondent Revit elements.")]
         public static void SetProperties(this IObject iObject, Element element, MappingSettings settings = null)
         {
             if (iObject == null || settings == null || settings.ParameterMaps == null || settings.ParameterMaps.Count == 0 || element == null)

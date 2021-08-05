@@ -23,6 +23,8 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Environment.Fragments;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +34,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the origin context from a Revit HostObject.")]
+        [Input("hostObject", "Revit HostObject to be queried.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("originContext", "BHoM origin context fragment extracted from the input Revit HostObject.")]
         public static OriginContextFragment OriginContext(this HostObject hostObject, RevitSettings settings)
         {
             if (hostObject == null)
