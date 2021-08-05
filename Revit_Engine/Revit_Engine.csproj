@@ -145,7 +145,7 @@
     <Compile Include="Create\Requests\FilterByViewSpecific.cs" />
     <Compile Include="Create\Requests\FilterByVisibleInView.cs" />
     <Compile Include="Create\Requests\FilterViewsByTemplate.cs" />
-    <Compile Include="Create\Settings\ParameterSettings.cs" />
+    <Compile Include="Create\Settings\MappingSettings.cs" />
     <Compile Include="Create\Generic\FamilyLibrary.cs" />
     <Compile Include="Create\Generic\ParameterMap.cs" />
     <Compile Include="Create\Generic\RevitFilePreview.cs" />
