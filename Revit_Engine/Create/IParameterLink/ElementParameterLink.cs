@@ -24,6 +24,7 @@ using BH.oM.Adapters.Revit.Mapping;
 using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -39,6 +40,18 @@ namespace BH.Engine.Adapters.Revit
         [Output("parameterLink")]
         public static ElementParameterLink ElementParameterLink(string propertyName, IEnumerable<string> parameterNames)
         {
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                BH.Engine.Reflection.Compute.RecordError("It is impossible to create parameter links for an empty property name.");
+                return null;
+            }
+
+            if (parameterNames == null || !parameterNames.Any())
+            {
+                BH.Engine.Reflection.Compute.RecordError("It is impossible to create parameter links for an empty parameter name collection.");
+                return null;
+            }
+
             return new ElementParameterLink { PropertyName = propertyName, ParameterNames = new HashSet<string>(parameterNames) };
         }
 
