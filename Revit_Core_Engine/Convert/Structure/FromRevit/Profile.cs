@@ -23,16 +23,18 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure.StructuralSections;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Base;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 using BH.oM.Spatial.ShapeProfiles;
 using BH.oM.Structure.SectionProperties;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using BH.Engine.Base;
 using BHS = BH.Engine.Spatial;
 
 namespace BH.Revit.Engine.Core
@@ -42,7 +44,12 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****               Public Methods              ****/
         /***************************************************/
-
+        
+        [Description("Converts a Revit FamilySymbol to BH.oM.Spatial.ShapeProfiles.IProfile.")]
+        [Input("familySymbol", "Revit FamilySymbol to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("profile", "BH.oM.Spatial.ShapeProfiles.IProfile resulting from converting the input Revit FamilySymbol.")]
         public static IProfile ProfileFromRevit(this FamilySymbol familySymbol, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -129,6 +136,9 @@ namespace BH.Revit.Engine.Core
         /****              Private Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit FamilySymbol to BH.oM.Spatial.ShapeProfiles.CircleProfile.")]
+        [Input("familySymbol", "Revit FamilySymbol to be converted.")]
+        [Output("profile", "BH.oM.Spatial.ShapeProfiles.CircleProfile resulting from converting the input Revit FamilySymbol.")]
         private static CircleProfile CircleProfileFromRevit(this FamilySymbol familySymbol)
         {
             double diameter;
@@ -157,6 +167,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit FamilySymbol to BH.oM.Spatial.ShapeProfiles.FabricatedISectionProfile.")]
+        [Input("familySymbol", "Revit FamilySymbol to be converted.")]
+        [Output("profile", "BH.oM.Spatial.ShapeProfiles.FabricatedISectionProfile resulting from converting the input Revit FamilySymbol.")]
         private static FabricatedISectionProfile FabricatedISectionProfileFromRevit(this FamilySymbol familySymbol)
         {
             double height, topFlangeWidth, botFlangeWidth, webThickness, topFlangeThickness, botFlangeThickness, weldSize;
@@ -201,6 +214,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit FamilySymbol to BH.oM.Spatial.ShapeProfiles.RectangleProfile.")]
+        [Input("familySymbol", "Revit FamilySymbol to be converted.")]
+        [Output("profile", "BH.oM.Spatial.ShapeProfiles.RectangleProfile resulting from converting the input Revit FamilySymbol.")]
         private static RectangleProfile RectangleProfileFromRevit(this FamilySymbol familySymbol)
         {
             double height, width, cornerRadius;
@@ -245,6 +261,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit FamilySymbol to BH.oM.Spatial.ShapeProfiles.AngleProfile.")]
+        [Input("familySymbol", "Revit FamilySymbol to be converted.")]
+        [Output("profile", "BH.oM.Spatial.ShapeProfiles.AngleProfile resulting from converting the input Revit FamilySymbol.")]
         private static AngleProfile AngleProfileFromRevit(this FamilySymbol familySymbol)
         {
             double height, width, webThickness, flangeThickness, rootRadius, toeRadius;
@@ -295,6 +314,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit FamilySymbol to BH.oM.Spatial.ShapeProfiles.BoxProfile.")]
+        [Input("familySymbol", "Revit FamilySymbol to be converted.")]
+        [Output("profile", "BH.oM.Spatial.ShapeProfiles.BoxProfile resulting from converting the input Revit FamilySymbol.")]
         private static BoxProfile BoxProfileFromRevit(this FamilySymbol familySymbol)
         {
             double height, width, thickness, outerRadius, innerRadius;
@@ -332,6 +354,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit FamilySymbol to BH.oM.Spatial.ShapeProfiles.ChannelProfile.")]
+        [Input("familySymbol", "Revit FamilySymbol to be converted.")]
+        [Output("profile", "BH.oM.Spatial.ShapeProfiles.ChannelProfile resulting from converting the input Revit FamilySymbol.")]
         private static ChannelProfile ChannelProfileFromRevit(this FamilySymbol familySymbol)
         {
             double height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius;
@@ -382,6 +407,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit FamilySymbol to BH.oM.Spatial.ShapeProfiles.ISectionProfile.")]
+        [Input("familySymbol", "Revit FamilySymbol to be converted.")]
+        [Output("profile", "BH.oM.Spatial.ShapeProfiles.ISectionProfile resulting from converting the input Revit FamilySymbol.")]
         private static ISectionProfile ISectionProfileFromRevit(this FamilySymbol familySymbol)
         {
             double height, width, webThickness, flangeThickness, rootRadius, toeRadius;
@@ -431,6 +459,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit FamilySymbol to BH.oM.Spatial.ShapeProfiles.TSectionProfile.")]
+        [Input("familySymbol", "Revit FamilySymbol to be converted.")]
+        [Output("profile", "BH.oM.Spatial.ShapeProfiles.TSectionProfile resulting from converting the input Revit FamilySymbol.")]
         private static TSectionProfile TSectionProfileFromRevit(this FamilySymbol familySymbol)
         {
             double height, width, webThickness, flangeThickness, rootRadius, toeRadius;
@@ -491,6 +522,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit FamilySymbol to BH.oM.Spatial.ShapeProfiles.ZSectionProfile.")]
+        [Input("familySymbol", "Revit FamilySymbol to be converted.")]
+        [Output("profile", "BH.oM.Spatial.ShapeProfiles.ZSectionProfile resulting from converting the input Revit FamilySymbol.")]
         private static ZSectionProfile ZSectionProfileFromRevit(this FamilySymbol familySymbol)
         {
             double height, flangeWidth, webThickness, flangeThickness, rootRadius, toeRadius;
@@ -530,6 +564,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit FamilySymbol to BH.oM.Spatial.ShapeProfiles.TubeProfile.")]
+        [Input("familySymbol", "Revit FamilySymbol to be converted.")]
+        [Output("profile", "BH.oM.Spatial.ShapeProfiles.TubeProfile resulting from converting the input Revit FamilySymbol.")]
         private static TubeProfile TubeProfileFromRevit(this FamilySymbol familySymbol)
         {
             double thickness, diameter;
@@ -565,6 +602,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit FamilySymbol to BH.oM.Spatial.ShapeProfiles.FreeFormProfile.")]
+        [Input("familySymbol", "Revit FamilySymbol to be converted.")]
+        [Output("profile", "BH.oM.Spatial.ShapeProfiles.FreeFormProfile resulting from converting the input Revit FamilySymbol.")]
         private static FreeFormProfile FreeFormProfileFromRevit(this FamilySymbol familySymbol, RevitSettings settings)
         {
             XYZ direction;
@@ -689,6 +729,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Queries a single solid from the Revit GeometryElement. If there is more than one solid inside the GeometryElement, null is returned.")]
+        [Input("geometryElement", "Revit GeometryElement to be queried.")]
+        [Output("solid", "Single solid from the input Revit GeometryElement. If there is more than one solid inside the GeometryElement, null is returned.")]
         private static Solid SingleSolid(this GeometryElement geometryElement)
         {
             Solid solid = null;

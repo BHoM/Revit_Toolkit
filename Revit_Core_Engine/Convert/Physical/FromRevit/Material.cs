@@ -36,11 +36,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Converts a Revit Material to an Physical.Materials.Material.")]
+        [Description("Converts a Revit Material to BH.oM.Physical.Materials.Material.")]
         [Input("revitMaterial", "Revit Material to be converted.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("material", "Physical.Materials.Material resulting from converting the input Revit Material.")]
+        [Output("material", "BH.oM.Physical.Materials.Material resulting from converting the input Revit Material.")]
         public static Material MaterialFromRevit(this Autodesk.Revit.DB.Material revitMaterial, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             return revitMaterial.MaterialFromRevit(null, settings, refObjects);
@@ -48,12 +48,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit Material to an Physical.Materials.Material.")]
+        [Description("Converts a Revit Material to BH.oM.Physical.Materials.Material.")]
         [Input("revitMaterial", "Revit Material to be converted.")]
         [Input("grade", "Material grade extracted from the Revit element parent to the given Material, to be applied to the resultant BHoM Material.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("material", "Physical.Materials.Material resulting from converting the input Revit Material.")]
+        [Output("material", "BH.oM.Physical.Materials.Material resulting from converting the input Revit Material.")]
         public static Material MaterialFromRevit(this Autodesk.Revit.DB.Material revitMaterial, string grade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (revitMaterial == null)

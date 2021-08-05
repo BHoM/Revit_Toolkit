@@ -22,16 +22,16 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
-
-using BH.oM.Base;
+using BH.Engine.Adapters.Revit;
 using BH.Engine.Environment;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Geometry;
-using BH.oM.Environment.Fragments;
+using BH.oM.Base;
 using BH.oM.Environment.Elements;
-
+using BH.oM.Environment.Fragments;
+using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
-using BH.Engine.Adapters.Revit;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -41,6 +41,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit EnergyAnalysisOpening to BH.oM.Environment.Elements.Opening.")]
+        [Input("energyAnalysisOpening", "Revit EnergyAnalysisOpening to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("opening", "BH.oM.Environment.Elements.Opening resulting from converting the input Revit EnergyAnalysisOpening.")]
         public static oM.Environment.Elements.Opening OpeningFromRevit(this EnergyAnalysisOpening energyAnalysisOpening, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();

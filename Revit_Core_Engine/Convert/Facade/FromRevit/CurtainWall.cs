@@ -35,6 +35,8 @@ using BH.oM.Facade.SectionProperties;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.ComponentModel;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Revit.Engine.Core
 {
@@ -44,7 +46,12 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Facade.Elements.CurtainWall CurtainWallFromRevit(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Description("Converts a Revit Wall to BH.oM.Facade.Elements.CurtainWall.")]
+        [Input("wall", "Revit Wall to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("curtainWall", "BH.oM.Facade.Elements.CurtainWall resulting from converting the input Revit Wall.")]
+        public static CurtainWall CurtainWallFromRevit(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (wall == null)
                 return null;

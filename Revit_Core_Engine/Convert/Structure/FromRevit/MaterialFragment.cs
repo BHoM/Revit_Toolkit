@@ -39,11 +39,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Converts a Revit Material to an Structure.MaterialFragments.IMaterialFragment.")]
+        [Description("Converts a Revit Material to BH.oM.Structure.MaterialFragments.IMaterialFragment.")]
         [Input("material", "Revit Material to be converted.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("material", "Structure.MaterialFragments.IMaterialFragment resulting from converting the input Revit Material.")]
+        [Output("material", "BH.oM.Structure.MaterialFragments.IMaterialFragment resulting from converting the input Revit Material.")]
         public static IMaterialFragment MaterialFragmentFromRevit(this Material material, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             return material.MaterialFragmentFromRevit(null, settings, refObjects);
@@ -51,12 +51,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit Material to an Structure.MaterialFragments.IMaterialFragment.")]
+        [Description("Converts a Revit Material to BH.oM.Structure.MaterialFragments.IMaterialFragment.")]
         [Input("material", "Revit Material to be converted.")]
         [Input("grade", "Material grade extracted from the Revit element parent to the given Material, to be applied to the resultant BHoM IMaterialFragment.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("material", "Structure.MaterialFragments.IMaterialFragment resulting from converting the input Revit Material.")]
+        [Output("material", "BH.oM.Structure.MaterialFragments.IMaterialFragment resulting from converting the input Revit Material.")]
         public static IMaterialFragment MaterialFragmentFromRevit(this Material material, string grade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (material == null)

@@ -36,11 +36,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Converts a Revit HostObjAttributes to an Physical.Constructions.Construction.")]
+        [Description("Converts a Revit HostObjAttributes to BH.oM.Physical.Constructions.Construction.")]
         [Input("hostObjAttributes", "Revit HostObjAttributes to be converted.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("construction", "Physical.Constructions.Construction resulting from converting the input Revit HostObjAttributes.")]
+        [Output("construction", "BH.oM.Physical.Constructions.Construction resulting from converting the input Revit HostObjAttributes.")]
         public static oM.Physical.Constructions.Construction ConstructionFromRevit(this HostObjAttributes hostObjAttributes, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             return hostObjAttributes.ConstructionFromRevit(null, settings, refObjects);
@@ -48,12 +48,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit HostObjAttributes to an Physical.Constructions.Construction.")]
+        [Description("Converts a Revit HostObjAttributes to BH.oM.Physical.Constructions.Construction.")]
         [Input("hostObjAttributes", "Revit HostObjAttributes to be converted.")]
         [Input("materialGrade", "Material grade extracted from the Revit element parent to the given HostObjAttributes, to be applied to the resultant BHoM Construction.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("construction", "Physical.Constructions.Construction resulting from converting the input Revit HostObjAttributes.")]
+        [Output("construction", "BH.oM.Physical.Constructions.Construction resulting from converting the input Revit HostObjAttributes.")]
         public static oM.Physical.Constructions.Construction ConstructionFromRevit(this HostObjAttributes hostObjAttributes, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();

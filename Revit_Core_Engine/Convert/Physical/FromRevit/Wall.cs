@@ -25,8 +25,10 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -37,6 +39,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit Wall to BH.oM.Physical.Elements.Wall.")]
+        [Input("wall", "Revit Wall to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("wall", "BH.oM.Physical.Elements.Wall resulting from converting the input Revit Wall.")]
         public static oM.Physical.Elements.Wall WallFromRevit(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (wall == null)
@@ -80,6 +87,11 @@ namespace BH.Revit.Engine.Core
         /****              Private Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit Wall to BH.oM.Physical.Elements.Wall in case the Revit Roof is a solid one.")]
+        [Input("wall", "Revit Wall to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("wall", "BH.oM.Physical.Elements.Wall resulting from converting the input Revit Wall.")]
         private static oM.Physical.Elements.Wall WallFromRevit_Solid(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             ISurface location = null;
@@ -138,6 +150,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit Wall to BH.oM.Physical.Elements.Wall in case the Revit Roof is a curtain one.")]
+        [Input("wall", "Revit Wall to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("wall", "BH.oM.Physical.Elements.Wall resulting from converting the input Revit Wall.")]
         private static oM.Physical.Elements.Wall WallFromRevit_Curtain(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             List<BH.oM.Physical.Elements.IOpening> curtainPanels = wall.CurtainGrid.CurtainPanels(wall.Document, settings, refObjects);

@@ -22,17 +22,14 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
-using BH.Engine.Facade;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Geometry;
-using BH.oM.Dimensional;
-using BH.oM.Physical.Constructions;
 using BH.oM.Facade.Elements;
-using BH.oM.Facade.SectionProperties;
-using System;
+using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -43,6 +40,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit FamilyInstance to BH.oM.Facade.Elements.Panel.")]
+        [Input("familyInstance", "Revit FamilyInstance to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("panel", "BH.oM.Facade.Elements.Panel resulting from converting the input Revit FamilyInstance.")]
         public static oM.Facade.Elements.Panel FacadePanelFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             BH.Engine.Reflection.Compute.RecordError("Conversion of Panels from Revit for the Facade discipline is not yet implemented.");
@@ -51,6 +53,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit Wall to BH.oM.Facade.Elements.Panel.")]
+        [Input("wall", "Revit Wall to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("panel", "BH.oM.Facade.Elements.Panel resulting from converting the input Revit Wall.")]
         public static oM.Facade.Elements.Panel FacadePanelFromRevit(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (wall == null)

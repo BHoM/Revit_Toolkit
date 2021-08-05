@@ -26,7 +26,9 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -37,6 +39,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts all Revit elements contained within EnergyAnalysisDetailModel to a collection of BH.oM.Environment.Elements objects.")]
+        [Input("energyAnalysisModel", "Revit EnergyAnalysisDetailModel to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("elements", "Collection of BH.oM.Environment.Elements objects resulting from converting the input Revit EnergyAnalysisDetailModel.")]
         public static List<IBHoMObject> EnergyAnalysisModelFromRevit(this EnergyAnalysisDetailModel energyAnalysisModel, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (energyAnalysisModel.Document.IsLinked)

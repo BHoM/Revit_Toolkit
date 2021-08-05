@@ -25,8 +25,10 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Physical.Elements;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -36,11 +38,24 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit FamilyInstance to BH.oM.Physical.Elements.Door.")]
+        [Input("familyInstance", "Revit FamilyInstance to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("door", "BH.oM.Physical.Elements.Door resulting from converting the input Revit FamilyInstance.")]
         public static Door DoorFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             return familyInstance.DoorFromRevit(null, settings, refObjects);
         }
 
+        /***************************************************/
+
+        [Description("Converts a Revit FamilyInstance to BH.oM.Physical.Elements.Door.")]
+        [Input("familyInstance", "Revit FamilyInstance to be converted.")]
+        [Input("host", "Revit Element hosting the FamilyInstance to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("door", "BH.oM.Physical.Elements.Door resulting from converting the input Revit FamilyInstance.")]
         public static Door DoorFromRevit(this FamilyInstance familyInstance, HostObject host = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (familyInstance == null)

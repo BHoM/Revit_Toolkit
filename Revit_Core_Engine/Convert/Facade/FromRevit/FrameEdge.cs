@@ -22,17 +22,14 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
-using BH.Engine.Facade;
-using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Spatial.ShapeProfiles;
-using BH.oM.Geometry;
-using BH.oM.Physical.FramingProperties;
 using BH.oM.Facade.Elements;
 using BH.oM.Facade.SectionProperties;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -42,7 +39,12 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static oM.Facade.Elements.FrameEdge FrameEdgeFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Description("Converts a Revit FamilyInstance to BH.oM.Facade.Elements.FrameEdge.")]
+        [Input("familyInstance", "Revit FamilyInstance to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("frameEdge", "BH.oM.Facade.Elements.FrameEdge resulting from converting the input Revit FamilyInstance.")]
+        public static FrameEdge FrameEdgeFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             Mullion mullion = familyInstance as Mullion;            
             if (mullion == null)

@@ -22,17 +22,17 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
-using BH.Engine.Facade;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Geometry;
-using BH.oM.Physical.Constructions;
 using BH.oM.Facade.Elements;
 using BH.oM.Facade.SectionProperties;
+using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -42,11 +42,24 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit FamilyInstance to BH.oM.Facade.Elements.Opening.")]
+        [Input("familyInstance", "Revit FamilyInstance to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("opening", "BH.oM.Facade.Elements.Opening resulting from converting the input Revit FamilyInstance.")]
         public static oM.Facade.Elements.Opening FacadeOpeningFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             return familyInstance.FacadeOpeningFromRevit(null, settings, refObjects);
         }
 
+        /***************************************************/
+
+        [Description("Converts a Revit FamilyInstance to BH.oM.Facade.Elements.Opening.")]
+        [Input("familyInstance", "Revit FamilyInstance to be converted.")]
+        [Input("host", "Revit Element hosting the FamilyInstance to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("opening", "BH.oM.Facade.Elements.Opening resulting from converting the input Revit FamilyInstance.")]
         public static oM.Facade.Elements.Opening FacadeOpeningFromRevit(this FamilyInstance familyInstance, HostObject host = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (familyInstance == null)
@@ -113,7 +126,5 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-
     }
 }
-
