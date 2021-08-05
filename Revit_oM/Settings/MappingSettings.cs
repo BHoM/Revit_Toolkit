@@ -21,7 +21,6 @@
  */
 
 using BH.oM.Adapters.Revit.Mapping;
-using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
 using System.Collections.Generic;
 using System.ComponentModel;
