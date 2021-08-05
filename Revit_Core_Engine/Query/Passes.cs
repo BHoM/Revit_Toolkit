@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Parameters;
+using BH.oM.Adapters.Revit.Mapping;
 using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Data.Requests;
@@ -85,7 +85,7 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
             
             Type bHoMType = element.BHoMType(discipline, settings);
-            oM.Adapters.Revit.Parameters.ParameterMap parameterMap = settings?.MappingSettings?.ParameterMap(bHoMType);
+            oM.Adapters.Revit.Mapping.ParameterMap parameterMap = settings?.MappingSettings?.ParameterMap(bHoMType);
             if (parameterMap != null)
                 BH.Engine.Reflection.Compute.RecordWarning($"A parameter map has been found for the BHoM type {bHoMType.Name} and discipline {discipline} - FilterByParameterExistence request does not support parameter mapping so it was neglected.");
 
@@ -114,7 +114,7 @@ namespace BH.Revit.Engine.Core
                 return param.IPasses(request);
 
             Type bHoMType = element.IBHoMType(discipline, settings);
-            oM.Adapters.Revit.Parameters.ParameterMap parameterMap = settings?.MappingSettings?.ParameterMap(bHoMType);
+            oM.Adapters.Revit.Mapping.ParameterMap parameterMap = settings?.MappingSettings?.ParameterMap(bHoMType);
             if (parameterMap != null)
             {
                 IEnumerable<string> elementParameterNames = parameterMap.ParameterLinks.Where(x => x is ElementParameterLink && x.PropertyName == request.ParameterName).SelectMany(x => x.ParameterNames);

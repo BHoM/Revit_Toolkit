@@ -21,7 +21,7 @@
  */
 
 using BH.Engine.Base;
-using BH.oM.Adapters.Revit.Parameters;
+using BH.oM.Adapters.Revit.Mapping;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
 using System;

@@ -25,7 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Parameters
+namespace BH.oM.Adapters.Revit.Mapping
 {
     [Description("An interface for classes defining the relationship between property names of an object (or names of RevitParameters attached to it) and sets of their correspondent Revit parameter names.")]
     public interface IParameterLink : IBHoMObject
