@@ -205,14 +205,14 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static Parameter LookupParameter(this Element element, ParameterSettings parameterSettings, Type type, string name, bool mustHaveValue = true)
+        public static Parameter LookupParameter(this Element element, MappingSettings mappingSettings, Type type, string name, bool mustHaveValue = true)
         {
-            if (element == null || parameterSettings == null || type == null)
+            if (element == null || mappingSettings == null || type == null)
                 return null;
 
             // Lookup element parameter.
             List<string> names = new List<string> { name };
-            HashSet<string> paramNames = parameterSettings.ParameterNames(type, name, false);
+            HashSet<string> paramNames = mappingSettings.ParameterNames(type, name, false);
             if (paramNames != null)
                 names.AddRange(paramNames);
             
@@ -226,8 +226,8 @@ namespace BH.Revit.Engine.Core
                     return parameter;
             }
 
-            // Lookup element type parameter (if specified in parameterSettings).
-            paramNames = parameterSettings.ParameterNames(type, name, true);
+            // Lookup element type parameter (if specified in mappingSettings).
+            paramNames = mappingSettings.ParameterNames(type, name, true);
             if (paramNames == null || paramNames.Count == 0)
                 return null;
 

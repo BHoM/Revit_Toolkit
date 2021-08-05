@@ -108,7 +108,7 @@ namespace BH.Revit.Engine.Core
                     else if (typeof(BH.oM.MEP.System.Fittings.Fitting).BuiltInCategories().Contains(category))
                         return typeof(BH.oM.MEP.System.Fittings.Fitting);
                     else if (typeof(BH.oM.Architecture.BuildersWork.Opening).BuiltInCategories().Contains(category)
-                            && settings.ParameterSettings.MappedFamilyNames(typeof(BH.oM.Architecture.BuildersWork.Opening)).Contains(familyName))
+                            && settings.MappingSettings.MappedFamilyNames(typeof(BH.oM.Architecture.BuildersWork.Opening)).Contains(familyName))
                         return typeof(BH.oM.Architecture.BuildersWork.Opening);
                     break;
                 case Discipline.Environmental:

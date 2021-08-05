@@ -57,8 +57,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             frameEdgeProperty.SetIdentifiers(familyInstance.Symbol);
-            frameEdgeProperty.CopyParameters(familyInstance.Symbol, settings.ParameterSettings);
-            frameEdgeProperty.SetProperties(familyInstance.Symbol, settings.ParameterSettings);
+            frameEdgeProperty.CopyParameters(familyInstance.Symbol, settings.MappingSettings);
+            frameEdgeProperty.SetProperties(familyInstance.Symbol, settings.MappingSettings);
 
             refObjects.AddOrReplace(familyInstance.Id, frameEdgeProperty);
             return frameEdgeProperty;

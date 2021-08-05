@@ -35,16 +35,16 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns ParameterMap for given type inside ParameterSettings.")]
-        [Input("parameterSettings", "ParameterSettings to be queried.")]
+        [Description("Returns ParameterMap for given type inside MappingSettings.")]
+        [Input("mappingSettings", "MappingSettings to be queried.")]
         [Input("type", "Type to be sought for.")]
         [Output("parameterMap")]
-        public static ParameterMap ParameterMap(this ParameterSettings parameterSettings, Type type)
+        public static ParameterMap ParameterMap(this MappingSettings mappingSettings, Type type)
         {
-            if (parameterSettings == null || parameterSettings.ParameterMaps == null)
+            if (mappingSettings == null || mappingSettings.ParameterMaps == null)
                 return null;
 
-            return parameterSettings.ParameterMaps.Find(x => x != null && x.Type == type);
+            return mappingSettings.ParameterMaps.Find(x => x != null && x.Type == type);
         }
 
         /***************************************************/

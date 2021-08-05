@@ -92,8 +92,8 @@ namespace BH.Revit.Engine.Core
             
             //Set identifiers, parameters & custom data
             bHoMCeiling.SetIdentifiers(ceiling);
-            bHoMCeiling.CopyParameters(ceiling, settings.ParameterSettings);
-            bHoMCeiling.SetProperties(ceiling, settings.ParameterSettings);
+            bHoMCeiling.CopyParameters(ceiling, settings.MappingSettings);
+            bHoMCeiling.SetProperties(ceiling, settings.MappingSettings);
 
             refObjects.AddOrReplace(ceiling.Id, bHoMCeiling);
             return bHoMCeiling;

@@ -99,8 +99,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             building.SetIdentifiers(projectInfo);
-            building.CopyParameters(projectInfo, settings.ParameterSettings);
-            building.SetProperties(projectInfo, settings.ParameterSettings);
+            building.CopyParameters(projectInfo, settings.MappingSettings);
+            building.SetProperties(projectInfo, settings.MappingSettings);
 
             refObjects.AddOrReplace(projectInfo.Id, building);
             return building;

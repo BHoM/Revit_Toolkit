@@ -111,8 +111,8 @@ namespace BH.Revit.Engine.Core
             foreach (oM.Structure.Elements.Panel panel in result)
             {
                 panel.SetIdentifiers(hostObject);
-                panel.CopyParameters(hostObject, settings.ParameterSettings);
-                panel.SetProperties(hostObject, settings.ParameterSettings);
+                panel.CopyParameters(hostObject, settings.MappingSettings);
+                panel.SetProperties(hostObject, settings.MappingSettings);
             }
             
             refObjects.AddOrReplace(hostObject.Id, result);

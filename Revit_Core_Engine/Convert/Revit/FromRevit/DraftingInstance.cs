@@ -69,8 +69,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             draftingInstance.SetIdentifiers(filledRegion);
-            draftingInstance.CopyParameters(filledRegion, settings.ParameterSettings);
-            draftingInstance.SetProperties(filledRegion, settings.ParameterSettings);
+            draftingInstance.CopyParameters(filledRegion, settings.MappingSettings);
+            draftingInstance.SetProperties(filledRegion, settings.MappingSettings);
 
             refObjects.AddOrReplace(filledRegion.Id, draftingInstance);
             return draftingInstance;

@@ -59,7 +59,7 @@ namespace BH.Revit.Engine.Core
                 };
 
                 OriginContextFragment originContext = new OriginContextFragment() { ElementID = energyAnalysisOpening.Id.IntegerValue.ToString(), TypeName = energyAnalysisOpening.OpeningName };
-                originContext.SetProperties(energyAnalysisOpening, settings.ParameterSettings);
+                originContext.SetProperties(energyAnalysisOpening, settings.MappingSettings);
                 result.AddFragment(originContext);
 
                 result.OpeningConstruction = energyAnalysisOpening.Construction(settings);
@@ -67,8 +67,8 @@ namespace BH.Revit.Engine.Core
 
                 //Set identifiers, parameters & custom data
                 result.SetIdentifiers(energyAnalysisOpening);
-                result.CopyParameters(energyAnalysisOpening, settings.ParameterSettings);
-                result.SetProperties(energyAnalysisOpening, settings.ParameterSettings);
+                result.CopyParameters(energyAnalysisOpening, settings.MappingSettings);
+                result.SetProperties(energyAnalysisOpening, settings.MappingSettings);
 
                 refObjects.AddOrReplace(energyAnalysisOpening.Id, result);
                 return result;
@@ -89,8 +89,8 @@ namespace BH.Revit.Engine.Core
                 };
 
                 OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.IntegerValue.ToString(), TypeName = element.FamilyTypeFullName() };
-                originContext.SetProperties(element, settings.ParameterSettings);
-                originContext.SetProperties(elementType, settings.ParameterSettings);
+                originContext.SetProperties(element, settings.MappingSettings);
+                originContext.SetProperties(elementType, settings.MappingSettings);
                 result.AddFragment(originContext);
 
                 result.OpeningConstruction = energyAnalysisOpening.Construction(settings);
@@ -103,8 +103,8 @@ namespace BH.Revit.Engine.Core
 
                 //Set identifiers, parameters & custom data
                 result.SetIdentifiers(element);
-                result.CopyParameters(element, settings.ParameterSettings);
-                result.SetProperties(element, settings.ParameterSettings);
+                result.CopyParameters(element, settings.MappingSettings);
+                result.SetProperties(element, settings.MappingSettings);
 
                 refObjects.AddOrReplace(energyAnalysisOpening.Id, result);
                 return result;

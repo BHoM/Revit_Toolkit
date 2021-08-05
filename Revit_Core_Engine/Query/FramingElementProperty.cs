@@ -95,8 +95,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             framingProperty.SetIdentifiers(familyInstance.Symbol);
-            framingProperty.CopyParameters(familyInstance.Symbol, settings.ParameterSettings);
-            framingProperty.SetProperties(familyInstance.Symbol, settings.ParameterSettings);
+            framingProperty.CopyParameters(familyInstance.Symbol, settings.MappingSettings);
+            framingProperty.SetProperties(familyInstance.Symbol, settings.MappingSettings);
 
             refObjects.AddOrReplace(familyInstance.Id, framingProperty);
             return framingProperty;

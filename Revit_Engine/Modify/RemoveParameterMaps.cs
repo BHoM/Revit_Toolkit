@@ -36,20 +36,20 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Removes ParameterMaps correspondent to given types from existing ParameterSettings.")]
-        [Input("parameterSettings", "ParameterSettings to be modified.")]
+        [Description("Removes ParameterMaps correspondent to given types from existing MappingSettings.")]
+        [Input("mappingSettings", "MappingSettings to be modified.")]
         [Input("type", "Type related to ParameterMap meant to be removed.")]
-        [Output("parameterSettings")]
-        public static ParameterSettings RemoveParameterMaps(this ParameterSettings parameterSettings, IEnumerable<Type> types)
+        [Output("mappingSettings")]
+        public static MappingSettings RemoveParameterMaps(this MappingSettings mappingSettings, IEnumerable<Type> types)
         {
-            if (parameterSettings == null)
+            if (mappingSettings == null)
                 return null;
 
-            if (parameterSettings.ParameterMaps == null)
-                return parameterSettings;
+            if (mappingSettings.ParameterMaps == null)
+                return mappingSettings;
 
-            ParameterSettings cloneSettings = parameterSettings.ShallowClone();
-            cloneSettings.ParameterMaps = parameterSettings.ParameterMaps.Where(x => types.All(y=> x.Type != y)).ToList();
+            MappingSettings cloneSettings = mappingSettings.ShallowClone();
+            cloneSettings.ParameterMaps = mappingSettings.ParameterMaps.Where(x => types.All(y=> x.Type != y)).ToList();
             return cloneSettings;
         }
 

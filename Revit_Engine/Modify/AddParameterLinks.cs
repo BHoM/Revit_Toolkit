@@ -88,22 +88,22 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Adds ParameterLinks to existing ParameterSettings.")]
-        [Input("parameterSettings", "ParameterSettings to be extended.")]
+        [Description("Adds ParameterLinks to existing MappingSettings.")]
+        [Input("mappingSettings", "MappingSettings to be extended.")]
         [Input("type", "Type, for which the ParameterLinks are meant to be added.")]
         [Input("parameterLinks", "ParameterLinks to be added.")]
         [Input("merge", "In case when PropertyName of input ParameterLink already exists in a ParameterMap of given type: if true, the parameterNames will be added to the existing collection of parameter names, if false, they will overwrite it.")]
-        [Output("parameterSettings")]
-        public static ParameterSettings AddParameterLinks(this ParameterSettings parameterSettings, Type type, IEnumerable<IParameterLink> parameterLinks, bool merge = true)
+        [Output("mappingSettings")]
+        public static MappingSettings AddParameterLinks(this MappingSettings mappingSettings, Type type, IEnumerable<IParameterLink> parameterLinks, bool merge = true)
         {
-            if (parameterSettings == null)
+            if (mappingSettings == null)
                 return null;
 
             if (type == null || parameterLinks == null || parameterLinks.Count() == 0)
-                return parameterSettings;
+                return mappingSettings;
 
-            ParameterSettings cloneSettings = parameterSettings.ShallowClone();
-            cloneSettings.ParameterMaps = new List<ParameterMap>(parameterSettings.ParameterMaps);
+            MappingSettings cloneSettings = mappingSettings.ShallowClone();
+            cloneSettings.ParameterMaps = new List<ParameterMap>(mappingSettings.ParameterMaps);
 
             ParameterMap parameterMap = cloneSettings.ParameterMap(type);
             if (parameterMap == null)

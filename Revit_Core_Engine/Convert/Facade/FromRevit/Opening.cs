@@ -105,8 +105,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             opening.SetIdentifiers(familyInstance);
-            opening.CopyParameters(familyInstance, settings.ParameterSettings);
-            opening.SetProperties(familyInstance, settings.ParameterSettings);
+            opening.CopyParameters(familyInstance, settings.MappingSettings);
+            opening.SetProperties(familyInstance, settings.MappingSettings);
 
             refObjects.AddOrReplace(refId, opening);
             return opening;

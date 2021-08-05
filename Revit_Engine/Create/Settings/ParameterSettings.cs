@@ -41,20 +41,20 @@ namespace BH.Engine.Adapters.Revit
         [InputFromProperty("familyMaps")]
         [InputFromProperty("tagsParameter")]
         [InputFromProperty("materialGradeParameter")]
-        [Output("parameterSettings")]
-        public static ParameterSettings ParameterSettings(IEnumerable<ParameterMap> parameterMaps = null, IEnumerable<FamilyMap> familyMaps = null, string tagsParameter = "", string materialGradeParameter = "")
+        [Output("mappingSettings")]
+        public static MappingSettings MappingSettings(IEnumerable<ParameterMap> parameterMaps = null, IEnumerable<FamilyMap> familyMaps = null, string tagsParameter = "", string materialGradeParameter = "")
         {
-            ParameterSettings parameterSettings = new ParameterSettings();
+            MappingSettings mappingSettings = new MappingSettings();
             if (parameterMaps != null)
-                parameterSettings = parameterSettings.AddParameterMaps(parameterMaps);
+                mappingSettings = mappingSettings.AddParameterMaps(parameterMaps);
 
             if (familyMaps != null)
-                parameterSettings.FamilyMaps = familyMaps.ToList();
+                mappingSettings.FamilyMaps = familyMaps.ToList();
 
-            parameterSettings.TagsParameter = tagsParameter;
-            parameterSettings.MaterialGradeParameter = materialGradeParameter;
+            mappingSettings.TagsParameter = tagsParameter;
+            mappingSettings.MaterialGradeParameter = materialGradeParameter;
 
-            return parameterSettings;
+            return mappingSettings;
         }
 
         /***************************************************/
@@ -64,17 +64,17 @@ namespace BH.Engine.Adapters.Revit
         [InputFromProperty("parameterMaps")]
         [InputFromProperty("tagsParameter")]
         [InputFromProperty("materialGradeParameter")]
-        [Output("parameterSettings")]
-        public static ParameterSettings ParameterSettings(IEnumerable<ParameterMap> parameterMaps = null, string tagsParameter = "", string materialGradeParameter = "")
+        [Output("mappingSettings")]
+        public static MappingSettings MappingSettings(IEnumerable<ParameterMap> parameterMaps = null, string tagsParameter = "", string materialGradeParameter = "")
         {
-            ParameterSettings parameterSettings = new ParameterSettings();
+            MappingSettings mappingSettings = new MappingSettings();
             if (parameterMaps != null)
-                parameterSettings = parameterSettings.AddParameterMaps(parameterMaps);
+                mappingSettings = mappingSettings.AddParameterMaps(parameterMaps);
 
-            parameterSettings.TagsParameter = tagsParameter;
-            parameterSettings.MaterialGradeParameter = materialGradeParameter;
+            mappingSettings.TagsParameter = tagsParameter;
+            mappingSettings.MaterialGradeParameter = materialGradeParameter;
 
-            return parameterSettings;
+            return mappingSettings;
         }
 
         /***************************************************/

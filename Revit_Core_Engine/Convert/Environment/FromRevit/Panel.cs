@@ -60,23 +60,23 @@ namespace BH.Revit.Engine.Core
 
             //Set ExtendedProperties
             OriginContextFragment originContext = new OriginContextFragment() { ElementID = familyInstance.Id.IntegerValue.ToString(), TypeName = familyInstance.FamilyTypeFullName() };
-            originContext.SetProperties(familyInstance.Symbol, settings.ParameterSettings);
-            originContext.SetProperties(familyInstance, settings.ParameterSettings);
+            originContext.SetProperties(familyInstance.Symbol, settings.MappingSettings);
+            originContext.SetProperties(familyInstance, settings.MappingSettings);
             panel.Fragments.Add(originContext);
 
             PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
-            panelAnalytical.SetProperties(familyInstance.Symbol, settings.ParameterSettings);
-            panelAnalytical.SetProperties(familyInstance, settings.ParameterSettings);
+            panelAnalytical.SetProperties(familyInstance.Symbol, settings.MappingSettings);
+            panelAnalytical.SetProperties(familyInstance, settings.MappingSettings);
             panel.Fragments.Add(panelAnalytical);
 
             PanelContextFragment panelContext = new PanelContextFragment();
-            panelContext.SetProperties(familyInstance.Symbol, settings.ParameterSettings);
-            panelContext.SetProperties(familyInstance, settings.ParameterSettings);
+            panelContext.SetProperties(familyInstance.Symbol, settings.MappingSettings);
+            panelContext.SetProperties(familyInstance, settings.MappingSettings);
             panel.Fragments.Add(panelContext);
 
             BuildingResultFragment buildingResults = new BuildingResultFragment();
-            buildingResults.SetProperties(familyInstance.Symbol, settings.ParameterSettings);
-            buildingResults.SetProperties(familyInstance, settings.ParameterSettings);
+            buildingResults.SetProperties(familyInstance.Symbol, settings.MappingSettings);
+            buildingResults.SetProperties(familyInstance, settings.MappingSettings);
             panel.Fragments.Add(buildingResults);
 
             oM.Environment.Elements.PanelType? panelType = familyInstance.Category.PanelType();
@@ -87,8 +87,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             panel.SetIdentifiers(familyInstance);
-            panel.CopyParameters(familyInstance, settings.ParameterSettings);
-            panel.SetProperties(familyInstance, settings.ParameterSettings);
+            panel.CopyParameters(familyInstance, settings.MappingSettings);
+            panel.SetProperties(familyInstance, settings.MappingSettings);
 
             refObjects.AddOrReplace(familyInstance.Id, panel);
             return panel;
@@ -123,23 +123,23 @@ namespace BH.Revit.Engine.Core
 
                 //Set ExtendedProperties
                 OriginContextFragment originContext = new OriginContextFragment() { ElementID = ceiling.Id.IntegerValue.ToString(), TypeName = ceiling.FamilyTypeFullName() };
-                originContext.SetProperties(ceilingType, settings.ParameterSettings);
-                originContext.SetProperties(ceiling, settings.ParameterSettings);
+                originContext.SetProperties(ceilingType, settings.MappingSettings);
+                originContext.SetProperties(ceiling, settings.MappingSettings);
                 panel.AddFragment(originContext);
 
                 PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
-                panelAnalytical.SetProperties(ceilingType, settings.ParameterSettings);
-                panelAnalytical.SetProperties(ceiling, settings.ParameterSettings);
+                panelAnalytical.SetProperties(ceilingType, settings.MappingSettings);
+                panelAnalytical.SetProperties(ceiling, settings.MappingSettings);
                 panel.AddFragment(panelAnalytical);
 
                 PanelContextFragment panelContext = new PanelContextFragment();
-                panelContext.SetProperties(ceilingType, settings.ParameterSettings);
-                panelContext.SetProperties(ceiling, settings.ParameterSettings);
+                panelContext.SetProperties(ceilingType, settings.MappingSettings);
+                panelContext.SetProperties(ceiling, settings.MappingSettings);
                 panel.AddFragment(panelContext);
 
                 BuildingResultFragment buildingResults = new BuildingResultFragment();
-                buildingResults.SetProperties(ceilingType, settings.ParameterSettings);
-                buildingResults.SetProperties(ceiling, settings.ParameterSettings);
+                buildingResults.SetProperties(ceilingType, settings.MappingSettings);
+                buildingResults.SetProperties(ceiling, settings.MappingSettings);
                 panel.AddFragment(buildingResults);
 
                 panel.Construction = construction;
@@ -147,8 +147,8 @@ namespace BH.Revit.Engine.Core
 
                 //Set identifiers, parameters & custom data
                 panel.SetIdentifiers(ceiling);
-                panel.CopyParameters(ceiling, settings.ParameterSettings);
-                panel.SetProperties(ceiling, settings.ParameterSettings);
+                panel.CopyParameters(ceiling, settings.MappingSettings);
+                panel.SetProperties(ceiling, settings.MappingSettings);
 
                 refObjects.AddOrReplace(ceiling.Id, panel);
                 panels.Add(panel);
@@ -186,23 +186,23 @@ namespace BH.Revit.Engine.Core
 
                 //Set ExtendedProperties
                 OriginContextFragment originContext = new OriginContextFragment() { ElementID = floor.Id.IntegerValue.ToString(), TypeName = floor.FamilyTypeFullName() };
-                originContext.SetProperties(floorType, settings.ParameterSettings);
-                originContext.SetProperties(floor, settings.ParameterSettings);
+                originContext.SetProperties(floorType, settings.MappingSettings);
+                originContext.SetProperties(floor, settings.MappingSettings);
                 panel.AddFragment(originContext);
 
                 PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
-                panelAnalytical.SetProperties(floorType, settings.ParameterSettings);
-                panelAnalytical.SetProperties(floor, settings.ParameterSettings);
+                panelAnalytical.SetProperties(floorType, settings.MappingSettings);
+                panelAnalytical.SetProperties(floor, settings.MappingSettings);
                 panel.AddFragment(panelAnalytical);
 
                 PanelContextFragment panelContext = new PanelContextFragment();
-                panelContext.SetProperties(floorType, settings.ParameterSettings);
-                panelContext.SetProperties(floor, settings.ParameterSettings);
+                panelContext.SetProperties(floorType, settings.MappingSettings);
+                panelContext.SetProperties(floor, settings.MappingSettings);
                 panel.AddFragment(panelContext);
 
                 BuildingResultFragment buildingResults = new BuildingResultFragment();
-                buildingResults.SetProperties(floorType, settings.ParameterSettings);
-                buildingResults.SetProperties(floor, settings.ParameterSettings);
+                buildingResults.SetProperties(floorType, settings.MappingSettings);
+                buildingResults.SetProperties(floor, settings.MappingSettings);
                 panel.AddFragment(buildingResults);
 
                 panel.Construction = construction;
@@ -210,8 +210,8 @@ namespace BH.Revit.Engine.Core
 
                 //Set identifiers, parameters & custom data
                 panel.SetIdentifiers(floor);
-                panel.CopyParameters(floor, settings.ParameterSettings);
-                panel.SetProperties(floor, settings.ParameterSettings);
+                panel.CopyParameters(floor, settings.MappingSettings);
+                panel.SetProperties(floor, settings.MappingSettings);
 
                 refObjects.AddOrReplace(floor.Id, panel);
 
@@ -249,23 +249,23 @@ namespace BH.Revit.Engine.Core
 
                 //Set ExtendedProperties
                 OriginContextFragment originContext = new OriginContextFragment() { ElementID = roofBase.Id.IntegerValue.ToString(), TypeName = roofBase.FamilyTypeFullName() };
-                originContext.SetProperties(roofBase.RoofType, settings.ParameterSettings);
-                originContext.SetProperties(roofBase, settings.ParameterSettings);
+                originContext.SetProperties(roofBase.RoofType, settings.MappingSettings);
+                originContext.SetProperties(roofBase, settings.MappingSettings);
                 panel.AddFragment(originContext);
 
                 PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
-                panelAnalytical.SetProperties(roofBase.RoofType, settings.ParameterSettings);
-                panelAnalytical.SetProperties(roofBase, settings.ParameterSettings);
+                panelAnalytical.SetProperties(roofBase.RoofType, settings.MappingSettings);
+                panelAnalytical.SetProperties(roofBase, settings.MappingSettings);
                 panel.AddFragment(panelAnalytical);
 
                 PanelContextFragment panelContext = new PanelContextFragment();
-                panelContext.SetProperties(roofBase.RoofType, settings.ParameterSettings);
-                panelContext.SetProperties(roofBase, settings.ParameterSettings);
+                panelContext.SetProperties(roofBase.RoofType, settings.MappingSettings);
+                panelContext.SetProperties(roofBase, settings.MappingSettings);
                 panel.AddFragment(panelContext);
 
                 BuildingResultFragment buildingResults = new BuildingResultFragment();
-                buildingResults.SetProperties(roofBase.RoofType, settings.ParameterSettings);
-                buildingResults.SetProperties(roofBase, settings.ParameterSettings);
+                buildingResults.SetProperties(roofBase.RoofType, settings.MappingSettings);
+                buildingResults.SetProperties(roofBase, settings.MappingSettings);
                 panel.AddFragment(buildingResults);
 
                 panel.Construction = construction;
@@ -273,8 +273,8 @@ namespace BH.Revit.Engine.Core
 
                 //Set identifiers, parameters & custom data
                 panel.SetIdentifiers(roofBase);
-                panel.CopyParameters(roofBase, settings.ParameterSettings);
-                panel.SetProperties(roofBase, settings.ParameterSettings);
+                panel.CopyParameters(roofBase, settings.MappingSettings);
+                panel.SetProperties(roofBase, settings.MappingSettings);
 
                 refObjects.AddOrReplace(roofBase.Id, panel);
 
@@ -315,23 +315,23 @@ namespace BH.Revit.Engine.Core
 
                 //Set ExtendedProperties
                 OriginContextFragment originContext = new OriginContextFragment() { ElementID = wall.Id.IntegerValue.ToString(), TypeName = wall.FamilyTypeFullName() };
-                originContext.SetProperties(wall.WallType, settings.ParameterSettings);
-                originContext.SetProperties(wall, settings.ParameterSettings);
+                originContext.SetProperties(wall.WallType, settings.MappingSettings);
+                originContext.SetProperties(wall, settings.MappingSettings);
                 panel.AddFragment(originContext);
 
                 PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
-                panelAnalytical.SetProperties(wall.WallType, settings.ParameterSettings);
-                panelAnalytical.SetProperties(wall, settings.ParameterSettings);
+                panelAnalytical.SetProperties(wall.WallType, settings.MappingSettings);
+                panelAnalytical.SetProperties(wall, settings.MappingSettings);
                 panel.AddFragment(panelAnalytical);
 
                 PanelContextFragment panelContext = new PanelContextFragment();
-                panelContext.SetProperties(wall.WallType, settings.ParameterSettings);
-                panelContext.SetProperties(wall, settings.ParameterSettings);
+                panelContext.SetProperties(wall.WallType, settings.MappingSettings);
+                panelContext.SetProperties(wall, settings.MappingSettings);
                 panel.AddFragment(panelContext);
 
                 BuildingResultFragment buildingResults = new BuildingResultFragment();
-                buildingResults.SetProperties(wall.WallType, settings.ParameterSettings);
-                buildingResults.SetProperties(wall, settings.ParameterSettings);
+                buildingResults.SetProperties(wall.WallType, settings.MappingSettings);
+                buildingResults.SetProperties(wall, settings.MappingSettings);
                 panel.AddFragment(buildingResults);
 
                 panel.Construction = constrtuction;
@@ -339,8 +339,8 @@ namespace BH.Revit.Engine.Core
 
                 //Set identifiers, parameters & custom data
                 panel.SetIdentifiers(wall);
-                panel.CopyParameters(wall, settings.ParameterSettings);
-                panel.SetProperties(wall, settings.ParameterSettings);
+                panel.CopyParameters(wall, settings.MappingSettings);
+                panel.SetProperties(wall, settings.MappingSettings);
 
                 refObjects.AddOrReplace(wall.Id, panel);
 
@@ -373,23 +373,23 @@ namespace BH.Revit.Engine.Core
 
             //Set ExtendedProperties
             OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.IntegerValue.ToString(), TypeName = element.FamilyTypeFullName() };
-            originContext.SetProperties(element, settings.ParameterSettings);
-            originContext.SetProperties(elementType, settings.ParameterSettings);
+            originContext.SetProperties(element, settings.MappingSettings);
+            originContext.SetProperties(elementType, settings.MappingSettings);
             panel.Fragments.Add(originContext);
 
             PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
-            panelAnalytical.SetProperties(element, settings.ParameterSettings);
-            panelAnalytical.SetProperties(elementType, settings.ParameterSettings);
+            panelAnalytical.SetProperties(element, settings.MappingSettings);
+            panelAnalytical.SetProperties(elementType, settings.MappingSettings);
             panel.Fragments.Add(panelAnalytical);
 
             PanelContextFragment panelContext = new PanelContextFragment();
-            panelContext.SetProperties(element, settings.ParameterSettings);
-            panelContext.SetProperties(elementType, settings.ParameterSettings);
+            panelContext.SetProperties(element, settings.MappingSettings);
+            panelContext.SetProperties(elementType, settings.MappingSettings);
             panel.Fragments.Add(panelContext);
 
             BuildingResultFragment buildingResults = new BuildingResultFragment();
-            buildingResults.SetProperties(element, settings.ParameterSettings);
-            buildingResults.SetProperties(elementType, settings.ParameterSettings);
+            buildingResults.SetProperties(element, settings.MappingSettings);
+            buildingResults.SetProperties(elementType, settings.MappingSettings);
             panel.Fragments.Add(buildingResults);
 
             oM.Environment.Elements.PanelType? panelType = element.Category.PanelType();
@@ -400,8 +400,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             panel.SetIdentifiers(element);
-            panel.CopyParameters(element, settings.ParameterSettings);
-            panel.SetProperties(element, settings.ParameterSettings);
+            panel.CopyParameters(element, settings.MappingSettings);
+            panel.SetProperties(element, settings.MappingSettings);
 
             refObjects.AddOrReplace(element.Id, panel);
             return panel;
@@ -437,13 +437,13 @@ namespace BH.Revit.Engine.Core
 
             //Set ExtendedProperties
             OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.IntegerValue.ToString(), TypeName = element.FamilyTypeFullName() };
-            originContext.SetProperties(element, settings.ParameterSettings);
-            originContext.SetProperties(elementType, settings.ParameterSettings);
+            originContext.SetProperties(element, settings.MappingSettings);
+            originContext.SetProperties(elementType, settings.MappingSettings);
             panel.AddFragment(originContext);
 
             PanelAnalyticalFragment panelAnalytical = new PanelAnalyticalFragment();
-            panelAnalytical.SetProperties(elementType, settings.ParameterSettings);
-            panelAnalytical.SetProperties(element, settings.ParameterSettings);
+            panelAnalytical.SetProperties(elementType, settings.MappingSettings);
+            panelAnalytical.SetProperties(element, settings.MappingSettings);
             panel.AddFragment(panelAnalytical);
 
             PanelContextFragment panelContext = new PanelContextFragment();
@@ -478,8 +478,8 @@ namespace BH.Revit.Engine.Core
             }
 
             panel.ConnectedSpaces = connectedSpaces;
-            panelContext.SetProperties(elementType, settings.ParameterSettings);
-            panelContext.SetProperties(element, settings.ParameterSettings);
+            panelContext.SetProperties(elementType, settings.MappingSettings);
+            panelContext.SetProperties(element, settings.MappingSettings);
             panel.AddFragment(panelContext);
 
             oM.Environment.Elements.PanelType? panelType = element.Category.PanelType();
@@ -492,8 +492,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             panel.SetIdentifiers(element);
-            panel.CopyParameters(element, settings.ParameterSettings);
-            panel.SetProperties(element, settings.ParameterSettings);
+            panel.CopyParameters(element, settings.MappingSettings);
+            panel.SetProperties(element, settings.MappingSettings);
 
             refObjects.AddOrReplace(energyAnalysisSurface.Id, panel);
             return panel;

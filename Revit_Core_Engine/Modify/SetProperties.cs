@@ -37,7 +37,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static void SetProperties(this IObject iObject, Element element, ParameterSettings settings = null)
+        public static void SetProperties(this IObject iObject, Element element, MappingSettings settings = null)
         {
             if (iObject == null || settings == null || settings.ParameterMaps == null || settings.ParameterMaps.Count == 0 || element == null)
                 return;

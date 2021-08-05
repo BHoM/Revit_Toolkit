@@ -39,7 +39,7 @@ namespace BH.Revit.Adapter.Core
         public bool Update(Element element, IBHoMObject bHoMObject, RevitPushConfig pushConfig)
         {
             RevitSettings settings = this.RevitSettings.DefaultIfNull();
-            string tagsParameterName = settings.ParameterSettings.TagsParameter;
+            string tagsParameterName = settings.MappingSettings.TagsParameter;
 
             try
             {

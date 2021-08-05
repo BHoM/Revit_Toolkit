@@ -169,7 +169,7 @@
     <Compile Include="Query\RenderMeshes.cs" />
     <Compile Include="Query\Workset.cs" />
     <Compile Include="Query\ZJustifiedCurve.cs" />
-    <Compile Include="Query\DefaultParameterSettings.cs" />
+    <Compile Include="Query\DefaultMappingSettings.cs" />
     <Compile Include="Query\GetRevitParameters.cs" />
     <Compile Include="Query\GetRevitParameterValue.cs" />
     <Compile Include="Query\Family.cs" />

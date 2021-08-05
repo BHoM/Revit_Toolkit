@@ -41,7 +41,7 @@ namespace BH.Engine.Adapters.Revit
             {
                 BH.Engine.Reflection.Compute.RecordNote("Revit settings are not set. Default settings are used.");
                 settings = new RevitSettings();
-                settings.ParameterSettings = Query.DefaultParameterSettings();
+                settings.MappingSettings = Query.DefaultMappingSettings();
             }
 
             return settings;
