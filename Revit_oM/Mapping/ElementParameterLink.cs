@@ -25,10 +25,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Parameters
+namespace BH.oM.Adapters.Revit.Mapping
 {
-    [Description("An entity defining the relationship between property names of an object (or names of RevitParameters attached to it) and sets of their correspondent Revit element type parameter names.")]
-    public class ElementTypeParameterLink : BHoMObject, IParameterLink
+    [Description("An entity defining the relationship between property names of an object (or names of RevitParameters attached to it) and sets of their correspondent Revit element parameter names.")]
+    public class ElementParameterLink : BHoMObject, IParameterLink
     {
         /***************************************************/
         /****             Public Properties             ****/
@@ -37,7 +37,7 @@ namespace BH.oM.Adapters.Revit.Parameters
         [Description("Name of the property (or RevitParameter) to be linked with Revit parameters.")]
         public virtual string PropertyName { get; set; } = "";
 
-        [Description("A collecation of Revit element type parameter names to be linked with the type property.")]
+        [Description("A collecation of Revit element parameter names to be linked with the type property.")]
         public virtual HashSet<string> ParameterNames { get; set; } = new HashSet<string>();
 
         /***************************************************/

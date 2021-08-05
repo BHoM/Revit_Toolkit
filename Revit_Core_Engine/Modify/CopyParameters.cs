@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Mapping;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
@@ -45,7 +46,7 @@ namespace BH.Revit.Engine.Core
                 return;
 
             List<RevitParameter> parameters = new List<RevitParameter>();
-            oM.Adapters.Revit.Parameters.ParameterMap parameterMap = settings?.ParameterMap(bHoMObject.GetType());
+            oM.Adapters.Revit.Mapping.ParameterMap parameterMap = settings?.ParameterMap(bHoMObject.GetType());
             IEnumerable<IParameterLink> parameterLinks = null;
             if (parameterMap != null)
             {
@@ -92,7 +93,7 @@ namespace BH.Revit.Engine.Core
             ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
             
             Type type = bHoMObject.GetType();
-            BH.oM.Adapters.Revit.Parameters.ParameterMap parameterMap = settings?.MappingSettings?.ParameterMap(type);
+            BH.oM.Adapters.Revit.Mapping.ParameterMap parameterMap = settings?.MappingSettings?.ParameterMap(type);
 
             IEnumerable<PropertyInfo> propertyInfos = type.MapPropertyInfos();
 

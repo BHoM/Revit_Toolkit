@@ -25,20 +25,20 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Parameters
+namespace BH.oM.Adapters.Revit.Mapping
 {
-    [Description("An entity defining the relationship between object's property names (or names of RevitParameters attached to it) and parameter names of correspondent Revit elements.")]
-    public class ParameterMap : BHoMObject
+    [Description("An entity defining the relationship between property names of an object (or names of RevitParameters attached to it) and sets of their correspondent Revit element type parameter names.")]
+    public class ElementTypeParameterLink : BHoMObject, IParameterLink
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Type, which property names (or names of RevitParameters) are being mapped with Revit element parameters.")]
-        public virtual Type Type { get; set; } = null;
+        [Description("Name of the property (or RevitParameter) to be linked with Revit parameters.")]
+        public virtual string PropertyName { get; set; } = "";
 
-        [Description("A collection of type property names (or names of RevitParameters) and sets of their correspondent Revit parameter names.")]
-        public virtual List<IParameterLink> ParameterLinks { get; set; } = new List<IParameterLink>();
+        [Description("A collecation of Revit element type parameter names to be linked with the type property.")]
+        public virtual HashSet<string> ParameterNames { get; set; } = new HashSet<string>();
 
         /***************************************************/
     }
