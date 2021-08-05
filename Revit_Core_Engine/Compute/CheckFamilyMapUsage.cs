@@ -40,8 +40,8 @@ namespace BH.Revit.Engine.Core
         [Description("Checks whether all Revit family names included in FamilyMaps relevant to a given BHoM type are present in the Revit document. If not, a warning is raised.")]
         [Input("bHoMType", "BHoM type to be checked against unused family maps.")]
         [Input("document", "Revit document to be checked against unused family maps.")]
-        [Input("settings", "ParameterSettings containing the ParameterMaps to be checked.")]
-        public static void CheckFamilyMapUsage(this Type bHoMType, Document document, ParameterSettings settings)
+        [Input("settings", "MappingSettings containing the ParameterMaps to be checked.")]
+        public static void CheckFamilyMapUsage(this Type bHoMType, Document document, MappingSettings settings)
         {
             if (bHoMType == null)
             {
@@ -69,7 +69,7 @@ namespace BH.Revit.Engine.Core
 
             if (unusedMaps.Count != 0)
             {
-                string warning = $"Some of the family names declared in the RevitSettings.ParameterSettings.FamilyMaps are not present in the Revit document.\nMissing names: {string.Join(", ", unusedMaps)}.";
+                string warning = $"Some of the family names declared in the RevitSettings.MappingSettings.FamilyMaps are not present in the Revit document.\nMissing names: {string.Join(", ", unusedMaps)}.";
                 BH.Engine.Reflection.Compute.RecordWarning(warning);
             }
         }

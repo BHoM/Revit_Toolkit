@@ -58,8 +58,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             bhomFitting.SetIdentifiers(revitMepFitting);
-            bhomFitting.CopyParameters(revitMepFitting, settings.ParameterSettings);
-            bhomFitting.SetProperties(revitMepFitting, settings.ParameterSettings);
+            bhomFitting.CopyParameters(revitMepFitting, settings.MappingSettings);
+            bhomFitting.SetProperties(revitMepFitting, settings.MappingSettings);
 
             refObjects.AddOrReplace(revitMepFitting.Id, bhomFitting);
             return bhomFitting;

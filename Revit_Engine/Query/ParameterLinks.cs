@@ -36,17 +36,17 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns ParameterLinks inside ParameterSettings for given type and property name (or RevitParameter name).")]
-        [Input("parameterSettings", "ParameterSettings to be queried.")]
+        [Description("Returns ParameterLinks inside MappingSettings for given type and property name (or RevitParameter name).")]
+        [Input("mappingSettings", "MappingSettings to be queried.")]
         [Input("type", "Type to be sought for.")]
         [Input("propertyName", "Name of the property (or RevitParameter) to be sought for.")]
         [Output("parameterLink")]
-        public static IEnumerable<IParameterLink> ParameterLinks(this ParameterSettings parameterSettings, Type type, string propertyName)
+        public static IEnumerable<IParameterLink> ParameterLinks(this MappingSettings mappingSettings, Type type, string propertyName)
         {
-            if (parameterSettings == null || parameterSettings.ParameterMaps == null || type == null || string.IsNullOrWhiteSpace(propertyName))
+            if (mappingSettings == null || mappingSettings.ParameterMaps == null || type == null || string.IsNullOrWhiteSpace(propertyName))
                 return null;
 
-            ParameterMap parameterMap = parameterSettings.ParameterMap(type);
+            ParameterMap parameterMap = mappingSettings.ParameterMap(type);
             if (parameterMap == null)
                 return null;
 

@@ -139,8 +139,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             bhomPanel.SetIdentifiers(wall);
-            bhomPanel.CopyParameters(wall, settings.ParameterSettings);
-            bhomPanel.SetProperties(wall, settings.ParameterSettings);
+            bhomPanel.CopyParameters(wall, settings.MappingSettings);
+            bhomPanel.SetProperties(wall, settings.MappingSettings);
 
             refObjects.AddOrReplace(wall.Id, bhomPanel);
 

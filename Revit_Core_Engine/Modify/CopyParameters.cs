@@ -39,7 +39,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static void CopyParameters(this IBHoMObject bHoMObject, Element element, ParameterSettings settings = null)
+        public static void CopyParameters(this IBHoMObject bHoMObject, Element element, MappingSettings settings = null)
         {
             if (bHoMObject == null || element == null)
                 return;
@@ -92,7 +92,7 @@ namespace BH.Revit.Engine.Core
             ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
             
             Type type = bHoMObject.GetType();
-            BH.oM.Adapters.Revit.Parameters.ParameterMap parameterMap = settings?.ParameterSettings?.ParameterMap(type);
+            BH.oM.Adapters.Revit.Parameters.ParameterMap parameterMap = settings?.MappingSettings?.ParameterMap(type);
 
             IEnumerable<PropertyInfo> propertyInfos = type.MapPropertyInfos();
 
@@ -103,14 +103,14 @@ namespace BH.Revit.Engine.Core
                 {
                     object value = pInfo.GetValue(bHoMObject);
 
-                    HashSet<string> parameterNames = settings.ParameterSettings.ParameterNames(type, pInfo.Name, false);
+                    HashSet<string> parameterNames = settings.MappingSettings.ParameterNames(type, pInfo.Name, false);
                     if (parameterNames != null && element.SetParameters(parameterNames, value))
                         continue;
 
                     if (elementType == null)
                         continue;
 
-                    parameterNames = settings.ParameterSettings.ParameterNames(type, pInfo.Name, true);
+                    parameterNames = settings.MappingSettings.ParameterNames(type, pInfo.Name, true);
                     if (parameterNames != null)
                         element.SetParameters(parameterNames, value);
                 }

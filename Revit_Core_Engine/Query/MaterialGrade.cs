@@ -36,7 +36,7 @@ namespace BH.Revit.Engine.Core
             if (element == null)
                 return null;
 
-            string materialGrade = element.LookupParameterString(settings.ParameterSettings.MaterialGradeParameter);
+            string materialGrade = element.LookupParameterString(settings.MappingSettings.MaterialGradeParameter);
             if (materialGrade != null)
                 materialGrade = materialGrade.Replace(" ", "");
 

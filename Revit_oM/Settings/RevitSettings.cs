@@ -38,7 +38,7 @@ namespace BH.oM.Adapters.Revit.Settings
         
         public virtual FamilyLoadSettings FamilyLoadSettings { get; set; } = new FamilyLoadSettings();
         
-        public virtual ParameterSettings ParameterSettings { get; set; } = new ParameterSettings();
+        public virtual MappingSettings MappingSettings { get; set; } = new MappingSettings();
 
         [Length]
         [Description("Distance tolerance to be used in geometry processing.")]

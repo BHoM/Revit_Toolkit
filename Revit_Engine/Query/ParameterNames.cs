@@ -36,17 +36,17 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns a collection of Revit parameter names associated with a given object's property (or RevitParameter attached to this object) inside ParameterSettings.")]
-        [Input("parameterSettings", "ParameterSettings to be queried.")]
+        [Description("Returns a collection of Revit parameter names associated with a given object's property (or RevitParameter attached to this object) inside MappingSettings.")]
+        [Input("mappingSettings", "MappingSettings to be queried.")]
         [Input("type", "Type to be sought for.")]
         [Input("name", "Name of property (or RevitParameter) to be sought for.")]
         [Output("names")]
-        public static HashSet<string> ParameterNames(this ParameterSettings parameterSettings, Type type, string name, bool typeParameters = false)
+        public static HashSet<string> ParameterNames(this MappingSettings mappingSettings, Type type, string name, bool typeParameters = false)
         {
-            if (parameterSettings == null || type == null || string.IsNullOrWhiteSpace(name))
+            if (mappingSettings == null || type == null || string.IsNullOrWhiteSpace(name))
                 return null;
 
-            ParameterMap parameterMap = parameterSettings.ParameterMap(type);
+            ParameterMap parameterMap = mappingSettings.ParameterMap(type);
             if (parameterMap == null || parameterMap.ParameterLinks == null)
                 return null;
 

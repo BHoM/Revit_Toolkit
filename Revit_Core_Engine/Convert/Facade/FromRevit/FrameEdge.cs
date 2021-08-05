@@ -66,8 +66,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             bHoMFrameEdge.SetIdentifiers(mullion);
-            bHoMFrameEdge.CopyParameters(mullion, settings.ParameterSettings);
-            bHoMFrameEdge.SetProperties(mullion, settings.ParameterSettings);
+            bHoMFrameEdge.CopyParameters(mullion, settings.MappingSettings);
+            bHoMFrameEdge.SetProperties(mullion, settings.MappingSettings);
 
             refObjects.AddOrReplace(mullion.Id, bHoMFrameEdge);
             return bHoMFrameEdge;

@@ -62,7 +62,7 @@ namespace BH.Revit.Engine.Core
             opening.CoordinateSystem = instance.CoordinateSystem();
 
             IProfile profile = null;
-            Parameter diameterParam = instance.LookupParameter(settings.ParameterSettings, typeof(oM.Architecture.BuildersWork.Opening), nameof(CircleProfile.Diameter));
+            Parameter diameterParam = instance.LookupParameter(settings.MappingSettings, typeof(oM.Architecture.BuildersWork.Opening), nameof(CircleProfile.Diameter));
             if (diameterParam != null)
             {
                 double diameter = diameterParam.AsDouble().ToSI(diameterParam.Definition.UnitType);
@@ -71,8 +71,8 @@ namespace BH.Revit.Engine.Core
 
             if (profile == null)
             {
-                Parameter widthParam = instance.LookupParameter(settings.ParameterSettings, typeof(oM.Architecture.BuildersWork.Opening), nameof(RectangleProfile.Width));
-                Parameter heightParam = instance.LookupParameter(settings.ParameterSettings, typeof(oM.Architecture.BuildersWork.Opening), nameof(RectangleProfile.Height));
+                Parameter widthParam = instance.LookupParameter(settings.MappingSettings, typeof(oM.Architecture.BuildersWork.Opening), nameof(RectangleProfile.Width));
+                Parameter heightParam = instance.LookupParameter(settings.MappingSettings, typeof(oM.Architecture.BuildersWork.Opening), nameof(RectangleProfile.Height));
                 if (widthParam != null && heightParam != null)
                 {
                     double width = widthParam.AsDouble().ToSI(widthParam.Definition.UnitType);
@@ -83,11 +83,11 @@ namespace BH.Revit.Engine.Core
 
             if (profile == null)
                 BH.Engine.Reflection.Compute.RecordWarning($"The profile of the opening could not be extracted from the Revit element because the parameters correspondent to their dimensions could not be found. Revit ElementId: {instance.Id}"
-                    + "\nTo link the specific parameter values with opening height/width/diameter, add relevant ParameterMap to RevitSettings.ParameterSettings.");
+                    + "\nTo link the specific parameter values with opening height/width/diameter, add relevant ParameterMap to RevitSettings.MappingSettings.");
 
             opening.Profile = profile;
 
-            Parameter depthParam = instance.LookupParameter(settings.ParameterSettings, typeof(oM.Architecture.BuildersWork.Opening), nameof(BH.oM.Architecture.BuildersWork.Opening.Depth));
+            Parameter depthParam = instance.LookupParameter(settings.MappingSettings, typeof(oM.Architecture.BuildersWork.Opening), nameof(BH.oM.Architecture.BuildersWork.Opening.Depth));
             if (depthParam != null)
             {
                 double depth = depthParam.AsDouble().ToSI(depthParam.Definition.UnitType);
@@ -95,12 +95,12 @@ namespace BH.Revit.Engine.Core
             }
             else
                 BH.Engine.Reflection.Compute.RecordWarning($"The depth of the opening could not be extracted from the Revit element because the correspondent parameter could not be found. Revit ElementId: {instance.Id}"
-                    + "\nTo link the specific parameter values with opening depth, add relevant ParameterMap to RevitSettings.ParameterSettings.");
+                    + "\nTo link the specific parameter values with opening depth, add relevant ParameterMap to RevitSettings.MappingSettings.");
 
             //Set identifiers, parameters & custom data
             opening.SetIdentifiers(instance);
-            opening.CopyParameters(instance, settings.ParameterSettings);
-            opening.SetProperties(instance, settings.ParameterSettings);
+            opening.CopyParameters(instance, settings.MappingSettings);
+            opening.SetProperties(instance, settings.MappingSettings);
 
             refObjects.AddOrReplace(instance.Id, opening);
             return opening;

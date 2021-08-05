@@ -66,8 +66,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             bHoMRoof.SetIdentifiers(roof);
-            bHoMRoof.CopyParameters(roof, settings.ParameterSettings);
-            bHoMRoof.SetProperties(roof, settings.ParameterSettings);
+            bHoMRoof.CopyParameters(roof, settings.MappingSettings);
+            bHoMRoof.SetProperties(roof, settings.MappingSettings);
 
             refObjects.AddOrReplace(roof.Id, bHoMRoof);
             return bHoMRoof;

@@ -81,8 +81,8 @@ namespace BH.Revit.Engine.Core
 
                 //Set identifiers, parameters & custom data
                 thisSegment.SetIdentifiers(revitCableTray);
-                thisSegment.CopyParameters(revitCableTray, settings.ParameterSettings);
-                thisSegment.SetProperties(revitCableTray, settings.ParameterSettings);
+                thisSegment.CopyParameters(revitCableTray, settings.MappingSettings);
+                thisSegment.SetProperties(revitCableTray, settings.MappingSettings);
                 bhomCableTrays.Add(thisSegment);
             }
 

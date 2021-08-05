@@ -22,32 +22,30 @@
 
 using BH.oM.Adapters.Revit.Mapping;
 using BH.oM.Adapters.Revit.Parameters;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Settings
 {
-    public static partial class Query
+    [Description("An entity holding information about the enforced convert relationships between Revit families and BHoM types on Pull as well as mapping between Revit parameters and BHoM object properties on Push/Pull.")]
+    public class MappingSettings : BHoMObject
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Creates an instance of ParameterSettings with all ParameterMaps and FamilyMaps stored in BHoM/DataSets/Revit/ParameterMaps folder.")]
-        [Output("parameterSettings")]
-        public static ParameterSettings DefaultParameterSettings()
-        {
-            ParameterSettings settings = new ParameterSettings().AddParameterMaps(BH.Engine.Library.Query.Library("ParameterMaps").Where(x => x is ParameterMap).Cast<ParameterMap>());
-            List<FamilyMap> familyMaps = BH.Engine.Library.Query.Library("FamilyMaps").Where(x => x is FamilyMap).Cast<FamilyMap>()?.ToList();
-            if (familyMaps != null)
-                settings.FamilyMaps = familyMaps;
-            
-            settings.Name = "BH Default Parameter Settings";
-            return settings;
-        }
+        [Description("A collection of entities defining relationships between property names of BHoM types (or RevitParameters attached to objects of these types) and parameter names of correspondent Revit elements.")]
+        public virtual List<ParameterMap> ParameterMaps { get; set; } = new List<ParameterMap>();
+
+        [Description("A collection of entities defining relationships between Revit families and BHoM types, to which these families are meant to be converted on Pull.")]
+        public virtual List<FamilyMap> FamilyMaps { get; set; } = new List<FamilyMap>();
+
+        [Description("Name of the Revit parameter to be used as a source (on Pull) and target (on Push) of information for BHoM tags.")]
+        public virtual string TagsParameter { get; set; } = "BHE_Tags";
+
+        [Description("Name of the Revit parameter to be used as a source of information about material grade of a Revit element.")]
+        public virtual string MaterialGradeParameter { get; set; } = "BHE_Material Grade";
 
         /***************************************************/
     }

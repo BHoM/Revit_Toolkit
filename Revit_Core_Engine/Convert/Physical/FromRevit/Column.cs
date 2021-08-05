@@ -50,8 +50,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             column.SetIdentifiers(familyInstance);
-            column.CopyParameters(familyInstance, settings.ParameterSettings);
-            column.SetProperties(familyInstance, settings.ParameterSettings);
+            column.CopyParameters(familyInstance, settings.MappingSettings);
+            column.SetProperties(familyInstance, settings.MappingSettings);
 
             refObjects.AddOrReplace(familyInstance.Id, column);
             return column;

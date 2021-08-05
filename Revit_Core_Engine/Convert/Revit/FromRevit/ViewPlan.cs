@@ -55,8 +55,8 @@ namespace BH.Revit.Engine.Core
 
             //Set identifiers, parameters & custom data
             viewPlan.SetIdentifiers(revitViewPlan);
-            viewPlan.CopyParameters(revitViewPlan, settings.ParameterSettings);
-            viewPlan.SetProperties(revitViewPlan, settings.ParameterSettings);
+            viewPlan.CopyParameters(revitViewPlan, settings.MappingSettings);
+            viewPlan.SetProperties(revitViewPlan, settings.MappingSettings);
 
             refObjects.AddOrReplace(revitViewPlan.Id, viewPlan);
             return viewPlan;

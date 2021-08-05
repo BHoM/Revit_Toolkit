@@ -152,7 +152,7 @@
     <Compile Include="Settings\FamilyLoadSettings.cs" />
     <Compile Include="Settings\ConnectionSettings.cs" />
     <Compile Include="Parameters\ParameterMap.cs" />
-    <Compile Include="Settings\ParameterSettings.cs" />
+    <Compile Include="Settings\MappingSettings.cs" />
     <Compile Include="Settings\RevitSettings.cs" />
     <Compile Include="Elements\Sheet.cs" />
   </ItemGroup>
