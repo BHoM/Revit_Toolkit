@@ -460,6 +460,21 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Finds the ElementIds of all elements within the Revit document that pass the filtering criteria set in the given FilterEverything request\n" +
+                     "in practice, returns all ElementIds in the model or equivalent of ids input, if the latter is not null.")]
+        [Input("request", "FilterEverything request containing the filtering criteria, against which the elements in the Revit document are checked.")]
+        [Input("document", "Revit Document queried for the filtered elements.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while evaluating the elements against the filtering criteria.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered Revit ElementIds.")]
+        public static IEnumerable<ElementId> ElementIds(this FilterEverything request, Document document, Discipline discipline = Discipline.Undefined, RevitSettings settings = null, IEnumerable<ElementId> ids = null)
+        {
+            return document.ElementIdsOfEverything(ids);
+        }
+
+        /***************************************************/
+
         [Description("Finds the ElementIds of all elements within the Revit document that pass the filtering criteria set in the given LogicalAndRequest.")]
         [Input("request", "LogicalAndRequest containing the filtering criteria, against which the elements in the Revit document are checked.")]
         [Input("document", "Revit Document queried for the filtered elements.")]

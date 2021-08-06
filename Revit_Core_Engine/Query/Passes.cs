@@ -69,7 +69,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Checks whether a given Revit Element passes the filtering criteria contained within the FilterByParameterExistence request.")]
-        [Input("element", "Revit Element to be checked against the IRequest.")]
+        [Input("element", "Revit Element to be checked against the FilterByParameterExistence request.")]
         [Input("request", "FilterByParameterExistence request containing the filtering criteria, against which the Revit element is checked.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("settings", "Revit adapter settings to be used while evaluating the element against the filtering criteria.")]
@@ -83,7 +83,7 @@ namespace BH.Revit.Engine.Core
                 discipline = Discipline.Physical;
 
             settings = settings.DefaultIfNull();
-            
+
             Type bHoMType = element.BHoMType(discipline, settings);
             oM.Adapters.Revit.Mapping.ParameterMap parameterMap = settings?.MappingSettings?.ParameterMap(bHoMType);
             if (parameterMap != null)
@@ -94,8 +94,22 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether a given Revit Element passes the filtering criteria contained within the FilterEverything request.\n" +
+                     "In practice always returns true.")]
+        [Input("element", "Revit Element to be checked against the FilterEverything request.")]
+        [Input("request", "FilterEverything request containing the filtering criteria, against which the Revit element is checked.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while evaluating the element against the filtering criteria.")]
+        [Output("passes", "Always true because FilterEverything request accepts all Revit elements.")]
+        public static bool Passes(this Element element, FilterEverything request, Discipline discipline = Discipline.Undefined, RevitSettings settings = null)
+        {
+            return true;
+        }
+
+        /***************************************************/
+
         [Description("Checks whether a given Revit Element passes the filtering criteria contained within the IParameterValueRequest.")]
-        [Input("element", "Revit Element to be checked against the IRequest.")]
+        [Input("element", "Revit Element to be checked against the IParameterValueRequest.")]
         [Input("request", "IParameterValueRequest containing the filtering criteria, against which the Revit element is checked.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("settings", "Revit adapter settings to be used while evaluating the element against the filtering criteria.")]
