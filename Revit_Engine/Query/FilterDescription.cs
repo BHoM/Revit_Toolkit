@@ -49,6 +49,12 @@ namespace BH.Engine.Adapters.Revit
         [Output("description", "Description of the filter represented by the input FilterEverything request.")]
         public static string FilterDescription(this FilterEverything request)
         {
+            if (request == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Cannot extract the filter description of a null request.");
+                return "";
+            }
+
             return "Filter all elements and types.";
         }
 
@@ -59,6 +65,12 @@ namespace BH.Engine.Adapters.Revit
         [Output("description", "Description of the filter represented by the input FilterByCategory request.")]
         public static string FilterDescription(this FilterByCategory request)
         {
+            if (request == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Cannot extract the filter description of a null request.");
+                return "";
+            }
+
             return $"Filter the elements and types that belong to the category '{request.CategoryName}'.";
         }
 
@@ -69,6 +81,12 @@ namespace BH.Engine.Adapters.Revit
         [Output("description", "Description of the filter represented by the input FilterByParameterBool request.")]
         public static string FilterDescription(this FilterByParameterBool request)
         {
+            if (request == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Cannot extract the filter description of a null request.");
+                return "";
+            }
+
             return $"Filter the elements and types with value of parameter '{request.ParameterName}' equal to {request.Value}.";
         }
 
@@ -79,6 +97,12 @@ namespace BH.Engine.Adapters.Revit
         [Output("description", "Description of the filter represented by the input FilterByParameterElementId request.")]
         public static string FilterDescription(this FilterByParameterElementId request)
         {
+            if (request == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Cannot extract the filter description of a null request.");
+                return "";
+            }
+
             return $"Filter the elements and types with parameter '{request.ParameterName}' referencing to a Revit element with ElementId {request.ElementId}.";
         }
 
@@ -89,6 +113,12 @@ namespace BH.Engine.Adapters.Revit
         [Output("description", "Description of the filter represented by the input FilterByParameterExistence request.")]
         public static string FilterDescription(this FilterByParameterExistence request)
         {
+            if (request == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Cannot extract the filter description of a null request.");
+                return "";
+            }
+
             return $"Filter the elements and types that {(request.ParameterExists ? "" : "do not ")}have parameter named '{request.ParameterName}'.";
         }
 
@@ -99,6 +129,12 @@ namespace BH.Engine.Adapters.Revit
         [Output("description", "Description of the filter represented by the input FilterByParameterInteger request.")]
         public static string FilterDescription(this FilterByParameterInteger request)
         {
+            if (request == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Cannot extract the filter description of a null request.");
+                return "";
+            }
+
             return $"Filter the elements and types with value of parameter '{request.ParameterName}' {request.NumberComparisonType.ComparisonDescription()} {request.Value}.";
         }
 
@@ -109,6 +145,12 @@ namespace BH.Engine.Adapters.Revit
         [Output("description", "Description of the filter represented by the input FilterByParameterNumber request.")]
         public static string FilterDescription(this FilterByParameterNumber request)
         {
+            if (request == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Cannot extract the filter description of a null request.");
+                return "";
+            }
+
             return $"Filter the elements and types with value of parameter '{request.ParameterName}' {request.NumberComparisonType.ComparisonDescription()} {request.Value}, within tolerance of {request.Tolerance}.";
         }
 
@@ -119,6 +161,12 @@ namespace BH.Engine.Adapters.Revit
         [Output("description", "Description of the filter represented by the input FilterByParameterText request.")]
         public static string FilterDescription(this FilterByParameterText request)
         {
+            if (request == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Cannot extract the filter description of a null request.");
+                return "";
+            }
+
             return $"Filter the elements and types with value of parameter '{request.ParameterName}' {request.TextComparisonType.ComparisonDescription()} '{request.Value}'.";
         }
 
@@ -127,6 +175,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Private methods              ****/
         /***************************************************/
 
+        [Description("Returns a verbal description of number comparison enum.")]
+        [Input("comparisonType", "NumberComparisonType to be queried for its description.")]
+        [Output("description", "Verbal description of the input NumberComparisonType.")]
         private static string ComparisonDescription(this NumberComparisonType comparisonType)
         {
             switch (comparisonType)
@@ -150,6 +201,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [Description("Returns a verbal description of text comparison enum.")]
+        [Input("comparisonType", "TextComparisonType to be queried for its description.")]
+        [Output("description", "Verbal description of the input TextComparisonType.")]
         private static string ComparisonDescription(this TextComparisonType comparisonType)
         {
             switch (comparisonType)
