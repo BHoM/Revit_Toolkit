@@ -34,9 +34,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Returns a description of the given FilterEverything request.")]
-        //[Input("request", "FilterEverything request to query the description from.")]
-        //[Output("description", "Description of the input FilterEverything request.")]
+        [Description("Returns a description of the filter represented by the given IRequest.")]
+        [Input("request", "IRequest to query the filter description from.")]
+        [Output("description", "Description of the filter represented by the input IRequest.")]
         public static string IFilterDescription(this IRequest request)
         {
             return FilterDescription(request as dynamic);
@@ -44,9 +44,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns a description of the given FilterEverything request.")]
-        [Input("request", "FilterEverything request to query the description from.")]
-        [Output("description", "Description of the input FilterEverything request.")]
+        [Description("Returns a description of the filter represented by the given FilterEverything request.")]
+        [Input("request", "FilterEverything request to query the filter description from.")]
+        [Output("description", "Description of the filter represented by the input FilterEverything request.")]
         public static string FilterDescription(this FilterEverything request)
         {
             return "Filter all elements and types.";
@@ -54,9 +54,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns a description of the given FilterByCategory request.")]
-        [Input("request", "FilterByCategory request to query the description from.")]
-        [Output("description", "Description of the input FilterByCategory request.")]
+        [Description("Returns a description of the filter represented by the given FilterByCategory request.")]
+        [Input("request", "FilterByCategory request to query the filter description from.")]
+        [Output("description", "Description of the filter represented by the input FilterByCategory request.")]
         public static string FilterDescription(this FilterByCategory request)
         {
             return $"Filter the elements and types that belong to the category '{request.CategoryName}'.";
@@ -64,9 +64,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns a description of the given FilterByParameterBool request.")]
-        [Input("request", "FilterByParameterBool request to query the description from.")]
-        [Output("description", "Description of the input FilterByParameterBool request.")]
+        [Description("Returns a description of the filter represented by the given FilterByParameterBool request.")]
+        [Input("request", "FilterByParameterBool request to query the filter description from.")]
+        [Output("description", "Description of the filter represented by the input FilterByParameterBool request.")]
         public static string FilterDescription(this FilterByParameterBool request)
         {
             return $"Filter the elements and types with value of parameter '{request.ParameterName}' equal to {request.Value}.";
@@ -74,9 +74,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns a description of the given FilterByParameterElementId request.")]
-        [Input("request", "FilterByParameterElementId request to query the description from.")]
-        [Output("description", "Description of the input FilterByParameterElementId request.")]
+        [Description("Returns a description of the filter represented by the given FilterByParameterElementId request.")]
+        [Input("request", "FilterByParameterElementId request to query the filter description from.")]
+        [Output("description", "Description of the filter represented by the input FilterByParameterElementId request.")]
         public static string FilterDescription(this FilterByParameterElementId request)
         {
             return $"Filter the elements and types with parameter '{request.ParameterName}' referencing to a Revit element with ElementId {request.ElementId}.";
@@ -84,9 +84,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns a description of the given FilterByParameterExistence request.")]
-        [Input("request", "FilterByParameterExistence request to query the description from.")]
-        [Output("description", "Description of the input FilterByParameterExistence request.")]
+        [Description("Returns a description of the filter represented by the given FilterByParameterExistence request.")]
+        [Input("request", "FilterByParameterExistence request to query the filter description from.")]
+        [Output("description", "Description of the filter represented by the input FilterByParameterExistence request.")]
         public static string FilterDescription(this FilterByParameterExistence request)
         {
             return $"Filter the elements and types that {(request.ParameterExists ? "" : "do not ")}have parameter named '{request.ParameterName}'.";
@@ -94,9 +94,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns a description of the given FilterByParameterInteger request.")]
-        [Input("request", "FilterByParameterInteger request to query the description from.")]
-        [Output("description", "Description of the input FilterByParameterInteger request.")]
+        [Description("Returns a description of the filter represented by the given FilterByParameterInteger request.")]
+        [Input("request", "FilterByParameterInteger request to query the filter description from.")]
+        [Output("description", "Description of the filter represented by the input FilterByParameterInteger request.")]
         public static string FilterDescription(this FilterByParameterInteger request)
         {
             return $"Filter the elements and types with value of parameter '{request.ParameterName}' {request.NumberComparisonType.ComparisonDescription()} {request.Value}.";
@@ -104,9 +104,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns a description of the given FilterByParameterNumber request.")]
-        [Input("request", "FilterByParameterNumber request to query the description from.")]
-        [Output("description", "Description of the input FilterByParameterNumber request.")]
+        [Description("Returns a description of the filter represented by the given FilterByParameterNumber request.")]
+        [Input("request", "FilterByParameterNumber request to query the filter description from.")]
+        [Output("description", "Description of the filter represented by the input FilterByParameterNumber request.")]
         public static string FilterDescription(this FilterByParameterNumber request)
         {
             return $"Filter the elements and types with value of parameter '{request.ParameterName}' {request.NumberComparisonType.ComparisonDescription()} {request.Value}, within tolerance of {request.Tolerance}.";
@@ -114,9 +114,9 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns a description of the given FilterByParameterText request.")]
-        [Input("request", "FilterByParameterText request to query the description from.")]
-        [Output("description", "Description of the input FilterByParameterText request.")]
+        [Description("Returns a description of the filter represented by the given FilterByParameterText request.")]
+        [Input("request", "FilterByParameterText request to query the filter description from.")]
+        [Output("description", "Description of the filter represented by the input FilterByParameterText request.")]
         public static string FilterDescription(this FilterByParameterText request)
         {
             return $"Filter the elements and types with value of parameter '{request.ParameterName}' {request.TextComparisonType.ComparisonDescription()} '{request.Value}'.";
