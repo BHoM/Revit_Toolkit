@@ -43,6 +43,9 @@ namespace BH.oM.Adapters.Revit.Requests
         [Description("Numerical tolerance for number comparison.")]
         public virtual double Tolerance { get; set; } = BH.oM.Geometry.Tolerance.Distance;
 
+        [Description("If true, the Revit values are converted to SI prior to being compared against the specified value, otherwise not.")]
+        public virtual bool ConvertUnits { get; set; } = true;
+
         /***************************************************/
     }
 }
