@@ -49,6 +49,9 @@ namespace BH.Revit.Engine.Core
         [Output("passes", "True if the input Revit Element passes the filtering criteria contained within the IRequest, otherwise false.")]
         public static bool IPasses(this Element element, IRequest request, Discipline discipline = Discipline.Undefined, RevitSettings settings = null)
         {
+            if (!CheckIfNotNull(element, request))
+                return false;
+
             return Passes(element, request as dynamic, discipline, settings);
         }
 
@@ -60,6 +63,9 @@ namespace BH.Revit.Engine.Core
         [Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the IParameterValueRequest, otherwise false.")]
         public static bool IPasses(this Parameter parameter, IParameterValueRequest request)
         {
+            if (!CheckIfNotNull(parameter, request))
+                return false;
+
             return Passes(parameter, request as dynamic);
         }
 
@@ -190,7 +196,10 @@ namespace BH.Revit.Engine.Core
         [Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterBool request, otherwise false.")]
         public static bool Passes(this Parameter parameter, FilterByParameterBool request)
         {
-            if (parameter != null && parameter.HasValue && parameter.StorageType == StorageType.Integer && parameter.Definition.ParameterType == ParameterType.YesNo)
+            if (!CheckIfNotNull(parameter, request))
+                return false;
+
+            if (parameter.HasValue && parameter.StorageType == StorageType.Integer && parameter.Definition.ParameterType == ParameterType.YesNo)
             {
                 int paramValue = parameter.AsInteger();
                 return (request.Value && paramValue == 1) || (!request.Value && paramValue == 0);
@@ -207,7 +216,10 @@ namespace BH.Revit.Engine.Core
         [Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterInteger request, otherwise false.")]
         public static bool Passes(this Parameter parameter, FilterByParameterInteger request)
         {
-            if (parameter != null && parameter.HasValue && parameter.StorageType == StorageType.Integer && parameter.Definition.ParameterType != ParameterType.YesNo)
+            if (!CheckIfNotNull(parameter, request))
+                return false;
+
+            if (parameter.HasValue && parameter.StorageType == StorageType.Integer && parameter.Definition.ParameterType != ParameterType.YesNo)
             {
                 int paramValue = parameter.AsInteger();
                 switch (request.NumberComparisonType)
@@ -238,7 +250,10 @@ namespace BH.Revit.Engine.Core
         [Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterNumber request, otherwise false.")]
         public static bool Passes(this Parameter parameter, FilterByParameterNumber request)
         {
-            if (parameter != null && parameter.HasValue)
+            if (!CheckIfNotNull(parameter, request))
+                return false;
+
+            if (parameter.HasValue)
             {
                 double paramValue;
                 if (parameter.StorageType == StorageType.Double)
@@ -284,7 +299,10 @@ namespace BH.Revit.Engine.Core
         [Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterText request, otherwise false.")]
         public static bool Passes(this Parameter parameter, FilterByParameterText request)
         {
-            if (parameter != null && parameter.HasValue)
+            if (!CheckIfNotNull(parameter, request))
+                return false;
+
+            if (parameter.HasValue)
             {
                 string paramValue;
                 if (parameter.StorageType == StorageType.String)
@@ -322,7 +340,10 @@ namespace BH.Revit.Engine.Core
         [Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterElementId request, otherwise false.")]
         public static bool Passes(this Parameter parameter, FilterByParameterElementId request)
         {
-            if (parameter != null && parameter.HasValue && parameter.StorageType == StorageType.ElementId)
+            if (!CheckIfNotNull(parameter, request))
+                return false;
+
+            if (parameter.HasValue && parameter.StorageType == StorageType.ElementId)
                 return parameter.AsElementId().IntegerValue == request.ElementId;
 
             return false;
@@ -342,6 +363,29 @@ namespace BH.Revit.Engine.Core
             if (element == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("The element cannot be checked against the request because it is null.");
+                return false;
+            }
+
+            if (request == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("The element cannot be checked against the request because the request is null.");
+                return false;
+            }
+
+            return true;
+        }
+
+        /***************************************************/
+
+        [Description("Checks whether either of the given Revit element and IRequest is null and raises error if so.")]
+        [Input("parameter", "Revit Parameter to be checked against null value.")]
+        [Input("request", "IRequest to be checked against null value.")]
+        [Output("notNull", "If true, neither the input Revit Element nor the IRequest is null. Otherwise false.")]
+        private static bool CheckIfNotNull(Parameter parameter, IRequest request)
+        {
+            if (parameter == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("The parameter cannot be checked against the request because it is null.");
                 return false;
             }
 
