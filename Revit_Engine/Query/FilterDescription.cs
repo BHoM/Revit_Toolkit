@@ -39,6 +39,12 @@ namespace BH.Engine.Adapters.Revit
         [Output("description", "Description of the filter represented by the input IRequest.")]
         public static string IFilterDescription(this IRequest request)
         {
+            if (request == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Cannot extract the filter description of a null request.");
+                return "";
+            }
+
             return FilterDescription(request as dynamic);
         }
 
@@ -151,7 +157,7 @@ namespace BH.Engine.Adapters.Revit
                 return "";
             }
 
-            return $"Filter the elements and types with value of parameter '{request.ParameterName}' {request.NumberComparisonType.ComparisonDescription()} {request.Value}, within tolerance of {request.Tolerance}.";
+            return $"Filter the elements and types with value of parameter '{request.ParameterName}' {request.NumberComparisonType.ComparisonDescription()} {request.Value}.";
         }
 
         /***************************************************/
