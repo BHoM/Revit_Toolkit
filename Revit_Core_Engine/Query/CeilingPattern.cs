@@ -107,10 +107,10 @@ namespace BH.Revit.Engine.Core
             List<BH.oM.Geometry.Line> patterns = new List<BH.oM.Geometry.Line>();
             FillPatternElement fillPatternElement = null;
 
-#if (REVIT2020 || REVIT2021)
-            fillPatternElement = revitMaterial.Document.GetElement(revitMaterial.SurfaceForegroundPatternId) as FillPatternElement;
+#if (REVIT2018 || REVIT2019)
+            fillPatternElement = revitMaterial.Document.GetElement(revitMaterial.SurfacePatternId) as FillPatternElement;
 #else
-                fillPatternElement = revitMaterial.Document.GetElement(revitMaterial.SurfacePatternId) as FillPatternElement;
+            fillPatternElement = revitMaterial.Document.GetElement(revitMaterial.SurfaceForegroundPatternId) as FillPatternElement;
 #endif
 
             if (fillPatternElement != null)
@@ -224,10 +224,10 @@ namespace BH.Revit.Engine.Core
             Document doc = ceiling.Document;
 
             FillPatternElement fillPatternElement;
-#if (REVIT2020 || REVIT2021)
-            fillPatternElement = doc.GetElement(material.SurfaceForegroundPatternId) as FillPatternElement;
-#else
+#if (REVIT2018 || REVIT2019)
             fillPatternElement = doc.GetElement(material.SurfacePatternId) as FillPatternElement;
+#else
+            fillPatternElement = doc.GetElement(material.SurfaceForegroundPatternId) as FillPatternElement;
 #endif
 
             FillPattern fp = fillPatternElement?.GetFillPattern();
