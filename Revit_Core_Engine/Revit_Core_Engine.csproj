@@ -389,7 +389,7 @@
     <Compile Include="Query\LinkTransform.cs" />
     <Compile Include="Query\Passes.cs" />
     <Compile Include="Query\Shape.cs" />
-    <Compile Include="Query\MaterialTakeOff.cs" />
+    <Compile Include="Query\IHateCapitalsOnGit.cs" />
     <Compile Include="Query\PipeSectionProperty.cs" />
     <Compile Include="Query\Profile.cs" />
     <Compile Include="Convert\MEP\FromRevit\Wire.cs" />
