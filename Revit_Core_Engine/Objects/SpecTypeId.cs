@@ -21,11 +21,6 @@
  */
 
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autodesk.Revit.DB;
 
 #if (REVIT2018 || REVIT2019 || REVIT2020)
@@ -165,178 +160,35 @@ namespace BH.Revit.Engine.Core
         public static UnitType ElectricalTemperatureDifference { get { return UnitType.UT_Electrical_TemperatureDifference; } }
         public static UnitType Custom { get { return UnitType.UT_Custom; } }
 
-#if (REVIT2018 || REVIT2019 || REVIT2020)
-        public static UnitType Stationing
-        {
-            get
-            {
-                NonExistentTypeWarning(nameof(Stationing), 2021);
-                return UnitType.UT_Undefined;
-            }
-        }
-
-        public static UnitType ThermalGradientCoefficientForMoistureCapacity
-        {
-            get
-            {
-                NonExistentTypeWarning(nameof(ThermalGradientCoefficientForMoistureCapacity), 2021);
-                return UnitType.UT_Undefined;
-            }
-        }
-
-        public static UnitType StationingInterval
-        {
-            get
-            {
-                NonExistentTypeWarning(nameof(StationingInterval), 2021);
-                return UnitType.UT_Undefined;
-            }
-        }
-
-        public static UnitType RotationAngle
-        {
-            get
-            {
-                NonExistentTypeWarning(nameof(RotationAngle), 2021);
-                return UnitType.UT_Undefined;
-            }
-        }
-
-        public static UnitType PowerPerLength
-        {
-            get
-            {
-                NonExistentTypeWarning(nameof(PowerPerLength), 2021);
-                return UnitType.UT_Undefined;
-            }
-        }
-
-        public static UnitType PowerPerFlow
-        {
-            get
-            {
-                NonExistentTypeWarning(nameof(PowerPerFlow), 2021);
-                return UnitType.UT_Undefined;
-            }
-        }
-
-        public static UnitType PipingMassPerTime
-        {
-            get
-            {
-                NonExistentTypeWarning(nameof(PipingMassPerTime), 2021);
-                return UnitType.UT_Undefined;
-            }
-        }
-
-        public static UnitType IsothermalMoistureCapacity
-        {
-            get
-            {
-                NonExistentTypeWarning(nameof(IsothermalMoistureCapacity), 2021);
-                return UnitType.UT_Undefined;
-            }
-        }
-
-        public static UnitType HvacMassPerTime
-        {
-            get
-            {
-                NonExistentTypeWarning(nameof(HvacMassPerTime), 2021);
-                return UnitType.UT_Undefined;
-            }
-        }
-
-        public static UnitType FlowPerPower
-        {
-            get
-            {
-                NonExistentTypeWarning(nameof(FlowPerPower), 2021);
-                return UnitType.UT_Undefined;
-            }
-        }
-
-        public static UnitType Distance
-        {
-            get
-            {
-                NonExistentTypeWarning(nameof(Distance), 2021);
-                return UnitType.UT_Undefined;
-            }
-        }
-
-        public static UnitType Diffusivity
-        {
-            get
-            {
-                NonExistentTypeWarning(nameof(Diffusivity), 2021);
-                return UnitType.UT_Undefined;
-            }
-        }
-
-        public static UnitType CostRatePower
-        {
-            get
-            {
-                NonExistentTypeWarning(nameof(CostRatePower), 2021);
-                return UnitType.UT_Undefined;
-            }
-        }
-
-        public static UnitType CostRateEnergy
-        {
-            get
-            {
-                NonExistentTypeWarning(nameof(CostRateEnergy), 2021);
-                return UnitType.UT_Undefined;
-            }
-        }
-
-        public static UnitType CostPerArea
-        {
-            get
-            {
-                NonExistentTypeWarning(nameof(CostPerArea), 2021);
-                return UnitType.UT_Undefined;
-            }
-        }
-
-        public static UnitType AngularSpeed
-        {
-            get
-            {
-                NonExistentTypeWarning(nameof(AngularSpeed), 2021);
-                return UnitType.UT_Undefined;
-            }
-        }
-#endif
-
+        public static UnitType Stationing { get { return NonExistent(nameof(Stationing), 2020); } }
+        public static UnitType ThermalGradientCoefficientForMoistureCapacity { get { return NonExistent(nameof(ThermalGradientCoefficientForMoistureCapacity), 2020); } }
+        public static UnitType StationingInterval { get { return NonExistent(nameof(StationingInterval), 2020); } }
+        public static UnitType RotationAngle { get { return NonExistent(nameof(RotationAngle), 2020); } }
+        public static UnitType PowerPerLength { get { return NonExistent(nameof(PowerPerLength), 2020); } }
+        public static UnitType PowerPerFlow { get { return NonExistent(nameof(PowerPerFlow), 2020); } }
+        public static UnitType PipingMassPerTime { get { return NonExistent(nameof(PipingMassPerTime), 2020); } }
+        public static UnitType IsothermalMoistureCapacity { get { return NonExistent(nameof(IsothermalMoistureCapacity), 2020); } }
+        public static UnitType HvacMassPerTime { get { return NonExistent(nameof(HvacMassPerTime), 2020); } }
+        public static UnitType FlowPerPower { get { return NonExistent(nameof(FlowPerPower), 2020); } }
+        public static UnitType Distance { get { return NonExistent(nameof(Distance), 2020); } }
+        public static UnitType Diffusivity { get { return NonExistent(nameof(Diffusivity), 2020); } }
+        public static UnitType CostRatePower { get { return NonExistent(nameof(CostRatePower), 2020); } }
+        public static UnitType CostRateEnergy { get { return NonExistent(nameof(CostRateEnergy), 2020); } }
+        public static UnitType CostPerArea { get { return NonExistent(nameof(CostPerArea), 2020); } }
+        public static UnitType AngularSpeed { get { return NonExistent(nameof(AngularSpeed), 2020); } }
+        
 #if (REVIT2018 || REVIT2019)
-        public static UnitType Time
-        {
-            get
-            {
-                NonExistentTypeWarning(nameof(Time), 2020);
-                return UnitType.UT_Undefined;
-            }
-        }
-
-        public static UnitType Speed
-        {
-            get
-            {
-                NonExistentTypeWarning(nameof(Speed), 2020);
-                return UnitType.UT_Undefined;
-            }
-        }
+        public static UnitType Time { get { return NonExistent(nameof(Time), 2020); } }
+        public static UnitType Speed { get { return NonExistent(nameof(Speed), 2020); } }
 #else
         public static UnitType Time { get { return UnitType.UT_TimeInterval; } }
         public static UnitType Speed { get { return UnitType.UT_Speed; } }
 #endif
-        
-        private static void NonExistentTypeWarning(string name, int version)
+
+        private static UnitType NonExistent(string name, int version)
         {
             BH.Engine.Reflection.Compute.RecordWarning($"SpecTypeId.{name} does not have a UnitType equivalent in Revit versions older than {version}. UnitType.UT_Undefined has been used which may cause unit conversion issues.");
+            return UnitType.UT_Undefined;
         }
     }
 }
