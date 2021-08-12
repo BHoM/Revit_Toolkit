@@ -63,7 +63,7 @@ namespace BH.Revit.Engine.Core
             }
 
             double bottomElevation = floor.Location.IBounds().Min.Z;
-            Level level = document.LevelBelow(bottomElevation.FromSI(UnitType.UT_Length), settings);
+            Level level = document.LevelBelow(bottomElevation.FromSI(SpecTypeId.Length), settings);
 
             oM.Geometry.Plane sketchPlane = new oM.Geometry.Plane { Origin = new BH.oM.Geometry.Point { Z = bottomElevation }, Normal = Vector.ZAxis };
             ICurve curve = planarSurface.ExternalBoundary.IProject(sketchPlane);
@@ -128,7 +128,7 @@ namespace BH.Revit.Engine.Core
             if (revitFloor.LevelId.IntegerValue != level.Id.IntegerValue)
             {
                 Level newLevel = document.GetElement(revitFloor.LevelId) as Level;
-                offset += (level.ProjectElevation - newLevel.ProjectElevation).ToSI(UnitType.UT_Length);
+                offset += (level.ProjectElevation - newLevel.ProjectElevation).ToSI(SpecTypeId.Length);
             }
 
             revitFloor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, offset);

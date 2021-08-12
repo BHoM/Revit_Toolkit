@@ -47,7 +47,7 @@ namespace BH.Revit.Engine.Core
             if (xyz == null)
                 return null;
 
-            return BH.Engine.Geometry.Create.Point(xyz.X.ToSI(UnitType.UT_Length), xyz.Y.ToSI(UnitType.UT_Length), xyz.Z.ToSI(UnitType.UT_Length));
+            return BH.Engine.Geometry.Create.Point(xyz.X.ToSI(SpecTypeId.Length), xyz.Y.ToSI(SpecTypeId.Length), xyz.Z.ToSI(SpecTypeId.Length));
         }
 
         /***************************************************/

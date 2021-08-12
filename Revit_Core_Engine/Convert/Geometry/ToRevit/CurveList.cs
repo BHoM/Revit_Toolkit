@@ -47,7 +47,7 @@ namespace BH.Revit.Engine.Core
             //Split the curve in half when it is closed.
             if (Math.Abs(2 * Math.PI) - curve.EndAngle + curve.StartAngle < BH.oM.Adapters.Revit.Tolerance.Angle)
             {
-                double r = curve.Radius.FromSI(UnitType.UT_Length);
+                double r = curve.Radius.FromSI(SpecTypeId.Length);
                 XYZ centre = curve.CoordinateSystem.Origin.ToRevit();
                 XYZ xAxis = curve.CoordinateSystem.X.ToRevit().Normalize();
                 XYZ yAxis = curve.CoordinateSystem.Y.ToRevit().Normalize();
@@ -64,7 +64,7 @@ namespace BH.Revit.Engine.Core
 
         public static List<Curve> ToRevitCurves(this BH.oM.Geometry.Circle curve)
         {
-            double r = curve.Radius.FromSI(UnitType.UT_Length);
+            double r = curve.Radius.FromSI(SpecTypeId.Length);
 
             XYZ centre = curve.Centre.ToRevit();
             XYZ normal = curve.Normal.ToRevit().Normalize();
@@ -80,8 +80,8 @@ namespace BH.Revit.Engine.Core
         public static List<Curve> ToRevitCurves(this BH.oM.Geometry.Ellipse curve)
         {
             XYZ centre = curve.Centre.ToRevit();
-            double radius1 = curve.Radius1.FromSI(UnitType.UT_Length);
-            double radius2 = curve.Radius2.FromSI(UnitType.UT_Length);
+            double radius1 = curve.Radius1.FromSI(SpecTypeId.Length);
+            double radius2 = curve.Radius2.FromSI(SpecTypeId.Length);
             XYZ axis1 = curve.Axis1.ToRevit().Normalize();
             XYZ axis2 = curve.Axis2.ToRevit().Normalize();
             return new List<Curve> { Ellipse.CreateCurve(centre, radius1, radius2, axis1, axis2, 0, Math.PI), Ellipse.CreateCurve(centre, radius1, radius2, axis1, axis2, Math.PI, Math.PI * 2) };

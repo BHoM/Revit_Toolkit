@@ -129,16 +129,16 @@ namespace BH.Revit.Engine.Core
 
         public static void CopyCharacteristics(this SolidMaterial toMaterial, ThermalAsset fromAsset)
         {
-            toMaterial.Conductivity = fromAsset.ThermalConductivity.ToSI(UnitType.UT_HVAC_ThermalConductivity);
-            toMaterial.SpecificHeat = fromAsset.SpecificHeat.ToSI(UnitType.UT_HVAC_SpecificHeat);
-            toMaterial.Density = fromAsset.Density.ToSI(UnitType.UT_MassDensity);
+            toMaterial.Conductivity = fromAsset.ThermalConductivity.ToSI(SpecTypeId.ThermalConductivity);
+            toMaterial.SpecificHeat = fromAsset.SpecificHeat.ToSI(SpecTypeId.SpecificHeat);
+            toMaterial.Density = fromAsset.Density.ToSI(SpecTypeId.MassDensity);
         }
 
         /***************************************************/
 
         public static void CopyCharacteristics(this IMaterialFragment toMaterial, StructuralAsset fromAsset)
         {
-            double density = fromAsset.Density.ToSI(UnitType.UT_MassDensity);
+            double density = fromAsset.Density.ToSI(SpecTypeId.MassDensity);
 
 #if (REVIT2020 || REVIT2021)
 
@@ -146,10 +146,10 @@ namespace BH.Revit.Engine.Core
             double dampingRatio = fromAsset.DampingRatio;
 #endif
 
-            oM.Geometry.Vector youngsModulus = BH.Engine.Geometry.Create.Vector(fromAsset.YoungModulus.X.ToSI(UnitType.UT_Stress), fromAsset.YoungModulus.Y.ToSI(UnitType.UT_Stress), fromAsset.YoungModulus.Z.ToSI(UnitType.UT_Stress));
-            oM.Geometry.Vector thermalExpansionCoeff = BH.Engine.Geometry.Create.Vector(fromAsset.ThermalExpansionCoefficient.X.ToSI(UnitType.UT_ThermalExpansion), fromAsset.ThermalExpansionCoefficient.Y.ToSI(UnitType.UT_ThermalExpansion), fromAsset.ThermalExpansionCoefficient.Z.ToSI(UnitType.UT_ThermalExpansion));
+            oM.Geometry.Vector youngsModulus = BH.Engine.Geometry.Create.Vector(fromAsset.YoungModulus.X.ToSI(SpecTypeId.Stress), fromAsset.YoungModulus.Y.ToSI(SpecTypeId.Stress), fromAsset.YoungModulus.Z.ToSI(SpecTypeId.Stress));
+            oM.Geometry.Vector thermalExpansionCoeff = BH.Engine.Geometry.Create.Vector(fromAsset.ThermalExpansionCoefficient.X.ToSI(SpecTypeId.ThermalExpansionCoefficient), fromAsset.ThermalExpansionCoefficient.Y.ToSI(SpecTypeId.ThermalExpansionCoefficient), fromAsset.ThermalExpansionCoefficient.Z.ToSI(SpecTypeId.ThermalExpansionCoefficient));
             oM.Geometry.Vector poissonsRatio = BH.Engine.Geometry.Create.Vector(fromAsset.PoissonRatio.X, fromAsset.PoissonRatio.Y, fromAsset.PoissonRatio.Z);
-            oM.Geometry.Vector shearModulus = BH.Engine.Geometry.Create.Vector(fromAsset.ShearModulus.X.ToSI(UnitType.UT_Stress), fromAsset.ShearModulus.Y.ToSI(UnitType.UT_Stress), fromAsset.ShearModulus.Z.ToSI(UnitType.UT_Stress));
+            oM.Geometry.Vector shearModulus = BH.Engine.Geometry.Create.Vector(fromAsset.ShearModulus.X.ToSI(SpecTypeId.Stress), fromAsset.ShearModulus.Y.ToSI(SpecTypeId.Stress), fromAsset.ShearModulus.Z.ToSI(SpecTypeId.Stress));
 
             toMaterial.Density = density;
 #if (REVIT2020 || REVIT2021)

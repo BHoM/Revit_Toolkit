@@ -88,7 +88,7 @@ namespace BH.Revit.Engine.Core
                             break;
                         }
 
-                        thickness = csl.Width.ToSI(UnitType.UT_Section_Dimension);
+                        thickness = csl.Width.ToSI(SpecTypeId.SectionDimension);
 
                         Material revitMaterial = document.GetElement(csl.MaterialId) as Material;
                         if (revitMaterial == null)

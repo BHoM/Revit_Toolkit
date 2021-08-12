@@ -40,7 +40,7 @@ namespace BH.Revit.Engine.Core
             XYZ basisX = new XYZ(transformMatrix.Matrix[0, 0], transformMatrix.Matrix[1, 0], transformMatrix.Matrix[2, 0]);
             XYZ basisY = new XYZ(transformMatrix.Matrix[0, 1], transformMatrix.Matrix[1, 1], transformMatrix.Matrix[2, 1]);
             XYZ basisZ = new XYZ(transformMatrix.Matrix[0, 2], transformMatrix.Matrix[1, 2], transformMatrix.Matrix[2, 2]);
-            XYZ translation = new XYZ(transformMatrix.Matrix[0, 3].FromSI(UnitType.UT_Length), transformMatrix.Matrix[1, 3].FromSI(UnitType.UT_Length), transformMatrix.Matrix[2, 3].FromSI(UnitType.UT_Length));
+            XYZ translation = new XYZ(transformMatrix.Matrix[0, 3].FromSI(SpecTypeId.Length), transformMatrix.Matrix[1, 3].FromSI(SpecTypeId.Length), transformMatrix.Matrix[2, 3].FromSI(SpecTypeId.Length));
             Transform transform = Transform.CreateTranslation(translation);
             transform.set_Basis(0, basisX);
             transform.set_Basis(1, basisY);

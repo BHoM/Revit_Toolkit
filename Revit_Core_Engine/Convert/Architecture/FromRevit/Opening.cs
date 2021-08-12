@@ -65,7 +65,7 @@ namespace BH.Revit.Engine.Core
             Parameter diameterParam = instance.LookupParameter(settings.MappingSettings, typeof(oM.Architecture.BuildersWork.Opening), nameof(CircleProfile.Diameter));
             if (diameterParam != null)
             {
-                double diameter = diameterParam.AsDouble().ToSI(diameterParam.Definition.UnitType);
+                double diameter = diameterParam.AsDouble().ToSI(diameterParam.Definition.GetSpecTypeId());
                 profile = BH.Engine.Spatial.Create.CircleProfile(diameter);
             }
 
@@ -75,8 +75,8 @@ namespace BH.Revit.Engine.Core
                 Parameter heightParam = instance.LookupParameter(settings.MappingSettings, typeof(oM.Architecture.BuildersWork.Opening), nameof(RectangleProfile.Height));
                 if (widthParam != null && heightParam != null)
                 {
-                    double width = widthParam.AsDouble().ToSI(widthParam.Definition.UnitType);
-                    double height = heightParam.AsDouble().ToSI(heightParam.Definition.UnitType);
+                    double width = widthParam.AsDouble().ToSI(widthParam.Definition.GetSpecTypeId());
+                    double height = heightParam.AsDouble().ToSI(heightParam.Definition.GetSpecTypeId());
                     profile = BH.Engine.Spatial.Create.RectangleProfile(height, width);
                 }
             }
@@ -90,7 +90,7 @@ namespace BH.Revit.Engine.Core
             Parameter depthParam = instance.LookupParameter(settings.MappingSettings, typeof(oM.Architecture.BuildersWork.Opening), nameof(BH.oM.Architecture.BuildersWork.Opening.Depth));
             if (depthParam != null)
             {
-                double depth = depthParam.AsDouble().ToSI(depthParam.Definition.UnitType);
+                double depth = depthParam.AsDouble().ToSI(depthParam.Definition.GetSpecTypeId());
                 opening.Depth = depth;
             }
             else

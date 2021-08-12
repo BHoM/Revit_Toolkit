@@ -85,7 +85,7 @@ namespace BH.Revit.Engine.Core
                 EnergyDataSettings energyDataSettings = EnergyDataSettings.GetFromDocument(document);
                 energyDataSettings.ExportComplexity = gbXMLExportComplexity.ComplexWithMullionsAndShadingSurfaces;
                 energyDataSettings.ExportDefaults = false;
-                energyDataSettings.SliverSpaceTolerance = Convert.FromSI(0.005, UnitType.UT_Length);
+                energyDataSettings.SliverSpaceTolerance = Convert.FromSI(0.005, SpecTypeId.Length);
                 energyDataSettings.AnalysisType = AnalysisMode.BuildingElements;
                 energyDataSettings.EnergyModel = false;
 

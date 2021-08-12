@@ -66,7 +66,7 @@ namespace BH.Revit.Engine.Core
             if (level == null)
                 return null;
 
-            double elevation = level.Elevation.ToSI(UnitType.UT_Length);
+            double elevation = level.Elevation.ToSI(SpecTypeId.Length);
             
             oM.Geometry.Plane plane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, elevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
 
@@ -113,7 +113,7 @@ namespace BH.Revit.Engine.Core
             if (roofBase.LevelId.IntegerValue != level.Id.IntegerValue)
             {
                 Level newLevel = document.GetElement(roofBase.LevelId) as Level;
-                offset += (level.ProjectElevation - newLevel.ProjectElevation).ToSI(UnitType.UT_Length);
+                offset += (level.ProjectElevation - newLevel.ProjectElevation).ToSI(SpecTypeId.Length);
             }
 
             roofBase.SetParameter(BuiltInParameter.ROOF_LEVEL_OFFSET_PARAM, offset);

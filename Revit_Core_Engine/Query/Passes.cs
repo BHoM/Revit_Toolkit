@@ -273,8 +273,8 @@ namespace BH.Revit.Engine.Core
 
                 if (request.ConvertUnits)
                 {
-                    comparisonValue = comparisonValue.FromSI(parameter.Definition.UnitType);
-                    comparisonTolerance = comparisonTolerance.FromSI(parameter.Definition.UnitType);
+                    comparisonValue = comparisonValue.FromSI(parameter.Definition.GetSpecTypeId());
+                    comparisonTolerance = comparisonTolerance.FromSI(parameter.Definition.GetSpecTypeId());
                 }
 
                 switch (request.NumberComparisonType)

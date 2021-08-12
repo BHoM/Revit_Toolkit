@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
 
         public static Arc ToRevit(this BH.oM.Geometry.Arc curve)
         {
-            double radius = curve.Radius.FromSI(UnitType.UT_Length);
+            double radius = curve.Radius.FromSI(SpecTypeId.Length);
             return Arc.Create(curve.CoordinateSystem.ToRevit(), radius, curve.StartAngle, curve.EndAngle);
         }
 
@@ -51,7 +51,7 @@ namespace BH.Revit.Engine.Core
 
         public static Curve ToRevit(this oM.Geometry.Circle curve)
         {
-            double radius = curve.Radius.FromSI(UnitType.UT_Length);
+            double radius = curve.Radius.FromSI(SpecTypeId.Length);
             Plane plane = Plane.CreateByNormalAndOrigin(curve.Normal.ToRevit().Normalize(), curve.Centre.ToRevit());
             return Arc.Create(plane, radius, 0, Math.PI * 2);
         }
@@ -60,7 +60,7 @@ namespace BH.Revit.Engine.Core
 
         public static Ellipse ToRevit(this oM.Geometry.Ellipse curve)
         {
-            return Ellipse.CreateCurve(curve.Centre.ToRevit(), curve.Radius1.FromSI(UnitType.UT_Length), curve.Radius2.FromSI(UnitType.UT_Length), curve.Axis1.ToRevit().Normalize(), curve.Axis2.ToRevit().Normalize(), 0, Math.PI * 2) as Ellipse;
+            return Ellipse.CreateCurve(curve.Centre.ToRevit(), curve.Radius1.FromSI(SpecTypeId.Length), curve.Radius2.FromSI(SpecTypeId.Length), curve.Axis1.ToRevit().Normalize(), curve.Axis2.ToRevit().Normalize(), 0, Math.PI * 2) as Ellipse;
         }
 
         /***************************************************/

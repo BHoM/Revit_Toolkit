@@ -122,7 +122,7 @@ namespace BH.Revit.Engine.Core
                 IList<FillGrid> fillGridList = fillPattern.GetFillGrids();
                 foreach (FillGrid grid in fillGridList)
                 {
-                    double offset = grid.Offset.ToSI(UnitType.UT_Length);
+                    double offset = grid.Offset.ToSI(SpecTypeId.Length);
 
                     double currentY = ((int)((box.Min.Y - yLength) / offset)) * offset;
                     double currentX = ((int)((box.Min.X - xLength) / offset)) * offset;
@@ -130,7 +130,7 @@ namespace BH.Revit.Engine.Core
                     double minNum = currentX;
                     double maxNum = (box.Max.X + xLength);
 
-                    if (grid.Angle.ToSI(UnitType.UT_Angle) > settings.AngleTolerance)
+                    if (grid.Angle.ToSI(SpecTypeId.Angle) > settings.AngleTolerance)
                     {
                         minNum = currentY;
                         maxNum = (box.Max.Y + yLength);
@@ -138,10 +138,10 @@ namespace BH.Revit.Engine.Core
 
                     if (origin != null)
                     {
-                        if (grid.Angle.ToSI(UnitType.UT_Angle) > settings.AngleTolerance)
-                            minNum += (origin.Y % grid.Offset).ToSI(UnitType.UT_Length);
+                        if (grid.Angle.ToSI(SpecTypeId.Angle) > settings.AngleTolerance)
+                            minNum += (origin.Y % grid.Offset).ToSI(SpecTypeId.Length);
                         else
-                            minNum += (origin.X % grid.Offset).ToSI(UnitType.UT_Length);
+                            minNum += (origin.X % grid.Offset).ToSI(SpecTypeId.Length);
                     }
 
                     while ((minNum + offset) < maxNum)
@@ -151,10 +151,10 @@ namespace BH.Revit.Engine.Core
 
                         BH.oM.Geometry.Line pline = new oM.Geometry.Line { Start = pt, End = pt2 };
 
-                        if (grid.Angle.ToSI(UnitType.UT_Angle) > settings.AngleTolerance)
+                        if (grid.Angle.ToSI(SpecTypeId.Angle) > settings.AngleTolerance)
                         {
                             BH.oM.Geometry.Point rotatePt = pline.Centroid();
-                            pline = pline.Rotate(rotatePt, Vector.ZAxis, grid.Angle.ToSI(UnitType.UT_Angle));
+                            pline = pline.Rotate(rotatePt, Vector.ZAxis, grid.Angle.ToSI(SpecTypeId.Angle));
 
                             pline.Start.Y = minNum + offset;
                             pline.End.Y = minNum + offset;
@@ -288,7 +288,7 @@ namespace BH.Revit.Engine.Core
 
                             foreach (FillGrid fg in fp.GetFillGrids())
                             {
-                                if (fg.Angle.ToSI(UnitType.UT_Angle) > settings.AngleTolerance)
+                                if (fg.Angle.ToSI(SpecTypeId.Angle) > settings.AngleTolerance)
                                     y += fg.Offset * 0.5;
                                 else
                                     x += fg.Offset * 0.5;

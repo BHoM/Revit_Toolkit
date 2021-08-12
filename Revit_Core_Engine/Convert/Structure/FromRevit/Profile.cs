@@ -144,9 +144,9 @@ namespace BH.Revit.Engine.Core
             double diameter;
             StructuralSection section = familySymbol.GetStructuralSection();
             if (section is StructuralSectionConcreteRound)
-                diameter = (section as StructuralSectionConcreteRound).Diameter.ToSI(UnitType.UT_Section_Dimension);
+                diameter = (section as StructuralSectionConcreteRound).Diameter.ToSI(SpecTypeId.SectionDimension);
             else if (section is StructuralSectionConcreteRound)
-                diameter = (section as StructuralSectionConcreteRound).Diameter.ToSI(UnitType.UT_Section_Dimension);
+                diameter = (section as StructuralSectionConcreteRound).Diameter.ToSI(SpecTypeId.SectionDimension);
             else
             {
                 BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
@@ -177,12 +177,12 @@ namespace BH.Revit.Engine.Core
             if (section is StructuralSectionIWelded)
             {
                 StructuralSectionIWelded sectionType = section as StructuralSectionIWelded;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                topFlangeWidth = sectionType.TopFlangeWidth.ToSI(UnitType.UT_Section_Dimension);
-                botFlangeWidth = sectionType.BottomFlangeWidth.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
-                topFlangeThickness = sectionType.TopFlangeThickness.ToSI(UnitType.UT_Section_Dimension);
-                botFlangeThickness = sectionType.BottomFlangeThickness.ToSI(UnitType.UT_Section_Dimension);
+                height = sectionType.Height.ToSI(SpecTypeId.SectionDimension);
+                topFlangeWidth = sectionType.TopFlangeWidth.ToSI(SpecTypeId.SectionDimension);
+                botFlangeWidth = sectionType.BottomFlangeWidth.ToSI(SpecTypeId.SectionDimension);
+                webThickness = sectionType.WebThickness.ToSI(SpecTypeId.SectionDimension);
+                topFlangeThickness = sectionType.TopFlangeThickness.ToSI(SpecTypeId.SectionDimension);
+                botFlangeThickness = sectionType.BottomFlangeThickness.ToSI(SpecTypeId.SectionDimension);
                 weldSize = 0;
             }
             else
@@ -224,22 +224,22 @@ namespace BH.Revit.Engine.Core
             if (section is StructuralSectionConcreteRectangle)
             {
                 StructuralSectionConcreteRectangle sectionType = section as StructuralSectionConcreteRectangle;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
+                height = sectionType.Height.ToSI(SpecTypeId.SectionDimension);
+                width = sectionType.Width.ToSI(SpecTypeId.SectionDimension);
                 cornerRadius = 0;
             }
             else if (section is StructuralSectionRectangularBar)
             {
                 StructuralSectionRectangularBar sectionType = section as StructuralSectionRectangularBar;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
+                height = sectionType.Height.ToSI(SpecTypeId.SectionDimension);
+                width = sectionType.Width.ToSI(SpecTypeId.SectionDimension);
                 cornerRadius = 0;
             }
             else if (section is StructuralSectionRectangleParameterized)
             {
                 StructuralSectionRectangleParameterized sectionType = section as StructuralSectionRectangleParameterized;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
+                height = sectionType.Height.ToSI(SpecTypeId.SectionDimension);
+                width = sectionType.Width.ToSI(SpecTypeId.SectionDimension);
                 cornerRadius = 0;
             }
             else
@@ -271,22 +271,22 @@ namespace BH.Revit.Engine.Core
             if (section is StructuralSectionLAngle)
             {
                 StructuralSectionLAngle sectionType = section as StructuralSectionLAngle;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.FlangeThickness.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = sectionType.WebFillet.ToSI(UnitType.UT_Section_Dimension);
-                toeRadius = sectionType.FlangeFillet.ToSI(UnitType.UT_Section_Dimension);
+                height = sectionType.Height.ToSI(SpecTypeId.SectionDimension);
+                width = sectionType.Width.ToSI(SpecTypeId.SectionDimension);
+                webThickness = sectionType.WebThickness.ToSI(SpecTypeId.SectionDimension);
+                flangeThickness = sectionType.FlangeThickness.ToSI(SpecTypeId.SectionDimension);
+                rootRadius = sectionType.WebFillet.ToSI(SpecTypeId.SectionDimension);
+                toeRadius = sectionType.FlangeFillet.ToSI(SpecTypeId.SectionDimension);
             }
             else if (section is StructuralSectionLProfile)
             {
                 //TODO: Implement cold-formed profiles?
                 StructuralSectionLProfile sectionType = section as StructuralSectionLProfile;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = sectionType.InnerFillet.ToSI(UnitType.UT_Section_Dimension);
+                height = sectionType.Height.ToSI(SpecTypeId.SectionDimension);
+                width = sectionType.Width.ToSI(SpecTypeId.SectionDimension);
+                webThickness = sectionType.WallNominalThickness.ToSI(SpecTypeId.SectionDimension);
+                flangeThickness = sectionType.WallNominalThickness.ToSI(SpecTypeId.SectionDimension);
+                rootRadius = sectionType.InnerFillet.ToSI(SpecTypeId.SectionDimension);
                 toeRadius = 0;
             }
             else
@@ -324,11 +324,11 @@ namespace BH.Revit.Engine.Core
             if (section is StructuralSectionRectangleHSS)
             {
                 StructuralSectionRectangleHSS sectionType = section as StructuralSectionRectangleHSS;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                thickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
-                outerRadius = sectionType.OuterFillet.ToSI(UnitType.UT_Section_Dimension);
-                innerRadius = sectionType.InnerFillet.ToSI(UnitType.UT_Section_Dimension);
+                height = sectionType.Height.ToSI(SpecTypeId.SectionDimension);
+                width = sectionType.Width.ToSI(SpecTypeId.SectionDimension);
+                thickness = sectionType.WallNominalThickness.ToSI(SpecTypeId.SectionDimension);
+                outerRadius = sectionType.OuterFillet.ToSI(SpecTypeId.SectionDimension);
+                innerRadius = sectionType.InnerFillet.ToSI(SpecTypeId.SectionDimension);
             }
             else
             {
@@ -364,22 +364,22 @@ namespace BH.Revit.Engine.Core
             if (section is StructuralSectionCParallelFlange)
             {
                 StructuralSectionCParallelFlange sectionType = section as StructuralSectionCParallelFlange;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                flangeWidth = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.FlangeThickness.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = sectionType.WebFillet.ToSI(UnitType.UT_Section_Dimension);
-                toeRadius = sectionType.FlangeFillet.ToSI(UnitType.UT_Section_Dimension);
+                height = sectionType.Height.ToSI(SpecTypeId.SectionDimension);
+                flangeWidth = sectionType.Width.ToSI(SpecTypeId.SectionDimension);
+                webThickness = sectionType.WebThickness.ToSI(SpecTypeId.SectionDimension);
+                flangeThickness = sectionType.FlangeThickness.ToSI(SpecTypeId.SectionDimension);
+                rootRadius = sectionType.WebFillet.ToSI(SpecTypeId.SectionDimension);
+                toeRadius = sectionType.FlangeFillet.ToSI(SpecTypeId.SectionDimension);
             }
             else if (section is StructuralSectionCProfile)
             {
                 //TODO: Implement cold-formed profiles?
                 StructuralSectionCProfile sectionType = section as StructuralSectionCProfile;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                flangeWidth = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = sectionType.InnerFillet.ToSI(UnitType.UT_Section_Dimension);
+                height = sectionType.Height.ToSI(SpecTypeId.SectionDimension);
+                flangeWidth = sectionType.Width.ToSI(SpecTypeId.SectionDimension);
+                webThickness = sectionType.WallNominalThickness.ToSI(SpecTypeId.SectionDimension);
+                flangeThickness = sectionType.WallNominalThickness.ToSI(SpecTypeId.SectionDimension);
+                rootRadius = sectionType.InnerFillet.ToSI(SpecTypeId.SectionDimension);
                 toeRadius = 0;
             }
             else
@@ -417,21 +417,21 @@ namespace BH.Revit.Engine.Core
             if (section is StructuralSectionIParallelFlange)
             {
                 StructuralSectionIParallelFlange sectionType = section as StructuralSectionIParallelFlange;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.FlangeThickness.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = sectionType.WebFillet.ToSI(UnitType.UT_Section_Dimension);
-                toeRadius = sectionType.FlangeFillet.ToSI(UnitType.UT_Section_Dimension);
+                height = sectionType.Height.ToSI(SpecTypeId.SectionDimension);
+                width = sectionType.Width.ToSI(SpecTypeId.SectionDimension);
+                webThickness = sectionType.WebThickness.ToSI(SpecTypeId.SectionDimension);
+                flangeThickness = sectionType.FlangeThickness.ToSI(SpecTypeId.SectionDimension);
+                rootRadius = sectionType.WebFillet.ToSI(SpecTypeId.SectionDimension);
+                toeRadius = sectionType.FlangeFillet.ToSI(SpecTypeId.SectionDimension);
             }
             else if (section is StructuralSectionIWideFlange)
             {
                 StructuralSectionIWideFlange sectionType = section as StructuralSectionIWideFlange;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.FlangeThickness.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = sectionType.WebFillet.ToSI(UnitType.UT_Section_Dimension);
+                height = sectionType.Height.ToSI(SpecTypeId.SectionDimension);
+                width = sectionType.Width.ToSI(SpecTypeId.SectionDimension);
+                webThickness = sectionType.WebThickness.ToSI(SpecTypeId.SectionDimension);
+                flangeThickness = sectionType.FlangeThickness.ToSI(SpecTypeId.SectionDimension);
+                rootRadius = sectionType.WebFillet.ToSI(SpecTypeId.SectionDimension);
                 toeRadius = 0;
             }
             else
@@ -470,30 +470,30 @@ namespace BH.Revit.Engine.Core
             if (section is StructuralSectionISplitParallelFlange)
             {
                 StructuralSectionISplitParallelFlange sectionType = section as StructuralSectionISplitParallelFlange;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.FlangeThickness.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = sectionType.WebFillet.ToSI(UnitType.UT_Section_Dimension);
-                toeRadius = sectionType.FlangeFillet.ToSI(UnitType.UT_Section_Dimension);
+                height = sectionType.Height.ToSI(SpecTypeId.SectionDimension);
+                width = sectionType.Width.ToSI(SpecTypeId.SectionDimension);
+                webThickness = sectionType.WebThickness.ToSI(SpecTypeId.SectionDimension);
+                flangeThickness = sectionType.FlangeThickness.ToSI(SpecTypeId.SectionDimension);
+                rootRadius = sectionType.WebFillet.ToSI(SpecTypeId.SectionDimension);
+                toeRadius = sectionType.FlangeFillet.ToSI(SpecTypeId.SectionDimension);
             }
             else if (section is StructuralSectionStructuralTees)
             {
                 StructuralSectionStructuralTees sectionType = section as StructuralSectionStructuralTees;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WebThickness.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.FlangeThickness.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = sectionType.WebFillet.ToSI(UnitType.UT_Section_Dimension);
-                toeRadius = sectionType.FlangeFillet.ToSI(UnitType.UT_Section_Dimension);
+                height = sectionType.Height.ToSI(SpecTypeId.SectionDimension);
+                width = sectionType.Width.ToSI(SpecTypeId.SectionDimension);
+                webThickness = sectionType.WebThickness.ToSI(SpecTypeId.SectionDimension);
+                flangeThickness = sectionType.FlangeThickness.ToSI(SpecTypeId.SectionDimension);
+                rootRadius = sectionType.WebFillet.ToSI(SpecTypeId.SectionDimension);
+                toeRadius = sectionType.FlangeFillet.ToSI(SpecTypeId.SectionDimension);
             }
             else if (section is StructuralSectionConcreteT)
             {
                 StructuralSectionConcreteT sectionType = section as StructuralSectionConcreteT;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                width = (sectionType.Width + 2 * sectionType.CantileverLength).ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.Width.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.CantileverHeight.ToSI(UnitType.UT_Section_Dimension);
+                height = sectionType.Height.ToSI(SpecTypeId.SectionDimension);
+                width = (sectionType.Width + 2 * sectionType.CantileverLength).ToSI(SpecTypeId.SectionDimension);
+                webThickness = sectionType.Width.ToSI(SpecTypeId.SectionDimension);
+                flangeThickness = sectionType.CantileverHeight.ToSI(SpecTypeId.SectionDimension);
                 rootRadius = 0;
                 toeRadius = 0;
             }
@@ -532,11 +532,11 @@ namespace BH.Revit.Engine.Core
             if (section is StructuralSectionZProfile)
             {
                 StructuralSectionZProfile sectionType = section as StructuralSectionZProfile;
-                height = sectionType.Height.ToSI(UnitType.UT_Section_Dimension);
-                flangeWidth = sectionType.BottomFlangeLength.ToSI(UnitType.UT_Section_Dimension);
-                webThickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
-                flangeThickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
-                rootRadius = sectionType.InnerFillet.ToSI(UnitType.UT_Section_Dimension);
+                height = sectionType.Height.ToSI(SpecTypeId.SectionDimension);
+                flangeWidth = sectionType.BottomFlangeLength.ToSI(SpecTypeId.SectionDimension);
+                webThickness = sectionType.WallNominalThickness.ToSI(SpecTypeId.SectionDimension);
+                flangeThickness = sectionType.WallNominalThickness.ToSI(SpecTypeId.SectionDimension);
+                rootRadius = sectionType.InnerFillet.ToSI(SpecTypeId.SectionDimension);
                 toeRadius = 0;
             }
             else
@@ -574,14 +574,14 @@ namespace BH.Revit.Engine.Core
             if (section is StructuralSectionPipeStandard)
             {
                 StructuralSectionPipeStandard sectionType = section as StructuralSectionPipeStandard;
-                thickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
-                diameter = sectionType.Diameter.ToSI(UnitType.UT_Section_Dimension);
+                thickness = sectionType.WallNominalThickness.ToSI(SpecTypeId.SectionDimension);
+                diameter = sectionType.Diameter.ToSI(SpecTypeId.SectionDimension);
             }
             else if (section is StructuralSectionRoundHSS)
             {
                 StructuralSectionRoundHSS sectionType = section as StructuralSectionRoundHSS;
-                thickness = sectionType.WallNominalThickness.ToSI(UnitType.UT_Section_Dimension);
-                diameter = sectionType.Diameter.ToSI(UnitType.UT_Section_Dimension);
+                thickness = sectionType.WallNominalThickness.ToSI(SpecTypeId.SectionDimension);
+                diameter = sectionType.Diameter.ToSI(SpecTypeId.SectionDimension);
             }
             else
             {

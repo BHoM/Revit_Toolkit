@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -22,27 +22,25 @@
 
 using Autodesk.Revit.DB;
 
-using BH.oM.Geometry;
-
-using BH.oM.Adapters.Revit.Settings;
-
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Convert
+    public static partial class Query
     {
-        /***************************************************/
-        /****               Public Methods              ****/
-        /***************************************************/
+#if (REVIT2018 || REVIT2019 || REVIT2020)
 
-        public static oM.Geometry.Vector VectorFromRevit(this XYZ xyz)
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+        
+        public static UnitType GetSpecTypeId(this Definition definition)
         {
-            if (xyz == null)
-                return null;
-
-            return new Vector { X = xyz.X.ToSI(SpecTypeId.Length), Y = xyz.Y.ToSI(SpecTypeId.Length), Z = xyz.Z.ToSI(SpecTypeId.Length) };
+            return definition.UnitType;
         }
 
         /***************************************************/
+
+#endif
     }
 }
+
 
