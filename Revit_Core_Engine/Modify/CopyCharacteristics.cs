@@ -140,10 +140,10 @@ namespace BH.Revit.Engine.Core
         {
             double density = fromAsset.Density.ToSI(SpecTypeId.MassDensity);
 
-#if (REVIT2020 || REVIT2021)
-
-#else
+#if (REVIT2018 || REVIT2019)
             double dampingRatio = fromAsset.DampingRatio;
+#else
+
 #endif
 
             oM.Geometry.Vector youngsModulus = BH.Engine.Geometry.Create.Vector(fromAsset.YoungModulus.X.ToSI(SpecTypeId.Stress), fromAsset.YoungModulus.Y.ToSI(SpecTypeId.Stress), fromAsset.YoungModulus.Z.ToSI(SpecTypeId.Stress));
@@ -152,10 +152,10 @@ namespace BH.Revit.Engine.Core
             oM.Geometry.Vector shearModulus = BH.Engine.Geometry.Create.Vector(fromAsset.ShearModulus.X.ToSI(SpecTypeId.Stress), fromAsset.ShearModulus.Y.ToSI(SpecTypeId.Stress), fromAsset.ShearModulus.Z.ToSI(SpecTypeId.Stress));
 
             toMaterial.Density = density;
-#if (REVIT2020 || REVIT2021)
-
-#else
+#if (REVIT2018 || REVIT2019)
             toMaterial.DampingRatio = dampingRatio;
+#else
+
 #endif
 
             if (toMaterial is Aluminium)
