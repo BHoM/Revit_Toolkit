@@ -63,7 +63,7 @@ namespace BH.Revit.Engine.Core
             if (acceptable.Count != 0)
             {
                 DisplayUnitType dut = acceptable.First();
-                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Unit type {0} does not have a unitless SI convert - instead, it has been converted to {1}.", LabelUtils.GetLabelFor(unitType), LabelUtils.GetLabelFor(dut)));
+                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Unit type {0} does not have a SI equivalent - instead, it has been converted to {1}.", LabelUtils.GetLabelFor(unitType), LabelUtils.GetLabelFor(dut)));
                 return dut;
             }
             else
@@ -76,24 +76,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
         /****            Private collections            ****/
-        /***************************************************/
-
-        private static readonly string[] NonSIUnitNames = new string[]
-        {
-            "inch",
-            "feet",
-            "foot",
-            "yard",
-            "fahrenheit",
-            "pound",
-            "gallon",
-            "kip",
-            "ustonne",
-            "mile",
-            "rankine",
-            "horsepower"
-        };
-
         /***************************************************/
 
         private static readonly DisplayUnitType[] BHoMUnits = new DisplayUnitType[]
@@ -158,11 +140,11 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
 #else
-    
+
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
+
         public static ForgeTypeId BHoMUnitType(this ForgeTypeId unitType)
         {
             // Check if any display unit type applicable to given unit type is acceptable BHoM unit type.
@@ -183,7 +165,7 @@ namespace BH.Revit.Engine.Core
             // Find any SI display unit types.
             List<ForgeTypeId> acceptable = duts.Where(x =>
             {
-                string lower = x.ToString().ToLower();
+                string lower = LabelUtils.GetLabelForUnit(x).ToLower();
                 return !NonSIUnitNames.Any(y => lower.Contains(y));
             }).ToList();
 
@@ -191,7 +173,7 @@ namespace BH.Revit.Engine.Core
             if (acceptable.Count != 0)
             {
                 ForgeTypeId dut = acceptable.First();
-                BH.Engine.Reflection.Compute.RecordWarning($"Unit type {LabelUtils.GetLabelForSpec(unitType)} does not have a unitless SI convert - instead, it has been converted to {LabelUtils.GetLabelForUnit(dut)}.");
+                BH.Engine.Reflection.Compute.RecordWarning($"Unit type {LabelUtils.GetLabelForSpec(unitType)} does not have a SI equivalent - instead, it has been converted to {LabelUtils.GetLabelForUnit(dut)}.");
                 return dut;
             }
             else
@@ -204,24 +186,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
         /****            Private collections            ****/
-        /***************************************************/
-
-        private static readonly string[] NonSIUnitNames = new string[]
-        {
-            "inch",
-            "feet",
-            "foot",
-            "yard",
-            "fahrenheit",
-            "pound",
-            "gallon",
-            "kip",
-            "ustonne",
-            "mile",
-            "rankine",
-            "horsepower"
-        };
-
         /***************************************************/
 
         private static readonly ForgeTypeId[] BHoMUnits = new ForgeTypeId[]
@@ -284,8 +248,25 @@ namespace BH.Revit.Engine.Core
         };
 
         /***************************************************/
-
 #endif
+        private static readonly string[] NonSIUnitNames = new string[]
+        {
+            "inch",
+            "feet",
+            "foot",
+            "yard",
+            "fahrenheit",
+            "pound",
+            "gallon",
+            "kip",
+            "ustonne",
+            "mile",
+            "rankine",
+            "horsepower",
+            "british"
+        };
+
+        /***************************************************/
     }
 }
 
