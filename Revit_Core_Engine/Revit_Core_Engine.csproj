@@ -358,6 +358,7 @@
     <Compile Include="Modify\SetProperty.cs" />
     <Compile Include="Modify\SetViewDetailLevel.cs" />
     <Compile Include="Objects\SpecTypeId.cs" />
+    <Compile Include="Objects\UnitTypeId.cs" />
     <Compile Include="Query\AllConvertMethods.cs" />
     <Compile Include="Query\BHoMType.cs" />
     <Compile Include="Query\CableTraySectionProfile.cs" />
@@ -372,6 +373,7 @@
     <Compile Include="Query\CurtainWallMullions.cs" />
     <Compile Include="Query\FrameEdgeProperty.cs" />
     <Compile Include="Query\GetSpecTypeId.cs" />
+    <Compile Include="Query\GetUnitTypeId.cs" />
     <Compile Include="Query\MEPConnectorsLocation.cs" />
     <Compile Include="Query\MullionElementProperty.cs" />
     <Compile Include="Query\GlazingConstruction.cs" />

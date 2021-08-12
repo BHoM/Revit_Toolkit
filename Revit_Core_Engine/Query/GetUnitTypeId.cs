@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -19,44 +19,28 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
- 
-using Autodesk.Revit.DB;
 
+using Autodesk.Revit.DB;
 
 namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
+#if (REVIT2018 || REVIT2019 || REVIT2020)
+
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-
-        public static string StringValue(this Parameter parameter)
+        
+        public static DisplayUnitType GetUnitTypeId(this Parameter parameter)
         {
-            if (parameter != null && parameter.HasValue)
-            {
-                switch (parameter.StorageType)
-                {
-                    case (StorageType.Double):
-                        return UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), parameter.GetUnitTypeId()).ToString();
-                    case (StorageType.Integer):
-                        {
-                            if (parameter.Definition.ParameterType == ParameterType.Invalid)
-                                return parameter.AsValueString();
-                            else
-                                return parameter.AsInteger().ToString();
-                        }
-                    case (StorageType.String):
-                        return parameter.AsString();
-                    case (StorageType.ElementId):
-                        return parameter.AsValueString();
-                }
-            }
-
-            return null;
+            return parameter.DisplayUnitType;
         }
 
         /***************************************************/
+
+#endif
     }
 }
+
 
