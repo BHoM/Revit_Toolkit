@@ -118,7 +118,7 @@ namespace BH.Revit.Engine.Core
             if (transform?.IsIdentity == false)
             {
                 level = level.ShallowClone();
-                level.Elevation += transform.Origin.Z.ToSI(UnitType.UT_Length);
+                level.Elevation += transform.Origin.Z.ToSI(SpecTypeId.Length);
             }
 
             return level;

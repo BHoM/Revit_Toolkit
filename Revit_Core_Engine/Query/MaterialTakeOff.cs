@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
             string grade = element.MaterialGrade(settings);
             foreach (ElementId materialId in element.GetMaterialIds(false))
             {
-                double volume = element.GetMaterialVolume(materialId).ToSI(UnitType.UT_Volume);
+                double volume = element.GetMaterialVolume(materialId).ToSI(SpecTypeId.Volume);
                 if (volume <= settings.DistanceTolerance)
                     continue;
 

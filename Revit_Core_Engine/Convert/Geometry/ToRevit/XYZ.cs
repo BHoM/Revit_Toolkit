@@ -33,14 +33,14 @@ namespace BH.Revit.Engine.Core
 
         public static XYZ ToRevit(this oM.Geometry.Point point)
         {
-            return new XYZ(point.X.FromSI(UnitType.UT_Length), point.Y.FromSI(UnitType.UT_Length), point.Z.FromSI(UnitType.UT_Length));
+            return new XYZ(point.X.FromSI(SpecTypeId.Length), point.Y.FromSI(SpecTypeId.Length), point.Z.FromSI(SpecTypeId.Length));
         }
 
         /***************************************************/
 
         public static XYZ ToRevit(this oM.Geometry.Vector vector)
         {
-            return new XYZ(vector.X.FromSI(UnitType.UT_Length), vector.Y.FromSI(UnitType.UT_Length), vector.Z.FromSI(UnitType.UT_Length));
+            return new XYZ(vector.X.FromSI(SpecTypeId.Length), vector.Y.FromSI(SpecTypeId.Length), vector.Z.FromSI(SpecTypeId.Length));
         }
 
         /***************************************************/

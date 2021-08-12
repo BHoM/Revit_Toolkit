@@ -245,7 +245,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                double locationZ = ((LocationPoint)element.Location).Point.Z.ToSI(UnitType.UT_Length);
+                double locationZ = ((LocationPoint)element.Location).Point.Z.ToSI(SpecTypeId.Length);
                 updated |= element.SetLocation(new oM.Geometry.Point { X = columnLine.Start.X, Y = columnLine.Start.Y, Z = locationZ }, settings);
 
                 Parameter baseLevelParam = element.get_Parameter(BuiltInParameter.FAMILY_BASE_LEVEL_PARAM);
@@ -254,18 +254,18 @@ namespace BH.Revit.Engine.Core
                 Parameter topOffsetParam = element.get_Parameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM);
                 Level baseLevel = element.Document.GetElement(baseLevelParam.AsElementId()) as Level;
                 Level topLevel = element.Document.GetElement(topLevelParam.AsElementId()) as Level;
-                double baseElevation = (baseLevel.ProjectElevation + baseOffsetParam.AsDouble()).ToSI(UnitType.UT_Length);
-                double topElevation = (topLevel.ProjectElevation + topOffsetParam.AsDouble()).ToSI(UnitType.UT_Length);
+                double baseElevation = (baseLevel.ProjectElevation + baseOffsetParam.AsDouble()).ToSI(SpecTypeId.Length);
+                double topElevation = (topLevel.ProjectElevation + topOffsetParam.AsDouble()).ToSI(SpecTypeId.Length);
 
                 if (Math.Abs(baseElevation - columnLine.Start.Z) > settings.DistanceTolerance)
                 {
-                    element.SetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM, columnLine.Start.Z.FromSI(UnitType.UT_Length) - baseLevel.ProjectElevation, false);
+                    element.SetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM, columnLine.Start.Z.FromSI(SpecTypeId.Length) - baseLevel.ProjectElevation, false);
                     updated = true;
                 }
 
                 if (Math.Abs(topElevation - columnLine.End.Z) > settings.DistanceTolerance)
                 {
-                    element.SetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM, columnLine.End.Z.FromSI(UnitType.UT_Length) - topLevel.ProjectElevation, false);
+                    element.SetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM, columnLine.End.Z.FromSI(SpecTypeId.Length) - topLevel.ProjectElevation, false);
                     updated = true;
                 }
             }

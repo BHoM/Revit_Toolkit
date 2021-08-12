@@ -54,7 +54,7 @@ namespace BH.Revit.Engine.Core
 
             if (!curve.IsBound)
             {
-                return new oM.Geometry.Circle { Centre = curve.Center.PointFromRevit(), Normal = curve.Normal.VectorFromRevit().Normalise(), Radius = curve.Radius.ToSI(UnitType.UT_Length) };
+                return new oM.Geometry.Circle { Centre = curve.Center.PointFromRevit(), Normal = curve.Normal.VectorFromRevit().Normalise(), Radius = curve.Radius.ToSI(SpecTypeId.Length) };
             }
 
             BH.oM.Geometry.CoordinateSystem.Cartesian cs = BH.Engine.Geometry.Create.CartesianCoordinateSystem(curve.Center.PointFromRevit(), curve.XDirection.VectorFromRevit(), curve.YDirection.VectorFromRevit());
@@ -64,7 +64,7 @@ namespace BH.Revit.Engine.Core
             if (startAngle > endAngle)
                 startAngle -= 2 * Math.PI;
 
-            return new oM.Geometry.Arc { CoordinateSystem = cs, Radius = curve.Radius.ToSI(UnitType.UT_Length), StartAngle = startAngle, EndAngle = endAngle };
+            return new oM.Geometry.Arc { CoordinateSystem = cs, Radius = curve.Radius.ToSI(SpecTypeId.Length), StartAngle = startAngle, EndAngle = endAngle };
         }
 
         /***************************************************/
@@ -75,7 +75,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             if (!curve.IsBound)
-                return new oM.Geometry.Ellipse { Centre = curve.Center.PointFromRevit(), Axis1 = curve.XDirection.VectorFromRevit().Normalise(), Radius1 = curve.RadiusX.ToSI(UnitType.UT_Length), Axis2 = curve.YDirection.VectorFromRevit().Normalise(), Radius2 = curve.RadiusY.ToSI(UnitType.UT_Length) };
+                return new oM.Geometry.Ellipse { Centre = curve.Center.PointFromRevit(), Axis1 = curve.XDirection.VectorFromRevit().Normalise(), Radius1 = curve.RadiusX.ToSI(SpecTypeId.Length), Axis2 = curve.YDirection.VectorFromRevit().Normalise(), Radius2 = curve.RadiusY.ToSI(SpecTypeId.Length) };
             else
             {
                 BH.Engine.Reflection.Compute.RecordWarning("Conversion of open ellipses is currently not supported because of lack of support for such type in BHoM.");

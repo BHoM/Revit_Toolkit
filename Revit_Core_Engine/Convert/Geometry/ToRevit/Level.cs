@@ -50,7 +50,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            double elevation = level.Elevation.FromSI(UnitType.UT_Length);
+            double elevation = level.Elevation.FromSI(SpecTypeId.Length);
             if (existingLevels.Any(x => Math.Abs(x.ProjectElevation - elevation) < settings.DistanceTolerance))
             {
                 BH.Engine.Reflection.Compute.RecordError($"Level with elevation {level.Elevation} could not be created because a level with the same elevation already exists in the model. BHoM_Guid: {level.BHoM_Guid}");

@@ -58,7 +58,7 @@ namespace BH.Revit.Engine.Core
             if (bbox == null)
                 return null;
 
-            return document.LevelBelow(bbox.Min.Z.FromSI(UnitType.UT_Length), settings, closestIfNotFound);
+            return document.LevelBelow(bbox.Min.Z.FromSI(SpecTypeId.Length), settings, closestIfNotFound);
         }
 
         /***************************************************/

@@ -39,7 +39,7 @@ namespace BH.Revit.Engine.Core
             if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Double)
             {
                 if (convertUnits)
-                    value = value.FromSI(parameter.Definition.UnitType);
+                    value = value.FromSI(parameter.Definition.GetSpecTypeId());
 
                 return parameter.Set(value);
             }
@@ -55,7 +55,7 @@ namespace BH.Revit.Engine.Core
             if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Double)
             {
                 if (convertUnits)
-                    value = value.FromSI(parameter.Definition.UnitType);
+                    value = value.FromSI(parameter.Definition.GetSpecTypeId());
 
                 return parameter.Set(value);
             }
@@ -187,7 +187,7 @@ namespace BH.Revit.Engine.Core
                         {
                             try
                             {
-                                dbl = Convert.FromSI(dbl, parameter.Definition.UnitType);
+                                dbl = Convert.FromSI(dbl, parameter.Definition.GetSpecTypeId());
                             }
                             catch
                             {

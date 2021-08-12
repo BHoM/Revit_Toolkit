@@ -65,8 +65,8 @@ namespace BH.Revit.Engine.Core
                         BoundingBoxXYZ bbox = familyInstance.Symbol.get_BoundingBox(null);
                         if (bbox != null)
                         {
-                            double profileHeight = (bbox.Max.Z - bbox.Min.Z).ToSI(UnitType.UT_Length);
-                            double profileWidth = (bbox.Max.Y - bbox.Min.Y).ToSI(UnitType.UT_Length);
+                            double profileHeight = (bbox.Max.Z - bbox.Min.Z).ToSI(SpecTypeId.Length);
+                            double profileWidth = (bbox.Max.Y - bbox.Min.Y).ToSI(SpecTypeId.Length);
 
                             if (yJustification == 0)
                                 yOffset -= profileWidth * 0.5;
@@ -130,8 +130,8 @@ namespace BH.Revit.Engine.Core
                         BoundingBoxXYZ bbox = familyInstance.Symbol.get_BoundingBox(null);
                         if (bbox != null)
                         {
-                            double profileHeight = (bbox.Max.Z - bbox.Min.Z).ToSI(UnitType.UT_Length);
-                            double profileWidth = (bbox.Max.Y - bbox.Min.Y).ToSI(UnitType.UT_Length);
+                            double profileHeight = (bbox.Max.Z - bbox.Min.Z).ToSI(SpecTypeId.Length);
+                            double profileWidth = (bbox.Max.Y - bbox.Min.Y).ToSI(SpecTypeId.Length);
 
                             if (yJustificationStart == 0)
                                 yOffsetStart -= profileWidth * 0.5;

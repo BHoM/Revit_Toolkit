@@ -50,7 +50,7 @@ namespace BH.Revit.Engine.Core
             if (level == null)
                 return null;
 
-            UV uv = new UV(space.Location.X.FromSI(UnitType.UT_Length), space.Location.Y.FromSI(UnitType.UT_Length));
+            UV uv = new UV(space.Location.X.FromSI(SpecTypeId.Length), space.Location.Y.FromSI(SpecTypeId.Length));
 
             revitSpace = document.Create.NewSpace(level, uv);
 

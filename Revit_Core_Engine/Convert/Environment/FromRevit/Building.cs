@@ -62,9 +62,9 @@ namespace BH.Revit.Engine.Core
 
             if (document.SiteLocation != null)
             {
-                elevation = document.SiteLocation.Elevation.ToSI(UnitType.UT_Length);
-                longitude = document.SiteLocation.Longitude.ToSI(UnitType.UT_Length);
-                latitude = document.SiteLocation.Latitude.ToSI(UnitType.UT_Length);
+                elevation = document.SiteLocation.Elevation.ToSI(SpecTypeId.Length);
+                longitude = document.SiteLocation.Longitude.ToSI(SpecTypeId.Length);
+                latitude = document.SiteLocation.Latitude.ToSI(SpecTypeId.Length);
                 timeZone = document.SiteLocation.TimeZone;
                 placeName = document.SiteLocation.PlaceName;
                 weatherStationName = document.SiteLocation.WeatherStationName;

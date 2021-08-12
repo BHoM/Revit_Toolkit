@@ -66,8 +66,8 @@ namespace BH.Revit.Engine.Core
             if (bbox == null)
                 return null;
 
-            double bottomElevation = bbox.Min.Z.FromSI(UnitType.UT_Length);
-            double topElevation = bbox.Max.Z.FromSI(UnitType.UT_Length);
+            double bottomElevation = bbox.Min.Z.FromSI(SpecTypeId.Length);
+            double topElevation = bbox.Max.Z.FromSI(SpecTypeId.Length);
 
             Level level = document.LevelBelow(bottomElevation, settings);
             if (level == null)

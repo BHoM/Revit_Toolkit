@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             oM.Physical.Constructions.Layer layer = new oM.Physical.Constructions.Layer();
-            layer.Thickness = compoundStructureLayer.Width.ToSI(UnitType.UT_Length);
+            layer.Thickness = compoundStructureLayer.Width.ToSI(SpecTypeId.Length);
 
             Material revitMaterial = owner.Document.GetElement(compoundStructureLayer.MaterialId) as Material;
             if (revitMaterial == null)

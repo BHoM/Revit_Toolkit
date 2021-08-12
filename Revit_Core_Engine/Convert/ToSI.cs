@@ -26,6 +26,8 @@ namespace BH.Revit.Engine.Core
 {
     public static partial class Convert
     {
+#if (REVIT2018 || REVIT2019 || REVIT2020)
+
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
@@ -39,6 +41,24 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+#else
+
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+
+        public static double ToSI(this double value, ForgeTypeId unitType)
+        {
+            if (double.IsNaN(value) || value == double.MaxValue || value == double.MinValue || double.IsNegativeInfinity(value) || double.IsPositiveInfinity(value))
+                return value;
+
+            return UnitUtils.ConvertFromInternalUnits(value, unitType.BHoMUnitType());
+        }
+
+        /***************************************************/
+
+#endif
     }
 }
 
