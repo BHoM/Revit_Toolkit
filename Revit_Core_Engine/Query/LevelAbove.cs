@@ -24,7 +24,9 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -35,6 +37,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Searches a given Revit Document for the level that has elevation above the given elevation value and is closest to it.")]
+        [Input("document", "Revit Document to be searched for the level above the given elevation.")]
+        [Input("elevation", "Elevation value, against which the level above is sought.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search.")]
+        [Input("closestIfNotFound", "If true, the closest level to the given elevation is returned in case when all levels in the Revit Document lie below it.")]
+        [Output("level", "Closest level in the input Revit Document that lies above the given elevation value.")]
         public static Level LevelAbove(this Document document, double elevation, RevitSettings settings = null, bool closestIfNotFound = true)
         {
             settings = settings.DefaultIfNull();
@@ -52,6 +60,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Searches a given Revit Document for the level that has elevation above the given geometry and is closest to it.")]
+        [Input("document", "Revit Document to be searched for the level above the given elevation.")]
+        [Input("geometry", "Geometry, against which the level above is sought.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search.")]
+        [Input("closestIfNotFound", "If true, the closest level to the given geometry is returned in case when all levels in the Revit Document lie below it.")]
+        [Output("level", "Closest level in the input Revit Document that lies above the given geometry.")]
         public static Level LevelAbove(this Document document, IGeometry geometry, RevitSettings settings = null, bool closestIfNotFound = true)
         {
             BoundingBox bbox = geometry.IBounds();

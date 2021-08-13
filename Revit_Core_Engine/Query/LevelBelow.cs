@@ -24,7 +24,9 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -35,6 +37,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Searches a given Revit Document for the level that has elevation below the given elevation value and is closest to it.")]
+        [Input("document", "Revit Document to be searched for the level below the given elevation.")]
+        [Input("elevation", "Elevation value, against which the level below is sought.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search.")]
+        [Input("closestIfNotFound", "If true, the closest level to the given elevation is returned in case when all levels in the Revit Document lie above it.")]
+        [Output("level", "Closest level in the input Revit Document that lies below the given elevation value.")]
         public static Level LevelBelow(this Document document, double elevation, RevitSettings settings = null, bool closestIfNotFound = true)
         {
             settings = settings.DefaultIfNull();
@@ -52,6 +60,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Searches a given Revit Document for the level that has elevation below the given geometry and is closest to it.")]
+        [Input("document", "Revit Document to be searched for the level below the given elevation.")]
+        [Input("geometry", "Geometry, against which the level below is sought.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search.")]
+        [Input("closestIfNotFound", "If true, the closest level to the given geometry is returned in case when all levels in the Revit Document lie above it.")]
+        [Output("level", "Closest level in the input Revit Document that lies below the given geometry.")]
         public static Level LevelBelow(this Document document, IGeometry geometry, RevitSettings settings = null, bool closestIfNotFound = true)
         {
             BoundingBox bbox = geometry.IBounds();
@@ -63,6 +77,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Searches a given Revit Document for the level that has elevation below the given point and is closest to it.")]
+        [Input("document", "Revit Document to be searched for the level below the given elevation.")]
+        [Input("point", "Point, against which the level below is sought.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search.")]
+        [Input("closestIfNotFound", "If true, the closest level to the given point is returned in case when all levels in the Revit Document lie above it.")]
+        [Output("level", "Closest level in the input Revit Document that lies below the given point.")]
         public static Level LevelBelow(this Document document, XYZ point, RevitSettings settings = null, bool closestIfNotFound = true)
         {
             if (point == null)
@@ -73,6 +93,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Searches a given Revit Document for the level that has elevation below the given curve and is closest to it.")]
+        [Input("document", "Revit Document to be searched for the level below the given elevation.")]
+        [Input("curve", "Curve, against which the level below is sought.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search.")]
+        [Input("closestIfNotFound", "If true, the closest level to the given curve is returned in case when all levels in the Revit Document lie above it.")]
+        [Output("level", "Closest level in the input Revit Document that lies below the given curve.")]
         public static Level LevelBelow(this Document document, Curve curve, RevitSettings settings = null, bool closestIfNotFound = true)
         {
             if (curve == null || !curve.IsBound)

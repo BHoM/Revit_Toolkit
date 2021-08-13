@@ -24,7 +24,9 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -34,6 +36,13 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Converts a Revit CompoundStructureLayer to BH.oM.Physical.Constructions.Layer.")]
+        [Input("compoundStructureLayer", "Revit CompoundStructureLayer to be converted.")]
+        [Input("owner", "Revit HostObjAttributes that represents the layered construction, to which the given layer belongs.")]
+        [Input("materialGrade", "Material grade extracted from the Revit element parent to the given CompoundStructureLayer, to be applied to the resultant BHoM Layer.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("layer", "Physical.Constructions.Layer resulting from converting the input Revit CompoundStructureLayer.")]
         public static oM.Physical.Constructions.Layer Layer(this CompoundStructureLayer compoundStructureLayer, HostObjAttributes owner, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (compoundStructureLayer == null)

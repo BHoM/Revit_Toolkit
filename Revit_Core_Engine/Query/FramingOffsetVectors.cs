@@ -23,6 +23,8 @@
 using Autodesk.Revit.DB;
 using BH.oM.Geometry;
 using BH.oM.Reflection;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +34,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts offset vectors at both ends of a given Revit FamilyInstance representing a framing element.")]
+        [Input("familyInstance", "Revit FamilyInstance representing a framing element to extract the offset vectors from.")]
+        [Output("vectors", "Offset vectors at both ends of the input Revit FamilyInstance.")]
         public static Output<Vector, Vector> FramingOffsetVectors(this FamilyInstance familyInstance)
         {
             Output<Vector, Vector> result = new Output<Vector, Vector> { Item1 = new Vector { X = 0, Y = 0, Z = 0 }, Item2 = new Vector { X = 0, Y = 0, Z = 0 } };
