@@ -21,6 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,7 +33,11 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
+
+        [Description("A special-purpose method mimicking the Revit API method introduced in 2021 version, which extracts the equivalent of UnitType from a Revit parameter Definition.\n" +
+                     "It has been implemented to minimise the fallout caused by the API change on the existing code base of Revit_Toolkit.")]
+        [Input("definition", "Revit parameter Definition to extract the UnitType from.")]
+        [Output("unitType", "UnitType extracted from the input Revit parameter Definition.")]
         public static UnitType GetSpecTypeId(this Definition definition)
         {
             return definition.UnitType;

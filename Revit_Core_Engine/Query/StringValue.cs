@@ -21,7 +21,8 @@
  */
  
 using Autodesk.Revit.DB;
-
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts a string value from a given Revit Parameter.")]
+        [Input("parameter", "Revit Parameter to extract the string value from.")]
+        [Output("value", "String value extracted from the input Revit Parameter.")]
         public static string StringValue(this Parameter parameter)
         {
             if (parameter != null && parameter.HasValue)

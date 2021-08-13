@@ -21,8 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
-using System;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -34,11 +35,14 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        public static DisplayUnitType BHoMUnitType(this UnitType unitType)
+
+        [Description("Finds a BHoM-specific Revit unit type for a given quantity.")]
+        [Input("quantity", "Quantity to find a BHoM-specific Revit unit type for.")]
+        [Output("unitType", "BHoM-specific Revit unit type for the input quantity.")]
+        public static DisplayUnitType BHoMUnitType(this UnitType quantity)
         {
             // Check if any display unit type applicable to given unit type is acceptable BHoM unit type.
-            IEnumerable<DisplayUnitType> duts = UnitUtils.GetValidDisplayUnits(unitType);
+            IEnumerable<DisplayUnitType> duts = UnitUtils.GetValidDisplayUnits(quantity);
             foreach (DisplayUnitType dut in duts)
             {
                 if (BHoMUnits.Contains(dut))
@@ -63,12 +67,12 @@ namespace BH.Revit.Engine.Core
             if (acceptable.Count != 0)
             {
                 DisplayUnitType dut = acceptable.First();
-                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Unit type {0} does not have a predefined SI equivalent - instead, it has been converted to {1}.", LabelUtils.GetLabelFor(unitType), LabelUtils.GetLabelFor(dut)));
+                BH.Engine.Reflection.Compute.RecordWarning($"Unit type {LabelUtils.GetLabelFor(quantity)} does not have a predefined SI equivalent - instead, it has been converted to {LabelUtils.GetLabelFor(dut)}.");
                 return dut;
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Unit type {0} has not been recognized and has not been converted - as a result, the output value can be wrong.", LabelUtils.GetLabelFor(unitType)));
+                BH.Engine.Reflection.Compute.RecordError($"Unit type {LabelUtils.GetLabelFor(quantity)} has not been recognized and has not been converted - as a result, the output value can be wrong.");
                 return DisplayUnitType.DUT_GENERAL;
             }
         }
@@ -145,11 +149,14 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-
-        public static ForgeTypeId BHoMUnitType(this ForgeTypeId unitType)
+            
+        [Description("Finds a BHoM-specific Revit unit type for a given quantity.")]
+        [Input("quantity", "Quantity to find a BHoM-specific Revit unit type for.")]
+        [Output("unitType", "BHoM-specific Revit unit type for the input quantity.")]
+        public static ForgeTypeId BHoMUnitType(this ForgeTypeId quantity)
         {
             // Check if any display unit type applicable to given unit type is acceptable BHoM unit type.
-            IEnumerable<ForgeTypeId> duts = UnitUtils.GetValidUnits(unitType);
+            IEnumerable<ForgeTypeId> duts = UnitUtils.GetValidUnits(quantity);
             foreach (ForgeTypeId dut in duts)
             {
                 if (BHoMUnits.Contains(dut))
@@ -174,12 +181,12 @@ namespace BH.Revit.Engine.Core
             if (acceptable.Count != 0)
             {
                 ForgeTypeId dut = acceptable.First();
-                BH.Engine.Reflection.Compute.RecordWarning($"Unit type {LabelUtils.GetLabelForSpec(unitType)} does not have a predefined SI equivalent - instead, it has been converted to {LabelUtils.GetLabelForUnit(dut)}.");
+                BH.Engine.Reflection.Compute.RecordWarning($"Unit type {LabelUtils.GetLabelForSpec(quantity)} does not have a predefined SI equivalent - instead, it has been converted to {LabelUtils.GetLabelForUnit(dut)}.");
                 return dut;
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordError($"Unit type {LabelUtils.GetLabelForSpec(unitType)} has not been recognized and has not been converted - as a result, the output value can be wrong.");
+                BH.Engine.Reflection.Compute.RecordError($"Unit type {LabelUtils.GetLabelForSpec(quantity)} has not been recognized and has not been converted - as a result, the output value can be wrong.");
                 return UnitTypeId.General;
             }
         }

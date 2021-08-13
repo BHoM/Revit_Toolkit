@@ -25,8 +25,10 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -37,6 +39,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts ceiling pattern from a given Revit Ceiling.")]
+        [Input("ceiling", "Revit Ceiling to extract the pattern from.")]
+        [Input("settings", "Revit adapter settings to be used while extracting the ceiling pattern.")]
+        [Input("surface", "If not null, the ceiling pattern is meant to be mapped onto this surface.")]
+        [Output("pattern", "Ceiling pattern extracted from the input Revit Ceiling.")]
         public static List<BH.oM.Geometry.Line> CeilingPattern(this Ceiling ceiling, RevitSettings settings, PlanarSurface surface = null)
         {
             CeilingType ceilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
@@ -79,6 +86,13 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Maps the pattern embedded in the given Revit Material onto the given surface.")]
+        [Input("revitMaterial", "Revit Material containing the pattern to be mapped.")]
+        [Input("surface", "Surface to map the pattern onto.")]
+        [Input("settings", "Revit adapter settings to be used while performing the mapping.")]
+        [Input("origin", "Origin defining the starting point of the pattern on the surface.")]
+        [Input("angle", "Angle, under which the pattern is mapped on the surface.")]
+        [Output("pattern", "Pattern mapped on the input surface.")]
         public static List<BH.oM.Geometry.Line> CeilingPattern(this Material revitMaterial, PlanarSurface surface, RevitSettings settings, XYZ origin = null, double angle = 0)
         {
             surface = surface.Rotate(BH.oM.Geometry.Point.Origin, Vector.ZAxis, -angle);
@@ -215,6 +229,12 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
+        [Description("Aligns the pattern embedded in the given Revit Material to the local coordinate system of a given Revit Ceiling.")]
+        [Input("ceiling", "Revit Ceiling to align the pattern to.")]
+        [Input("material", "Revit Material containing the pattern to be aligned.")]
+        [Input("settings", "Revit adapter settings to be used while performing the alignment.")]
+        [Input("rotation", "Rotation angle value extracted during the alignment process.")]
+        [Input("origin", "Origin defining the starting point of the pattern aligned to the input Revit Ceiling.")]
         private static XYZ CeilingPatternAlignment(this Ceiling ceiling, Material material, RevitSettings settings, out double rotation)
         {
             rotation = 0;

@@ -25,8 +25,9 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using System;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -37,6 +38,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the material takeoff from a given Revit Element.")]
+        [Input("element", "Revit Element to extract the material takeoff from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the extraction.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("takeoff", "Material takeoff extracted from the input Revit Element.")]
         public static RevitMaterialTakeOff MaterialTakeoff(this Element element, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
