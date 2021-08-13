@@ -21,44 +21,33 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
     public static partial class Convert
     {
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+        
+        [Description("Converts a numeric value from internal Revit units to BHoM-specific unit for a given quantity type.")]
+        [Input("value", "Numeric value to be converted to BHoM-specific units.")]
+        [Input("quantity", "Quantity type to use when converting from Revit internal units to BHoM-specific units.")]
+        [Output("converted", "Input value converted from internal Revit units to BHoM-specific units for the input quantity type.")]
 #if (REVIT2018 || REVIT2019 || REVIT2020)
-
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
-
-        public static double FromSI(this double value, UnitType unitType)
-        {
-            if (double.IsNaN(value) || value == double.MaxValue || value == double.MinValue || double.IsNegativeInfinity(value) || double.IsPositiveInfinity(value))
-                return value;
-
-            return UnitUtils.ConvertToInternalUnits(value, unitType.BHoMUnitType());
-        }
-
-        /***************************************************/
-
+        public static double FromSI(this double value, UnitType quantity)
 #else
-
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
-
-        public static double FromSI(this double value, ForgeTypeId unitType)
+        public static double FromSI(this double value, ForgeTypeId quantity)
+#endif
         {
             if (double.IsNaN(value) || value == double.MaxValue || value == double.MinValue || double.IsNegativeInfinity(value) || double.IsPositiveInfinity(value))
                 return value;
 
-            return UnitUtils.ConvertToInternalUnits(value, unitType.BHoMUnitType());
+            return UnitUtils.ConvertToInternalUnits(value, quantity.BHoMUnitType());
         }
-
+        
         /***************************************************/
-
-#endif
     }
 }
-

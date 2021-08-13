@@ -21,8 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using System.Collections.Generic;
-using System.Linq;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.TransformMatrix to a Revit Transform.")]
+        [Input("transformMatrix", "BH.oM.Geometry.TransformMatrix to be converted.")]
+        [Output("transform", "Revit Transform resulting from converting the input BH.oM.Geometry.TransformMatrix.")]
         public static Transform ToRevit(this oM.Geometry.TransformMatrix transformMatrix)
         {
             if (transformMatrix == null)
