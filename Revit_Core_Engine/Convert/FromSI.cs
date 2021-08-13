@@ -32,8 +32,8 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
         
-        [Description("Converts a numeric value from internal Revit units to BHoM-specific unit for a given quantity type.")]
-        [Input("value", "Numeric value to be converted to BHoM-specific units.")]
+        [Description("Converts a numerical value from internal Revit units to BHoM-specific unit for a given quantity type.")]
+        [Input("value", "Numerical value to be converted to BHoM-specific units.")]
         [Input("quantity", "Quantity type to use when converting from Revit internal units to BHoM-specific units.")]
         [Output("converted", "Input value converted from internal Revit units to BHoM-specific units for the input quantity type.")]
 #if (REVIT2018 || REVIT2019 || REVIT2020)
