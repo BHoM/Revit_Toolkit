@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
             if (double.IsNaN(value) || value == double.MaxValue || value == double.MinValue || double.IsNegativeInfinity(value) || double.IsPositiveInfinity(value))
                 return value;
 
-            return UnitUtils.ConvertFromInternalUnits(value, unitType.BHoMUnitType());
+            return UnitUtils.ConvertFromInternalUnits(value, quantity.BHoMUnitType());
         }
 
         /***************************************************/
