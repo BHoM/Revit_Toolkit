@@ -21,10 +21,11 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Base;
 using BH.oM.Environment.MaterialFragments;
+using BH.oM.Reflection.Attributes;
 using BH.oM.Structure.MaterialFragments;
 using System;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -34,6 +35,9 @@ namespace BH.Revit.Engine.Core
         /****             Interface methods             ****/
         /***************************************************/
 
+        [Description("Copies material characteristics from a Revit Material to BHoM Physical IMaterialProperties.")]
+        [Input("toMaterial", "Target BHoM IMaterialProperties to copy the material characteristics to.")]
+        [Input("fromMaterial", "Source Revit Material to copy the material characteristics from.")]
         public static void ICopyCharacteristics(this BH.oM.Physical.Materials.IMaterialProperties toMaterial, Material fromMaterial)
         {
             CopyCharacteristics(toMaterial as dynamic, fromMaterial as dynamic);
@@ -41,16 +45,22 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Copies material characteristics from BHoM Physical IMaterialProperties to a Revit Material.")]
+        [Input("toMaterial", "Target Revit Material to copy the material characteristics to.")]
+        [Input("fromMaterial", "Source BHoM IMaterialProperties to copy the material characteristics from.")]
         public static void ICopyCharacteristics(this Material toMaterial, BH.oM.Physical.Materials.IMaterialProperties fromMaterial)
         {
             CopyCharacteristics(toMaterial as dynamic, fromMaterial as dynamic);
         }
 
-        
+
         /***************************************************/
         /****        Public methods - Materials         ****/
         /***************************************************/
 
+        [Description("Copies material characteristics from a Revit Material to BHoM Environment SolidMaterial.")]
+        [Input("toMaterial", "Target BHoM SolidMaterial to copy the material characteristics to.")]
+        [Input("fromMaterial", "Source Revit Material to copy the material characteristics from.")]
         public static void CopyCharacteristics(this SolidMaterial toMaterial, Material fromMaterial)
         {
             if (fromMaterial == null)
@@ -79,6 +89,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Copies material characteristics from a Revit Material to BHoM Structure IMaterialFragment.")]
+        [Input("toMaterial", "Target BHoM IMaterialFragment to copy the material characteristics to.")]
+        [Input("fromMaterial", "Source Revit Material to copy the material characteristics from.")]
         public static void CopyCharacteristics(this IMaterialFragment toMaterial, Material fromMaterial)
         {
             if (fromMaterial == null)
@@ -127,6 +140,9 @@ namespace BH.Revit.Engine.Core
         /****          Public methods - Assets          ****/
         /***************************************************/
 
+        [Description("Copies material characteristics from a Revit ThermalAsset to BHoM Environment SolidMaterial.")]
+        [Input("toMaterial", "Target BHoM SolidMaterial to copy the material characteristics to.")]
+        [Input("fromAsset", "Source Revit ThermalAsset to copy the material characteristics from.")]
         public static void CopyCharacteristics(this SolidMaterial toMaterial, ThermalAsset fromAsset)
         {
             toMaterial.Conductivity = fromAsset.ThermalConductivity.ToSI(SpecTypeId.ThermalConductivity);
@@ -136,6 +152,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Copies material characteristics from a Revit ThermalAsset to BHoM Structure IMaterialFragment.")]
+        [Input("toMaterial", "Target BHoM IMaterialFragment to copy the material characteristics to.")]
+        [Input("fromAsset", "Source Revit StructuralAsset to copy the material characteristics from.")]
         public static void CopyCharacteristics(this IMaterialFragment toMaterial, StructuralAsset fromAsset)
         {
             double density = fromAsset.Density.ToSI(SpecTypeId.MassDensity);
