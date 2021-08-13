@@ -63,7 +63,7 @@ namespace BH.Revit.Engine.Core
             if (acceptable.Count != 0)
             {
                 DisplayUnitType dut = acceptable.First();
-                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Unit type {0} does not have a SI equivalent - instead, it has been converted to {1}.", LabelUtils.GetLabelFor(unitType), LabelUtils.GetLabelFor(dut)));
+                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Unit type {0} does not have a predefined SI equivalent - instead, it has been converted to {1}.", LabelUtils.GetLabelFor(unitType), LabelUtils.GetLabelFor(dut)));
                 return dut;
             }
             else
@@ -123,6 +123,7 @@ namespace BH.Revit.Engine.Core
             DisplayUnitType.DUT_KILOGRAMS_MASS_PER_METER,
             DisplayUnitType.DUT_KILOGRAMS_MASS_PER_SQUARE_METER,
             DisplayUnitType.DUT_JOULES_PER_KILOGRAM_CELSIUS,
+            DisplayUnitType.DUT_NEWTONS_PER_SQUARE_METER,
             DisplayUnitType.DUT_GENERAL
         };
 
@@ -173,7 +174,7 @@ namespace BH.Revit.Engine.Core
             if (acceptable.Count != 0)
             {
                 ForgeTypeId dut = acceptable.First();
-                BH.Engine.Reflection.Compute.RecordWarning($"Unit type {LabelUtils.GetLabelForSpec(unitType)} does not have a SI equivalent - instead, it has been converted to {LabelUtils.GetLabelForUnit(dut)}.");
+                BH.Engine.Reflection.Compute.RecordWarning($"Unit type {LabelUtils.GetLabelForSpec(unitType)} does not have a predefined SI equivalent - instead, it has been converted to {LabelUtils.GetLabelForUnit(dut)}.");
                 return dut;
             }
             else
@@ -233,7 +234,8 @@ namespace BH.Revit.Engine.Core
             UnitTypeId.KilogramsPerMeter,
             UnitTypeId.KilogramsPerSquareMeter,
             UnitTypeId.JoulesPerKilogramDegreeCelsius,
-            UnitTypeId.General,
+            UnitTypeId.NewtonsPerSquareMeter,
+            UnitTypeId.General
         };
 
         /***************************************************/
