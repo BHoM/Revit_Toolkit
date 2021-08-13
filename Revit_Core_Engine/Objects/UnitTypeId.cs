@@ -19,15 +19,21 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
-
-
+ 
 using Autodesk.Revit.DB;
+using System.ComponentModel;
 
 #if (REVIT2018 || REVIT2019 || REVIT2020)
 namespace BH.Revit.Engine.Core
 {
+    [Description("A special-purpose class mimicking the Revit API class introduced in 2021 version, which contains the properties that return the equivalents of DisplayUnitType.\n" +
+                 "It has been implemented to minimise the fallout caused by the API change on the existing code base of Revit_Toolkit.")]
     public static class UnitTypeId
     {
+        /***************************************************/
+        /****             Public properties             ****/
+        /***************************************************/
+
         public static DisplayUnitType Meters { get { return DisplayUnitType.DUT_METERS; } }
         public static DisplayUnitType Centimeters { get { return DisplayUnitType.DUT_CENTIMETERS; } }
         public static DisplayUnitType Millimeters { get { return DisplayUnitType.DUT_MILLIMETERS; } }
@@ -322,11 +328,18 @@ namespace BH.Revit.Engine.Core
         public static DisplayUnitType CubicFeetPerMinutePerBritishThermalUnitPerHour { get { return NonExistent(nameof(CubicFeetPerMinutePerBritishThermalUnitPerHour), 2021); } }
         public static DisplayUnitType CandelasPerSquareFoot { get { return NonExistent(nameof(CandelasPerSquareFoot), 2021); } }
 
+
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
         private static DisplayUnitType NonExistent(string name, int version)
         {
             BH.Engine.Reflection.Compute.RecordWarning($"UnitTypeId.{name} does not have a DisplayUnitType equivalent in Revit versions older than {version}. UnitType.UT_Undefined has been used which may cause unit conversion issues.");
             return DisplayUnitType.DUT_UNDEFINED;
         }
+
+        /***************************************************/
     }
 }
 #endif
