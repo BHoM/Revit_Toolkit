@@ -54,8 +54,8 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Converts BH.oM.Geometry.Basis to a Revit Transform.")]
-        [Input("transformMatrix", "BH.oM.Geometry.Basis to be converted.")]
-        [Output("basis", "Revit Transform resulting from converting the input BH.oM.Geometry.Basis.")]
+        [Input("basis", "BH.oM.Geometry.Basis to be converted.")]
+        [Output("transform", "Revit Transform resulting from converting the input BH.oM.Geometry.Basis.")]
         public static Transform ToRevit(this oM.Geometry.Basis basis)
         {
             if (basis == null)
