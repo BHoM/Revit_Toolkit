@@ -21,10 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
-
 using BH.oM.Geometry;
-
-using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -34,6 +33,9 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit XYZ to BH.oM.Geometry.Vector.")]
+        [Input("xyz", "Revit XYZ to be converted.")]
+        [Output("vector", "BH.oM.Geometry.Vector resulting from converting the input Revit XYZ.")]
         public static oM.Geometry.Vector VectorFromRevit(this XYZ xyz)
         {
             if (xyz == null)

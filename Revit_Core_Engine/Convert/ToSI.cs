@@ -21,34 +21,27 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
     public static partial class Convert
     {
+
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+
+        [Description("Converts a numeric value from BHoM-specific unit to internal Revit units for a given quantity type.")]
+        [Input("value", "Numeric value to be converted to internal Revit units.")]
+        [Input("quantity", "Quantity type to use when converting from BHoM-specific units to Revit internal units.")]
+        [Output("converted", "Input value converted from BHoM-specific units to internal Revit units for the input quantity type.")]
 #if (REVIT2018 || REVIT2019 || REVIT2020)
-
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
-
-        public static double ToSI(this double value, UnitType unitType)
-        {
-            if (double.IsNaN(value) || value == double.MaxValue || value == double.MinValue || double.IsNegativeInfinity(value) || double.IsPositiveInfinity(value))
-                return value;
-
-            return UnitUtils.ConvertFromInternalUnits(value, unitType.BHoMUnitType());
-        }
-
-        /***************************************************/
-
+        public static double ToSI(this double value, UnitType quantity)
 #else
-
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
-
-        public static double ToSI(this double value, ForgeTypeId unitType)
+        public static double ToSI(this double value, ForgeTypeId quantity)
+#endif
         {
             if (double.IsNaN(value) || value == double.MaxValue || value == double.MinValue || double.IsNegativeInfinity(value) || double.IsPositiveInfinity(value))
                 return value;
@@ -57,8 +50,5 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-
-#endif
     }
 }
-

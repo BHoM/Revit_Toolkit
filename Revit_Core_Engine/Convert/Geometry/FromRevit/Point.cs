@@ -21,8 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-
-using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit LocationPoint to BH.oM.Geometry.Point.")]
+        [Input("locationPoint", "Revit LocationPoint to be converted.")]
+        [Output("point", "BH.oM.Geometry.Point resulting from converting the input Revit LocationPoint.")]
         public static oM.Geometry.Point FromRevit(this LocationPoint locationPoint)
         {
             if (locationPoint == null)
@@ -42,6 +45,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit XYZ to BH.oM.Geometry.Point.")]
+        [Input("xyz", "Revit XYZ to be converted.")]
+        [Output("point", "BH.oM.Geometry.Point resulting from converting the input Revit XYZ.")]
         public static oM.Geometry.Point PointFromRevit(this XYZ xyz)
         {
             if (xyz == null)
