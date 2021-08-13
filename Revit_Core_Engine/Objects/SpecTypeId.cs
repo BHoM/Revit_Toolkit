@@ -22,12 +22,19 @@
 
 
 using Autodesk.Revit.DB;
+using System.ComponentModel;
 
 #if (REVIT2018 || REVIT2019 || REVIT2020)
 namespace BH.Revit.Engine.Core
 {
+    [Description("A special-purpose class mimicking the Revit API class introduced in 2021 version, which contains the properties that return the equivalents of UnitType.\n" +
+                 "It has been implemented to minimise the fallout caused by the API change on the existing code base of Revit_Toolkit.")]
     public static class SpecTypeId
     {
+        /***************************************************/
+        /****             Public properties             ****/
+        /***************************************************/
+
         public static UnitType Length { get { return UnitType.UT_Length; } }
         public static UnitType Area { get { return UnitType.UT_Area; } }
         public static UnitType Volume { get { return UnitType.UT_Volume; } }
@@ -185,11 +192,17 @@ namespace BH.Revit.Engine.Core
         public static UnitType Speed { get { return UnitType.UT_Speed; } }
 #endif
 
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
         private static UnitType NonExistent(string name, int version)
         {
             BH.Engine.Reflection.Compute.RecordWarning($"SpecTypeId.{name} does not have a UnitType equivalent in Revit versions older than {version}. UnitType.UT_Undefined has been used which may cause unit conversion issues.");
             return UnitType.UT_Undefined;
         }
+
+        /***************************************************/
     }
 }
 #endif
