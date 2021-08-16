@@ -59,7 +59,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            FloorType floorType = floor.Construction?.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_Floors }, settings, refObjects) as FloorType;
+            FloorType floorType = floor.Construction?.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_Floors, BuiltInCategory.OST_StructuralFoundation }, settings, refObjects) as FloorType;
             if (floorType == null)
                 floorType = floor.ElementType(document, settings);
 
@@ -78,7 +78,12 @@ namespace BH.Revit.Engine.Core
 
             BH.oM.Geometry.Plane slabPlane = planarSurface.FitPlane();
             if (1 - Math.Abs(Vector.ZAxis.DotProduct(slabPlane.Normal)) <= settings.AngleTolerance)
-                revitFloor = document.Create.NewFloor(curveArray, floorType, level, true);
+            {
+                if (floorType.Category.Id.IntegerValue == (int)BuiltInCategory.OST_StructuralFoundation)
+                    revitFloor = document.Create.NewFoundationSlab(curveArray, floorType, level, true, XYZ.BasisZ);
+                else
+                    revitFloor = document.Create.NewFloor(curveArray, floorType, level, true);
+            }
             else
             {
                 Vector normal = slabPlane.Normal;
