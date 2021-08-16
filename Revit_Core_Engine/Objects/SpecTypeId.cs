@@ -27,8 +27,8 @@ using System.ComponentModel;
 #if (REVIT2018 || REVIT2019 || REVIT2020)
 namespace BH.Revit.Engine.Core
 {
-    [Description("A special-purpose class mimicking the Revit API class introduced in 2021 version, which contains the properties that return the equivalents of UnitType.\n" +
-                 "It has been implemented to minimise the fallout caused by the API change on the existing code base of Revit_Toolkit.")]
+    [Description("This class is defined by BHoM only for Revit Versions < 2021. Revit versions from 2021 onwards define an equivalent class with the same name as part of their API." +
+                 "This BHoM implementation eliminates breaking changes between different Revit API versions. It contains static properties that return the equivalents of UnitType.")]
     public static class SpecTypeId
     {
         /***************************************************/
