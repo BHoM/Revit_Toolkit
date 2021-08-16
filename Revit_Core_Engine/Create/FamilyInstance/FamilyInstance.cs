@@ -334,7 +334,7 @@ namespace BH.Revit.Engine.Core
             if (location != null && location.DistanceTo(origin) > settings.DistanceTolerance)
             {
                 List<Solid> hostSolids = host.Solids(new Options());
-                if (hostSolids != null && hostSolids.All(x => !origin.IsInside(x, settings.DistanceTolerance)))
+                if (hostSolids == null && hostSolids.All(x => !x.IsContaining(origin, settings.DistanceTolerance)))
                     BH.Engine.Reflection.Compute.RecordWarning($"The input location point for creation of a family instance was outside of the host solid, the point has been snapped to the host. ElementId: {familyInstance.Id.IntegerValue}");
             }
 

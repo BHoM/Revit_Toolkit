@@ -339,6 +339,7 @@
     <Compile Include="Compute\SplitRequestTreeByLinks.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Opening.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Room.cs" />
+    <Compile Include="Convert\Architecture\ToRevit\Opening.cs" />
     <Compile Include="Convert\Facade\FromRevit\FrameEdge.cs" />
     <Compile Include="Convert\MEP\FromRevit\CableTray.cs" />
     <Compile Include="Convert\MEP\FromRevit\Duct.cs" />
@@ -386,9 +387,11 @@
     <Compile Include="Query\FacadePanelAsOpening.cs" />
     <Compile Include="Query\FacadeCurtainPanels.cs" />
     <Compile Include="Query\CurtainWallMullions.cs" />
+    <Compile Include="Query\FindHost.cs" />
     <Compile Include="Query\FrameEdgeProperty.cs" />
     <Compile Include="Query\GetSpecTypeId.cs" />
     <Compile Include="Query\GetUnitTypeId.cs" />
+    <Compile Include="Query\IsContaining.cs" />
     <Compile Include="Query\MEPConnectorsLocation.cs" />
     <Compile Include="Query\MullionElementProperty.cs" />
     <Compile Include="Query\GlazingConstruction.cs" />

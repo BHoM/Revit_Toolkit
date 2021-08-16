@@ -323,6 +323,13 @@ namespace BH.Revit.Engine.Core
             return parameterDefinition.ToRevitParameterElement(document, settings, refObjects);
         }
 
+        /***************************************************/
+
+        public static Element ToRevit(this BH.oM.Architecture.BuildersWork.Opening opening, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            return opening.ToRevitFamilyInstance(document, settings, refObjects);
+        }
+
 
         /***************************************************/
         /****             Disallowed Types              ****/
