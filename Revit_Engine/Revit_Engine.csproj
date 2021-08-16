@@ -184,6 +184,7 @@
     <Compile Include="Modify\DefaultIfNull.cs" />
     <Compile Include="Modify\RemoveParameterLinks.cs" />
     <Compile Include="Modify\RemoveParameterMaps.cs" />
+    <Compile Include="Modify\SetHost.cs" />
     <Compile Include="Modify\SetRevitParameter.cs" />
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />

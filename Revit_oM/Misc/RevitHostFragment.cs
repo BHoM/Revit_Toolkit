@@ -7,8 +7,16 @@ using System.Threading.Tasks;
 
 namespace BH.oM.Revit
 {
-    public class RevitHostFragment : IFragment
+    public class RevitHostFragment : IFragment, IImmutable
     {
-        public virtual int HostId { get; set; } = -1;
+        public virtual int HostId { get; } = -1;
+
+        public virtual int LinkDocument { get; } = -1;
+
+        public RevitHostFragment(int hostId, int linkDocument)
+        {
+            HostId = hostId;
+            LinkDocument = linkDocument;
+        }
     }
 }
