@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
-using System;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -29,6 +31,20 @@ namespace BH.Revit.Engine.Core
     {
         /***************************************************/
         /****              Public methods               ****/
+        /***************************************************/
+
+        public static bool IsContaining(this Element element, XYZ point, RevitSettings settings)
+        {
+            settings = settings.DefaultIfNull();
+            double tolerance = settings.DistanceTolerance;
+
+            BoundingBoxXYZ bbox = element.get_BoundingBox(null);
+            if (bbox == null || !bbox.IsContaining(point, tolerance))
+                return false;
+
+            return element.Solids(new Options(), settings).Any(x => x.IsContaining(point, tolerance));
+        }
+
         /***************************************************/
 
         public static bool IsContaining(this Solid solid, XYZ point, double tolerance = BH.oM.Geometry.Tolerance.Distance)
@@ -57,6 +73,18 @@ namespace BH.Revit.Engine.Core
             }
 
             return false;
+        }
+
+        /***************************************************/
+
+        public static bool IsContaining(this BoundingBoxXYZ bbox, XYZ point, double tolerance = BH.oM.Geometry.Tolerance.Distance)
+        {
+            XYZ max = bbox.Max;
+            XYZ min = bbox.Min;
+
+            return (point.X >= min.X - tolerance && point.X <= max.X + tolerance &&
+                    point.Y >= min.Y - tolerance && point.Y <= max.Y + tolerance &&
+                    point.Z >= min.Z - tolerance && point.Z <= max.Z + tolerance);
         }
 
         /***************************************************/
