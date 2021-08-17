@@ -78,8 +78,8 @@ namespace BH.Revit.Engine.Core
                         else
                         {
                             iBHoMObject = BH.Engine.Adapters.Revit.Create.ModelInstance(objectProperties, iGeometry as dynamic);
-                            if (iBHoMObject is ModelInstance && (element as FamilyInstance)?.Host != null)
-                                ((ModelInstance)iBHoMObject).HostId = (element as FamilyInstance).Host.Id.IntegerValue;
+                            //if (iBHoMObject is ModelInstance && (element as FamilyInstance)?.Host != null)
+                            //    ((ModelInstance)iBHoMObject).HostId = (element as FamilyInstance).Host.Id.IntegerValue;
                         }
 
                         if (iGeometry is BH.oM.Geometry.Point)

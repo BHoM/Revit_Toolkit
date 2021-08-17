@@ -64,8 +64,9 @@ namespace BH.Revit.Engine.Core
             //TODO: special case for hostdoc != -1, then transform point and check for host in the doc
             //TODO: add SetLocation!
             //TODO: find the dimension params explicitly and raise warning when not found!
+            //TODO: remember about Update, remember about Create instances on linked elements
 
-            Element host = opening.FindHost(document, settings);
+            Element host = opening.HostElement(document, settings, true);
 
             BH.oM.Geometry.CoordinateSystem.Cartesian cs = opening.CoordinateSystem;
             XYZ basisX = new XYZ(cs.X.X, cs.X.Y, cs.X.Z);
