@@ -21,11 +21,13 @@
  */
 
 using BH.Engine.Base;
+using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Revit;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -40,14 +42,25 @@ namespace BH.Engine.Adapters.Revit
         //[Output("revitSettings")]
         public static IBHoMObject SetHost(this IBHoMObject obj, int hostId, int linkDocument = -1)
         {
-            //TODO: add other created taking IBHoMObjects
-            //TODO: if has RevitIdentifiers then raise that impossible to change host of an existing element
-
             IBHoMObject clone = obj.DeepClone();
             RevitHostFragment hostFragment = new RevitHostFragment(hostId, linkDocument);
             obj.AddFragment(hostFragment, true);
 
             return clone;
+        }
+
+        /***************************************************/
+
+        public static IBHoMObject SetHost(this IBHoMObject obj, IBHoMObject host)
+        {
+            RevitIdentifiers identifiers = host.FindFragment<RevitIdentifiers>();
+            if (identifiers == null)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning($"Setting the new host failed because the input host object is not originating from Revit pull. BHoM_Guid: {obj.BHoM_Guid}");
+                return obj;
+            }
+
+            return obj.SetHost(identifiers.ElementId);
         }
 
         /***************************************************/

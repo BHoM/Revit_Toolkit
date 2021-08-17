@@ -65,6 +65,7 @@ namespace BH.Revit.Engine.Core
             //TODO: add SetLocation!
             //TODO: find the dimension params explicitly and raise warning when not found!
             //TODO: remember about Update, remember about Create instances on linked elements
+            //TODO: on Update remember about a check regarding inability to set new host
 
             Element host = opening.HostElement(document, settings, true);
 

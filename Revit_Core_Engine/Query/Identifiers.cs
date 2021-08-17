@@ -98,10 +98,6 @@ namespace BH.Revit.Engine.Core
             if (parameter != null)
                 workset = parameter.AsValueString();
 
-            //Element host = (element as FamilyInstance)?.Host;
-            //if (host != null)
-            //    hostId = host.Id.IntegerValue;
-
             if (element.ViewSpecific)
                 ownerViewId = element.OwnerViewId.IntegerValue;
 
@@ -118,7 +114,7 @@ namespace BH.Revit.Engine.Core
             if (element.Document.IsLinked)
                 linkPath = element.Document.PathName;
 
-            return new RevitIdentifiers(element.UniqueId, element.Id.IntegerValue, categoryName, familyName, familyTypeName, familyTypeId, workset, /*hostId,*/ ownerViewId, parentElementId, linkPath);
+            return new RevitIdentifiers(element.UniqueId, element.Id.IntegerValue, categoryName, familyName, familyTypeName, familyTypeId, workset, ownerViewId, parentElementId, linkPath);
         }
 
         /***************************************************/

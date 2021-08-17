@@ -24,6 +24,7 @@ using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
+using BH.oM.Revit;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -100,9 +101,11 @@ namespace BH.Engine.Adapters.Revit
                 Properties = properties,
                 Name = properties.Name,
                 Location = location,
-                Orientation = orientation,
-                //HostId = hostId
+                Orientation = orientation
             };
+
+            if (hostId != -1)
+                modelInstance.Fragments.AddOrReplace(new RevitHostFragment(hostId));
 
             return modelInstance;
         }
@@ -123,9 +126,11 @@ namespace BH.Engine.Adapters.Revit
             {
                 Properties = properties,
                 Name = properties.Name,
-                Location = location,
-                //HostId = hostId
+                Location = location
             };
+
+            if (hostId != -1)
+                modelInstance.Fragments.AddOrReplace(new RevitHostFragment(hostId));
 
             return modelInstance;
         }

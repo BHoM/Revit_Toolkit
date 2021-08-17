@@ -404,7 +404,6 @@
     <Compile Include="Query\ElementIds\ElementIdsByScopeBox.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfLinkInstances.cs" />
     <Compile Include="Query\HostDocument.cs" />
-    <Compile Include="Query\IsInside.cs" />
     <Compile Include="Query\IsOnFace.cs" />
     <Compile Include="Query\LinkInstance.cs" />
     <Compile Include="Query\LinkPanelFaces.cs" />
