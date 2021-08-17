@@ -63,9 +63,9 @@ namespace BH.Revit.Engine.Core
             }
 
             Document doc = document;
-            if (hostFragment.LinkDocument != -1)
+            if (hostFragment.LinkDocumentId != -1)
             {
-                RevitLinkInstance linkInstance = document.GetElement(new ElementId(hostFragment.LinkDocument)) as RevitLinkInstance;
+                RevitLinkInstance linkInstance = document.GetElement(new ElementId(hostFragment.LinkDocumentId)) as RevitLinkInstance;
                 doc = linkInstance?.Document;
                 if (doc == null)
                 {
