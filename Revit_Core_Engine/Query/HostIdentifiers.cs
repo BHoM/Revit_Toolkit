@@ -20,40 +20,65 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Base;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Revit;
-using System.ComponentModel;
+using System;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Revit.Engine.Core
 {
-    public static partial class Modify
+    public static partial class Query
     {
+        /***************************************************/
+        /****             Interface methods             ****/
+        /***************************************************/
+
+        public static RevitHostFragment IHostIdentifiers(this Element element)
+        {
+            return HostIdentifiers(element as dynamic);
+        }
+
+
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Sets RevitSettings to default value if they are null.")]
-        //[Input("settings", "RevitSettings to be set to default if null.")]
-        //[Output("revitSettings")]
-        public static IBHoMObject SetHost(this IBHoMObject obj, int hostId, int linkDocument = -1)
+        public static RevitHostFragment HostIdentifiers(this FamilyInstance familyInstance)
         {
-            //TODO: add other created taking IBHoMObjects
-            //TODO: if has RevitIdentifiers then raise that impossible to change host of an existing element
+            Element host = familyInstance?.Host;
+            if (host == null)
+                return null;
 
-            IBHoMObject clone = obj.DeepClone();
-            RevitHostFragment hostFragment = new RevitHostFragment(hostId, linkDocument);
-            obj.AddFragment(hostFragment, true);
+            int hostId = -1;
+            int linkId = -1;
 
-            return clone;
+            if (host is RevitLinkInstance)
+            {
+                linkId = host.Id.IntegerValue;
+
+                Reference faceReference = familyInstance.HostFace?.CreateReferenceInLink();
+                if (faceReference != null)
+                    hostId = faceReference.ElementId.IntegerValue;
+                else
+                    BH.Engine.Reflection.Compute.RecordWarning("The Revit element has been identified as hosted on a linked element, but the host could not be identified.");
+            }
+            else
+                hostId = host.Id.IntegerValue;
+
+            return new RevitHostFragment(hostId, linkId);
+        }
+
+
+        /***************************************************/
+        /****             Fallback methods              ****/
+        /***************************************************/
+
+        private static RevitHostFragment HostIdentifiers(this Element element)
+        {
+            return null;
         }
 
         /***************************************************/
     }
 }
-
-
-
 

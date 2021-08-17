@@ -11,12 +11,12 @@ namespace BH.oM.Revit
     {
         public virtual int HostId { get; } = -1;
 
-        public virtual int LinkDocument { get; } = -1;
+        public virtual int LinkDocumentId { get; } = -1;
 
-        public RevitHostFragment(int hostId, int linkDocument)
+        public RevitHostFragment(int hostId, int linkDocument = -1)
         {
             HostId = hostId;
-            LinkDocument = linkDocument;
+            LinkDocumentId = linkDocument;
         }
     }
 }
