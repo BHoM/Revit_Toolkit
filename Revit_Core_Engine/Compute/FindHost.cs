@@ -30,14 +30,13 @@ using BH.oM.Base;
 using BH.oM.Dimensional;
 using BH.oM.Revit;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
     public static partial class Compute
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Interface methods             ****/
         /***************************************************/
 
         public static Element IFindHost(this IBHoMObject bHoMObject, Document document, RevitSettings settings = null)
@@ -99,41 +98,5 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-
-        public static Element ContainingElement(this Document document, XYZ point, IEnumerable<BuiltInCategory> categories, RevitSettings settings = null)
-        {
-            settings = settings.DefaultIfNull();
-            if (!categories.Any())
-                return null;
-
-            LogicalAndFilter filter = new LogicalAndFilter(new List<ElementFilter>(categories.Select(x => new ElementCategoryFilter(x))));
-            return new FilteredElementCollector(document).WherePasses(filter).ToElements().FirstOrDefault(x => x.IsContaining(point, settings));
-        }
-
-        public static bool IsContaining(this Element element, XYZ point, RevitSettings settings)
-        {
-            settings = settings.DefaultIfNull();
-            double tolerance = settings.DistanceTolerance;
-
-            BoundingBoxXYZ bbox = element.get_BoundingBox(null);
-            if (bbox == null || !bbox.IsContaining(point, tolerance))
-                return false;
-
-            return element.Solids(new Options(), settings).Any(x => x.IsContaining(point, tolerance));
-        }
-
-        public static bool IsContaining(this BoundingBoxXYZ bbox, XYZ point, double tolerance = BH.oM.Geometry.Tolerance.Distance)
-        {
-            XYZ max = bbox.Max;
-            XYZ min = bbox.Min;
-
-            return (point.X >= min.X - tolerance && point.X <= max.X + tolerance &&
-                    point.Y >= min.Y - tolerance && point.Y <= max.Y + tolerance &&
-                    point.Z >= min.Z - tolerance && point.Z <= max.Z + tolerance);
-        }
-
-        /***************************************************/
     }
 }
-
-
