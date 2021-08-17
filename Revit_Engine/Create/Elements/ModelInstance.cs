@@ -101,7 +101,7 @@ namespace BH.Engine.Adapters.Revit
                 Name = properties.Name,
                 Location = location,
                 Orientation = orientation,
-                HostId = hostId
+                //HostId = hostId
             };
 
             return modelInstance;
@@ -124,7 +124,7 @@ namespace BH.Engine.Adapters.Revit
                 Properties = properties,
                 Name = properties.Name,
                 Location = location,
-                HostId = hostId
+                //HostId = hostId
             };
 
             return modelInstance;

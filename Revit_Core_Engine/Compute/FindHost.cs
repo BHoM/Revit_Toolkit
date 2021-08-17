@@ -21,53 +21,62 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Architecture.BuildersWork;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using BH.oM.Revit;
+using BH.Engine.Adapters.Revit;
 using BH.Engine.Base;
 using BH.Engine.Geometry;
-using BH.oM.Data.Requests;
-using BH.Engine.Adapters.Revit;
+using BH.Engine.Spatial;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Dimensional;
+using BH.oM.Revit;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Query
+    public static partial class Compute
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Find all relevant convert methods from Revit to BHoM, which return a BHoM object or a collection of them, and take Revit Element, RevitSettings and refObjects (in this exact order).")]
-        //[Output("methods", "All relevant Revit => BHoM convert methods.")]
-        public static Element FindHost(this BH.oM.Architecture.BuildersWork.Opening opening, Document document, RevitSettings settings)
+        public static Element IFindHost(this IBHoMObject bHoMObject, Document document, RevitSettings settings = null)
         {
-            RevitHostFragment hostFragment = opening.FindFragment<RevitHostFragment>();
-            if (hostFragment == null)
-            {
-                // warning
-                return null;
-            }
+            return FindHost(bHoMObject as dynamic, document, settings);
+        }
 
-            XYZ location = opening.CoordinateSystem?.Origin?.ToRevit();
+
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+
+        public static Element FindHost(this BH.oM.Architecture.BuildersWork.Opening opening, Document document, RevitSettings settings = null)
+        {
+            BuiltInCategory[] hostCategories = new BuiltInCategory[] { BuiltInCategory.OST_Floors, BuiltInCategory.OST_Walls, BuiltInCategory.OST_Roofs };
+            return opening.FindHost(document, hostCategories, settings);
+        }
+
+        /***************************************************/
+
+        public static Element FindHost(this IElement0D element, Document document, IEnumerable<BuiltInCategory> categories, RevitSettings settings = null)
+        {
+            settings = settings.DefaultIfNull();
+
+            XYZ location = element.IGeometry()?.ToRevit();
             if (location == null)
             {
                 //error or warning?
                 return null;
             }
 
-            Document doc = document;
-            if (hostFragment.LinkDocumentId != -1)
+            Document hostDoc = document;
+            int? linkId = (element as IBHoMObject)?.FindFragment<RevitHostFragment>()?.LinkDocumentId;
+
+            if (linkId.HasValue && linkId.Value != -1)
             {
-                RevitLinkInstance linkInstance = document.GetElement(new ElementId(hostFragment.LinkDocumentId)) as RevitLinkInstance;
-                doc = linkInstance?.Document;
-                if (doc == null)
+                RevitLinkInstance linkInstance = document.GetElement(new ElementId(linkId.Value)) as RevitLinkInstance;
+                hostDoc = linkInstance?.Document;
+                if (hostDoc == null)
                 {
                     //error or warning?
                     return null;
@@ -76,10 +85,20 @@ namespace BH.Revit.Engine.Core
                 location = linkInstance.GetTotalTransform().Inverse.OfPoint(location);
             }
 
-            BuiltInCategory[] categories = new BuiltInCategory[] { Autodesk.Revit.DB.BuiltInCategory.OST_Floors, Autodesk.Revit.DB.BuiltInCategory.OST_Walls, Autodesk.Revit.DB.BuiltInCategory.OST_Roofs };
-            return ContainingElement(doc, location, categories, settings);
-        
+            return ContainingElement(hostDoc, location, categories, settings);        
         }
+
+
+        /***************************************************/
+        /****             Fallback methods              ****/
+        /***************************************************/
+
+        private static Element FindHost(this IBHoMObject bHoMObject, Document document, RevitSettings settings = null)
+        {
+            return null;
+        }
+
+        /***************************************************/
 
         public static Element ContainingElement(this Document document, XYZ point, IEnumerable<BuiltInCategory> categories, RevitSettings settings = null)
         {

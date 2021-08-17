@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
@@ -124,7 +125,7 @@ namespace BH.Revit.Engine.Core
             if (!string.IsNullOrWhiteSpace(bHoMObject.Properties?.CategoryName) && element.Category?.Name != bHoMObject.Properties.CategoryName)
                 BH.Engine.Reflection.Compute.RecordWarning($"Updating the category of an existing element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
 
-            if (((element.Host == null || element.Host is ReferencePlane) && bHoMObject.HostId != -1) || (element.Host != null && !(element.Host is ReferencePlane) && element.Host.Id.IntegerValue != bHoMObject.HostId))
+            if (((element.Host == null || element.Host is ReferencePlane) && bHoMObject.HostId().Item1 != -1) || (element.Host != null && !(element.Host is ReferencePlane) && element.Host.Id.IntegerValue != bHoMObject.HostId().Item1))
                 BH.Engine.Reflection.Compute.RecordWarning($"Updating the host of an existing hosted element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
 
             return ((Element)element).Update(bHoMObject, settings, setLocationOnUpdate);

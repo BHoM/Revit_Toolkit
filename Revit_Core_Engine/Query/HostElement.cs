@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -19,36 +19,58 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
- 
-using BH.oM.Adapters.Revit.Properties;
-using BH.oM.Base;
-using BH.oM.Geometry;
-using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Elements
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+using BH.Engine.Adapters.Revit;
+using BH.Engine.Base;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Reflection;
+using BH.oM.Revit;
+
+namespace BH.Revit.Engine.Core
 {
-    [Description("A generic wrapper BHoM type corresponding to any view-independent Revit element (model elements, e.g. duct or beam). On Push it can be used to generate or update Revit model elements that do not have a correspondent BHoM type, on Pull all Revit model elements that do not have explicit Convert method for given discipline will be converted to ModelInstance.")]
-    public class ModelInstance : BHoMObject, IInstance
+    public static partial class Query
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Information about Revit family type of the instance.")]
-        public virtual InstanceProperties Properties { get; set; } = new InstanceProperties();
+        public static Element HostElement(this IBHoMObject bHoMObject, Document document, RevitSettings settings, bool geometryIfNotSpecified = false)
+        {
+            RevitHostFragment hostFragment = bHoMObject.FindFragment<RevitHostFragment>();
+            if (hostFragment == null)
+            {
+                // warning
+                return null;
+            }
 
-        [Description("Location of the instance in in three dimensional space.")]
-        public virtual IGeometry Location { get; set; } = new Point();
+            settings = settings.DefaultIfNull();
 
-        [Description("Orientation of the instance in 3 dimensional space. Applicable only to point-based ModelInstances. If null, a default orientation will be applied.")]
-        public virtual Basis Orientation { get; set; } = null;
+            if (hostFragment.HostId != -1)
+            {
+                Document hostDoc = document;
+                if (hostFragment.LinkDocumentId != -1)
+                {
+                    RevitLinkInstance linkInstance = document.GetElement(new ElementId(hostFragment.LinkDocumentId)) as RevitLinkInstance;
+                    hostDoc = linkInstance?.Document;
+                    if (hostDoc == null)
+                    {
+                        //error or warning?
+                        return null;
+                    }
+                }
 
-        //[Description("Revit ElementId of the host element. -1 indicates no host for the given instance")]
-        //public virtual int HostId { get; set; } = -1;
+                return hostDoc.GetElement(new ElementId(hostFragment.HostId));
+            }
+            else if (geometryIfNotSpecified)
+                return bHoMObject.IFindHost(document, settings);
+
+            return null;
+        }
 
         /***************************************************/
     }
 }
-
-
 
