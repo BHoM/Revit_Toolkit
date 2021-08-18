@@ -40,15 +40,15 @@ namespace BH.Revit.Engine.Core
         public static Element HostElement(this IBHoMObject bHoMObject, Document document, RevitSettings settings, bool geometryIfNotSpecified = false)
         {
             RevitHostFragment hostFragment = bHoMObject.FindFragment<RevitHostFragment>();
-            if (hostFragment == null)
-            {
-                // warning
-                return null;
-            }
+            //if (hostFragment == null)
+            //{
+            //    // warning
+            //    return null;
+            //}
 
             settings = settings.DefaultIfNull();
 
-            if (hostFragment.HostId != -1)
+            if (hostFragment != null && hostFragment.HostId != -1)
             {
                 Document hostDoc = document;
                 if (hostFragment.LinkDocumentId != -1)

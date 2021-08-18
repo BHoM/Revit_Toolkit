@@ -58,14 +58,12 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            //TODO: what about host? RevitHostFragment with SetHost method, if no fragment then look for host objects where the origin is inside!
+            //TODO: unify linkPath on identifiers with Id on host? how?
             //TODO: make sure it works for linked hosts on push & pull
             //TODO: remember about versioning and moving identifiers to HostFragment, same with host prop in ModelInstance
-            //TODO: special case for hostdoc != -1, then transform point and check for host in the doc
             //TODO: add SetLocation!
-            //TODO: find the dimension params explicitly and raise warning when not found!
-            //TODO: remember about Update, remember about Create instances on linked elements
             //TODO: on Update remember about a check regarding inability to set new host
+            //TODO: remember about Update, remember about Create instances on linked elements
 
             Element host = opening.HostElement(document, settings, true);
 
@@ -86,6 +84,7 @@ namespace BH.Revit.Engine.Core
             if (familyInstance == null)
                 return null;
 
+            //TODO: find the dimension params explicitly and raise warning when not found!
             familyInstance.CopyParameters(opening, settings);
 
             refObjects.AddOrReplace(opening, familyInstance);
