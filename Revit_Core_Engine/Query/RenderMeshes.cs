@@ -46,9 +46,9 @@ namespace BH.Revit.Engine.Core
                 RenderMesh renderMesh = face.Triangulate(options.DetailLevel.FaceTriangulationFactor()).MeshFromRevit().ToRenderMesh();
                 System.Drawing.Color color = face.Color(element.Document);
 
-                foreach (Vertex vertex in renderMesh.Vertices)
+                foreach (RenderPoint vertex in renderMesh.Vertices)
                 {
-                    vertex.Color = color;
+                    vertex.Colour = color;
                 }
 
                 result.Add(renderMesh);
@@ -58,9 +58,9 @@ namespace BH.Revit.Engine.Core
             {
                 RenderMesh renderMesh = curve.MeshFromRevit().ToRenderMesh();
                 System.Drawing.Color color = curve.Color(element.Document);
-                foreach (Vertex vertex in renderMesh.Vertices)
+                foreach (RenderPoint vertex in renderMesh.Vertices)
                 {
-                    vertex.Color = color;
+                    vertex.Colour = color;
                 }
 
                 result.Add(renderMesh);
