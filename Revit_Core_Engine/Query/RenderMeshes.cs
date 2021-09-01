@@ -24,7 +24,9 @@ using Autodesk.Revit.DB;
 using BH.Engine.Graphics;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Graphics;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -35,6 +37,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Attempts to retrieve Meshes corresponding to the input Revit Element. These meshes are returned as RenderMesh objects that can be used to visualise the input Revit Element.")]
+        [Input("element", "Element to display thorugh RenderMeshes.")]
+        [Input("options", "Revit API options for the retrieval, including e.g. `IncludeNonVisibleObjects`.")]
+        [Input("settings", "Revit Adapter settings to be applied in retrieving the meshes corresponding to the element.")]
         public static List<RenderMesh> RenderMeshes(this Element element, Options options, RevitSettings settings = null)
         {
             if (element == null)
