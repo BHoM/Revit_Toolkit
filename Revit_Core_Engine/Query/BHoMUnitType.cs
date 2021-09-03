@@ -67,7 +67,7 @@ namespace BH.Revit.Engine.Core
             if (acceptable.Count != 0)
             {
                 DisplayUnitType dut = acceptable.First();
-                BH.Engine.Reflection.Compute.RecordWarning($"Unit type {LabelUtils.GetLabelFor(quantity)} does not have a predefined SI equivalent - instead, it has been converted to {LabelUtils.GetLabelFor(dut)}.");
+                BH.Engine.Reflection.Compute.RecordWarning($"Unit type {LabelUtils.GetLabelFor(quantity)} does not have a predefined SI equivalent in BHoM - the unit type used on the BHoM side of convert is {LabelUtils.GetLabelFor(dut)}. Please make sure the converted values are correct.");
                 return dut;
             }
             else
@@ -181,7 +181,7 @@ namespace BH.Revit.Engine.Core
             if (acceptable.Count != 0)
             {
                 ForgeTypeId dut = acceptable.First();
-                BH.Engine.Reflection.Compute.RecordWarning($"Unit type {LabelUtils.GetLabelForSpec(quantity)} does not have a predefined SI equivalent - instead, it has been converted to {LabelUtils.GetLabelForUnit(dut)}.");
+                BH.Engine.Reflection.Compute.RecordWarning($"Unit type {LabelUtils.GetLabelForSpec(quantity)} does not have a predefined SI equivalent in BHoM - the unit type used on the BHoM side of convert is {LabelUtils.GetLabelForUnit(dut)}. Please make sure the converted values are correct.");
                 return dut;
             }
             else
