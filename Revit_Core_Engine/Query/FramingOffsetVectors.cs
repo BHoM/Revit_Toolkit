@@ -23,6 +23,8 @@
 using Autodesk.Revit.DB;
 using BH.oM.Geometry;
 using BH.oM.Reflection;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +34,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts offset vectors at both ends of a given Revit FamilyInstance representing a framing element.")]
+        [Input("familyInstance", "Revit FamilyInstance representing a framing element to extract the offset vectors from.")]
+        [MultiOutput(0, "startOffset", "Offset vector at the start of the input Revit FamilyInstance.")]
+        [MultiOutput(1, "endOffset", "Offset vector at the end of the input Revit FamilyInstance.")]
         public static Output<Vector, Vector> FramingOffsetVectors(this FamilyInstance familyInstance)
         {
             Output<Vector, Vector> result = new Output<Vector, Vector> { Item1 = new Vector { X = 0, Y = 0, Z = 0 }, Item2 = new Vector { X = 0, Y = 0, Z = 0 } };
@@ -65,8 +71,8 @@ namespace BH.Revit.Engine.Core
                         BoundingBoxXYZ bbox = familyInstance.Symbol.get_BoundingBox(null);
                         if (bbox != null)
                         {
-                            double profileHeight = (bbox.Max.Z - bbox.Min.Z).ToSI(UnitType.UT_Length);
-                            double profileWidth = (bbox.Max.Y - bbox.Min.Y).ToSI(UnitType.UT_Length);
+                            double profileHeight = (bbox.Max.Z - bbox.Min.Z).ToSI(SpecTypeId.Length);
+                            double profileWidth = (bbox.Max.Y - bbox.Min.Y).ToSI(SpecTypeId.Length);
 
                             if (yJustification == 0)
                                 yOffset -= profileWidth * 0.5;
@@ -130,8 +136,8 @@ namespace BH.Revit.Engine.Core
                         BoundingBoxXYZ bbox = familyInstance.Symbol.get_BoundingBox(null);
                         if (bbox != null)
                         {
-                            double profileHeight = (bbox.Max.Z - bbox.Min.Z).ToSI(UnitType.UT_Length);
-                            double profileWidth = (bbox.Max.Y - bbox.Min.Y).ToSI(UnitType.UT_Length);
+                            double profileHeight = (bbox.Max.Z - bbox.Min.Z).ToSI(SpecTypeId.Length);
+                            double profileWidth = (bbox.Max.Y - bbox.Min.Y).ToSI(SpecTypeId.Length);
 
                             if (yJustificationStart == 0)
                                 yOffsetStart -= profileWidth * 0.5;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
- 
+
 using Autodesk.Revit.DB;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
@@ -28,39 +28,25 @@ namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
+#if (REVIT2018 || REVIT2019 || REVIT2020)
+
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts a string value from a given Revit Parameter.")]
-        [Input("parameter", "Revit Parameter to extract the string value from.")]
-        [Output("value", "String value extracted from the input Revit Parameter.")]
-        public static string StringValue(this Parameter parameter)
+        [Description("This method is defined by BHoM only for Revit Versions < 2021. Revit versions from 2021 onwards define an equivalent method with the same name as part of their API." +
+                     "This BHoM implementation eliminates breaking changes between different Revit API versions. It returns the equivalent of DisplayUnitType from a Revit Parameter.")]
+        [Input("parameter", "Revit Parameter to extract the DisplayUnitType from.")]
+        [Output("displayUnitType", "DisplayUnitType extracted from the input Revit Parameter.")]
+        public static DisplayUnitType GetUnitTypeId(this Parameter parameter)
         {
-            if (parameter != null && parameter.HasValue)
-            {
-                switch (parameter.StorageType)
-                {
-                    case (StorageType.Double):
-                        return UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), parameter.GetUnitTypeId()).ToString();
-                    case (StorageType.Integer):
-                        {
-                            if (parameter.Definition.ParameterType == ParameterType.Invalid)
-                                return parameter.AsValueString();
-                            else
-                                return parameter.AsInteger().ToString();
-                        }
-                    case (StorageType.String):
-                        return parameter.AsString();
-                    case (StorageType.ElementId):
-                        return parameter.AsValueString();
-                }
-            }
-
-            return null;
+            return parameter.DisplayUnitType;
         }
 
         /***************************************************/
+
+#endif
     }
 }
+
 

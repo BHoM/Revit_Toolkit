@@ -21,10 +21,11 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Base;
 using BH.oM.Environment.MaterialFragments;
+using BH.oM.Reflection.Attributes;
 using BH.oM.Structure.MaterialFragments;
 using System;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -34,6 +35,9 @@ namespace BH.Revit.Engine.Core
         /****             Interface methods             ****/
         /***************************************************/
 
+        [Description("Copies material characteristics from a Revit Material to BHoM Physical IMaterialProperties.")]
+        [Input("toMaterial", "Target BHoM IMaterialProperties to copy the material characteristics to.")]
+        [Input("fromMaterial", "Source Revit Material to copy the material characteristics from.")]
         public static void ICopyCharacteristics(this BH.oM.Physical.Materials.IMaterialProperties toMaterial, Material fromMaterial)
         {
             CopyCharacteristics(toMaterial as dynamic, fromMaterial as dynamic);
@@ -41,16 +45,22 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Copies material characteristics from BHoM Physical IMaterialProperties to a Revit Material.")]
+        [Input("toMaterial", "Target Revit Material to copy the material characteristics to.")]
+        [Input("fromMaterial", "Source BHoM IMaterialProperties to copy the material characteristics from.")]
         public static void ICopyCharacteristics(this Material toMaterial, BH.oM.Physical.Materials.IMaterialProperties fromMaterial)
         {
             CopyCharacteristics(toMaterial as dynamic, fromMaterial as dynamic);
         }
 
-        
+
         /***************************************************/
         /****        Public methods - Materials         ****/
         /***************************************************/
 
+        [Description("Copies material characteristics from a Revit Material to BHoM Environment SolidMaterial.")]
+        [Input("toMaterial", "Target BHoM SolidMaterial to copy the material characteristics to.")]
+        [Input("fromMaterial", "Source Revit Material to copy the material characteristics from.")]
         public static void CopyCharacteristics(this SolidMaterial toMaterial, Material fromMaterial)
         {
             if (fromMaterial == null)
@@ -79,6 +89,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Copies material characteristics from a Revit Material to BHoM Structure IMaterialFragment.")]
+        [Input("toMaterial", "Target BHoM IMaterialFragment to copy the material characteristics to.")]
+        [Input("fromMaterial", "Source Revit Material to copy the material characteristics from.")]
         public static void CopyCharacteristics(this IMaterialFragment toMaterial, Material fromMaterial)
         {
             if (fromMaterial == null)
@@ -127,35 +140,41 @@ namespace BH.Revit.Engine.Core
         /****          Public methods - Assets          ****/
         /***************************************************/
 
+        [Description("Copies material characteristics from a Revit ThermalAsset to BHoM Environment SolidMaterial.")]
+        [Input("toMaterial", "Target BHoM SolidMaterial to copy the material characteristics to.")]
+        [Input("fromAsset", "Source Revit ThermalAsset to copy the material characteristics from.")]
         public static void CopyCharacteristics(this SolidMaterial toMaterial, ThermalAsset fromAsset)
         {
-            toMaterial.Conductivity = fromAsset.ThermalConductivity.ToSI(UnitType.UT_HVAC_ThermalConductivity);
-            toMaterial.SpecificHeat = fromAsset.SpecificHeat.ToSI(UnitType.UT_HVAC_SpecificHeat);
-            toMaterial.Density = fromAsset.Density.ToSI(UnitType.UT_MassDensity);
+            toMaterial.Conductivity = fromAsset.ThermalConductivity.ToSI(SpecTypeId.ThermalConductivity);
+            toMaterial.SpecificHeat = fromAsset.SpecificHeat.ToSI(SpecTypeId.SpecificHeat);
+            toMaterial.Density = fromAsset.Density.ToSI(SpecTypeId.MassDensity);
         }
 
         /***************************************************/
 
+        [Description("Copies material characteristics from a Revit ThermalAsset to BHoM Structure IMaterialFragment.")]
+        [Input("toMaterial", "Target BHoM IMaterialFragment to copy the material characteristics to.")]
+        [Input("fromAsset", "Source Revit StructuralAsset to copy the material characteristics from.")]
         public static void CopyCharacteristics(this IMaterialFragment toMaterial, StructuralAsset fromAsset)
         {
-            double density = fromAsset.Density.ToSI(UnitType.UT_MassDensity);
+            double density = fromAsset.Density.ToSI(SpecTypeId.MassDensity);
 
-#if (REVIT2020 || REVIT2021)
-
-#else
+#if (REVIT2018 || REVIT2019)
             double dampingRatio = fromAsset.DampingRatio;
+#else
+
 #endif
 
-            oM.Geometry.Vector youngsModulus = BH.Engine.Geometry.Create.Vector(fromAsset.YoungModulus.X.ToSI(UnitType.UT_Stress), fromAsset.YoungModulus.Y.ToSI(UnitType.UT_Stress), fromAsset.YoungModulus.Z.ToSI(UnitType.UT_Stress));
-            oM.Geometry.Vector thermalExpansionCoeff = BH.Engine.Geometry.Create.Vector(fromAsset.ThermalExpansionCoefficient.X.ToSI(UnitType.UT_ThermalExpansion), fromAsset.ThermalExpansionCoefficient.Y.ToSI(UnitType.UT_ThermalExpansion), fromAsset.ThermalExpansionCoefficient.Z.ToSI(UnitType.UT_ThermalExpansion));
+            oM.Geometry.Vector youngsModulus = BH.Engine.Geometry.Create.Vector(fromAsset.YoungModulus.X.ToSI(SpecTypeId.Stress), fromAsset.YoungModulus.Y.ToSI(SpecTypeId.Stress), fromAsset.YoungModulus.Z.ToSI(SpecTypeId.Stress));
+            oM.Geometry.Vector thermalExpansionCoeff = BH.Engine.Geometry.Create.Vector(fromAsset.ThermalExpansionCoefficient.X.ToSI(SpecTypeId.ThermalExpansionCoefficient), fromAsset.ThermalExpansionCoefficient.Y.ToSI(SpecTypeId.ThermalExpansionCoefficient), fromAsset.ThermalExpansionCoefficient.Z.ToSI(SpecTypeId.ThermalExpansionCoefficient));
             oM.Geometry.Vector poissonsRatio = BH.Engine.Geometry.Create.Vector(fromAsset.PoissonRatio.X, fromAsset.PoissonRatio.Y, fromAsset.PoissonRatio.Z);
-            oM.Geometry.Vector shearModulus = BH.Engine.Geometry.Create.Vector(fromAsset.ShearModulus.X.ToSI(UnitType.UT_Stress), fromAsset.ShearModulus.Y.ToSI(UnitType.UT_Stress), fromAsset.ShearModulus.Z.ToSI(UnitType.UT_Stress));
+            oM.Geometry.Vector shearModulus = BH.Engine.Geometry.Create.Vector(fromAsset.ShearModulus.X.ToSI(SpecTypeId.Stress), fromAsset.ShearModulus.Y.ToSI(SpecTypeId.Stress), fromAsset.ShearModulus.Z.ToSI(SpecTypeId.Stress));
 
             toMaterial.Density = density;
-#if (REVIT2020 || REVIT2021)
-
-#else
+#if (REVIT2018 || REVIT2019)
             toMaterial.DampingRatio = dampingRatio;
+#else
+
 #endif
 
             if (toMaterial is Aluminium)

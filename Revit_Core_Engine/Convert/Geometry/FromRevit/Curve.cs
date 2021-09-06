@@ -20,14 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 using BH.Engine.Geometry;
 using BH.oM.Reflection.Attributes;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -37,6 +37,9 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit Line to BH.oM.Geometry.Line.")]
+        [Input("curve", "Revit Line to be converted.")]
+        [Output("curve", "BH.oM.Geometry.Line resulting from converting the input Revit Line.")]
         public static oM.Geometry.Line FromRevit(this Line curve)
         {
             if (curve == null)
@@ -47,6 +50,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit Arc to BH.oM.Geometry.ICurve.")]
+        [Input("curve", "Revit Arc to be converted.")]
+        [Output("curve", "BH.oM.Geometry.ICurve resulting from converting the input Revit Arc.")]
         public static oM.Geometry.ICurve FromRevit(this Arc curve)
         {
             if (curve == null)
@@ -54,7 +60,7 @@ namespace BH.Revit.Engine.Core
 
             if (!curve.IsBound)
             {
-                return new oM.Geometry.Circle { Centre = curve.Center.PointFromRevit(), Normal = curve.Normal.VectorFromRevit().Normalise(), Radius = curve.Radius.ToSI(UnitType.UT_Length) };
+                return new oM.Geometry.Circle { Centre = curve.Center.PointFromRevit(), Normal = curve.Normal.VectorFromRevit().Normalise(), Radius = curve.Radius.ToSI(SpecTypeId.Length) };
             }
 
             BH.oM.Geometry.CoordinateSystem.Cartesian cs = BH.Engine.Geometry.Create.CartesianCoordinateSystem(curve.Center.PointFromRevit(), curve.XDirection.VectorFromRevit(), curve.YDirection.VectorFromRevit());
@@ -64,18 +70,21 @@ namespace BH.Revit.Engine.Core
             if (startAngle > endAngle)
                 startAngle -= 2 * Math.PI;
 
-            return new oM.Geometry.Arc { CoordinateSystem = cs, Radius = curve.Radius.ToSI(UnitType.UT_Length), StartAngle = startAngle, EndAngle = endAngle };
+            return new oM.Geometry.Arc { CoordinateSystem = cs, Radius = curve.Radius.ToSI(SpecTypeId.Length), StartAngle = startAngle, EndAngle = endAngle };
         }
 
         /***************************************************/
-        
+
+        [Description("Converts a Revit Ellipse to BH.oM.Geometry.Ellipse.")]
+        [Input("curve", "Revit Ellipse to be converted.")]
+        [Output("curve", "BH.oM.Geometry.Ellipse resulting from converting the input Revit Ellipse.")]
         public static oM.Geometry.Ellipse FromRevit(this Ellipse curve)
         {
             if (curve == null)
                 return null;
 
             if (!curve.IsBound)
-                return new oM.Geometry.Ellipse { Centre = curve.Center.PointFromRevit(), Axis1 = curve.XDirection.VectorFromRevit().Normalise(), Radius1 = curve.RadiusX.ToSI(UnitType.UT_Length), Axis2 = curve.YDirection.VectorFromRevit().Normalise(), Radius2 = curve.RadiusY.ToSI(UnitType.UT_Length) };
+                return new oM.Geometry.Ellipse { Centre = curve.Center.PointFromRevit(), Axis1 = curve.XDirection.VectorFromRevit().Normalise(), Radius1 = curve.RadiusX.ToSI(SpecTypeId.Length), Axis2 = curve.YDirection.VectorFromRevit().Normalise(), Radius2 = curve.RadiusY.ToSI(SpecTypeId.Length) };
             else
             {
                 BH.Engine.Reflection.Compute.RecordWarning("Conversion of open ellipses is currently not supported because of lack of support for such type in BHoM.");
@@ -84,7 +93,10 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-        
+
+        [Description("Converts a Revit NurbSpline to BH.oM.Geometry.NurbsCurve.")]
+        [Input("curve", "Revit NurbSpline to be converted.")]
+        [Output("curve", "BH.oM.Geometry.NurbsCurve resulting from converting the input Revit NurbSpline.")]
         public static oM.Geometry.NurbsCurve FromRevit(this NurbSpline curve)
         {
             if (curve == null)
@@ -103,7 +115,10 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-        
+
+        [Description("Converts a Revit HermiteSpline to BH.oM.Geometry.NurbsCurve.")]
+        [Input("curve", "Revit HermiteSpline to be converted.")]
+        [Output("curve", "BH.oM.Geometry.NurbsCurve resulting from converting the input Revit HermiteSpline.")]
         public static oM.Geometry.NurbsCurve FromRevit(this HermiteSpline curve)
         {
             if (curve == null)
@@ -113,8 +128,11 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-        
+
         [NotImplemented]
+        [Description("Converts a Revit CylindricalHelix to BH.oM.Geometry.NurbsCurve.")]
+        [Input("curve", "Revit CylindricalHelix to be converted.")]
+        [Output("curve", "BH.oM.Geometry.NurbsCurve resulting from converting the input Revit CylindricalHelix.")]
         public static oM.Geometry.NurbsCurve FromRevit(this CylindricalHelix curve)
         {
             if (curve == null)
@@ -126,6 +144,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit Polyloop to BH.oM.Geometry.Polyline.")]
+        [Input("polyloop", "Revit Polyloop to be converted.")]
+        [Output("curve", "BH.oM.Geometry.Polyline resulting from converting the input Revit Polyloop.")]
         public static oM.Geometry.Polyline FromRevit(this Polyloop polyloop)
         {
             IList<XYZ> xyzList = polyloop.GetPoints();
@@ -139,6 +160,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit PolyLine to BH.oM.Geometry.Polyline.")]
+        [Input("polyline", "Revit PolyLine to be converted.")]
+        [Output("curve", "BH.oM.Geometry.Polyline resulting from converting the input Revit PolyLine.")]
         public static oM.Geometry.Polyline FromRevit(this PolyLine polyline)
         {
             IList<XYZ> xyzList = polyline.GetCoordinates();
@@ -152,6 +176,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit CurveLoop to BH.oM.Geometry.PolyCurve.")]
+        [Input("curveLoop", "Revit CurveLoop to be converted.")]
+        [Output("curve", "BH.oM.Geometry.PolyCurve resulting from converting the input Revit CurveLoop.")]
         public static oM.Geometry.PolyCurve FromRevit(this CurveLoop curveLoop)
         {
             if (curveLoop == null)
@@ -162,6 +189,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit LocationCurve to BH.oM.Geometry.ICurve.")]
+        [Input("locationCurve", "Revit LocationCurve to be converted.")]
+        [Output("curve", "BH.oM.Geometry.ICurve resulting from converting the input Revit LocationCurve.")]
         public static oM.Geometry.ICurve FromRevit(this LocationCurve locationCurve)
         {
             if (locationCurve == null)
@@ -172,6 +202,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit Edge to BH.oM.Geometry.ICurve.")]
+        [Input("edge", "Revit Edge to be converted.")]
+        [Output("curve", "BH.oM.Geometry.ICurve resulting from converting the input Revit Edge.")]
         public static oM.Geometry.ICurve FromRevit(this Edge edge)
         {
             if (edge == null)
@@ -185,6 +218,9 @@ namespace BH.Revit.Engine.Core
         /****             Interface Methods             ****/
         /***************************************************/
 
+        [Description("Converts a Revit Curve to BH.oM.Geometry.ICurve.")]
+        [Input("curve", "Revit Curve to be converted.")]
+        [Output("curve", "BH.oM.Geometry.ICurve resulting from converting the input Revit Curve.")]
         public static oM.Geometry.ICurve IFromRevit(this Curve curve)
         {
             oM.Geometry.ICurve result = FromRevit(curve as dynamic);

@@ -54,7 +54,7 @@ namespace BH.Revit.Engine.Core
                 case Autodesk.Revit.DB.ConnectorProfileType.Round:
                     // Create a circular profile
                     // Diameter
-                    double diameter = duct.Diameter.ToSI(UnitType.UT_HVAC_DuctSize);
+                    double diameter = duct.Diameter.ToSI(SpecTypeId.DuctSize);
 
                     // Thickness / gauge of the duct sheet
                     double thickness = 0.001519; // Dafault to 16 gauge, to be changed later
@@ -62,8 +62,8 @@ namespace BH.Revit.Engine.Core
                     return BH.Engine.Spatial.Create.TubeProfile(diameter, thickness);
                 case Autodesk.Revit.DB.ConnectorProfileType.Rectangular:
                     // Create a rectangular box profile
-                    double boxHeight = duct.Height.ToSI(UnitType.UT_HVAC_DuctSize);
-                    double boxWidth = duct.Width.ToSI(UnitType.UT_HVAC_DuctSize);
+                    double boxHeight = duct.Height.ToSI(SpecTypeId.DuctSize);
+                    double boxWidth = duct.Width.ToSI(SpecTypeId.DuctSize);
                     double boxThickness = 0.001519; // Dafault to 16 gauge, to be changed later
                     double outerRadius = 0;
                     double innerRadius = 0;
@@ -88,8 +88,8 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             // Cable Trays are always rectangular
-            double boxHeight = cableTray.Height.ToSI(UnitType.UT_Electrical_CableTraySize);
-            double boxWidth = cableTray.Width.ToSI(UnitType.UT_Electrical_CableTraySize);
+            double boxHeight = cableTray.Height.ToSI(SpecTypeId.CableTraySize);
+            double boxWidth = cableTray.Width.ToSI(SpecTypeId.CableTraySize);
             double boxThickness = 0.001519;
             double outerRadius = 0;
             double innerRadius = 0;
@@ -109,7 +109,7 @@ namespace BH.Revit.Engine.Core
 
             List<ICurve> edges = new List<ICurve>();
 
-            double diameter = pipe.Diameter.ToSI(UnitType.UT_PipeSize);
+            double diameter = pipe.Diameter.ToSI(SpecTypeId.PipeSize);
 
             // Thickness
             double outsideDiameter = pipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_OUTER_DIAMETER);
@@ -131,7 +131,7 @@ namespace BH.Revit.Engine.Core
 
             List<ICurve> edges = new List<ICurve>();
 
-            double diameter = wire.Diameter.ToSI(UnitType.UT_WireSize);
+            double diameter = wire.Diameter.ToSI(SpecTypeId.WireDiameter);
 
             double thickness = 0;
 

@@ -448,8 +448,8 @@ namespace BH.Revit.Engine.Core
                         Autodesk.Revit.DB.Mechanical.Space space = (Autodesk.Revit.DB.Mechanical.Space)spatialElement;
 
                         BuildingResultFragment buildingResultsProperties = new BuildingResultFragment();
-                        buildingResultsProperties.PeakCooling = space.DesignCoolingLoad.ToSI(UnitType.UT_HVAC_Cooling_Load);
-                        buildingResultsProperties.PeakHeating = space.DesignHeatingLoad.ToSI(UnitType.UT_HVAC_Heating_Load);
+                        buildingResultsProperties.PeakCooling = space.DesignCoolingLoad.ToSI(SpecTypeId.CoolingLoad);
+                        buildingResultsProperties.PeakHeating = space.DesignHeatingLoad.ToSI(SpecTypeId.HeatingLoad);
                         panel.AddFragment(buildingResultsProperties);
                     }
                 }

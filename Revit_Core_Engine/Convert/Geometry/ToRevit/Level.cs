@@ -23,8 +23,10 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -35,6 +37,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.SettingOut.Level to a Revit Level.")]
+        [Input("level", "BH.oM.Geometry.SettingOut.Level to be converted.")]
+        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("level", "Revit Level resulting from converting the input BH.oM.Geometry.SettingOut.Level.")]
         public static Level ToRevitLevel(this oM.Geometry.SettingOut.Level level, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             Level revitLevel = refObjects.GetValue<Level>(document, level.BHoM_Guid);
@@ -50,7 +58,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            double elevation = level.Elevation.FromSI(UnitType.UT_Length);
+            double elevation = level.Elevation.FromSI(SpecTypeId.Length);
             if (existingLevels.Any(x => Math.Abs(x.ProjectElevation - elevation) < settings.DistanceTolerance))
             {
                 BH.Engine.Reflection.Compute.RecordError($"Level with elevation {level.Elevation} could not be created because a level with the same elevation already exists in the model. BHoM_Guid: {level.BHoM_Guid}");

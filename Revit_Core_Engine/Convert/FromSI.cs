@@ -21,6 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -29,16 +31,23 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-
-        public static double FromSI(this double value, UnitType unitType)
+        
+        [Description("Converts a numerical value from internal Revit units to BHoM-specific unit for a given quantity type.")]
+        [Input("value", "Numerical value to be converted to BHoM-specific units.")]
+        [Input("quantity", "Quantity type to use when converting from Revit internal units to BHoM-specific units.")]
+        [Output("converted", "Input value converted from internal Revit units to BHoM-specific units for the input quantity type.")]
+#if (REVIT2018 || REVIT2019 || REVIT2020)
+        public static double FromSI(this double value, UnitType quantity)
+#else
+        public static double FromSI(this double value, ForgeTypeId quantity)
+#endif
         {
             if (double.IsNaN(value) || value == double.MaxValue || value == double.MinValue || double.IsNegativeInfinity(value) || double.IsPositiveInfinity(value))
                 return value;
 
-            return UnitUtils.ConvertToInternalUnits(value, unitType.BHoMUnitType());
+            return UnitUtils.ConvertToInternalUnits(value, quantity.BHoMUnitType());
         }
-
+        
         /***************************************************/
     }
 }
-

@@ -21,8 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using System.Collections.Generic;
-using System.Linq;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.TransformMatrix to a Revit Transform.")]
+        [Input("transformMatrix", "BH.oM.Geometry.TransformMatrix to be converted.")]
+        [Output("transform", "Revit Transform resulting from converting the input BH.oM.Geometry.TransformMatrix.")]
         public static Transform ToRevit(this oM.Geometry.TransformMatrix transformMatrix)
         {
             if (transformMatrix == null)
@@ -40,7 +43,7 @@ namespace BH.Revit.Engine.Core
             XYZ basisX = new XYZ(transformMatrix.Matrix[0, 0], transformMatrix.Matrix[1, 0], transformMatrix.Matrix[2, 0]);
             XYZ basisY = new XYZ(transformMatrix.Matrix[0, 1], transformMatrix.Matrix[1, 1], transformMatrix.Matrix[2, 1]);
             XYZ basisZ = new XYZ(transformMatrix.Matrix[0, 2], transformMatrix.Matrix[1, 2], transformMatrix.Matrix[2, 2]);
-            XYZ translation = new XYZ(transformMatrix.Matrix[0, 3].FromSI(UnitType.UT_Length), transformMatrix.Matrix[1, 3].FromSI(UnitType.UT_Length), transformMatrix.Matrix[2, 3].FromSI(UnitType.UT_Length));
+            XYZ translation = new XYZ(transformMatrix.Matrix[0, 3].FromSI(SpecTypeId.Length), transformMatrix.Matrix[1, 3].FromSI(SpecTypeId.Length), transformMatrix.Matrix[2, 3].FromSI(SpecTypeId.Length));
             Transform transform = Transform.CreateTranslation(translation);
             transform.set_Basis(0, basisX);
             transform.set_Basis(1, basisY);
@@ -50,6 +53,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.Basis to a Revit Transform.")]
+        [Input("basis", "BH.oM.Geometry.Basis to be converted.")]
+        [Output("transform", "Revit Transform resulting from converting the input BH.oM.Geometry.Basis.")]
         public static Transform ToRevit(this oM.Geometry.Basis basis)
         {
             if (basis == null)

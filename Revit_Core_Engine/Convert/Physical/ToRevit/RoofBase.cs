@@ -25,9 +25,10 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -37,6 +38,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Converts BH.oM.Physical.Elements.Roof to a Revit RoofBase.")]
+        [Input("roof", "BH.oM.Physical.Elements.Roof to be converted.")]
+        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("roofBase", "Revit RoofBase resulting from converting the input BH.oM.Physical.Elements.Roof.")]
         public static RoofBase ToRevitRoofBase(this oM.Physical.Elements.Roof roof, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (roof == null || roof.Location == null || document == null)
@@ -66,7 +73,7 @@ namespace BH.Revit.Engine.Core
             if (level == null)
                 return null;
 
-            double elevation = level.Elevation.ToSI(UnitType.UT_Length);
+            double elevation = level.Elevation.ToSI(SpecTypeId.Length);
             
             oM.Geometry.Plane plane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, elevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
 
@@ -113,7 +120,7 @@ namespace BH.Revit.Engine.Core
             if (roofBase.LevelId.IntegerValue != level.Id.IntegerValue)
             {
                 Level newLevel = document.GetElement(roofBase.LevelId) as Level;
-                offset += (level.ProjectElevation - newLevel.ProjectElevation).ToSI(UnitType.UT_Length);
+                offset += (level.ProjectElevation - newLevel.ProjectElevation).ToSI(SpecTypeId.Length);
             }
 
             roofBase.SetParameter(BuiltInParameter.ROOF_LEVEL_OFFSET_PARAM, offset);

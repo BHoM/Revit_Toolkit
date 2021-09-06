@@ -123,6 +123,28 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <AssemblyName>Revit_Core_Engine_2021</AssemblyName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2022|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;REVIT2022</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <AssemblyName>Revit_Core_Engine_2022</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2022|AnyCPU'">
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;REVIT2022</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <AssemblyName>Revit_Core_Engine_2022</AssemblyName>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytical_oM">
       <SpecificVersion>False</SpecificVersion>
@@ -232,20 +254,12 @@
       <HintPath>..\libs\2018\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018' Or '$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
-      <HintPath>..\libs\2018\RevitAPIIFC.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018' Or '$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
       <HintPath>..\libs\2018\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
       <HintPath>..\libs\2019\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
-      <HintPath>..\libs\2019\RevitAPIIFC.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
@@ -256,10 +270,6 @@
       <HintPath>..\libs\2020\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
-      <HintPath>..\libs\2020\RevitAPIIFC.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
       <HintPath>..\libs\2020\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
@@ -268,12 +278,16 @@
       <HintPath>..\libs\2021\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="RevitAPIIFC" Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
-      <HintPath>..\libs\2021\RevitAPIIFC.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
       <HintPath>..\libs\2021\RevitAPIUI.dll</HintPath>
+      <private>False</private>
+    </Reference>
+    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2022' Or '$(Configuration)'=='Release2022'">
+      <HintPath>..\libs\2022\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2022' Or '$(Configuration)'=='Release2022'">
+      <HintPath>..\libs\2022\RevitAPIUI.dll</HintPath>
       <private>False</private>
     </Reference>
     <Reference Include="Spatial_Engine">
@@ -343,6 +357,8 @@
     <Compile Include="Modify\Postprocess.cs" />
     <Compile Include="Modify\SetProperty.cs" />
     <Compile Include="Modify\SetViewDetailLevel.cs" />
+    <Compile Include="Objects\SpecTypeId.cs" />
+    <Compile Include="Objects\UnitTypeId.cs" />
     <Compile Include="Query\AllConvertMethods.cs" />
     <Compile Include="Query\BHoMType.cs" />
     <Compile Include="Query\CableTraySectionProfile.cs" />
@@ -356,6 +372,8 @@
     <Compile Include="Query\FacadeCurtainPanels.cs" />
     <Compile Include="Query\CurtainWallMullions.cs" />
     <Compile Include="Query\FrameEdgeProperty.cs" />
+    <Compile Include="Query\GetSpecTypeId.cs" />
+    <Compile Include="Query\GetUnitTypeId.cs" />
     <Compile Include="Query\MEPConnectorsLocation.cs" />
     <Compile Include="Query\MullionElementProperty.cs" />
     <Compile Include="Query\GlazingConstruction.cs" />
@@ -371,7 +389,7 @@
     <Compile Include="Query\LinkTransform.cs" />
     <Compile Include="Query\Passes.cs" />
     <Compile Include="Query\Shape.cs" />
-    <Compile Include="Query\MaterialTakeOff.cs" />
+    <Compile Include="Query\MaterialTakeoff.cs" />
     <Compile Include="Query\PipeSectionProperty.cs" />
     <Compile Include="Query\Profile.cs" />
     <Compile Include="Convert\MEP\FromRevit\Wire.cs" />

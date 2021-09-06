@@ -22,7 +22,9 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -33,13 +35,19 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Sets a given numerical value to first parameter of a given Revit Element found under given name.")]
+        [Input("element", "Revit element to be modified.")]
+        [Input("parameterName", "Name of the parameter to be set.")]
+        [Input("value", "Value to be set to the parameter.")]
+        [Input("convertUnits", "If true, the input value will be converted to internal Revit units, otherwise not.")]
+        [Output("success", "True if an existing parameter has been found under the input name and got successfully set with the input value.")]
         public static bool SetParameter(this Element element, string parameterName, double value, bool convertUnits = true)
         {
             Parameter parameter = element.LookupParameter(parameterName);
             if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Double)
             {
                 if (convertUnits)
-                    value = value.FromSI(parameter.Definition.UnitType);
+                    value = value.FromSI(parameter.Definition.GetSpecTypeId());
 
                 return parameter.Set(value);
             }
@@ -49,13 +57,19 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets a given numerical value to the parameter of a given Revit Element found under given identifier.")]
+        [Input("element", "Revit element to be modified.")]
+        [Input("builtInParam", "Identifier of the parameter to be set.")]
+        [Input("value", "Value to be set to the parameter.")]
+        [Input("convertUnits", "If true, the input value will be converted to internal Revit units, otherwise not.")]
+        [Output("success", "True if an existing parameter has been found under the input name and got successfully set with the input value.")]
         public static bool SetParameter(this Element element, BuiltInParameter builtInParam, double value, bool convertUnits = true)
         {
             Parameter parameter = element.get_Parameter(builtInParam);
             if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Double)
             {
                 if (convertUnits)
-                    value = value.FromSI(parameter.Definition.UnitType);
+                    value = value.FromSI(parameter.Definition.GetSpecTypeId());
 
                 return parameter.Set(value);
             }
@@ -65,6 +79,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets a given integer value to first parameter of a given Revit Element found under given name.")]
+        [Input("element", "Revit element to be modified.")]
+        [Input("parameterName", "Name of the parameter to be set.")]
+        [Input("value", "Value to be set to the parameter.")]
+        [Output("success", "True if an existing parameter has been found under the input name and got successfully set with the input value.")]
         public static bool SetParameter(this Element element, string parameterName, int value)
         {
             Parameter parameter = element.LookupParameter(parameterName);
@@ -76,6 +95,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets a given integer value to the parameter of a given Revit Element found under given identifier.")]
+        [Input("element", "Revit element to be modified.")]
+        [Input("builtInParam", "Identifier of the parameter to be set.")]
+        [Input("value", "Value to be set to the parameter.")]
+        [Output("success", "True if an existing parameter has been found under the input name and got successfully set with the input value.")]
         public static bool SetParameter(this Element element, BuiltInParameter builtInParam, int value)
         {
             Parameter parameter = element.get_Parameter(builtInParam);
@@ -87,6 +111,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets a given text value to first parameter of a given Revit Element found under given name.")]
+        [Input("element", "Revit element to be modified.")]
+        [Input("parameterName", "Name of the parameter to be set.")]
+        [Input("value", "Value to be set to the parameter.")]
+        [Output("success", "True if an existing parameter has been found under the input name and got successfully set with the input value.")]
         public static bool SetParameter(this Element element, string parameterName, string value)
         {
             Parameter parameter = element.LookupParameter(parameterName);
@@ -98,6 +127,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets a given text value to the parameter of a given Revit Element found under given identifier.")]
+        [Input("element", "Revit element to be modified.")]
+        [Input("builtInParam", "Identifier of the parameter to be set.")]
+        [Input("value", "Value to be set to the parameter.")]
+        [Output("success", "True if an existing parameter has been found under the input name and got successfully set with the input value.")]
         public static bool SetParameter(this Element element, BuiltInParameter builtInParam, string value)
         {
             Parameter parameter = element.get_Parameter(builtInParam);
@@ -109,6 +143,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets a given value in a form of Revit ElementId to first parameter of a given Revit Element found under given name.")]
+        [Input("element", "Revit element to be modified.")]
+        [Input("parameterName", "Name of the parameter to be set.")]
+        [Input("value", "Value to be set to the parameter.")]
+        [Output("success", "True if an existing parameter has been found under the input name and got successfully set with the input value.")]
         public static bool SetParameter(this Element element, string parameterName, ElementId value)
         {
             Parameter parameter = element.LookupParameter(parameterName);
@@ -120,6 +159,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets a given value in a form of Revit ElementId to the parameter of a given Revit Element found under given identifier.")]
+        [Input("element", "Revit element to be modified.")]
+        [Input("builtInParam", "Identifier of the parameter to be set.")]
+        [Input("value", "Value to be set to the parameter.")]
+        [Output("success", "True if an existing parameter has been found under the input name and got successfully set with the input value.")]
         public static bool SetParameter(this Element element, BuiltInParameter builtInParam, ElementId value)
         {
             Parameter parameter = element.get_Parameter(builtInParam);
@@ -131,6 +175,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets a given Revit Parameter with the given value.")]
+        [Input("parameter", "Revit Parameter to be set.")]
+        [Input("value", "Value to be set to the parameter.")]
+        [Input("document", "Revit Document to be used when processing the parameter.")]
+        [Output("success", "True if the input parameter got successfully set with the input value.")]
         public static bool SetParameter(this Parameter parameter, object value, Document document = null)
         {
             // Skip null and read-only parameters
@@ -187,7 +236,7 @@ namespace BH.Revit.Engine.Core
                         {
                             try
                             {
-                                dbl = Convert.FromSI(dbl, parameter.Definition.UnitType);
+                                dbl = Convert.FromSI(dbl, parameter.Definition.GetSpecTypeId());
                             }
                             catch
                             {
@@ -331,6 +380,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets the given value to all parameters of a given Revit Element under a given name.")]
+        [Input("element", "Revit element to be modified.")]
+        [Input("name", "Name of the parameters to be set.")]
+        [Input("value", "Value to be set to the parameters.")]
+        [Output("success", "True if at least one existing parameter has been found under the input name and got successfully set with the input value.")]
         public static bool SetParameters(this Element element, string name, object value)
         {
             bool success = false;
@@ -345,6 +399,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets the given value to all parameters of a given Revit Element under given names.")]
+        [Input("element", "Revit element to be modified.")]
+        [Input("names", "Names of the parameters to be set.")]
+        [Input("value", "Value to be set to the parameters.")]
+        [Output("success", "True if at least one existing parameter has been found under one of the input names and got successfully set with the input value.")]
         public static bool SetParameters(this Element element, IEnumerable<string> names, object value)
         {
             bool success = false;

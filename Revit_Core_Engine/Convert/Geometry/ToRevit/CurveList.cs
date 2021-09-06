@@ -23,8 +23,10 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Base;
 using BH.Engine.Geometry;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -35,6 +37,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.Line to a collection of Revit Curves.")]
+        [Input("curve", "BH.oM.Geometry.Line to be converted.")]
+        [Output("curves", "Collection of Revit Curves resulting from converting the input BH.oM.Geometry.Line.")]
         public static List<Curve> ToRevitCurves(this BH.oM.Geometry.Line curve)
         {
             return new List<Curve> { curve.ToRevit() };
@@ -42,12 +47,15 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.Arc to a collection of Revit Curves.")]
+        [Input("curve", "BH.oM.Geometry.Arc to be converted.")]
+        [Output("curves", "Collection of Revit Curves resulting from converting the input BH.oM.Geometry.Arc.")]
         public static List<Curve> ToRevitCurves(this BH.oM.Geometry.Arc curve)
         {
             //Split the curve in half when it is closed.
             if (Math.Abs(2 * Math.PI) - curve.EndAngle + curve.StartAngle < BH.oM.Adapters.Revit.Tolerance.Angle)
             {
-                double r = curve.Radius.FromSI(UnitType.UT_Length);
+                double r = curve.Radius.FromSI(SpecTypeId.Length);
                 XYZ centre = curve.CoordinateSystem.Origin.ToRevit();
                 XYZ xAxis = curve.CoordinateSystem.X.ToRevit().Normalize();
                 XYZ yAxis = curve.CoordinateSystem.Y.ToRevit().Normalize();
@@ -62,9 +70,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.Circle to a collection of Revit Curves.")]
+        [Input("curve", "BH.oM.Geometry.Circle to be converted.")]
+        [Output("curves", "Collection of Revit Curves resulting from converting the input BH.oM.Geometry.Circle.")]
         public static List<Curve> ToRevitCurves(this BH.oM.Geometry.Circle curve)
         {
-            double r = curve.Radius.FromSI(UnitType.UT_Length);
+            double r = curve.Radius.FromSI(SpecTypeId.Length);
 
             XYZ centre = curve.Centre.ToRevit();
             XYZ normal = curve.Normal.ToRevit().Normalize();
@@ -77,11 +88,14 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.Ellipse to a collection of Revit Curves.")]
+        [Input("curve", "BH.oM.Geometry.Ellipse to be converted.")]
+        [Output("curves", "Collection of Revit Curves resulting from converting the input BH.oM.Geometry.Ellipse.")]
         public static List<Curve> ToRevitCurves(this BH.oM.Geometry.Ellipse curve)
         {
             XYZ centre = curve.Centre.ToRevit();
-            double radius1 = curve.Radius1.FromSI(UnitType.UT_Length);
-            double radius2 = curve.Radius2.FromSI(UnitType.UT_Length);
+            double radius1 = curve.Radius1.FromSI(SpecTypeId.Length);
+            double radius2 = curve.Radius2.FromSI(SpecTypeId.Length);
             XYZ axis1 = curve.Axis1.ToRevit().Normalize();
             XYZ axis2 = curve.Axis2.ToRevit().Normalize();
             return new List<Curve> { Ellipse.CreateCurve(centre, radius1, radius2, axis1, axis2, 0, Math.PI), Ellipse.CreateCurve(centre, radius1, radius2, axis1, axis2, Math.PI, Math.PI * 2) };
@@ -89,6 +103,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.NurbsCurve to a collection of Revit Curves.")]
+        [Input("curve", "BH.oM.Geometry.NurbsCurve to be converted.")]
+        [Output("curves", "Collection of Revit Curves resulting from converting the input BH.oM.Geometry.NurbsCurve.")]
         public static List<Curve> ToRevitCurves(this BH.oM.Geometry.NurbsCurve curve)
         {
             if (curve.ControlPoints.Count == 2)
@@ -143,6 +160,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.PolyCurve to a collection of Revit Curves.")]
+        [Input("curve", "BH.oM.Geometry.PolyCurve to be converted.")]
+        [Output("curves", "Collection of Revit Curves resulting from converting the input BH.oM.Geometry.PolyCurve.")]
         public static List<Curve> ToRevitCurves(this BH.oM.Geometry.PolyCurve curve)
         {
             List<Curve> result = new List<Curve>();
@@ -156,6 +176,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.Polyline to a collection of Revit Curves.")]
+        [Input("curve", "BH.oM.Geometry.Polyline to be converted.")]
+        [Output("curves", "Collection of Revit Curves resulting from converting the input BH.oM.Geometry.Polyline.")]
         public static List<Curve> ToRevitCurves(this BH.oM.Geometry.Polyline curve)
         {
             return curve.SubParts().Select(x => x.ToRevit() as Curve).ToList();
@@ -166,6 +189,9 @@ namespace BH.Revit.Engine.Core
         /****             Interface Methods             ****/
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.ICurve to a collection of Revit Curves.")]
+        [Input("curve", "BH.oM.Geometry.ICurve to be converted.")]
+        [Output("curves", "Collection of Revit Curves resulting from converting the input BH.oM.Geometry.ICurve.")]
         public static List<Curve> IToRevitCurves(this BH.oM.Geometry.ICurve curve)
         {
             return ToRevitCurves(curve as dynamic);

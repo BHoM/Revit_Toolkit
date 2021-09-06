@@ -21,22 +21,28 @@
  */
 
 using Autodesk.Revit.DB;
-using System;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
+#if (REVIT2018 || REVIT2019 || REVIT2020)
+
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        public static DisplayUnitType BHoMUnitType(this UnitType unitType)
+        [Description("Finds a BHoM-specific Revit unit type for a given quantity.")]
+        [Input("quantity", "Quantity to find a BHoM-specific Revit unit type for.")]
+        [Output("unitType", "BHoM-specific Revit unit type for the input quantity.")]
+        public static DisplayUnitType BHoMUnitType(this UnitType quantity)
         {
             // Check if any display unit type applicable to given unit type is acceptable BHoM unit type.
-            IEnumerable<DisplayUnitType> duts = UnitUtils.GetValidDisplayUnits(unitType);
+            IEnumerable<DisplayUnitType> duts = UnitUtils.GetValidDisplayUnits(quantity);
             foreach (DisplayUnitType dut in duts)
             {
                 if (BHoMUnits.Contains(dut))
@@ -61,12 +67,12 @@ namespace BH.Revit.Engine.Core
             if (acceptable.Count != 0)
             {
                 DisplayUnitType dut = acceptable.First();
-                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Unit type {0} does not have a unitless SI convert - instead, it has been converted to {1}.", LabelUtils.GetLabelFor(unitType), LabelUtils.GetLabelFor(dut)));
+                BH.Engine.Reflection.Compute.RecordWarning($"Unit type {LabelUtils.GetLabelFor(quantity)} does not have a predefined SI equivalent in BHoM - the unit type used on the BHoM side of convert is {LabelUtils.GetLabelFor(dut)}. Please make sure the converted values are correct.");
                 return dut;
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Unit type {0} has not been recognized and has not been converted - as a result, the output value can be wrong.", LabelUtils.GetLabelFor(unitType)));
+                BH.Engine.Reflection.Compute.RecordError($"Unit type {LabelUtils.GetLabelFor(quantity)} has not been recognized and has not been converted - as a result, the output value can be wrong.");
                 return DisplayUnitType.DUT_GENERAL;
             }
         }
@@ -74,24 +80,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
         /****            Private collections            ****/
-        /***************************************************/
-
-        private static readonly string[] NonSIUnitNames = new string[]
-        {
-            "inch",
-            "feet",
-            "foot",
-            "yard",
-            "fahrenheit",
-            "pound",
-            "gallon",
-            "kip",
-            "ustonne",
-            "mile",
-            "rankine",
-            "horsepower"
-        };
-
         /***************************************************/
 
         private static readonly DisplayUnitType[] BHoMUnits = new DisplayUnitType[]
@@ -139,6 +127,7 @@ namespace BH.Revit.Engine.Core
             DisplayUnitType.DUT_KILOGRAMS_MASS_PER_METER,
             DisplayUnitType.DUT_KILOGRAMS_MASS_PER_SQUARE_METER,
             DisplayUnitType.DUT_JOULES_PER_KILOGRAM_CELSIUS,
+            DisplayUnitType.DUT_NEWTONS_PER_SQUARE_METER,
             DisplayUnitType.DUT_GENERAL
         };
 
@@ -151,6 +140,139 @@ namespace BH.Revit.Engine.Core
             { DisplayUnitType.DUT_PERCENTAGE,  DisplayUnitType.DUT_FIXED },
             { DisplayUnitType.DUT_SQUARE_METERS_PER_METER,  DisplayUnitType.DUT_METERS },
             { DisplayUnitType.DUT_MILLIMETERS,  DisplayUnitType.DUT_METERS }
+        };
+
+        /***************************************************/
+
+#else
+
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+            
+        [Description("Finds a BHoM-specific Revit unit type for a given quantity.")]
+        [Input("quantity", "Quantity to find a BHoM-specific Revit unit type for.")]
+        [Output("unitType", "BHoM-specific Revit unit type for the input quantity.")]
+        public static ForgeTypeId BHoMUnitType(this ForgeTypeId quantity)
+        {
+            // Check if any display unit type applicable to given unit type is acceptable BHoM unit type.
+            IEnumerable<ForgeTypeId> duts = UnitUtils.GetValidUnits(quantity);
+            foreach (ForgeTypeId dut in duts)
+            {
+                if (BHoMUnits.Contains(dut))
+                    return dut;
+            }
+
+            // Check if any display unit type applicable to given unit type has acceptable BHoM equivalent unit type.
+            foreach (ForgeTypeId dut in duts)
+            {
+                if (BHoMEquivalents.ContainsKey(dut))
+                    return BHoMEquivalents[dut];
+            }
+
+            // Find any SI display unit types.
+            List<ForgeTypeId> acceptable = duts.Where(x =>
+            {
+                string lower = LabelUtils.GetLabelForUnit(x).ToLower();
+                return !NonSIUnitNames.Any(y => lower.Contains(y));
+            }).ToList();
+
+            // Return first SI display unit type or record error.
+            if (acceptable.Count != 0)
+            {
+                ForgeTypeId dut = acceptable.First();
+                BH.Engine.Reflection.Compute.RecordWarning($"Unit type {LabelUtils.GetLabelForSpec(quantity)} does not have a predefined SI equivalent in BHoM - the unit type used on the BHoM side of convert is {LabelUtils.GetLabelForUnit(dut)}. Please make sure the converted values are correct.");
+                return dut;
+            }
+            else
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Unit type {LabelUtils.GetLabelForSpec(quantity)} has not been recognized and has not been converted - as a result, the output value can be wrong.");
+                return UnitTypeId.General;
+            }
+        }
+
+
+        /***************************************************/
+        /****            Private collections            ****/
+        /***************************************************/
+
+        private static readonly ForgeTypeId[] BHoMUnits = new ForgeTypeId[]
+        {
+            UnitTypeId.Meters,
+            UnitTypeId.SquareMeters,
+            UnitTypeId.CubicMeters,
+            UnitTypeId.Joules,
+            UnitTypeId.PascalsPerMeter,
+            UnitTypeId.Watts,
+            UnitTypeId.WattsPerSquareMeter,
+            UnitTypeId.Pascals,
+            UnitTypeId.Celsius,
+            UnitTypeId.MetersPerSecond,
+            UnitTypeId.CubicMetersPerSecond,
+            UnitTypeId.Amperes,
+            UnitTypeId.Kilograms,
+            UnitTypeId.Volts,
+            UnitTypeId.Hertz,
+            UnitTypeId.Lux,
+            UnitTypeId.CandelasPerSquareMeter,
+            UnitTypeId.Candelas,
+            UnitTypeId.Lumens,
+            UnitTypeId.Newtons,
+            UnitTypeId.NewtonsPerMeter,
+            UnitTypeId.NewtonMeters,
+            UnitTypeId.PascalSeconds,
+            UnitTypeId.InverseDegreesCelsius,
+            UnitTypeId.NewtonMetersPerMeter,
+            UnitTypeId.WattsPerSquareMeterKelvin,
+            UnitTypeId.WattsPerCubicMeter,
+            UnitTypeId.LumensPerWatt,
+            UnitTypeId.SquareMeterKelvinsPerWatt,
+            UnitTypeId.JoulesPerKelvin,
+            UnitTypeId.MetersPerSecondSquared,
+            UnitTypeId.MetersToTheFourthPower,
+            UnitTypeId.MetersToTheSixthPower,
+            UnitTypeId.Radians,
+            UnitTypeId.RadiansPerSecond,
+            UnitTypeId.Seconds,
+            UnitTypeId.WattsPerMeterKelvin,
+            UnitTypeId.OhmMeters,
+            UnitTypeId.KelvinInterval,
+            UnitTypeId.KilogramsPerCubicMeter,
+            UnitTypeId.KilogramsPerMeter,
+            UnitTypeId.KilogramsPerSquareMeter,
+            UnitTypeId.JoulesPerKilogramDegreeCelsius,
+            UnitTypeId.NewtonsPerSquareMeter,
+            UnitTypeId.General
+        };
+
+        /***************************************************/
+
+        private static readonly Dictionary<ForgeTypeId, ForgeTypeId> BHoMEquivalents = new Dictionary<ForgeTypeId, ForgeTypeId>
+        {
+            { UnitTypeId.Currency,  UnitTypeId.General },
+            { UnitTypeId.Kelvin,  UnitTypeId.Celsius },
+            { UnitTypeId.Percentage,  UnitTypeId.Fixed },
+            { UnitTypeId.SquareMetersPerMeter,  UnitTypeId.Meters },
+            { UnitTypeId.Millimeters,  UnitTypeId.Meters }
+        };
+
+        /***************************************************/
+#endif
+        private static readonly string[] NonSIUnitNames = new string[]
+        {
+            "inch",
+            "feet",
+            "foot",
+            "yard",
+            "fahrenheit",
+            "pound",
+            "gallon",
+            "kip",
+            "ustonne",
+            "mile",
+            "rankine",
+            "horsepower",
+            "british"
         };
 
         /***************************************************/

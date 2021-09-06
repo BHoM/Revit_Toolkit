@@ -21,7 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,16 +32,22 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.Point to a Revit XYZ.")]
+        [Input("point", "BH.oM.Geometry.Point to be converted.")]
+        [Output("xyz", "Revit XYZ resulting from converting the input BH.oM.Geometry.Point.")]
         public static XYZ ToRevit(this oM.Geometry.Point point)
         {
-            return new XYZ(point.X.FromSI(UnitType.UT_Length), point.Y.FromSI(UnitType.UT_Length), point.Z.FromSI(UnitType.UT_Length));
+            return new XYZ(point.X.FromSI(SpecTypeId.Length), point.Y.FromSI(SpecTypeId.Length), point.Z.FromSI(SpecTypeId.Length));
         }
 
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.Vector to a Revit XYZ.")]
+        [Input("vector", "BH.oM.Geometry.Vector to be converted.")]
+        [Output("xyz", "Revit XYZ resulting from converting the input BH.oM.Geometry.Vector.")]
         public static XYZ ToRevit(this oM.Geometry.Vector vector)
         {
-            return new XYZ(vector.X.FromSI(UnitType.UT_Length), vector.Y.FromSI(UnitType.UT_Length), vector.Z.FromSI(UnitType.UT_Length));
+            return new XYZ(vector.X.FromSI(SpecTypeId.Length), vector.Y.FromSI(SpecTypeId.Length), vector.Z.FromSI(SpecTypeId.Length));
         }
 
         /***************************************************/

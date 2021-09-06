@@ -21,8 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using System.Collections.Generic;
-using System.Linq;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit Transform to BH.oM.Geometry.TransformMatrix.")]
+        [Input("transform", "Revit Transform to be converted.")]
+        [Output("transformMatrix", "BH.oM.Geometry.TransformMatrix resulting from converting the input Revit Transform.")]
         public static oM.Geometry.TransformMatrix FromRevit(this Transform transform)
         {
             if (transform == null)
@@ -47,9 +50,9 @@ namespace BH.Revit.Engine.Core
             transformMatrix.Matrix[0, 2] = transform.BasisZ.X;
             transformMatrix.Matrix[1, 2] = transform.BasisZ.Y;
             transformMatrix.Matrix[2, 2] = transform.BasisZ.Z;
-            transformMatrix.Matrix[0, 3] = transform.Origin.X.ToSI(UnitType.UT_Length);
-            transformMatrix.Matrix[1, 3] = transform.Origin.Y.ToSI(UnitType.UT_Length);
-            transformMatrix.Matrix[2, 3] = transform.Origin.Z.ToSI(UnitType.UT_Length);
+            transformMatrix.Matrix[0, 3] = transform.Origin.X.ToSI(SpecTypeId.Length);
+            transformMatrix.Matrix[1, 3] = transform.Origin.Y.ToSI(SpecTypeId.Length);
+            transformMatrix.Matrix[2, 3] = transform.Origin.Z.ToSI(SpecTypeId.Length);
             transformMatrix.Matrix[3, 3] = 1;
             return transformMatrix;
         }

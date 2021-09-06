@@ -21,18 +21,20 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
-using BH.Engine.Geometry;
-using System;
-using System.Linq;
 using BH.oM.Physical.FramingProperties;
 using BH.oM.Reflection;
+using BH.oM.Reflection.Attributes;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -42,6 +44,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Sets the location of a given Revit Element based on a given BHoM IInstance.")]
+        [Input("element", "Revit Element to be modified.")]
+        [Input("instance", "BHoM IInsance acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit Element has been successfully set.")]
         public static bool SetLocation(this Element element, IInstance instance, RevitSettings settings)
         {
             if (instance.Location == null)
@@ -52,6 +59,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets the location of a given Revit FamilyInstance based on a given BHoM IInstance.")]
+        [Input("element", "Revit FamilyInstance to be modified.")]
+        [Input("instance", "BHoM IInsance acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit FamilyInstance has been successfully set.")]
         public static bool SetLocation(this FamilyInstance element, IInstance instance, RevitSettings settings)
         {
             if (instance.Location == null)
@@ -204,6 +216,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets the location of a given Revit FamilyInstance based on a given BHoM Column.")]
+        [Input("element", "Revit FamilyInstance to be modified.")]
+        [Input("column", "BHoM Column acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit FamilyInstance has been successfully set.")]
         public static bool SetLocation(this FamilyInstance element, Column column, RevitSettings settings)
         {
             if (!(typeof(Column).BuiltInCategories().Contains((BuiltInCategory)element.Category.Id.IntegerValue)))
@@ -245,7 +262,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                double locationZ = ((LocationPoint)element.Location).Point.Z.ToSI(UnitType.UT_Length);
+                double locationZ = ((LocationPoint)element.Location).Point.Z.ToSI(SpecTypeId.Length);
                 updated |= element.SetLocation(new oM.Geometry.Point { X = columnLine.Start.X, Y = columnLine.Start.Y, Z = locationZ }, settings);
 
                 Parameter baseLevelParam = element.get_Parameter(BuiltInParameter.FAMILY_BASE_LEVEL_PARAM);
@@ -254,18 +271,18 @@ namespace BH.Revit.Engine.Core
                 Parameter topOffsetParam = element.get_Parameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM);
                 Level baseLevel = element.Document.GetElement(baseLevelParam.AsElementId()) as Level;
                 Level topLevel = element.Document.GetElement(topLevelParam.AsElementId()) as Level;
-                double baseElevation = (baseLevel.ProjectElevation + baseOffsetParam.AsDouble()).ToSI(UnitType.UT_Length);
-                double topElevation = (topLevel.ProjectElevation + topOffsetParam.AsDouble()).ToSI(UnitType.UT_Length);
+                double baseElevation = (baseLevel.ProjectElevation + baseOffsetParam.AsDouble()).ToSI(SpecTypeId.Length);
+                double topElevation = (topLevel.ProjectElevation + topOffsetParam.AsDouble()).ToSI(SpecTypeId.Length);
 
                 if (Math.Abs(baseElevation - columnLine.Start.Z) > settings.DistanceTolerance)
                 {
-                    element.SetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM, columnLine.Start.Z.FromSI(UnitType.UT_Length) - baseLevel.ProjectElevation, false);
+                    element.SetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM, columnLine.Start.Z.FromSI(SpecTypeId.Length) - baseLevel.ProjectElevation, false);
                     updated = true;
                 }
 
                 if (Math.Abs(topElevation - columnLine.End.Z) > settings.DistanceTolerance)
                 {
-                    element.SetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM, columnLine.End.Z.FromSI(UnitType.UT_Length) - topLevel.ProjectElevation, false);
+                    element.SetParameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM, columnLine.End.Z.FromSI(SpecTypeId.Length) - topLevel.ProjectElevation, false);
                     updated = true;
                 }
             }
@@ -298,6 +315,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets the location of a given Revit FamilyInstance based on a given BHoM IFramingElement.")]
+        [Input("element", "Revit FamilyInstance to be modified.")]
+        [Input("framingElement", "BHoM IFramingElement acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit FamilyInstance has been successfully set.")]
         public static bool SetLocation(this FamilyInstance element, IFramingElement framingElement, RevitSettings settings)
         {
             if (!(typeof(IFramingElement).BuiltInCategories().Contains((BuiltInCategory)element.Category.Id.IntegerValue)))
@@ -336,6 +358,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets the location of a given Revit Space based on a given BHoM Space.")]
+        [Input("revitSpace", "Revit Space to be modified.")]
+        [Input("bHoMSpace", "BHoM Space acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit Space has been successfully set.")]
         public static bool SetLocation(this Autodesk.Revit.DB.Mechanical.Space revitSpace, Space bHoMSpace, RevitSettings settings)
         {
             Level level = revitSpace.Document.LevelBelow(bHoMSpace.Location, settings);
@@ -349,6 +376,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets the location of a given Revit Level based on a given BHoM Level.")]
+        [Input("level", "Revit Level to be modified.")]
+        [Input("bHoMLevel", "BHoM Level acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit Level has been successfully set.")]
         public static bool SetLocation(this Level level, BH.oM.Geometry.SettingOut.Level bHoMLevel, RevitSettings settings)
         {
             return level.SetParameter(BuiltInParameter.LEVEL_ELEV, bHoMLevel.Elevation);
@@ -356,6 +388,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets the location of a given Revit Grid based on a given BHoM Grid.")]
+        [Input("grid", "Revit Grid to be modified.")]
+        [Input("bHoMGrid", "BHoM Grid acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit Grid has been successfully set.")]
         public static bool SetLocation(this Grid grid, BH.oM.Geometry.SettingOut.Grid bHoMGrid, RevitSettings settings)
         {
             if (!bHoMGrid.Curve.IToRevit().IsSimilar(grid.Curve, settings))
@@ -366,6 +403,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets the location of a given Revit Element based on a given BHoM ICurve.")]
+        [Input("element", "Revit Element to be modified.")]
+        [Input("curve", "BHoM ICurve acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit Element has been successfully set.")]
         public static bool SetLocation(this Element element, ICurve curve, RevitSettings settings)
         {
             LocationCurve location = element.Location as LocationCurve;
@@ -384,6 +426,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets the location of a given Revit Element based on a given BHoM Point.")]
+        [Input("element", "Revit Element to be modified.")]
+        [Input("point", "BHoM Point acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit Element has been successfully set.")]
         public static bool SetLocation(this Element element, BH.oM.Geometry.Point point, RevitSettings settings)
         {
             LocationPoint location = element.Location as LocationPoint;
@@ -402,6 +449,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets the location of a given Revit HostObject based on a given BHoM ISurface.")]
+        [Input("element", "Revit HostObject to be modified.")]
+        [Input("bHoMObject", "BHoM ISurface acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit HostObject has been successfully set.")]
         public static bool SetLocation(this HostObject element, BH.oM.Physical.Elements.ISurface bHoMObject, RevitSettings settings)
         {
             BH.Engine.Reflection.Compute.RecordWarning(String.Format("Update of location of surface-based elements is currently not supported. Possibly DeleteThenCreate PushType could be used instead. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, bHoMObject.BHoM_Guid));
@@ -413,7 +465,7 @@ namespace BH.Revit.Engine.Core
         /****             Fallback Methods              ****/
         /***************************************************/
 
-        public static bool SetLocation(this Element element, IGeometry geometry, RevitSettings settings)
+        private static bool SetLocation(this Element element, IGeometry geometry, RevitSettings settings)
         {
             Type type = element.GetType();
             if (AbstractRevitTypes.All(x => !x.IsAssignableFrom(type)))
@@ -424,7 +476,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static bool SetLocation(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
+        private static bool SetLocation(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
             Type type = element.GetType();
             if (AbstractRevitTypes.All(x => !x.IsAssignableFrom(type)))
@@ -438,6 +490,11 @@ namespace BH.Revit.Engine.Core
         /****             Interface methods             ****/
         /***************************************************/
 
+        [Description("Sets the location of a given Revit Element based on a given BHoM IBHoMObject.")]
+        [Input("element", "Revit Element to be modified.")]
+        [Input("bHoMObject", "BHoM IBHoMObject acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit Element has been successfully set.")]
         public static bool ISetLocation(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
             if (element == null || bHoMObject == null)

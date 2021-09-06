@@ -49,7 +49,7 @@ namespace BH.Revit.Engine.Core
             if (level != null)
                 return level;
 
-            level = BH.Engine.Geometry.Create.Level(revitLevel.ProjectElevation.ToSI(UnitType.UT_Length));
+            level = BH.Engine.Geometry.Create.Level(revitLevel.ProjectElevation.ToSI(SpecTypeId.Length));
             level.Name = revitLevel.Name;
 
             //Set identifiers, parameters & custom data

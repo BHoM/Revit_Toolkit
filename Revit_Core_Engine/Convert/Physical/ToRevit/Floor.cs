@@ -25,9 +25,10 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -37,6 +38,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Converts BH.oM.Physical.Elements.Floor to a Revit Floor.")]
+        [Input("floor", "BH.oM.Physical.Elements.Floor to be converted.")]
+        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("floor", "Revit Floor resulting from converting the input BH.oM.Physical.Elements.Floor.")]
         public static Floor ToRevitFloor(this oM.Physical.Elements.Floor floor, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (floor == null || floor.Construction == null || document == null)
@@ -63,7 +70,7 @@ namespace BH.Revit.Engine.Core
             }
 
             double bottomElevation = floor.Location.IBounds().Min.Z;
-            Level level = document.LevelBelow(bottomElevation.FromSI(UnitType.UT_Length), settings);
+            Level level = document.LevelBelow(bottomElevation.FromSI(SpecTypeId.Length), settings);
 
             oM.Geometry.Plane sketchPlane = new oM.Geometry.Plane { Origin = new BH.oM.Geometry.Point { Z = bottomElevation }, Normal = Vector.ZAxis };
             ICurve curve = planarSurface.ExternalBoundary.IProject(sketchPlane);
@@ -128,7 +135,7 @@ namespace BH.Revit.Engine.Core
             if (revitFloor.LevelId.IntegerValue != level.Id.IntegerValue)
             {
                 Level newLevel = document.GetElement(revitFloor.LevelId) as Level;
-                offset += (level.ProjectElevation - newLevel.ProjectElevation).ToSI(UnitType.UT_Length);
+                offset += (level.ProjectElevation - newLevel.ProjectElevation).ToSI(SpecTypeId.Length);
             }
 
             revitFloor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, offset);
