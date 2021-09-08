@@ -459,7 +459,7 @@ namespace BH.Revit.Engine.Core
 
         internal static void PlaceElementOnMEPCurveWarning(this FamilyInstance familyInstance)
         {
-            BH.Engine.Reflection.Compute.RecordWarning($"Family needs to have orientation perpendiculator to the MEPCurve line, therefore transform out of MEPCurve plane has been ignored. ElementId: {familyInstance?.Id.IntegerValue}");
+            BH.Engine.Reflection.Compute.RecordWarning($"Family needs to have orientation perpendicular to the MEPCurve line, therefore transform out of MEPCurve plane has been ignored. ElementId: {familyInstance?.Id.IntegerValue}");
         }
 
         /***************************************************/
