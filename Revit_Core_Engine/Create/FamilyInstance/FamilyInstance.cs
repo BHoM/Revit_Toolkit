@@ -27,6 +27,8 @@ using BH.oM.Adapters.Revit.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Autodesk.Revit.DB.Mechanical;
+using Autodesk.Revit.DB.Plumbing;
 
 namespace BH.Revit.Engine.Core
 {
@@ -46,7 +48,7 @@ namespace BH.Revit.Engine.Core
             switch (familySymbol.Family.FamilyPlacementType)
             {
                 case FamilyPlacementType.OneLevelBased:
-                    return Create.FamilyInstance_OneLevelBased(document, familySymbol, origin, orientation, host, settings);
+                    return Create.FamilyInstance_OneLevelBased(document, familySymbol, origin, orientation, host as dynamic, settings);
                 case FamilyPlacementType.OneLevelBasedHosted:
                     return Create.FamilyInstance_OneLevelBasedHosted(document, familySymbol, origin, orientation, host, settings);
                 case FamilyPlacementType.TwoLevelsBased:
@@ -146,9 +148,94 @@ namespace BH.Revit.Engine.Core
 
             if (orientation?.BasisX != null && Math.Abs(orientation.BasisX.Z) > settings.AngleTolerance)
                 familyInstance.ProjectedOnXYWarning();
-
+            
             if (host != null)
                 familyInstance.HostIgnoredWarning();
+
+            return familyInstance;
+        }
+
+        /***************************************************/
+
+        private static FamilyInstance FamilyInstance_OneLevelBased(Document document, FamilySymbol familySymbol, XYZ origin, Transform orientation, MEPCurve host, RevitSettings settings)
+        {
+            //Check inputs
+            if (familySymbol == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Element could not be created. Family Symbol not found.");
+                return null;
+            }
+            if (host == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Element could not be created. MEPCurve element not found.");
+                return null;
+            }
+            LocationCurve location = host.Location as LocationCurve;
+            Curve line = location.Curve;
+            if (line.Distance(origin) > settings.DistanceTolerance)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Element could not be created. Origin point is out of the MEPCurve line.");
+                return null;
+            }
+
+            //BreakCurve
+            ElementId newElementId;
+            if (host is Pipe)
+            {
+                newElementId = PlumbingUtils.BreakCurve(document, host.Id, origin);
+            }
+            else if (host is Duct)
+            {
+                newElementId = MechanicalUtils.BreakCurve(document, host.Id, origin);
+            }
+            else
+            {
+                BH.Engine.Reflection.Compute.RecordError("Element could not be created. MEPCurve element not supported.");
+                return null;
+            }
+
+            //Find connectors
+            Element newElement = document.GetElement(newElementId);
+            MEPCurve newElementMEPCurve = newElement as MEPCurve;
+            ConnectorSet hostConnSet = host.ConnectorManager.Connectors;
+            ConnectorSet newElConnSet = newElementMEPCurve.ConnectorManager.Connectors;
+            Connector conn1 = null;
+            Connector conn2 = null;
+            foreach (Connector hostConn in hostConnSet)
+            {
+                foreach (Connector newElConn in newElConnSet)
+                {
+                    if (hostConn.Origin.IsAlmostEqualTo(newElConn.Origin))
+                    {
+                        conn1 = hostConn;
+                        conn2 = newElConn;
+                        break;
+                    }
+                }
+            }
+
+            //Place family instance
+            FamilyInstance familyInstance = document.Create.NewUnionFitting(conn1, conn2);
+            document.Regenerate();
+            familyInstance.LookupParameter("Type").Set(familySymbol.Id);
+
+            //Rotate
+            XYZ x = orientation?.BasisZ;
+            if (x != null)
+            {
+                Transform localOrientation = familyInstance.GetTotalTransform();
+
+                if (Math.Abs(orientation.BasisZ.DotProduct(localOrientation.BasisX)) > settings.AngleTolerance)
+                    familyInstance.PlaceElementOnMEPCurveWarning();
+
+                double angle = localOrientation.BasisZ.AngleOnPlaneTo(orientation.BasisZ, localOrientation.BasisX);
+                if (Math.Abs(angle) > settings.AngleTolerance)
+                {
+                    Line dir = Line.CreateBound(origin, origin + localOrientation.BasisX);
+                    ElementTransformUtils.RotateElement(document, familyInstance.Id, dir, angle);
+                    document.Regenerate();
+                }    
+            }
 
             return familyInstance;
         }
