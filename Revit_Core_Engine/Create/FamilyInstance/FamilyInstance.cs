@@ -165,19 +165,32 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Reflection.Compute.RecordError("Element could not be created. Family Symbol not found.");
                 return null;
             }
+
             if (host == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Element could not be created. MEPCurve element not found.");
-                return null;
-            }
-            LocationCurve location = host.Location as LocationCurve;
-            Curve line = location.Curve;
-            if (line.Distance(origin) > settings.DistanceTolerance)
-            {
-                BH.Engine.Reflection.Compute.RecordError("Element could not be created. Origin point is out of the MEPCurve line.");
+                BH.Engine.Reflection.Compute.RecordError("Element could not be created. Host element not found.");
                 return null;
             }
 
+            LocationCurve location = host.Location as LocationCurve;
+            Line line = location.Curve as Line;
+            if (line == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Element could not be created. Host element type does not support line breaking functionality.");
+                return null;
+            }
+            
+            if (line.Distance(origin) > settings.DistanceTolerance)
+            {
+                if (origin == null)
+                {
+                    BH.Engine.Reflection.Compute.RecordError("Element could not be created. Its location point is could not be projected on the host MEPCurve");
+                    return null;
+                }
+                origin = line.Project(origin).XYZPoint;
+                BH.Engine.Reflection.Compute.RecordWarning("Origin point location does not lie on the host MEPCurve. Closest point has been projected.");
+            }
+            
             //BreakCurve
             ElementId newElementId;
             if (host is Pipe)
@@ -190,7 +203,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordError("Element could not be created. MEPCurve element not supported.");
+                BH.Engine.Reflection.Compute.RecordError("Element could not be created. Host element type does not support line breaking functionality.");
                 return null;
             }
 
@@ -216,8 +229,8 @@ namespace BH.Revit.Engine.Core
 
             //Place family instance
             FamilyInstance familyInstance = document.Create.NewUnionFitting(conn1, conn2);
-            document.Regenerate();
-            familyInstance.LookupParameter("Type").Set(familySymbol.Id);
+            if (!familyInstance.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, familySymbol.Id))
+                BH.Engine.Reflection.Compute.RecordWarning("Family Symbol type is not correct for Host element.");
 
             //Rotate
             XYZ x = orientation?.BasisZ;
@@ -226,7 +239,7 @@ namespace BH.Revit.Engine.Core
                 Transform localOrientation = familyInstance.GetTotalTransform();
 
                 if (Math.Abs(orientation.BasisZ.DotProduct(localOrientation.BasisX)) > settings.AngleTolerance)
-                    familyInstance.PlaceElementOnMEPCurveWarning();
+                    familyInstance.NotPerpendicularOrientationWarning();
 
                 double angle = localOrientation.BasisZ.AngleOnPlaneTo(orientation.BasisZ, localOrientation.BasisX);
                 if (Math.Abs(angle) > settings.AngleTolerance)
