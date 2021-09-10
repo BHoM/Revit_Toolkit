@@ -21,12 +21,12 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Geometry;
-using BH.oM.Adapters.Revit.Settings;
 using BH.Engine.Geometry;
+using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using System;
 
 namespace BH.Revit.Engine.Core
 {
@@ -36,6 +36,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.ISurface to a Revit Solid.")]
+        [Input("surface", "BH.oM.Geometry.ISurface to be converted.")]
+        [Output("solid", "Revit Solid resulting from converting the input BH.oM.Geometry.ISurface.")]
         public static Solid ToRevit(this ISurface surface)
         {
             //TODO: conversion of ISurface to Solid is weird (but it works?)
@@ -54,6 +57,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.BoundaryRepresentation to a Revit Solid.")]
+        [Input("boundaryRepresentation", "BH.oM.Geometry.BoundaryRepresentation to be converted.")]
+        [Output("solid", "Revit Solid resulting from converting the input BH.oM.Geometry.BoundaryRepresentation.")]
         public static Solid ToRevit(this BoundaryRepresentation boundaryRepresentation)
         {
             //TODO: allow creating void and solid?

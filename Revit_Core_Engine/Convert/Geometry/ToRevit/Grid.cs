@@ -23,9 +23,10 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -36,6 +37,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.SettingOut.Grid to a Revit Grid or MultiSegmentGrid.")]
+        [Input("grid", "BH.oM.Geometry.SettingOut.Grid to be converted.")]
+        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("grid", "Revit Grid or MultiSegmentGrid resulting from converting the input BH.oM.Geometry.SettingOut.Grid.")]
         public static Element ToRevitGrid(this oM.Geometry.SettingOut.Grid grid, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             Element revitGrid = refObjects.GetValue<Grid>(document, grid.BHoM_Guid);

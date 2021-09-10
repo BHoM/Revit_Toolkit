@@ -23,8 +23,10 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -35,6 +37,12 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts BH.oM.MEP.System.SectionProperties.DuctSectionProperty to a Revit DuctType.")]
+        [Input("property", "BH.oM.MEP.System.SectionProperties.DuctSectionProperty to be converted.")]
+        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("ductType", "Revit DuctType resulting from converting the input BH.oM.MEP.System.SectionProperties.DuctSectionProperty.")]
         public static Autodesk.Revit.DB.Mechanical.DuctType ToRevitElementType(this oM.MEP.System.SectionProperties.DuctSectionProperty property, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (property == null || document == null)
@@ -74,6 +82,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts BH.oM.MEP.System.SectionProperties.PipeSectionProperty to a Revit PipeType.")]
+        [Input("property", "BH.oM.MEP.System.SectionProperties.PipeSectionProperty to be converted.")]
+        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("pipeType", "Revit PipeType resulting from converting the input BH.oM.MEP.System.SectionProperties.PipeSectionProperty.")]
         public static Autodesk.Revit.DB.Plumbing.PipeType ToRevitElementType(this oM.MEP.System.SectionProperties.PipeSectionProperty property, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (property == null || document == null)
@@ -110,6 +124,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts BH.oM.MEP.System.SectionProperties.CableTraySectionProperty to a Revit CableTrayType.")]
+        [Input("property", "BH.oM.MEP.System.SectionProperties.CableTraySectionProperty to be converted.")]
+        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("cableTrayType", "Revit CableTrayType resulting from converting the input BH.oM.MEP.System.SectionProperties.CableTraySectionProperty.")]
         public static Autodesk.Revit.DB.Electrical.CableTrayType ToRevitElementType(this oM.MEP.System.SectionProperties.CableTraySectionProperty property, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (property == null || document == null)
