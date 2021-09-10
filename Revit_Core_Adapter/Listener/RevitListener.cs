@@ -418,7 +418,7 @@ namespace BH.Revit.Adapter.Core
         private void AddInfoButtons(UIControlledApplication uiControlledApp)
         {
             string tabName = "BHoM";
-            string panelName = "More Info";
+            string panelName = "Info";
             try
             {
                 uiControlledApp.CreateRibbonTab(tabName);
