@@ -24,8 +24,10 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB.Plumbing;
@@ -38,6 +40,14 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Creates a FamilyInstance with given type, location and host, in a given Revit document.")]
+        [Input("document", "Document to create a FamilyInstance in.")]
+        [Input("familySymbol", "Symbol (type) of family to be applied when creating the FamilyInstance.")]
+        [Input("origin", "Location of the created FamilyInstance.")]
+        [Input("orientation", "Orientation of the created FamilyInstance.")]
+        [Input("host", "Host element of the created FamilyInstance. If null, a non-hosted element is created.")]
+        [Input("settings", "Revit adapter settings to be used while creating the FamilyInstance.")]
+        [Output("instance", "New FamilyInstance created in the input Revit document, based on the provided type, location and host information.")]
         public static FamilyInstance FamilyInstance(Document document, FamilySymbol familySymbol, XYZ origin, Transform orientation = null, Element host = null, RevitSettings settings = null)
         {
             if (document == null || familySymbol == null || origin == null)
@@ -67,6 +77,13 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Creates a FamilyInstance with given type, location and host, in a given Revit document.")]
+        [Input("document", "Document to create a FamilyInstance in.")]
+        [Input("familySymbol", "Symbol (type) of family to be applied when creating the FamilyInstance.")]
+        [Input("curve", "Location of the created FamilyInstance.")]
+        [Input("host", "Host element of the created FamilyInstance. If null, a non-hosted element is created.")]
+        [Input("settings", "Revit adapter settings to be used while creating the FamilyInstance.")]
+        [Output("instance", "New FamilyInstance created in the input Revit document, based on the provided type, location and host information.")]
         public static FamilyInstance FamilyInstance(Document document, FamilySymbol familySymbol, Curve curve, Element host = null, RevitSettings settings = null)
         {
             if (document == null || familySymbol == null || curve == null)
@@ -96,6 +113,14 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Creates a view-specific FamilyInstance with given type and location, in a given Revit document.")]
+        [Input("document", "Document to create a FamilyInstance in.")]
+        [Input("familySymbol", "Symbol (type) of family to be applied when creating the FamilyInstance.")]
+        [Input("origin", "Location of the created FamilyInstance.")]
+        [Input("orientation", "Orientation of the created FamilyInstance.")]
+        [Input("view", "Revit view, in which the FamilyInstance will be created.")]
+        [Input("settings", "Revit adapter settings to be used while creating the FamilyInstance.")]
+        [Output("instance", "New FamilyInstance created in the input Revit view, based on the provided type and location information.")]
         public static FamilyInstance FamilyInstance(Document document, FamilySymbol familySymbol, XYZ origin, Transform orientation, View view, RevitSettings settings = null)
         {
             if (document == null || familySymbol == null || origin == null || view == null)
@@ -114,6 +139,13 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Creates a view-specific FamilyInstance with given type and location, in a given Revit document.")]
+        [Input("document", "Document to create a FamilyInstance in.")]
+        [Input("familySymbol", "Symbol (type) of family to be applied when creating the FamilyInstance.")]
+        [Input("curve", "Location of the created FamilyInstance.")]
+        [Input("view", "Revit view, in which the FamilyInstance will be created.")]
+        [Input("settings", "Revit adapter settings to be used while creating the FamilyInstance.")]
+        [Output("instance", "New FamilyInstance created in the input Revit view, based on the provided type and location information.")]
         public static FamilyInstance FamilyInstance(Document document, FamilySymbol familySymbol, Curve curve, View view, RevitSettings settings = null)
         {
             if (document == null || familySymbol == null || curve == null || view == null)
