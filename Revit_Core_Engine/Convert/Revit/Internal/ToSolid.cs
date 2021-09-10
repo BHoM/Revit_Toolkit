@@ -23,8 +23,10 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -34,6 +36,10 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts Revit scope box to a Revit Solid.")]
+        [Input("scopeBox", "Revit scope box to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Output("solid", "Revit Solid resulting from converting the input Revit scope box.")]
         public static Solid ToSolid(this Element scopeBox, RevitSettings settings = null)
         {
             if (scopeBox == null || scopeBox.Category.Id.IntegerValue != (int)BuiltInCategory.OST_VolumeOfInterest)
