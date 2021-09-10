@@ -21,10 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Geometry;
-using System.Linq;
-using System.Collections.Generic;
-using System;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -34,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.ICurve to a Revit CurveLoop.")]
+        [Input("curve", "BH.oM.Geometry.ICurve to be converted.")]
+        [Output("curveLoop", "Revit CurveLoop resulting from converting the input BH.oM.Geometry.ICurve.")]
         public static CurveLoop ToRevitCurveLoop(this BH.oM.Geometry.ICurve curve)
         {
             CurveLoop curveLoop = new CurveLoop();

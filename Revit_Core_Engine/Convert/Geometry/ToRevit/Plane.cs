@@ -21,7 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Converts BH.oM.Geometry.Plane to a Revit Plane.")]
+        [Input("plane", "BH.oM.Geometry.Plane to be converted.")]
+        [Output("plane", "Revit Plane resulting from converting the input BH.oM.Geometry.Plane.")]
         public static Plane ToRevit(this oM.Geometry.Plane plane)
         {
             return Plane.CreateByNormalAndOrigin(plane.Normal.ToRevit(), plane.Origin.ToRevit());
