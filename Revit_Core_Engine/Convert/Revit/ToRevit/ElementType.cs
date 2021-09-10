@@ -25,8 +25,10 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -36,6 +38,12 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts BH.oM.Adapters.Revit.Properties.InstanceProperties to a Revit ElementType.")]
+        [Input("instanceProperties", "BH.oM.Adapters.Revit.Properties.InstanceProperties to be converted.")]
+        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("elementType", "Revit ElementType resulting from converting the input BH.oM.Adapters.Revit.Properties.InstanceProperties.")]
         public static ElementType ToRevitElementType(this InstanceProperties instanceProperties, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             ElementType elementType = refObjects.GetValue<ElementType>(document, instanceProperties.BHoM_Guid);
@@ -57,6 +65,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts BH.oM.Adapters.Revit.ClonedType to a Revit ElementType.")]
+        [Input("clonedType", "BH.oM.Adapters.Revit.ClonedType to be converted.")]
+        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("elementType", "Revit ElementType resulting from converting the input BH.oM.Adapters.Revit.ClonedType.")]
         public static ElementType ToRevitElementType(this ClonedType clonedType, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             ElementType elementType = refObjects.GetValue<ElementType>(document, clonedType.BHoM_Guid);

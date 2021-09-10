@@ -21,11 +21,12 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Adapter.Revit;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -36,6 +37,12 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts BH.oM.Adapters.Revit.Elements.ViewPlan to a Revit ViewPlan.")]
+        [Input("viewPlan", "BH.oM.Adapters.Revit.Elements.ViewPlan to be converted.")]
+        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("viewPlan", "Revit ViewPlan resulting from converting the input BH.oM.Adapters.Revit.Elements.ViewPlan.")]
         public static ViewPlan ToRevitViewPlan(this oM.Adapters.Revit.Elements.ViewPlan viewPlan, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (viewPlan == null || string.IsNullOrEmpty(viewPlan.LevelName) || string.IsNullOrEmpty(viewPlan.ViewName))
