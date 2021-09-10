@@ -21,8 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using System.Collections.Generic;
-using System.Linq;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit Transform to BH.oM.Geometry.Basis.")]
+        [Input("transform", "Revit Transform to be converted.")]
+        [Output("basis", "BH.oM.Geometry.Basis resulting from converting the input Revit Transform.")]
         public static oM.Geometry.Basis BasisFromRevit(this Transform transform)
         {
             if (transform == null)

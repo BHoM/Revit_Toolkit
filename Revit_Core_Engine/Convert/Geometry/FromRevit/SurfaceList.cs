@@ -20,10 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -33,6 +34,9 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a list of Revit Faces to a list of BH.oM.Geometry.ISurfaces.")]
+        [Input("faces", "List of Revit Faces to be converted.")]
+        [Output("surfaces", "List of BH.oM.Geometry.ISurfaces resulting from converting the input list of Revit Faces.")]
         public static List<oM.Geometry.ISurface> FromRevit(this List<Face> faces)
         {
             if (faces == null)
@@ -43,6 +47,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit FaceArray to a list of BH.oM.Geometry.ISurfaces.")]
+        [Input("faceArray", "Revit FaceArray to be converted.")]
+        [Output("surfaces", "List of BH.oM.Geometry.ISurfaces resulting from converting the Revit FaceArray.")]
         public static List<oM.Geometry.ISurface> FromRevit(this FaceArray faceArray)
         {
             if (faceArray == null)
@@ -55,7 +62,9 @@ namespace BH.Revit.Engine.Core
             }
 
             return result;
-        }       
+        }
+
+        /***************************************************/
     }
 }
 

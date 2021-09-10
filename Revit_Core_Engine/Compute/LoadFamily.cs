@@ -23,7 +23,9 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -34,6 +36,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Loads the Revit family of given category and name into a given document.")]
+        [Input("familyLoadSettings", "Family load settings object containing the family library to be searched.")]
+        [Input("document", "Revit document to load the family into.")]
+        [Input("categoryName", "Category, to which the sought family belongs.")]
+        [Input("familyName", "Name of the sought family.")]
+        [Output("family","Family loaded to the Revit document based on the input criteria and settings.")]
         public static Family LoadFamily(this FamilyLoadSettings familyLoadSettings, Document document, string categoryName, string familyName)
         {
             if (familyLoadSettings?.FamilyLibrary == null || document == null)

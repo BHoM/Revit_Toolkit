@@ -21,6 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -30,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit MeshTriangle to BH.oM.Geometry.Face.")]
+        [Input("triangle", "Revit MeshTriangle to be converted.")]
+        [Output("face", "BH.oM.Geometry.Face resulting from converting the input Revit MeshTriangle.")]
         public static oM.Geometry.Face FromRevit(this MeshTriangle triangle)
         {
             if (triangle == null)

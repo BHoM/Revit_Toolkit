@@ -21,15 +21,21 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
     public static partial class Compute
     {
         /***************************************************/
-        /****               Internal methods            ****/
+        /****               Public methods              ****/
         /***************************************************/
 
+        [Description("Manipulates the given reference to a linked element in order to make it applicable for dimensioning in the host document.")]
+        [Input("reference", "Linked element reference to be prepared for dimensioning in the host document.")]
+        [Input("hostDocument", "Revit document to act as a host document for dimensioning.")]
+        [Output("reference", "Linked element reference prepared for dimensioning in the host document.")]
         public static Reference PrepareForLinkDimensioning(this Reference reference, Document hostDocument)
         {
             if (reference.LinkedElementId.IntegerValue == -1)
