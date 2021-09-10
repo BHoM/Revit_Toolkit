@@ -20,14 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-
-using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Analysis;
-using BH.Engine.Geometry;
-using BH.oM.Reflection.Attributes;
 
 namespace BH.Revit.Engine.Core
 {
@@ -37,6 +35,9 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit PlanarFace to BH.oM.Geometry.PlanarSurface.")]
+        [Input("face", "Revit PlanarFace to be converted.")]
+        [Output("surface", "BH.oM.Geometry.PlanarSurface resulting from converting the input Revit PlanarFace.")]
         public static oM.Geometry.PlanarSurface FromRevit(this PlanarFace face)
         {
             if (face == null)
@@ -47,23 +48,29 @@ namespace BH.Revit.Engine.Core
             List<oM.Geometry.ICurve> internalBoundary = crvLoop.Skip(1).Select(x => x.FromRevit() as oM.Geometry.ICurve).ToList();                           
 
             return new oM.Geometry.PlanarSurface(externalBoundary, internalBoundary);
-        }        
+        }
 
 
         /***************************************************/
         /****             Interface Methods             ****/
         /***************************************************/
 
+        [Description("Converts a Revit Face to BH.oM.Geometry.ISurface.")]
+        [Input("face", "Revit Face to be converted.")]
+        [Output("surface", "BH.oM.Geometry.ISurface resulting from converting the input Revit Face.")]
         public static oM.Geometry.ISurface IFromRevit(this Face face)
         {
             return FromRevit(face as dynamic);                        
-        }        
+        }
 
 
         /***************************************************/
         /****              Fallback Methods             ****/
         /***************************************************/
 
+        [Description("Fallback method for the case when a FromRevit Convert method does not exist for the given Revit face type.")]
+        [Input("face", "Revit Face that is not supported.")]
+        [Output("surface", "Always null.")]
         public static oM.Geometry.ISurface FromRevit(this Face face)
         {
             BH.Engine.Reflection.Compute.RecordError(String.Format("Revit face of type {0} could not be converted to BHoM due to a missing convert method.", face.GetType()));

@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -32,6 +34,9 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit Mesh to BH.oM.Geometry.Mesh.")]
+        [Input("mesh", "Revit Mesh to be converted.")]
+        [Output("mesh", "BH.oM.Geometry.Mesh resulting from converting the input Revit Mesh.")]
         public static oM.Geometry.Mesh MeshFromRevit(this Mesh mesh)
         {
             if (mesh == null)
@@ -48,6 +53,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts a Revit Curve to BH.oM.Geometry.Mesh.")]
+        [Input("curve", "Revit Curve to be converted.")]
+        [Output("mesh", "BH.oM.Geometry.Mesh resulting from converting the input Revit Curve.")]
         public static oM.Geometry.Mesh MeshFromRevit(this Curve curve)
         {
             if (curve == null)

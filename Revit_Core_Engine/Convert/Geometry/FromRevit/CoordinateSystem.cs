@@ -21,6 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -30,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a Revit Plane to BH.oM.Geometry.CoordinateSystem.Cartesian.")]
+        [Input("plane", "Revit Plane to be converted.")]
+        [Output("cartesian", "BH.oM.Geometry.CoordinateSystem.Cartesian resulting from converting the input Revit Plane.")]
         public static oM.Geometry.CoordinateSystem.Cartesian FromRevit(this Plane plane)
         {
             if (plane == null)
