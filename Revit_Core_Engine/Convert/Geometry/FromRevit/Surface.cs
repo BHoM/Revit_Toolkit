@@ -67,11 +67,8 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Fallback Methods             ****/
         /***************************************************/
-
-        [Description("Fallback method for the case when a FromRevit Convert method does not exist for the given Revit face type.")]
-        [Input("face", "Revit Face that is not supported.")]
-        [Output("surface", "Always null.")]
-        public static oM.Geometry.ISurface FromRevit(this Face face)
+        
+        private static oM.Geometry.ISurface FromRevit(this Face face)
         {
             BH.Engine.Reflection.Compute.RecordError(String.Format("Revit face of type {0} could not be converted to BHoM due to a missing convert method.", face.GetType()));
             return null;
