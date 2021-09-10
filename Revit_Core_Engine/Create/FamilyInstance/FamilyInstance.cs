@@ -176,19 +176,19 @@ namespace BH.Revit.Engine.Core
             Line line = location.Curve as Line;
             if (line == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Element could not be created. Host element type does not support line breaking functionality.");
+                BH.Engine.Reflection.Compute.RecordError("Element could not be created. Host element is not linear.");
                 return null;
             }
             
             if (line.Distance(origin) > settings.DistanceTolerance)
             {
+                origin = line.Project(origin).XYZPoint;
                 if (origin == null)
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Element could not be created. Its location point is could not be projected on the host MEPCurve");
+                    BH.Engine.Reflection.Compute.RecordError("Element could not be created. Its location point could not be projected on the host MEPCurve.");
                     return null;
                 }
-                origin = line.Project(origin).XYZPoint;
-                BH.Engine.Reflection.Compute.RecordWarning("Origin point location does not lie on the host MEPCurve. Closest point has been projected.");
+                BH.Engine.Reflection.Compute.RecordWarning("The input location does not lie on the host MEPCurve, therefore it has been projected on the curve.");
             }
             
             //BreakCurve
@@ -230,7 +230,7 @@ namespace BH.Revit.Engine.Core
             //Place family instance
             FamilyInstance familyInstance = document.Create.NewUnionFitting(conn1, conn2);
             if (!familyInstance.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, familySymbol.Id))
-                BH.Engine.Reflection.Compute.RecordWarning("Family Symbol type is not correct for Host element.");
+                BH.Engine.Reflection.Compute.RecordWarning("The input family type could not be assigned to the created instance, possibly because it is not applicable to the host element.");
 
             //Rotate
             XYZ x = orientation?.BasisZ;
