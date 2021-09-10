@@ -364,7 +364,7 @@ namespace BH.Revit.Adapter.Core
         private void AddAdapterButtons(UIControlledApplication uiControlledApp)
         {
             string tabName = "BHoM";
-            string panelName = "Revit Adapter";
+            string panelName = "Adapter";
             try
             {
                 uiControlledApp.CreateRibbonTab(tabName);
@@ -404,6 +404,13 @@ namespace BH.Revit.Adapter.Core
             m_DeactivateButton.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterDeactivate16.png")));
             m_DeactivateButton.Enabled = true;
             m_DeactivateButton.Visible = false;
+            
+            PushButton button = panel.AddItem(new PushButtonData("Adapter Wiki", "Adapter Wiki", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".RevitToolkitWiki")) as PushButton;
+            button.ToolTip = "Visit the BHoM Revit Toolkit (BHoM adapter for Revit) Wiki page.";
+            button.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info32.png")));
+            button.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info16.png")));
+            button.Enabled = true;
+            button.Visible = true;
         }
 
         /***************************************************/
@@ -411,7 +418,7 @@ namespace BH.Revit.Adapter.Core
         private void AddInfoButtons(UIControlledApplication uiControlledApp)
         {
             string tabName = "BHoM";
-            string panelName = "Info";
+            string panelName = "More Info";
             try
             {
                 uiControlledApp.CreateRibbonTab(tabName);
@@ -424,13 +431,6 @@ namespace BH.Revit.Adapter.Core
             RibbonPanel panel = uiControlledApp.GetRibbonPanels(tabName).FirstOrDefault(x => x.Name == panelName) as RibbonPanel;
             if (panel == null)
                 panel = uiControlledApp.CreateRibbonPanel(tabName, panelName);
-
-            PushButton button = panel.AddItem(new PushButtonData("BHoM Revit Wiki", "BHoM\nRevit Wiki", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".RevitToolkitWiki")) as PushButton;
-            button.ToolTip = "Visit the BHoM Revit Toolkit Wiki page.";
-            button.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info32.png")));
-            button.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info16.png")));
-            button.Enabled = true;
-            button.Visible = true;
 
             PushButtonData bHoMInfoButton = new PushButtonData("BHoM Wiki", "BHoM Wiki", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".BHoMWiki");
             PushButtonData bHoMWebsiteButton = new PushButtonData("bhom.xyz", "bhom.xyz", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".BHoMWebsite");
