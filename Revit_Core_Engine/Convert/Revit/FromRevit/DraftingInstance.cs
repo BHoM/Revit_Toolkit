@@ -65,7 +65,7 @@ namespace BH.Revit.Engine.Core
                 curves.Add(loop.FromRevit());
             }
 
-            List<PlanarSurface> surfaces = BH.Engine.Geometry.Create.PlanarSurface(curves);
+            List<PlanarSurface> surfaces = BH.Engine.Geometry.Create.PlanarSurface(curves, settings.DistanceTolerance);
             if (surfaces.Count == 1)
                 draftingInstance = new DraftingInstance { Properties = instanceProperties, ViewName = view.Name, Location = surfaces[0] };
             else
