@@ -24,7 +24,7 @@ using BH.oM.Base;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.oM.Revit.Parameters
+namespace BH.oM.Adapters.Revit.Parameters
 {
     [Description("An object representing the definition of a Revit parameter (project parameter or shared parameter as such, not its value related to certain element or type).")]
     public class ParameterDefinition : BHoMObject
