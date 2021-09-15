@@ -23,7 +23,6 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Base;
-using BH.Engine.Revit;
 using BH.Engine.Spatial;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
