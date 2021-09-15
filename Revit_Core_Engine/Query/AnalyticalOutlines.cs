@@ -56,7 +56,7 @@ namespace BH.Revit.Engine.Core
             }
 
             List<ICurve> result = BH.Engine.Geometry.Compute.IJoin(wallCurves).ConvertAll(c => c as ICurve);
-            if (result.Any(x => !x.IIsClosed()))
+            if (result.Any(x => !x.IIsClosed(settings.DistanceTolerance)))
             {
                 hostObject.NonClosedOutlineWarning();
                 return null;
