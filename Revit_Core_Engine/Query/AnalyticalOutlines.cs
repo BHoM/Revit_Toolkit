@@ -41,8 +41,8 @@ namespace BH.Revit.Engine.Core
 
         [Description("Gets AnalyticalOutlines of a host object.")]
         [Input("hostObject", "Object to get AnalyticalOutlines from.")]
-        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
-        [Output("outlines", "The AnalyticalOutlines of the host object..")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("outlines", "The analytical outlines of the host object.")]
         public static List<ICurve> AnalyticalOutlines(this HostObject hostObject, RevitSettings settings = null)
         {
             AnalyticalModel analyticalModel = hostObject.GetAnalyticalModel();
@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            List<ICurve> result = BH.Engine.Geometry.Compute.IJoin(wallCurves).ConvertAll(c => c as ICurve);
+            List<ICurve> result = BH.Engine.Geometry.Compute.IJoin(wallCurves, settings.DistanceTolerance).ConvertAll(c => c as ICurve);
             if (result.Any(x => !x.IIsClosed(settings.DistanceTolerance)))
             {
                 hostObject.NonClosedOutlineWarning();

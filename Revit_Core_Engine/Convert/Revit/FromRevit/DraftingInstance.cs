@@ -28,6 +28,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
+using BH.Engine.Reflection;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -66,7 +67,12 @@ namespace BH.Revit.Engine.Core
             }
 
             List<PlanarSurface> surfaces = BH.Engine.Geometry.Create.PlanarSurface(curves, settings.DistanceTolerance);
-            if (surfaces.Count == 1)
+            if (surfaces.Count == 0)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning("No location was returned for filled region with Element ID = " + filledRegion.Id.ToString() + ". Location has been set to null.");
+                draftingInstance = new DraftingInstance { Properties = instanceProperties, ViewName = view.Name, Location = null };
+            }
+            else if (surfaces.Count == 1)
                 draftingInstance = new DraftingInstance { Properties = instanceProperties, ViewName = view.Name, Location = surfaces[0] };
             else
                 draftingInstance = new DraftingInstance { Properties = instanceProperties, ViewName = view.Name, Location = new PolySurface { Surfaces = surfaces.Cast<ISurface>().ToList() } };
