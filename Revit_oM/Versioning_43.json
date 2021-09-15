@@ -11,14 +11,16 @@
 	  "BH.oM.Adapters.Revit.Parameters.ElementParameterLink": "BH.oM.Adapters.Revit.Mapping.ElementParameterLink",
 	  "BH.oM.Adapters.Revit.Parameters.ElementTypeParameterLink": "BH.oM.Adapters.Revit.Mapping.ElementTypeParameterLink",
 	  "BH.oM.Adapters.Revit.Parameters.IParameterLink": "BH.oM.Adapters.Revit.Mapping.IParameterLink",
-	  "BH.oM.Adapters.Revit.Parameters.ParameterMap": "BH.oM.Adapters.Revit.Mapping.ParameterMap"
+	  "BH.oM.Adapters.Revit.Parameters.ParameterMap": "BH.oM.Adapters.Revit.Mapping.ParameterMap",
+	  "BH.oM.Revit.Parameters": "BH.oM.Adapters.Revit.Parameters"
     },
     "ToOld": {
 	  "BH.oM.Adapters.Revit.Settings.MappingSettings": "BH.oM.Adapters.Revit.Settings.ParameterSettings",
 	  "BH.oM.Adapters.Revit.Mapping.ElementParameterLink": "BH.oM.Adapters.Revit.Parameters.ElementParameterLink",
 	  "BH.oM.Adapters.Revit.Mapping.ElementTypeParameterLink": "BH.oM.Adapters.Revit.Parameters.ElementTypeParameterLink",
 	  "BH.oM.Adapters.Revit.Mapping.IParameterLink": "BH.oM.Adapters.Revit.Parameters.IParameterLink",
-	  "BH.oM.Adapters.Revit.Mapping.ParameterMap": "BH.oM.Adapters.Revit.Parameters.ParameterMap"
+	  "BH.oM.Adapters.Revit.Mapping.ParameterMap": "BH.oM.Adapters.Revit.Parameters.ParameterMap",
+	  "BH.oM.Adapters.Revit.Parameters": "BH.oM.Revit.Parameters"
     }
   },
   "Property": {
