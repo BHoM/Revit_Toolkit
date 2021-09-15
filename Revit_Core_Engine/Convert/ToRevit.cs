@@ -26,7 +26,6 @@ using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Revit.Parameters;
 using System;
 using System.Collections.Generic;
 
