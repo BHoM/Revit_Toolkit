@@ -27,7 +27,7 @@ using BH.oM.Geometry;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
 
-namespace BH.Engine.Revit
+namespace BH.Engine.Adapters.Revit
 {
     public static partial class Modify
     {
