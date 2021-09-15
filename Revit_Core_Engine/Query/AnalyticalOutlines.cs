@@ -26,7 +26,9 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -37,6 +39,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Gets AnalyticalOutlines of a host object.")]
+        [Input("hostObject", "Object to get AnalyticalOutlines from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Output("outlines", "The AnalyticalOutlines of the host object..")]
         public static List<ICurve> AnalyticalOutlines(this HostObject hostObject, RevitSettings settings = null)
         {
             AnalyticalModel analyticalModel = hostObject.GetAnalyticalModel();
