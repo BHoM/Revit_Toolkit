@@ -24,6 +24,7 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using System;
