@@ -32,7 +32,9 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
+
+        [PreviousVersion("4.3", "BH.Engine.Adapters.Revit.Create.RevitPullConfig(BH.oM.Adapters.Revit.Enums.Discipline, System.Boolean, BH.oM.Adapters.Revit.PullGeometryConfig, BH.oM.Adapters.Revit.PullRepresentationConfig, System.Boolean)")]
+        [PreviousVersion("4.3", "BH.Engine.Adapters.Revit.Create.RevitPullConfig(BH.oM.Adapters.Revit.Enums.Discipline, System.Boolean, BH.oM.Adapters.Revit.PullGeometryConfig, BH.oM.Adapters.Revit.PullRepresentationConfig)")]
         [Description("Creates a pull action-specific configuration used for adapter interaction with Revit.")]
         [InputFromProperty("discipline")]
         [InputFromProperty("includeClosedWorksets")]
