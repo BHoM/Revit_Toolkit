@@ -294,30 +294,44 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Reflection.Compute.RecordError($"Element could not be created: instantiation of families with placement type of {familySymbol.Family.FamilyPlacementType} requires a host. ElementId: {familySymbol.Id.IntegerValue}");
                 return null;
             }
-            
+
             FamilyInstance familyInstance;
-            if (orientation?.BasisX == null)
-            {
-                familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, host, StructuralType.NonStructural);
-                if (familyInstance == null)
-                    return null;
-            }
+            Level hostLevel = host.Document.GetElement(host.LevelId) as Level;
+            if (hostLevel != null)
+                familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, host, hostLevel, StructuralType.NonStructural);
             else
+                familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, host, StructuralType.NonStructural);
+
+            if (familyInstance == null)
+                return null;
+
+            document.Regenerate();
+            
+            if (orientation?.BasisX != null)
             {
-                familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, orientation.BasisX, host, StructuralType.NonStructural);
-                if (familyInstance == null)
-                    return null;
+                Transform localOrientation = familyInstance.GetTotalTransform();
+                XYZ normal;
+                if (familySymbol.Family.LookupParameterString(BuiltInParameter.FAMILY_HOSTING_BEHAVIOR) == "Wall")
+                    normal = localOrientation.BasisY;
+                else
+                    normal = localOrientation.BasisZ;
 
-                document.Regenerate();
-                if (1 - Math.Abs(familyInstance.GetTotalTransform().BasisY.DotProduct(orientation.BasisY.Normalize())) > settings.AngleTolerance)
+                if (Math.Abs(normal.DotProduct(orientation.BasisX)) > settings.AngleTolerance)
                     BH.Engine.Reflection.Compute.RecordWarning($"The orientation used to create the family instance was not perpendicular to the face on which the instance was placed. The orientation out of plane has been ignored. ElementId: {familyInstance.Id.IntegerValue}");
-            }
 
+                double angle = localOrientation.BasisX.AngleOnPlaneTo(orientation.BasisX, normal);
+                if (Math.Abs(angle) > settings.AngleTolerance)
+                {
+                    Line dir = Line.CreateBound(origin, origin + normal);
+                    ElementTransformUtils.RotateElement(document, familyInstance.Id, dir, angle);
+                }
+            }
+            
             XYZ location = (familyInstance.Location as LocationPoint)?.Point;
             if (location != null && location.DistanceTo(origin) > settings.DistanceTolerance)
             {
                 List<Solid> hostSolids = host.Solids(new Options());
-                if (hostSolids == null && hostSolids.All(x => !origin.IsInside(x, settings.DistanceTolerance)))
+                if (hostSolids != null && hostSolids.All(x => !origin.IsInside(x, settings.DistanceTolerance)))
                     BH.Engine.Reflection.Compute.RecordWarning($"The input location point for creation of a family instance was outside of the host solid, the point has been snapped to the host. ElementId: {familyInstance.Id.IntegerValue}");
             }
 
