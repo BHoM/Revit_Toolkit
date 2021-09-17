@@ -22,7 +22,9 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -33,6 +35,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Remove the items correspondent to the energy analysis elements that overlap with physical ones from the given collection of Revit ElementIds.")]
+        [Input("ids", "Collection of Revit ElementIds to remove the energy analysis elements that overlap with physical ones from.")]
+        [Input("document", "Revit Document correspondent to the processed collection of ElementIds.")]
+        [Output("ids", "Input collection of Revit ElementIds without the items correspondent to the energy analysis elements that overlap with physical ones.")]
         public static List<ElementId> RemoveDuplicateAnalyticalElements(this IEnumerable<ElementId> ids, Document document)
         {
             List<ElementId> result = new List<ElementId>(ids);

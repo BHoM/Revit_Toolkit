@@ -20,8 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Normalises the angle to fall within the range between -Pi and +Pi.")]
+        [Input("orientationAngle", "Angle to be normalised.")]
+        [Output("normalised", "Angle normalised to fall within the range between -Pi and +Pi.")]
         public static double NormalizeAngleDomain(this double orientationAngle)
         {
             orientationAngle = orientationAngle % (2 * Math.PI);

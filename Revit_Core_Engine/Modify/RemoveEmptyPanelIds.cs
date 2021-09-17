@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,6 +33,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Remove the items correspondent to the Panels without host from the given collection of Revit ElementIds.")]
+        [Input("ids", "Collection of Revit ElementIds to remove the Panels without host from.")]
+        [Input("document", "Revit Document correspondent to the processed collection of ElementIds.")]
+        [Output("ids", "Input collection of Revit ElementIds without the items correspondent to the Panels without host.")]
         public static HashSet<ElementId> RemoveEmptyPanelIds(this IEnumerable<ElementId> ids, Document document)
         {
             HashSet<ElementId> result = new HashSet<ElementId>();

@@ -26,7 +26,9 @@ using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Physical.Elements;
+using BH.oM.Reflection.Attributes;
 using System;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -37,6 +39,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Updates the type of the Revit FamilyInstance based on the given BHoM IFramingElement.")]
+        [Input("element", "Revit FamilyInstance to have its type updated.")]
+        [Input("bHoMObject", "BHoM IFramingElement, based on which the Revit element type will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Output("success", "True if the type of the FamilyInstance has been successfully updated.")]
         public static bool SetType(this FamilyInstance element, IFramingElement bHoMObject, RevitSettings settings)
         {
             if (element.TrySetTypeFromString(bHoMObject, settings))
@@ -58,6 +65,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Updates the type of the Revit HostObject based on the given BHoM ISurface.")]
+        [Input("element", "Revit HostObject to have its type updated.")]
+        [Input("bHoMObject", "BHoM ISurface, based on which the Revit element type will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Output("success", "True if the type of the HostObject has been successfully updated.")]
         public static bool SetType(this HostObject element, ISurface bHoMObject, RevitSettings settings)
         {
             if (element.TrySetTypeFromString(bHoMObject, settings))
@@ -76,6 +88,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Updates the type of the Revit Element based on the given BHoM IInstance.")]
+        [Input("element", "Revit Element to have its type updated.")]
+        [Input("bHoMObject", "BHoM IInstance, based on which the Revit element type will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Output("success", "True if the type of the Element has been successfully updated.")]
         public static bool SetType(this Element element, IInstance instance, RevitSettings settings)
         {
             if (element.TrySetTypeFromString(instance, settings))
@@ -105,7 +122,7 @@ namespace BH.Revit.Engine.Core
         /****              Fallback Methods             ****/
         /***************************************************/
 
-        public static bool SetType(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
+        private static bool SetType(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
             if (element.TrySetTypeFromString(bHoMObject, settings))
                 return true;
@@ -116,12 +133,17 @@ namespace BH.Revit.Engine.Core
 
             return false;
         }
-        
+
 
         /***************************************************/
         /****             Interface Methods             ****/
         /***************************************************/
 
+        [Description("Updates the type of the Revit Element based on the given BHoM object.")]
+        [Input("element", "Revit Element to have its type updated.")]
+        [Input("bHoMObject", "BHoM object, based on which the Revit element type will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Output("success", "True if the type of the Element has been successfully updated.")]
         public static bool ISetType(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
             return SetType(element as dynamic, bHoMObject as dynamic, settings);
@@ -132,7 +154,7 @@ namespace BH.Revit.Engine.Core
         /****              Private Methods              ****/
         /***************************************************/
 
-        public static bool TrySetTypeFromString(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
+        private static bool TrySetTypeFromString(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
             if (element.Category.Id.IntegerValue < 0)
             {
