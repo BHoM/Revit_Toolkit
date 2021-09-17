@@ -22,7 +22,9 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 using System;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +34,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the values stored in Tags property of the given BHoM object and sets them to a given parameter of Revit Element.")]
+        [Input("element", "Target Revit Element to copy the tags to.")]
+        [Input("bHoMObject", "Source BHoM object to copy the tags from.")]
+        [Input("tagsParameterName", "Name of the parameter of the Revit element to set the tags to.")]
         public static void SetTags(this Element element, IBHoMObject bHoMObject, string tagsParameterName)
         {
             if (bHoMObject == null || element == null || string.IsNullOrEmpty(tagsParameterName))
@@ -53,6 +59,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Extracts the values stored in a given parameter of Revit Element and sets them to Tags property of the given BHoM object.")]
+        [Input("bHoMObject", "Target BHoM object to copy the tags to.")]
+        [Input("element", "Source Revit Element to copy the tags from.")]
+        [Input("tagsParameterName", "Name of the parameter of the Revit element to extract the tags from.")]
         public static void SetTags(this IBHoMObject bHoMObject, Element element, string tagsParameterName)
         {
             if (bHoMObject == null || element == null || string.IsNullOrEmpty(tagsParameterName))

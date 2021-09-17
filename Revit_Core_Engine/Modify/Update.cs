@@ -24,7 +24,9 @@ using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 using System;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -34,6 +36,12 @@ namespace BH.Revit.Engine.Core
         /****             Interface Methods             ****/
         /***************************************************/
 
+        [Description("Updates the existing Revit Element based on the given BHoM object.")]
+        [Input("element", "Revit Element to be updated.")]
+        [Input("bHoMObject", "BHoM object, based on which the Revit element will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Input("setLocationOnUpdate", "If false, only parameters and properties of the Element will be updated, if true, its location will be updated too.")]
+        [Output("success", "True if the Revit element has been updated successfully based on the input BHoM object.")]
         public static bool IUpdate(this Element element, IBHoMObject bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
         {
             if (element == null)
@@ -62,6 +70,12 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Updates the existing Revit Element based on the given BHoM object.")]
+        [Input("element", "Revit Element to be updated.")]
+        [Input("bHoMObject", "BHoM object, based on which the Revit element will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Input("setLocationOnUpdate", "If false, only parameters and properties of the Element will be updated, if true, its location will be updated too.")]
+        [Output("success", "True if the Revit element has been updated successfully based on the input BHoM object.")]
         public static bool Update(this Element element, IBHoMObject bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
         {
             bool isElement = new ElementIsElementTypeFilter(true).PassesFilter(element);
@@ -93,6 +107,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Updates the existing Revit FamilyInstance based on the given BHoM ModelInstance.")]
+        [Input("element", "Revit FamilyInstance to be updated.")]
+        [Input("bHoMObject", "BHoM ModelInstance, based on which the Revit element will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Input("setLocationOnUpdate", "If false, only parameters and properties of the FamilyInstance will be updated, if true, its location will be updated too.")]
+        [Output("success", "True if the Revit FamilyInstance has been updated successfully based on the input BHoM ModelInstance.")]
         public static bool Update(this FamilyInstance element, ModelInstance bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
         {
             if (element.ViewSpecific)
@@ -112,6 +132,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Updates the existing Revit FamilyInstance based on the given BHoM DraftingInstance.")]
+        [Input("element", "Revit FamilyInstance to be updated.")]
+        [Input("bHoMObject", "BHoM DraftingInstance, based on which the Revit element will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Input("setLocationOnUpdate", "If false, only parameters and properties of the FamilyInstance will be updated, if true, its location will be updated too.")]
+        [Output("success", "True if the Revit FamilyInstance has been updated successfully based on the input BHoM DraftingInstance.")]
         public static bool Update(this FamilyInstance element, DraftingInstance bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
         {
             if (!element.ViewSpecific || element.OwnerViewId == null)
@@ -131,6 +157,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Updates the existing Revit Material based on the given BHoM Material.")]
+        [Input("element", "Revit Material to be updated.")]
+        [Input("bHoMObject", "BHoM Material, based on which the Revit element will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Input("setLocationOnUpdate", "Revit Material does not have location property, therefore this parameter is irrelevant.")]
+        [Output("success", "True if the Revit Material has been updated successfully based on the input BHoM Material.")]
         public static bool Update(this Material element, BH.oM.Physical.Materials.Material bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
         {
             foreach (BH.oM.Physical.Materials.IMaterialProperties property in bHoMObject.Properties)
@@ -160,6 +192,12 @@ namespace BH.Revit.Engine.Core
         /****             Disallowed Types              ****/
         /***************************************************/
 
+        [Description("Throws an error on attempt to update the existing Revit Element based on a BHoM Bar.")]
+        [Input("element", "Revit Element to be updated.")]
+        [Input("bHoMObject", "BHoM Bar, based on which the Revit element will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Input("setLocationOnUpdate", "If false, only parameters and properties of the Element will be updated, if true, its location will be updated too.")]
+        [Output("success", "Always false because updating the Revit Element based on BHoM Bar is not allowed.")]
         public static bool Update(this Element element, oM.Structure.Elements.Bar bar, RevitSettings settings, bool setLocationOnUpdate)
         {
             bar.ConvertBeforePushError(typeof(oM.Physical.Elements.IFramingElement));
@@ -168,6 +206,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Throws an error on attempt to update the existing Revit Element based on a BHoM Panel.")]
+        [Input("element", "Revit Element to be updated.")]
+        [Input("bHoMObject", "BHoM Panel, based on which the Revit element will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Input("setLocationOnUpdate", "If false, only parameters and properties of the Element will be updated, if true, its location will be updated too.")]
+        [Output("success", "Always false because updating the Revit Element based on BHoM Panel is not allowed.")]
         public static bool Update(this Element element, oM.Structure.Elements.Panel panel, RevitSettings settings, bool setLocationOnUpdate)
         {
             panel.ConvertBeforePushError(typeof(oM.Physical.Elements.ISurface));
@@ -176,6 +220,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Throws an error on attempt to update the existing Revit Element based on a BHoM Panel.")]
+        [Input("element", "Revit Element to be updated.")]
+        [Input("bHoMObject", "BHoM Panel, based on which the Revit element will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Input("setLocationOnUpdate", "If false, only parameters and properties of the Element will be updated, if true, its location will be updated too.")]
+        [Output("success", "Always false because updating the Revit Element based on BHoM Panel is not allowed.")]
         public static bool Update(this Element element, oM.Environment.Elements.Panel panel, RevitSettings settings, bool setLocationOnUpdate)
         {
             panel.ConvertBeforePushError(typeof(oM.Physical.Elements.ISurface));

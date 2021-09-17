@@ -22,6 +22,8 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -30,7 +32,10 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
+
+        [Description("Extracts the identifiers of a given Revit Element, wraps them into a RevitIdentifiers fragment and adds to the fragments held by the given BHoM object.")]
+        [Input("bHoMObject", "Target BHoM object to save the Revit Identifiers to.")]
+        [Input("element", "Source Revit Element to extract the Identifiers from.")]
         public static void SetIdentifiers(this IBHoMObject bHoMObject, Element element)
         {
             if (bHoMObject != null && element != null)
