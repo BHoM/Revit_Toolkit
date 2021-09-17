@@ -90,7 +90,7 @@ namespace BH.Revit.Engine.Core
 
         [Description("Updates the type of the Revit Element based on the given BHoM IInstance.")]
         [Input("element", "Revit Element to have its type updated.")]
-        [Input("bHoMObject", "BHoM IInstance, based on which the Revit element type will be updated.")]
+        [Input("instance", "BHoM IInstance, based on which the Revit element type will be updated.")]
         [Input("settings", "Revit adapter settings to be used while performing the action.")]
         [Output("success", "True if the type of the Element has been successfully updated.")]
         public static bool SetType(this Element element, IInstance instance, RevitSettings settings)

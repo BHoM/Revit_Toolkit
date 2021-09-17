@@ -194,7 +194,7 @@ namespace BH.Revit.Engine.Core
 
         [Description("Throws an error on attempt to update the existing Revit Element based on a BHoM Bar.")]
         [Input("element", "Revit Element to be updated.")]
-        [Input("bHoMObject", "BHoM Bar, based on which the Revit element will be updated.")]
+        [Input("bar", "BHoM Bar, based on which the Revit element will be updated.")]
         [Input("settings", "Revit adapter settings to be used while performing the action.")]
         [Input("setLocationOnUpdate", "If false, only parameters and properties of the Element will be updated, if true, its location will be updated too.")]
         [Output("success", "Always false because updating the Revit Element based on BHoM Bar is not allowed.")]
@@ -208,7 +208,7 @@ namespace BH.Revit.Engine.Core
 
         [Description("Throws an error on attempt to update the existing Revit Element based on a BHoM Panel.")]
         [Input("element", "Revit Element to be updated.")]
-        [Input("bHoMObject", "BHoM Panel, based on which the Revit element will be updated.")]
+        [Input("panel", "BHoM Panel, based on which the Revit element will be updated.")]
         [Input("settings", "Revit adapter settings to be used while performing the action.")]
         [Input("setLocationOnUpdate", "If false, only parameters and properties of the Element will be updated, if true, its location will be updated too.")]
         [Output("success", "Always false because updating the Revit Element based on BHoM Panel is not allowed.")]
@@ -222,7 +222,7 @@ namespace BH.Revit.Engine.Core
 
         [Description("Throws an error on attempt to update the existing Revit Element based on a BHoM Panel.")]
         [Input("element", "Revit Element to be updated.")]
-        [Input("bHoMObject", "BHoM Panel, based on which the Revit element will be updated.")]
+        [Input("panel", "BHoM Panel, based on which the Revit element will be updated.")]
         [Input("settings", "Revit adapter settings to be used while performing the action.")]
         [Input("setLocationOnUpdate", "If false, only parameters and properties of the Element will be updated, if true, its location will be updated too.")]
         [Output("success", "Always false because updating the Revit Element based on BHoM Panel is not allowed.")]
