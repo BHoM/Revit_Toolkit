@@ -33,14 +33,14 @@ namespace BH.oM.Adapters.Revit.Parameters
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Parameter group, to which the Revit parameter represented by this object belongs. One of the dropdown values for project parameters, any value for shared paramter.")]
+        [Description("Parameter group, to which the Revit parameter represented by this object belongs. One of the dropdown values for project parameters, any value for shared parameter.")]
         public virtual string ParameterGroup { get; set; } = "";
 
         [Description("Parameter type of the Revit parameter represented by this object.")]
         public virtual string ParameterType { get; set; } = "";
 
         [Description("Discipline, to which the Revit parameter represented by this object belongs. Only relevant in case if there is more than one types with the same name (e.g. piping, HVAC and structural Velocity).\n" +
-                     "Five sensible values can be applied: Common, Electrical, HVAC, Piping and Structural.")]
+                     "Six sensible values can be applied: Common, Electrical, Energy, HVAC, Piping and Structural.")]
         public virtual string Discipline { get; set; } = "";
 
         [Description("If true, the Revit parameter represented by this object is an instance parameter, otherwise it is a type parameter.")]
