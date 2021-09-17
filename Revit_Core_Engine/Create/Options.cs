@@ -21,8 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-
-using System.Collections.Generic;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +32,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Creates Revit Options based on the given properties.")]
+        [Input("detailLevel", "Value of the DetailLevel property to be assigned to the created Options.")]
+        [Input("includeNonVisible", "Value of the IncludeNonVisibleObjects property to be assigned to the created Options.")]
+        [Input("computeReferences", "Value of the ComputeReferences property to be assigned to the created Options.")]
+        [Output("options", "Revit Options created based on the input properties.")]
         public static Options Options(ViewDetailLevel detailLevel, bool includeNonVisible = false, bool computeReferences = false)
         {
             Options options = new Options();
@@ -43,6 +48,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Creates Revit Options based the given view and properties.")]
+        [Input("view", "Revit view, on which the created Options will be based.")]
+        [Input("includeNonVisible", "Value of the IncludeNonVisibleObjects property to be assigned to the created Options.")]
+        [Input("computeReferences", "Value of the ComputeReferences property to be assigned to the created Options.")]
+        [Output("options", "Revit Options created based on the input view and properties.")]
         public static Options Options(View view, bool includeNonVisible = false, bool computeReferences = false)
         {
             if (view == null)

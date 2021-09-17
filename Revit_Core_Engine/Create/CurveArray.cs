@@ -21,8 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
-
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +33,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Creates a Revit CurveArray based on the given collection of Curves.")]
+        [Input("curves", "Collection of Revit Curves to be wrapped into a CurveArray.")]
+        [Output("curveArray", "Revit CurveArray created based on the input collection of Curves.")]
         public static CurveArray CurveArray(this IEnumerable<Curve> curves)
         {
             CurveArray ca = new CurveArray();
