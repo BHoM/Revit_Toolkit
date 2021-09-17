@@ -34,7 +34,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Converts BH.oM.Geometry.CoordinateSystem.Cartesian to a Revit Plane.")]
-        [Input("cartesian", "BH.oM.Geometry.CoordinateSystem.Cartesian to be converted.")]
+        [Input("coordinateSystem", "BH.oM.Geometry.CoordinateSystem.Cartesian to be converted.")]
         [Output("plane", "Revit Plane resulting from converting the input BH.oM.Geometry.CoordinateSystem.Cartesian.")]
         public static Plane ToRevit(this Cartesian coordinateSystem)
         {
