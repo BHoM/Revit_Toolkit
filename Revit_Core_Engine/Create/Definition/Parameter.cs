@@ -21,8 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -33,6 +35,17 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Creates a Revit parameter Definition based on the given properties.")]
+        [Input("document", "Revit document, in which the new parameter Definition will be created.")]
+        [Input("parameterName", "Name of the created parameter.")]
+        [Input("typeName", "Name of the type of the created parameter. One of the UI dropdown values, e.g. Length, Area, Currency etc.")]
+        [Input("groupName", "Name of the parameter group, to which the created parameter belongs. One of the UI dropdown values for project parameters (e.g. Dimensions), any value for shared parameter.")]
+        [Input("instance", "If true, the created parameter will be an instance parameter, otherwise it will be a type parameter.")]
+        [Input("categoryNames", "Categories, to which the created parameter is bound. It will get bound to all categories if this value is null.")]
+        [Input("shared", "If true, the created parameter will be a shared parameter, otherwise it will be a project parameter.")]
+        [Input("discipline", "Name of the Revit discipline, to which the created parameter belongs. One of the UI dropdown values (Common/Structural/HVAC/Electrical/Piping/Energy).\n" +
+                             "Only relevant in case if there is more than one types with the same name (e.g. piping, HVAC and structural Velocity).")]
+        [Output("definition", "Revit parameter Definition created based on the input properties.")]
         public static Definition Parameter(Document document, string parameterName, string typeName, string groupName, bool instance, IEnumerable<string> categoryNames, bool shared, string discipline = "")
         {
             List<ParameterType> parameterTypes = new List<ParameterType>();

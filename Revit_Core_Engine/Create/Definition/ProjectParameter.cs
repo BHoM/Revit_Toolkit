@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -32,6 +34,14 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Creates a Revit project parameter Definition based on the given properties.")]
+        [Input("document", "Revit document, in which the new parameter Definition will be created.")]
+        [Input("parameterName", "Name of the created parameter.")]
+        [Input("parameterType", "Type of the created parameter. One of the UI dropdown values, e.g. Length, Area, Currency etc.")]
+        [Input("parameterGroup", "Parameter group, to which the created parameter belongs. One of the UI dropdown values for project parameters (e.g. Dimensions).")]
+        [Input("instance", "If true, the created parameter will be an instance parameter, otherwise it will be a type parameter.")]
+        [Input("categories", "Categories, to which the created parameter is bound. It will get bound to all categories if this value is null.")]
+        [Output("definition", "Revit project parameter Definition created based on the input properties.")]
         public static Definition ProjectParameter(Document document, string parameterName, ParameterType parameterType, BuiltInParameterGroup parameterGroup, bool instance, IEnumerable<Category> categories)
         {
             // Inspired by https://github.com/DynamoDS/DynamoRevit/blob/master/src/Libraries/RevitNodes/Elements/Parameter.cs

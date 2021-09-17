@@ -21,7 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,6 +32,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Creates a Revit ReferencePlane based on the given origin and orientation.")]
+        [Input("document", "Revit document, in which the new ReferencePlane will be created.")]
+        [Input("point", "Origin of the created ReferencePlane.")]
+        [Input("orientation", "Orientation of the created ReferencePlane.")]
+        [Input("name", "Name of the created ReferencePlane.")]
+        [Output("referencePlane", "Revit ReferencePlane created based on the input origin and orientation.")]
         public static ReferencePlane ReferencePlane(Document document, XYZ point, Transform orientation, string name = "")
         {
             if (point == null || orientation == null)

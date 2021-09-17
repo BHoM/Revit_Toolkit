@@ -23,7 +23,9 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -33,6 +35,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Creates a Revit adaptive component based on the given FamilySymbol and a collection of Points.")]
+        [Input("document", "Revit document, in which the new adaptive component will be created.")]
+        [Input("familySymbol", "Revit FamilySymbol to be applied to the created adaptive component.")]
+        [Input("points", "Collection of Revit points defining the location of the created adaptive component.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Output("adaptiveComponent", "Revit adaptive component created based on the input FamilySymbol and a collection of Points.")]
         public static FamilyInstance AdaptiveComponent(Document document, FamilySymbol familySymbol, List<XYZ> points, RevitSettings settings = null)
         {
             if (document == null || familySymbol == null || points == null)

@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,6 +33,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Creates a Revit CategorySet based on the given collection of Categories.")]
+        [Input("document", "Revit document, in which the new CategorySet will be created.")]
+        [Input("categories", "Collection of Revit Categories to be wrapped into a CategorySet.")]
+        [Output("categorySet", "Revit CategorySet created based on the input collection of Categories.")]
         public static CategorySet CategorySet(Document document, IEnumerable<Category> categories)
         {
             CategorySet result = document.Application.Create.NewCategorySet();
