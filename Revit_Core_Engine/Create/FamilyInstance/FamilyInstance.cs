@@ -58,7 +58,10 @@ namespace BH.Revit.Engine.Core
             switch (familySymbol.Family.FamilyPlacementType)
             {
                 case FamilyPlacementType.OneLevelBased:
-                    return Create.FamilyInstance_OneLevelBased(document, familySymbol, origin, orientation, host, settings);
+                    if (host is MEPCurve)
+                        return Create.FamilyInstance_OneLevelBased(document, familySymbol, origin, orientation, (MEPCurve)host, settings);
+                    else
+                        return Create.FamilyInstance_OneLevelBased(document, familySymbol, origin, orientation, host, settings);
                 case FamilyPlacementType.OneLevelBasedHosted:
                     return Create.FamilyInstance_OneLevelBasedHosted(document, familySymbol, origin, orientation, host as dynamic, settings);
                 case FamilyPlacementType.TwoLevelsBased:
@@ -189,7 +192,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static FamilyInstance FamilyInstance_OneLevelBasedHosted(Document document, FamilySymbol familySymbol, XYZ origin, Transform orientation, MEPCurve host, RevitSettings settings)
+        private static FamilyInstance FamilyInstance_OneLevelBased(Document document, FamilySymbol familySymbol, XYZ origin, Transform orientation, MEPCurve host, RevitSettings settings)
         {
             //Check inputs
             if (familySymbol == null)
