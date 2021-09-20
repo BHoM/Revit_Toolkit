@@ -116,13 +116,15 @@ namespace BH.Revit.Engine.Core
 
             return false;
         }
-
-
-        /***************************************************/
-        /****              Fallback Methods             ****/
+        
         /***************************************************/
 
-        private static bool SetType(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
+        [Description("Updates the type of the Revit Element based on the given BHoM object.")]
+        [Input("element", "Revit Element to have its type updated.")]
+        [Input("bHoMObject", "BHoM object, based on which the Revit element type will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Output("success", "True if the type of the Element has been successfully updated.")]
+        public static bool SetType(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
             if (element.TrySetTypeFromString(bHoMObject, settings))
                 return true;
@@ -154,6 +156,11 @@ namespace BH.Revit.Engine.Core
         /****              Private Methods              ****/
         /***************************************************/
 
+        [Description("Attempts to set type of the element based on the value of 'Type' parameter carried by the given BHoM object.")]
+        [Input("element", "Revit Element to have its type updated.")]
+        [Input("bHoMObject", "BHoM object, based on which the Revit element type will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Output("success", "True if the type of the Element has been successfully updated.")]
         private static bool TrySetTypeFromString(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
             if (element.Category.Id.IntegerValue < 0)
