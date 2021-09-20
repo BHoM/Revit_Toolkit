@@ -324,7 +324,7 @@ namespace BH.Revit.Engine.Core
             string message = "Element type has not been found for given BHoM Object. Please make sure the name of the BHoM object (or its type property, e.g. Construction) is matching the Revit family type name.";
 
             if (iBHoMObject != null)
-                message = string.Format("{0} BHoM Guid: {1}", message, iBHoMObject.BHoM_Guid);
+                message = $"{message}\nObject name: {iBHoMObject.Name}, object type: {iBHoMObject.GetType().FullName}, BHoM_Guid: {iBHoMObject.BHoM_Guid}";
 
             BH.Engine.Reflection.Compute.RecordError(message);
         }
