@@ -12,6 +12,7 @@ Autodesk Revit 2018
 Autodesk Revit 2019  
 Autodesk Revit 2020  
 Autodesk Revit 2021  
+Autodesk Revit 2022  
 
 ### Documentation
 For more information about functionality see [Revit_Toolkit Wiki](https://github.com/BHoM/Revit_Toolkit/wiki).
@@ -35,6 +36,7 @@ You will need the following to build Revit_Toolkit:
     - .NET Framework 4.7.2 for Revit 2019
     - .NET Framework 4.7.2 for Revit 2020
     - .NET Framework 4.8 for Revit 2021
+    - .NET Framework 4.8 for Revit 2022
 - [BHoM](https://github.com/BHoM/BHoM)
 - [BHoM_Engine](https://github.com/BHoM/BHoM_Engine)
 - [BHoM_Adapter](https://github.com/BHoM/BHoM_Adapter)
@@ -45,6 +47,7 @@ Debug2018 -> Revit 2018
 Debug2019 -> Revit 2019  
 Debug2020 -> Revit 2020  
 Debug2021 -> Revit 2021  
+Debug2022 -> Revit 2022  
 
 
 ## Want to Contribute? ##
