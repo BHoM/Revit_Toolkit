@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -35,7 +35,6 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("4.3", "BH.Engine.Revit.Modify.Transform(BH.oM.Adapters.Revit.Elements.IInstance, BH.oM.Geometry.TransformMatrix, System.Double)")]
         [Description("Transforms the IInstance's location and orientation by the transform matrix. Only rigid body transformations are supported.")]
         [Input("instance", "IInstance to transform.")]
         [Input("transform", "Transform matrix.")]
