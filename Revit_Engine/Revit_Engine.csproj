@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -58,6 +58,14 @@
     <Reference Include="Data_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Data_oM.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Diffing_Engine, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Diffing_Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="Diffing_oM, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Diffing_oM.dll</HintPath>
     </Reference>
     <Reference Include="Dimensional_oM">
       <SpecificVersion>False</SpecificVersion>
@@ -125,6 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compute\CloneType.cs" />
+    <Compile Include="Compute\Diffing.cs" />
     <Compile Include="Compute\SortByPerformance.cs" />
     <Compile Include="Create\Config\RevitPushConfig.cs" />
     <Compile Include="Create\Config\RevitPullConfig.cs" />
