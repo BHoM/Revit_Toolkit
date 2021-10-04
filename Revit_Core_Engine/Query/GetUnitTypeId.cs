@@ -45,6 +45,17 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("This method is defined by BHoM only for Revit Versions < 2021. Revit versions from 2021 onwards define an equivalent method with the same name as part of their API." +
+             "This BHoM implementation eliminates breaking changes between different Revit API versions. It returns the equivalent of DisplayUnitType from a Revit Format Options.")]
+        [Input("formatOptions", "Revit Format Options to extract the DisplayUnitType from.")]
+        [Output("displayUnitType", "DisplayUnitType extracted from the input Revit Format Options.")]
+        public static DisplayUnitType GetUnitTypeId(this FormatOptions formatOptions)
+        {
+            return formatOptions.DisplayUnits;
+        }
+
+        /***************************************************/
+
 #endif
     }
 }
