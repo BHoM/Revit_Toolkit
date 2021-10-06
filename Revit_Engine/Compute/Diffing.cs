@@ -51,6 +51,16 @@ namespace BH.Engine.Adapters.Revit
             // Set configurations if diffConfig is null. Clone it for immutability in the UI.
             DiffingConfig diffingConfigClone = diffConfig == null ? new DiffingConfig() { IncludeUnchangedObjects = true } : diffConfig.DeepClone();
 
+            // Checks on the input objects.
+            string validNamespace = "BH.oM.Adapters.Revit";
+            if (pastObjects.Any(obj => !obj.GetType().FullName.StartsWith(validNamespace)) || currentObjects.Any(obj => !obj.GetType().FullName.StartsWith(validNamespace)))
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Some of the input objects do not belong to the namespace `{validNamespace}`. This Diffing method is specialized for objects from that namespace." +
+                    $"\nPlease either use the base method {typeof(BH.Engine.Diffing.Compute).FullName}.{nameof(BH.Engine.Diffing.Compute.IDiffing)} (or one of the other base Engine Diffing methods) or ensure that all input objects come from the namespace `{validNamespace}`");
+                return null;
+            }
+
+            // Set up the diffingConfig.
             if (propertiesToConsider != null)
                 diffingConfigClone.ComparisonConfig.PropertiesToConsider.AddRange(propertiesToConsider);
             diffingConfigClone.ComparisonConfig.PropertiesToConsider = diffingConfigClone.ComparisonConfig.PropertiesToConsider.Distinct().ToList();
