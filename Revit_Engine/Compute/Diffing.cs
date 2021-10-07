@@ -74,7 +74,12 @@ namespace BH.Engine.Adapters.Revit
             List<object> remainingObjs_following = followingObjects.Except(revitBHoMObjects_following).ToList();
 
             // First compute the diff for all objects that are non-revit.
-            Diff remainingDiff = BH.Engine.Diffing.Compute.IDiffing(remainingObjs_past, remainingObjs_following, DiffingType.Automatic, diffConfigClone);
+            Diff remainingDiff = null;
+            if (remainingObjs_past.Any() || remainingObjs_following.Any())
+            {
+                BH.Engine.Reflection.Compute.RecordNote("Computing the Diffing for the non-revit objects.");
+                BH.Engine.Diffing.Compute.IDiffing(remainingObjs_past, remainingObjs_following, DiffingType.Automatic, diffConfigClone);
+            }
 
             // // - Now do the necessary configurations for the Revit-specific diffing.
 
@@ -96,6 +101,7 @@ namespace BH.Engine.Adapters.Revit
             diffConfigClone.ComparisonConfig.ComparisonFunctions = new ComparisonFunctions() { PropertyFullNameModifier = PropertyFullNameModifier_RevitParameterNameAsPropertyName };
 
             // Compute the diffing through DiffWithFragmentId() with revitDiffingConfig.
+            BH.Engine.Reflection.Compute.RecordNote("Computing the revit-specific Diffing.");
             Diff revitDiff = BH.Engine.Diffing.Compute.DiffWithFragmentId(revitBHoMObjects_past, revitBHoMObjects_following, typeof(RevitIdentifiers), revitIdName, diffConfigClone);
 
             // Combine and return the Diffs.
