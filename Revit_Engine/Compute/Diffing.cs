@@ -60,7 +60,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("propertiesToConsider", "Object properties to be considered when comparing two objects for differences. If null or empty, all properties will be considered." +
             "\nYou can specify also Revit parameter names.")]
         [Input("diffConfig", "Further Diffing configurations.")]
-        [Output("Diff", "Holds the differences between the two sets of objects. Explode it to see all differences.")]
+        [Output("diff", "Holds the differences between the two sets of objects. Explode it to see all differences.")]
         public static Diff RevitDiffing(IEnumerable<object> pastObjects, IEnumerable<object> followingObjects, string revitIdName = null, HashSet<string> propertiesToConsider = null, DiffingConfig diffConfig = null)
         {
             // Set configurations if diffConfig is null. Clone it for immutability in the UI.
