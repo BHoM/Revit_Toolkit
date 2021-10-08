@@ -78,7 +78,7 @@ namespace BH.Engine.Adapters.Revit
             if (remainingObjs_past.Any() || remainingObjs_following.Any())
             {
                 BH.Engine.Reflection.Compute.RecordNote("Computing the Diffing for the non-revit objects.");
-                BH.Engine.Diffing.Compute.IDiffing(remainingObjs_past, remainingObjs_following, DiffingType.Automatic, diffConfigClone);
+                remainingDiff = BH.Engine.Diffing.Compute.IDiffing(remainingObjs_past, remainingObjs_following, DiffingType.Automatic, diffConfigClone);
             }
 
             // // - Now do the necessary configurations for the Revit-specific diffing.
