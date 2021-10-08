@@ -150,19 +150,15 @@ namespace BH.Engine.Adapters.Revit
         // This method is to be passed to the DiffingConfig.ComparisonConfig.ComparisonFunctions (as Func delegate).
         // It will ensure that Revit Parameters are treated as main properties of an object,
         // e.g. we can specify as exception to the diffing `someRevitObj.SomeParameter`, as like `SomeParameter` was a property of the object (when instead it's stored on a RevitParameter fragment).
-        private static string PropertyFullNameModifier_RevitParameterNameAsPropertyName(string propertyFullName, object obj)
+        private static string PropertyFullNameModifier_RevitParameterNameAsPropertyName(string propertyFullName, object propertyValue)
         {
-            // If the object is not a BHoMObject, just return the propertyFullName as-is.
-            IBHoMObject bHoMObject = obj as IBHoMObject;
-            if (bHoMObject == null)
-                return propertyFullName;
-
-            // Check if the propertyFullName is identifying a Revit Parameter: e.g. SomeObject.Fragments[0].Parameters[0].Value
-            if (!(propertyFullName.Contains("Fragments") && propertyFullName.Contains(nameof(IRevitParameterFragment.Parameters)) && propertyFullName.Contains(nameof(RevitParameter.Value))))
+            // If the object is not a RevitParameter, just return the propertyFullName as-is.
+            RevitParameter revitParameter = propertyValue as RevitParameter;
+            if (revitParameter == null)
                 return propertyFullName;
 
             // Get the parameter name, and modify the input propertyFullName as if the parameter was a declared property of the object.
-            string parameterName = BH.Engine.Reflection.Query.PropertyValue(obj, "Name").ToString();
+            string parameterName = revitParameter.Name;
             string modifiedPropertyFullName = propertyFullName.Split(new string[] { "Fragments" }, StringSplitOptions.None).First() + parameterName;
 
             return modifiedPropertyFullName;
