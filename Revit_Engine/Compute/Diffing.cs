@@ -53,31 +53,6 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-
-        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects. This relies on the ID assigned to the objects by Revit: the objects should have been pulled from a Revit_Adapter. An option below allows to use either Revit's ElementId or UniqueId.")]
-        [Input("pastObjects", "Past objects. Objects whose creation precedes 'followingObjects'.")]
-        [Input("followingObjects", "Following objects. Objects that were created after 'pastObjects'.")]
-        [Input("propertiesToConsider", "Object properties to be considered when comparing two objects for differences. If null or empty, all properties will be considered.")]
-        [Output("Diff", "Holds the differences between the two sets of objects. Explode it to see all differences.")]
-        public static Diff RevitDiffing(IEnumerable<object> pastObjects, IEnumerable<object> followingObjects, IEnumerable<string> propertiesToConsider = null, IEnumerable<string> parametersToConsider = null)
-        {
-            // Place the parameters into a private variable. This will be used later.
-            m_parametersToConsider = parametersToConsider.ToList();
-
-            return BH.Engine.Diffing.Compute.IDiffing(pastObjects, followingObjects, DiffingType.Automatic, new DiffingConfig()
-            {
-                ComparisonConfig = new ComparisonConfig() {
-                    PropertiesToConsider = propertiesToConsider.ToList(),
-                    ComparisonFunctions = new ComparisonFunctions() {
-                        // Add the PropertyFullNameFilter for the parametersToConsider: it will filter out revitParameters based on the values in m_parametersToConsider.
-                        PropertyFullNameFilter = PropertyFullNameFilter_RevitParameter,
-                        PropertyDisplayNameModifier = PropertyDisplayNameModifier_RevitParameterNameAsPropertyName
-                    } 
-            } });
-        }
-
-        /***************************************************/
-
         [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects. This relies on the ID assigned to the objects by Revit: the objects should have been pulled from a Revit_Adapter. An option below allows to use either Revit's ElementId or UniqueId.")]
         [Input("pastObjects", "Past objects. Objects whose creation precedes 'followingObjects'.")]
         [Input("followingObjects", "Following objects. Objects that were created after 'pastObjects'.")]
@@ -163,9 +138,10 @@ namespace BH.Engine.Adapters.Revit
             {
                 // If not, instantiate a new ComparisonFunctions,
                 // where we set a PropertyFullNameModifier, so that Revit Parameters are considered as object declared properties.
-                diffConfigClone.ComparisonConfig.ComparisonFunctions = new ComparisonFunctions() {
+                diffConfigClone.ComparisonConfig.ComparisonFunctions = new ComparisonFunctions()
+                {
                     PropertyFullNameModifier = PropertyFullNameModifier_RevitParameterNameAsPropertyName,
-                    PropertyDisplayNameModifier = PropertyDisplayNameModifier_RevitParameterNameAsPropertyName
+                    PropertyDisplayNameModifier = PropertyDisplayNameModifier
                 };
             }
 
@@ -219,14 +195,12 @@ namespace BH.Engine.Adapters.Revit
             return false; // do not do anything (let the object pass).
         }
 
-        /***************************************************/
-
 
         // This method is to be passed to the DiffingConfig.ComparisonConfig.ComparisonFunctions (as Func delegate).
         // It will be called when needed by the base Diffing methods.
         // The method displays the property difference for Revit parameters using the parameter name.
         // e.g. we can specify as exception to the diffing `someRevitObj.SomeParameter`, as like `SomeParameter` was a property of the object (when instead it's stored on a RevitParameter fragment).
-        private static string PropertyDisplayNameModifier_RevitParameterNameAsPropertyName(string propertyFullName, object propertyValue)
+        private static string PropertyDisplayNameModifier(string propertyFullName, object propertyValue)
         {
             // If the object is not a RevitParameter, just return the propertyFullName as-is.
             RevitParameter revitParameter = propertyValue as RevitParameter;
