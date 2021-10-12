@@ -135,15 +135,11 @@ namespace BH.Engine.Adapters.Revit
 
             // Check if we already specified some ComparisonFunctions or not.
             if (diffConfigClone.ComparisonConfig.ComparisonFunctions == null)
-            {
-                // If not, instantiate a new ComparisonFunctions,
-                // where we set a PropertyFullNameModifier, so that Revit Parameters are considered as object declared properties.
-                diffConfigClone.ComparisonConfig.ComparisonFunctions = new ComparisonFunctions()
-                {
-                    PropertyFullNameModifier = PropertyFullNameModifier_RevitParameterNameAsPropertyName,
-                    PropertyDisplayNameModifier = PropertyDisplayNameModifier
-                };
-            }
+                diffConfigClone.ComparisonConfig.ComparisonFunctions = new ComparisonFunctions();
+
+            // set a PropertyFullNameModifier, so that Revit Parameters are considered as object declared properties.
+            diffConfigClone.ComparisonConfig.ComparisonFunctions.PropertyFullNameModifier = diffConfigClone.ComparisonConfig.ComparisonFunctions.PropertyFullNameModifier ?? PropertyFullNameModifier_RevitParameterNameAsPropertyName;
+            diffConfigClone.ComparisonConfig.ComparisonFunctions.PropertyDisplayNameModifier = diffConfigClone.ComparisonConfig.ComparisonFunctions.PropertyDisplayNameModifier ?? PropertyDisplayNameModifier;
 
             // Compute the diffing through DiffWithFragmentId() with revitDiffingConfig.
             BH.Engine.Reflection.Compute.RecordNote("Computing the revit-specific Diffing.");
@@ -213,12 +209,5 @@ namespace BH.Engine.Adapters.Revit
 
             return modifiedPropertyFullName;
         }
-
-
-        /***************************************************/
-        /****              Private fields               ****/
-        /***************************************************/
-
-        private static List<string> m_parametersToConsider = new List<string>();
     }
 }
