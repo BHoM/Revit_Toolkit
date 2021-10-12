@@ -174,26 +174,6 @@ namespace BH.Engine.Adapters.Revit
 
         // This method is to be passed to the DiffingConfig.ComparisonConfig.ComparisonFunctions (as Func delegate).
         // It will be called when needed by the base Diffing methods.
-        // Parameters are a Revit-specific concept, so this is how we can tell diffing to use the parametersToConsider input 
-        // (without renaming them - this solution is alternative from using ComparisonFunctions.PropertyFullNameModifier).
-        private static bool PropertyFullNameFilter_RevitParameter(string propertyFullName, object propertyValue)
-        {
-            // If the object is not a RevitParameter, do not do anything (let the object pass).
-            RevitParameter revitParameter = propertyValue as RevitParameter;
-            if (revitParameter == null)
-                return false; // do not do anything (let the object pass).
-
-            // Get the parameter name, and modify the input propertyFullName as if the parameter was a declared property of the object.
-            string parameterName = revitParameter.Name;
-            if (m_parametersToConsider != null && !m_parametersToConsider.Contains(parameterName))
-                return true; // We must filter out this Parameter.
-
-            return false; // do not do anything (let the object pass).
-        }
-
-
-        // This method is to be passed to the DiffingConfig.ComparisonConfig.ComparisonFunctions (as Func delegate).
-        // It will be called when needed by the base Diffing methods.
         // The method displays the property difference for Revit parameters using the parameter name.
         // e.g. we can specify as exception to the diffing `someRevitObj.SomeParameter`, as like `SomeParameter` was a property of the object (when instead it's stored on a RevitParameter fragment).
         private static string PropertyDisplayNameModifier(string propertyFullName, object propertyValue)
