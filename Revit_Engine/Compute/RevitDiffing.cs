@@ -48,7 +48,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("Diff", "Holds the differences between the two sets of objects. Explode it to see all differences.")]
         public static Diff RevitDiffing(IEnumerable<object> pastObjects, IEnumerable<object> followingObjects, IEnumerable<string> propertiesOrParamsToConsider = null)
         {
-            return BH.Engine.Diffing.Compute.IDiffing(pastObjects, followingObjects, DiffingType.Automatic, new DiffingConfig() { ComparisonConfig = new ComparisonConfig() { PropertiesToConsider = propertiesOrParamsToConsider.ToList() } });
+            return BH.Engine.Diffing.Compute.IDiffing(pastObjects, followingObjects, DiffingType.Automatic, new DiffingConfig() { ComparisonConfig = new ComparisonConfig() { PropertiesToConsider = propertiesOrParamsToConsider?.ToList() } });
         }
 
         /***************************************************/
