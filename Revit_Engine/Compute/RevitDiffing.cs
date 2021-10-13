@@ -99,6 +99,13 @@ namespace BH.Engine.Adapters.Revit
 
             // Dispatch objects in those that belong to Revit and non-Revit namespace.
             string validNamespace = "BH.oM.Adapters.Revit";
+
+            if (pastObjects == null)
+                pastObjects = new List<object>();
+
+            if (followingObjects == null)
+                followingObjects = new List<object>();
+
             List<IBHoMObject> revitBHoMObjects_past = pastObjects.OfType<IBHoMObject>().Where(obj => obj.GetType().FullName.StartsWith(validNamespace)).ToList();
             List<IBHoMObject> revitBHoMObjects_following = followingObjects.OfType<IBHoMObject>().Where(obj => obj.GetType().FullName.StartsWith(validNamespace)).ToList();
             List<object> remainingObjs_past = pastObjects.Except(revitBHoMObjects_past).ToList();
