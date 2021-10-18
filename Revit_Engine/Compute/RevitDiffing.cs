@@ -105,9 +105,6 @@ namespace BH.Engine.Adapters.Revit
         [Output("diff", "Holds the differences between the two sets of objects. Explode it to see all differences.")]
         private static Diff Diffing(IEnumerable<object> pastObjects, IEnumerable<object> followingObjects, string revitIdName = "UniqueId", IEnumerable<string> propertiesOrParamsToConsider = null, DiffingConfig diffConfig = null)
         {
-            // This method can be called from BH.Engine.Diffing.IDiffing(), depending on the workflow. For this reason, better to return a Note whenever it is called.
-            BH.Engine.Reflection.Compute.RecordNote("Computing the revit-specific Diffing."); 
-
             // Checks and setup of input objects.
             if (pastObjects == null)
                 pastObjects = new List<object>();
@@ -159,11 +156,9 @@ namespace BH.Engine.Adapters.Revit
 
             List<IBHoMObject> revitBHoMObjects_past = pastObjects.OfType<IBHoMObject>().Where(obj => obj.GetType().FullName.StartsWith(validNamespace)).ToList();
             List<IBHoMObject> revitBHoMObjects_following = followingObjects.OfType<IBHoMObject>().Where(obj => obj.GetType().FullName.StartsWith(validNamespace)).ToList();
-            List<object> remainingObjs_past = pastObjects.Except(revitBHoMObjects_past).ToList();
-            List<object> remainingObjs_following = followingObjects.Except(revitBHoMObjects_following).ToList();
 
-            // Do something for the objects that are non-Revit.
-            if (remainingObjs_past.Any() || remainingObjs_following.Any())
+            // Do something if non-Revit objs were specified.
+            if (revitBHoMObjects_past.Count() != pastObjects.Count() || revitBHoMObjects_following.Count() != followingObjects.Count())
             {
                 // Returning an error for now for clarity. We deliberately restrict this method to work only on revit objects.
                 BH.Engine.Reflection.Compute.RecordError($"Please specify Revit-only objects (from the namespace {validNamespace}), or use any RevitDiffing method that does not take `{nameof(revitIdName)}` as an input.");

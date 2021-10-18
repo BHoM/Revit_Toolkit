@@ -39,28 +39,28 @@ namespace BH.Engine.Adapters.Revit
             "and how its name should be registered when a difference is returned.")]
         public static PropertyComparisonInclusion PropertyComparisonInclusion(this RevitParameter rp, string propertyFullName, IComparisonConfig cc)
         {
-            PropertyComparisonInclusion pci = new PropertyComparisonInclusion();
+            PropertyComparisonInclusion result = new PropertyComparisonInclusion();
 
-            pci.PropertyDisplayName = rp.Name + " (RevitParameter)";
-            pci.IncludeProperty = true;
+            result.PropertyDisplayName = rp.Name + " (RevitParameter)";
+            result.IncludeProperty = true;
 
             RevitComparisonConfig rcc = cc as RevitComparisonConfig;
             if (rcc == null)
-                return pci; // pass the pameter (do not skip it)
+                return result; // pass the RevitParameter (do not skip it)
 
             if (!rcc.ParametersToConsider?.Contains(rp.Name) ?? false)
             {
-                pci.IncludeProperty = false;
-                return pci; // parameter must be skipped
+                result.IncludeProperty = false;
+                return result; // RevitParameter must be skipped
             }
 
             if (rcc.ParametersExceptions?.Contains(rp.Name) ?? false)
             {
-                pci.IncludeProperty = false;
-                return pci; // parameter must be skipped
+                result.IncludeProperty = false;
+                return result; // RevitParameter must be skipped
             }
 
-            return pci; // pass the pameter (do not skip it)
+            return result; // pass the RevitParameter (do not skip it)
         }
     }
 }
