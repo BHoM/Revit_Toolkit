@@ -114,11 +114,42 @@ namespace BH.Engine.Adapters.Revit
                 return null;
             }
 
+            // Get only the BHoMObjects from the input collections.
+            IEnumerable<IBHoMObject> pastBHoMObjects = pastObjects.OfType<IBHoMObject>();
+            IEnumerable<IBHoMObject> followingBHoMObjects = followingObjects.OfType<IBHoMObject>();
+
+            // Make sure all input objects are BHoMObjects.
+            if (pastBHoMObjects.Count() != pastObjects.Count())
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Some of the input {nameof(pastObjects)} were not BHoMObjects. This method only works with BHoMObjects.");
+                return null;
+            }
+
+            if (followingBHoMObjects.Count() != followingObjects.Count())
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Some of the input {nameof(followingObjects)} were not BHoMObjects. This method only works with BHoMObjects.");
+                return null;
+            }
+
+            // Make sure all input BHoMObjects have a RevitIdentifier Fragment attached.
+            foreach (var o in pastBHoMObjects)
+                if (o.GetAllFragments(typeof(RevitIdentifiers)).Count < 1)
+                {
+                    BH.Engine.Reflection.Compute.RecordError($"Some of the input {nameof(pastObjects)} did not have a {nameof(RevitIdentifiers)} fragment attached. This method works with objects pulled from Revit, that therefore have it attached.");
+                    return null;
+                }
+
+            foreach (var o in followingBHoMObjects)
+                if (o.GetAllFragments(typeof(RevitIdentifiers)).Count < 1)
+                {
+                    BH.Engine.Reflection.Compute.RecordError($"Some of the input {nameof(pastObjects)} did not have a {nameof(RevitIdentifiers)} fragment attached. This method works with objects pulled from Revit, that therefore have it attached.");
+                    return null;
+                }
+
             // Set up the diffingConfig so it deals with Revit objects correctly.
             if (propertiesOrParamsToConsider != null)
                 diffConfigClone.ComparisonConfig.PropertiesToConsider.AddRange(propertiesOrParamsToConsider);
             diffConfigClone.ComparisonConfig.TypeExceptions.Add(typeof(IRevitParameterFragment));
-
 
             // Check if we already specified some ComparisonFunctions or not.
             if (diffConfigClone.ComparisonConfig.ComparisonFunctions == null)
@@ -130,7 +161,7 @@ namespace BH.Engine.Adapters.Revit
 
             // Compute the diffing through DiffWithFragmentId() with revitDiffingConfig.
             BH.Engine.Reflection.Compute.RecordNote("Computing the revit-specific Diffing.");
-            Diff revitDiff = BH.Engine.Diffing.Compute.DiffWithFragmentId(pastObjects.OfType<IBHoMObject>(), followingObjects.OfType<IBHoMObject>(), typeof(RevitIdentifiers), revitIdName, diffConfigClone);
+            Diff revitDiff = BH.Engine.Diffing.Compute.DiffWithFragmentId(pastBHoMObjects, followingBHoMObjects, typeof(RevitIdentifiers), revitIdName, diffConfigClone);
 
             // Combine and return the Diffs.
             return revitDiff;
