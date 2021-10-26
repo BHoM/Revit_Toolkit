@@ -106,9 +106,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("Diff", "Holds the differences between the two sets of objects. Explode it to see all differences.")]
         public static Diff RevitDiffing(IEnumerable<object> pastObjects, IEnumerable<object> followingObjects, string revitIdName = "UniqueId", DiffingConfig diffConfig = null)
         {
-            // Because this method has `revitIdName` in the inputs, it means that we are asking to compute the Diff based on the RevitIdentifiers. These are known only within Revit_Toolkit.
-            // Call the Revit-specific private Diff method.
-            return BH.Engine.Adapters.Revit.Compute.Diffing(pastObjects, followingObjects, revitIdName, diffConfig);
+            return Diffing(pastObjects, followingObjects, revitIdName, diffConfig);
         }
 
         /***************************************************/
