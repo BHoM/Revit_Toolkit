@@ -37,12 +37,10 @@ namespace BH.Engine.Adapters.Revit
     {
         [Description("When Diffing or Hashing an object that owns a property of type of `RevitParameter`, this function determines if the RevitParameter is to be considered, " +
             "and how its name should be registered when a difference is returned.")]
-        public static PropertyComparisonInclusion PropertyComparisonInclusion(this RevitParameter rp, string propertyFullName, IComparisonConfig cc)
+        public static PropertyComparisonInclusion PropertyComparisonInclusion(this RevitParameter rp, string propertyFullName, ComparisonConfig cc)
         {
             PropertyComparisonInclusion result = new PropertyComparisonInclusion();
-
             result.PropertyDisplayName = rp.Name + " (RevitParameter)";
-            result.IncludeProperty = true;
 
             RevitComparisonConfig rcc = cc as RevitComparisonConfig;
             if (rcc == null)
