@@ -54,7 +54,7 @@ namespace BH.Engine.Adapters.Revit
                 ParametersToConsider = propertiesOrParamsToConsider?.ToList()
             };
 
-            return BH.Engine.Diffing.Compute.IDiffing(pastObjects, followingObjects, new DiffingConfig() { ComparisonConfig = rcc });
+            return Diffing(pastObjects, followingObjects, null, new DiffingConfig() { ComparisonConfig = rcc });
         }
 
         [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects. This relies on the ID assigned to the objects by Revit: the objects should have been pulled from a Revit_Adapter. An option below allows to use either Revit's ElementId or UniqueId.")]
@@ -71,7 +71,7 @@ namespace BH.Engine.Adapters.Revit
                 ParametersToConsider = parametersToConsider?.ToList()
             };
 
-            return BH.Engine.Diffing.Compute.IDiffing(pastObjects, followingObjects, new DiffingConfig() { ComparisonConfig = rcc });
+            return Diffing(pastObjects, followingObjects, null, new DiffingConfig() { ComparisonConfig = rcc });
         }
 
         /***************************************************/
@@ -91,9 +91,7 @@ namespace BH.Engine.Adapters.Revit
                 ParametersToConsider = propertiesOrParamsToConsider?.ToList()
             };
 
-            // Because this method has `revitIdName` in the inputs, it means that we are asking to compute the Diff based on the RevitIdentifiers. These are known only within Revit_Toolkit.
-            // Call the Revit-specific private Diff method.
-            return BH.Engine.Adapters.Revit.Compute.Diffing(pastObjects, followingObjects, revitIdName, new DiffingConfig() { ComparisonConfig = rcc });
+            return Diffing(pastObjects, followingObjects, revitIdName, new DiffingConfig() { ComparisonConfig = rcc });
         }
 
         /***************************************************/
@@ -132,7 +130,7 @@ namespace BH.Engine.Adapters.Revit
             if (followingObjects == null) followingObjects = new List<object>();
 
             // Checks and setup of revitIdName.
-            if (revitIdName == "UniqueId" || revitIdName == nameof(RevitIdentifiers.PersistentId))
+            if (revitIdName == "UniqueId" || revitIdName == nameof(RevitIdentifiers.PersistentId) || revitIdName.IsNullOrEmpty())
                 revitIdName = nameof(RevitIdentifiers.PersistentId);
             else if (revitIdName != "ElementId")
             {
