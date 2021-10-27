@@ -39,7 +39,8 @@ namespace BH.oM.Adapters.Revit
         [Description("Additional functions that can be specified as delegates and that will be executed while comparing.")]
         public virtual List<string> ParametersExceptions { get; set; } = new List<string>() { };
 
-        [Description("Additional functions that can be specified as delegates and that will be executed while comparing.")]
+        [Description("Additional functions that can be specified as delegates and that will be executed while comparing." +
+            "\nIf the list is empty, all RevitParameters will be considered. If there is only one name, only parameters called like that will be considered, etc.")]
         public virtual List<string> ParametersToConsider { get; set; } = new List<string>() { }; 
 
         /***************************************************/

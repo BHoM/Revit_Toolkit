@@ -35,27 +35,31 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Query
     {
-        [Description("When Diffing or Hashing an object that owns a property of type of `RevitParameter`, this function determines if the RevitParameter is to be considered, " +
-            "and how its name should be registered when a difference is returned.")]
-        public static PropertyComparisonInclusion PropertyComparisonInclusion(this RevitParameter rp, string propertyFullName, ComparisonConfig cc)
+        [Description("When Diffing or Hashing, determine if and how `RevitParameter`'s properties should be included.")]
+        public static PropertyComparisonInclusion PropertyComparisonInclusion(this RevitParameter revitParameter, string propertyFullName, ComparisonConfig cc)
         {
             PropertyComparisonInclusion result = new PropertyComparisonInclusion();
-            result.PropertyDisplayName = rp.Name + " (RevitParameter)";
+            result.PropertyDisplayName = revitParameter.Name + " (RevitParameter)"; // differences in any property of RevitParameters will be displayed like this.
 
+            // Check if the Diffing of Hashing process has a RevitComparisonConfig input.
             RevitComparisonConfig rcc = cc as RevitComparisonConfig;
             if (rcc == null)
-                return result; // pass the RevitParameter (do not skip it)
+                return result;
 
-            if (!rcc.ParametersToConsider?.Contains(rp.Name) ?? false)
+            // If a RevitComparisonConfig was input, check the ParametersToConsider.
+            // If there is at least one name in the list, make sure that the current revitParameter's Name is contained in the list.
+            if ((rcc.ParametersToConsider?.Any() ?? false) && !rcc.ParametersToConsider.Contains(revitParameter.Name))
             {
-                result.IncludeProperty = false;
-                return result; // RevitParameter must be skipped
+                // The parameter is not within the ParametersToConsider.
+                result.IncludeProperty = false; // RevitParameter must be skipped
+                return result; 
             }
 
-            if (rcc.ParametersExceptions?.Contains(rp.Name) ?? false)
+            // If a RevitComparisonConfig was input, check if the current revitParameter is within the ParametersExceptions.
+            if (rcc.ParametersExceptions?.Contains(revitParameter.Name) ?? false)
             {
-                result.IncludeProperty = false;
-                return result; // RevitParameter must be skipped
+                result.IncludeProperty = false; // RevitParameter must be skipped
+                return result;
             }
 
             return result; // pass the RevitParameter (do not skip it)
