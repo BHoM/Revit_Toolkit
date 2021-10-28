@@ -36,12 +36,12 @@ namespace BH.Engine.Adapters.Revit
     public static partial class Query
     {
         [Description("When Diffing or Hashing, determine if and how `RevitParameter`'s properties should be included.")]
-        public static PropertyComparisonInclusion PropertyComparisonInclusion(this RevitParameter revitParameter, string propertyFullName, ComparisonConfig cc)
+        public static ComparisonInclusion ComparisonInclusion(this RevitParameter revitParameter, string propertyFullName, ComparisonConfig cc)
         {
-            PropertyComparisonInclusion result = new PropertyComparisonInclusion();
-            result.PropertyDisplayName = revitParameter.Name + " (RevitParameter)"; // differences in any property of RevitParameters will be displayed like this.
+            ComparisonInclusion result = new ComparisonInclusion();
+            result.DisplayName = revitParameter.Name + " (RevitParameter)"; // differences in any property of RevitParameters will be displayed like this.
 
-            // Check if the Diffing of Hashing process has a RevitComparisonConfig input.
+            // Check if the caller (the Diffing or Hashing process) had a RevitComparisonConfig input.
             RevitComparisonConfig rcc = cc as RevitComparisonConfig;
             if (rcc == null)
                 return result;
@@ -51,14 +51,14 @@ namespace BH.Engine.Adapters.Revit
             if ((rcc.ParametersToConsider?.Any() ?? false) && !rcc.ParametersToConsider.Contains(revitParameter.Name))
             {
                 // The parameter is not within the ParametersToConsider.
-                result.IncludeProperty = false; // RevitParameter must be skipped
+                result.Include = false; // RevitParameter must be skipped
                 return result; 
             }
 
             // If a RevitComparisonConfig was input, check if the current revitParameter is within the ParametersExceptions.
             if (rcc.ParametersExceptions?.Contains(revitParameter.Name) ?? false)
             {
-                result.IncludeProperty = false; // RevitParameter must be skipped
+                result.Include = false; // RevitParameter must be skipped
                 return result;
             }
 
