@@ -118,7 +118,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("followingObjects", "Following objects. Objects that were created after 'pastObjects'.")]
         [Input("revitIdName", "(Optional) Defaults to UniqueId. Name of the Revit ID that will be used to perform the diffing, and recognize what objects were modified. Appropriate choices are `ElementId`, `UniqueId` or `PersistentId` (which is BHoM's equivalent to Revit's UniqueId). For more information, see Revit documentation to see how Revit Ids work.")]
         [Input("propertiesOrParamsToConsider", "Object properties to be considered when comparing two objects for differences. If null or empty, all properties will be considered." +
-            "\nYou can specify also Revit parameter names.")]
+        "\nYou can specify also Revit parameter names.")]
         [Input("diffConfig", "Further Diffing configurations.")]
         [Output("diff", "Holds the differences between the two sets of objects. Explode it to see all differences.")]
         private static Diff Diffing(IEnumerable<object> pastObjects, IEnumerable<object> followingObjects, string revitIdName = "UniqueId", DiffingConfig diffConfig = null)
