@@ -40,7 +40,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public Methods               ****/
         /***************************************************/
 
-        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects. This relies on the ID assigned to the objects by Revit: the objects should have been pulled from a Revit_Adapter. An option below allows to use either Revit's ElementId or UniqueId.")]
+        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects.\nThis relies on Revit's `UniqueId`: the objects must have been pulled from a Revit_Adapter (they must own a `RevitIdentifiers` fragment).")]
         [Input("pastObjects", "Past objects. Objects whose creation precedes 'followingObjects'.")]
         [Input("followingObjects", "Following objects. Objects that were created after 'pastObjects'.")]
         [Input("propertiesOrParamsToConsider", "Object properties to be considered when comparing two objects for differences. If null or empty, all properties will be considered." +
@@ -57,7 +57,7 @@ namespace BH.Engine.Adapters.Revit
             return Diffing(pastObjects, followingObjects, null, new DiffingConfig() { ComparisonConfig = rcc });
         }
 
-        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects. This relies on the ID assigned to the objects by Revit: the objects should have been pulled from a Revit_Adapter. An option below allows to use either Revit's ElementId or UniqueId.")]
+        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects.\nThis relies on Revit's `UniqueId`: the objects must have been pulled from a Revit_Adapter (they must own a `RevitIdentifiers` fragment)")]
         [Input("pastObjects", "Past objects. Objects whose creation precedes 'followingObjects'.")]
         [Input("followingObjects", "Following objects. Objects that were created after 'pastObjects'.")]
         [Input("propertiesOrParamsToConsider", "Object properties to be considered when comparing two objects for differences. If null or empty, all properties will be considered." +
@@ -76,7 +76,7 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects. This relies on the ID assigned to the objects by Revit: the objects should have been pulled from a Revit_Adapter. An option below allows to use either Revit's ElementId or UniqueId.")]
+        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects.\nThis relies on Revit's identifiers: the objects must have been pulled from a Revit_Adapter (they must own a `RevitIdentifiers` fragment).\nBy default, Revit's `UniqueId` is used, but an option allows to select `ElementId`.")]
         [Input("pastObjects", "Past objects. Objects whose creation precedes 'followingObjects'.")]
         [Input("followingObjects", "Following objects. Objects that were created after 'pastObjects'.")]
         [Input("revitIdName", "(Optional) Defaults to UniqueId. Name of the Revit ID that will be used to perform the diffing, and recognize what objects were modified. Appropriate choices are `ElementId`, `UniqueId` or `PersistentId` (which is BHoM's equivalent to Revit's UniqueId). For more information, see Revit documentation to see how Revit Ids work.")]
@@ -96,7 +96,7 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects. This relies on the ID assigned to the objects by Revit: the objects should have been pulled from a Revit_Adapter. An option below allows to use either Revit's ElementId or UniqueId.")]
+        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects.\nThis relies on Revit's identifiers: the objects must have been pulled from a Revit_Adapter (they must own a `RevitIdentifiers` fragment).\nBy default, Revit's `UniqueId` is used, but an option allows to select `ElementId`.")]
         [Input("pastObjects", "Past objects. Objects whose creation precedes 'followingObjects'.")]
         [Input("followingObjects", "Following objects. Objects that were created after 'pastObjects'.")]
         [Input("revitIdName", "(Optional) Defaults to UniqueId. Name of the Revit ID that will be used to perform the diffing, and recognize what objects were modified. Appropriate choices are `ElementId`, `UniqueId` or `PersistentId` (which is BHoM's equivalent to Revit's UniqueId). For more information, see Revit documentation to see how Revit Ids work.")]
@@ -113,7 +113,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Private Methods              ****/
         /***************************************************/
 
-        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects. This relies on the ID assigned to the objects by Revit: the objects should have been pulled from a Revit_Adapter. An option below allows to use either Revit's ElementId or UniqueId.")]
+        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects.\nThis relies on Revit's identifiers: the objects must have been pulled from a Revit_Adapter (they must own a `RevitIdentifiers` fragment).\nBy default, Revit's `UniqueId` is used, but an option allows to select `ElementId`.")]
         [Input("pastObjects", "Past objects. Objects whose creation precedes 'followingObjects'.")]
         [Input("followingObjects", "Following objects. Objects that were created after 'pastObjects'.")]
         [Input("revitIdName", "(Optional) Defaults to UniqueId. Name of the Revit ID that will be used to perform the diffing, and recognize what objects were modified. Appropriate choices are `ElementId`, `UniqueId` or `PersistentId` (which is BHoM's equivalent to Revit's UniqueId). For more information, see Revit documentation to see how Revit Ids work.")]
