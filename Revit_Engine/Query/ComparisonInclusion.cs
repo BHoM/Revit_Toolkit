@@ -35,14 +35,20 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Query
     {
-        [Description("When Diffing or Hashing, determine if and how `RevitParameter`'s properties should be included.")]
-        public static ComparisonInclusion ComparisonInclusion(this RevitParameter revitParameter, string propertyFullName, ComparisonConfig cc)
+        [Description("When Diffing or Hashing, determine if and how `RevitParameter`'s properties should be included. In other words, this method is triggered:" +
+            "\n\t- when Diffing, if a property difference that is within a RevitParameter is found;" +
+            "\n\t- when computing the Hash of an object, if the object has a RevitParameter.")]
+        [Input("revitParameter", "RevitParameter that triggered the property difference or that was found on the object.")]
+        [Input("propertyFullName", "The Full Name of the RevitParameter stored on the object whose Hash/Diffing was being computed.")]
+        [Input("comparisonConfig", "Additional comparison configurations. You can specify a default `ComparisonConfig` or a `RevitComparisonConfig`." +
+            "\nBecause this method is called automatically for you when computing Hash/Diffing, you can specify the ComparisonConfig as an input to the Hash or Diff function.")]
+        public static ComparisonInclusion ComparisonInclusion(this RevitParameter revitParameter, string propertyFullName, BaseComparisonConfig comparisonConfig)
         {
             ComparisonInclusion result = new ComparisonInclusion();
             result.DisplayName = revitParameter.Name + " (RevitParameter)"; // differences in any property of RevitParameters will be displayed like this.
 
             // Check if the caller (the Diffing or Hashing process) had a RevitComparisonConfig input.
-            RevitComparisonConfig rcc = cc as RevitComparisonConfig;
+            RevitComparisonConfig rcc = comparisonConfig as RevitComparisonConfig;
             if (rcc == null)
                 return result;
 
