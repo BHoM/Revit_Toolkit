@@ -29,18 +29,19 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    [Description("Settings to determine the uniqueness of an Object.")]
+    [Description("Settings to determine the uniqueness of an Object for comparison (e.g. when Diffing or computing an object Hash).")]
     public class RevitComparisonConfig : ComparisonConfig
     {
         /***************************************************/
         /**** Properties                                ****/
         /***************************************************/
 
-        [Description("Additional functions that can be specified as delegates and that will be executed while comparing.")]
+        [Description("Names of any Revit Parameter that should not be considered for the comparison.")]
         public virtual List<string> ParametersExceptions { get; set; } = new List<string>() { };
 
-        [Description("Additional functions that can be specified as delegates and that will be executed while comparing." +
-            "\nIf the list is empty, all RevitParameters will be considered. If there is only one name, only parameters called like that will be considered, etc.")]
+        [Description("Names of the Revit Parameters that will be considered for the comparison." +
+            "By default, this list is empty, so all parameters are considered (except possibly those included in the other property `ParametersExceptions`)." +
+            "If this list is populated with one or more values, it takes higher priority over `ParametersExceptions`.")]
         public virtual List<string> ParametersToConsider { get; set; } = new List<string>() { }; 
 
         /***************************************************/
