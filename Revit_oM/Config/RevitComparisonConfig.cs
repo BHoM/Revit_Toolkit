@@ -42,7 +42,7 @@ namespace BH.oM.Adapters.Revit
         [Description("Names of the Revit Parameters that will be considered for the comparison." +
             "By default, this list is empty, so all parameters are considered (except possibly those included in the other property `ParametersExceptions`)." +
             "If this list is populated with one or more values, it takes higher priority over `ParametersExceptions`.")]
-        public virtual List<string> ParametersToConsider { get; set; } = new List<string>() { }; 
+        public virtual List<string> ParametersToConsider { get; set; } = new List<string>() { };
 
         /***************************************************/
     }
