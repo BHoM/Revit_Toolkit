@@ -128,7 +128,7 @@ namespace BH.Engine.Adapters.Revit
             if (followingObjects == null) followingObjects = new List<object>();
 
             // Checks and setup of revitIdName.
-            if (revitIdName == "UniqueId" || revitIdName == nameof(RevitIdentifiers.PersistentId) || revitIdName.IsNullOrEmpty())
+            if (revitIdName == "UniqueId" || revitIdName == nameof(RevitIdentifiers.PersistentId) || string.IsNullOrEmpty(revitIdName))
                 revitIdName = nameof(RevitIdentifiers.PersistentId);
             else if (revitIdName != "ElementId")
             {
