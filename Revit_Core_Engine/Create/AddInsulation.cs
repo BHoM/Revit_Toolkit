@@ -42,16 +42,16 @@ namespace BH.Revit.Engine.Core
 
         [Description("Add or update existing insulation of the duct or pipe with given inuslation type and thickness.")]
         [Input("host", "Host element to add the insulation on.")]
-        [Input("insulationType", "Type of insulation to be added on host object.")]
-        [Input("insulationThickness", "Thickness of insulation to be added on host object.")]
-        [Input("doc", "Document to create a FamilyInstance in.")]
+        [Input("insulationType", "Type of insulation to be added on the host object.")]
+        [Input("insulationThickness", "Thickness of insulation to be added on the host object in millimeters.")]
         [Output("insulation", "Insulation that has been added on the host.")]
-        public static InsulationLiningBase AddInsulation(this MEPCurve host, FamilySymbol insulationType, double insulationThickness, Document doc)
+        public static InsulationLiningBase AddInsulation(this Element host, ElementType insulationType, double insulationThickness)
         {
+            Document doc = host.Document;
             //Check inputs
             if (insulationType == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Insulation could not be created. Insulation Type not found.");
+                BH.Engine.Reflection.Compute.RecordError("Insulation could not be created. Insulation type not found.");
                 return null;
             }
 
@@ -61,24 +61,48 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            ICollection<ElementId> existingIns = InsulationLiningBase.GetInsulationIds(doc, host.Id);
-
             InsulationLiningBase ins;
-            if (host is Pipe)
+            ICollection<ElementId> insIds = InsulationLiningBase.GetInsulationIds(doc, host.Id);
+            insulationThickness = insulationThickness / 304.8;
+            BuiltInCategory hostCategory = (BuiltInCategory)host.Category.Id.IntegerValue;
+            if (insIds.Count == 0)
             {
-                ins = PipeInsulation.Create(doc, host.Id, insulationType.Id, insulationThickness);
+                if (host is Pipe || hostCategory is BuiltInCategory.OST_PipeFitting || hostCategory is BuiltInCategory.OST_PipeAccessory || hostCategory is BuiltInCategory.OST_FlexPipeCurves)
+                {
+                    ins = PipeInsulation.Create(doc, host.Id, insulationType.Id, insulationThickness);
+                }
+                else if (host is Duct || hostCategory is BuiltInCategory.OST_DuctFitting || hostCategory is BuiltInCategory.OST_DuctAccessory || hostCategory is BuiltInCategory.OST_FlexDuctCurves)
+                {
+                    ins = DuctInsulation.Create(doc, host.Id, insulationType.Id, insulationThickness);
+                }
+                else
+                {
+                    BH.Engine.Reflection.Compute.RecordError("Insulation could not be created. Host element type does not support insulation adding functionality.");
+                    return null;
+                }
             }
-            else if (host is Duct)
+            else if (insIds.Count == 1)
             {
-                ins = DuctInsulation.Create(doc, host.Id, insulationType.Id, insulationThickness);
+                ElementId insId = insIds.ToList()[0];
+                ins = doc.GetElement(insId) as InsulationLiningBase;
+                if (ins.GetTypeId() != insulationType.Id)
+                {
+                    ins.ChangeTypeId(insulationType.Id);
+                }
+                if (ins.Thickness != insulationThickness)
+                {
+                    ins.Thickness = insulationThickness;
+                }
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordError("Insulation could not be created. Host element type does not support insulation adding functionality.");
+                BH.Engine.Reflection.Compute.RecordError("Insulation could not be changed. Not supported type of host insulation.");
                 return null;
             }
 
             return ins;
         }
     }
+
+    /***************************************************/
 }
