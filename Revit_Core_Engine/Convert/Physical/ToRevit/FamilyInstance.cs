@@ -208,7 +208,7 @@ namespace BH.Revit.Engine.Core
             categories.Add(BuiltInCategory.OST_StructuralFraming);
             FamilySymbol familySymbol = framingElement.Property.ToRevitElementType(document, categories, settings, refObjects);
             if (familySymbol == null)
-                familySymbol = framingElement.ElementType(document, settings) as FamilySymbol;
+                familySymbol = framingElement.ElementType(document, categories, settings) as FamilySymbol;
 
             if (familySymbol == null)
             {
