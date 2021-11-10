@@ -355,7 +355,7 @@
     <Compile Include="Convert\Revit\Internal\ToSolid.cs" />
     <Compile Include="Convert\Physical\ToRevit\Rebar.cs" />
     <Compile Include="Convert\Revit\ToRevit\ParameterElement.cs" />
-    <Compile Include="Create\AddInsulation.cs" />
+    <Compile Include="Modify\Insulation.cs" />
     <Compile Include="Create\CategorySet.cs" />
     <Compile Include="Create\Definition\Parameter.cs" />
     <Compile Include="Create\FamilyInstance\AdaptiveComponent.cs" />

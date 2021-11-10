@@ -34,7 +34,7 @@ using Autodesk.Revit.DB.Plumbing;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Create
+    public static partial class Modify
     {
         /***************************************************/
         /****              Public methods               ****/
@@ -45,27 +45,21 @@ namespace BH.Revit.Engine.Core
         [Input("insulationType", "Type of insulation to be added on the host object.")]
         [Input("insulationThickness", "Thickness of insulation to be added on the host object in millimeters.")]
         [Output("insulation", "Insulation that has been added on the host.")]
-        public static InsulationLiningBase AddInsulation(this Element host, ElementType insulationType, double insulationThickness)
+        public static InsulationLiningBase Insulation(this Element host, ElementType insulationType, double insulationThickness)
         {
-            Document doc = host.Document;
-            //Check inputs
-            if (insulationType == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError("Insulation could not be created. Insulation type not found.");
-                return null;
-            }
-
             if (host == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Insulation could not be created. Host element not found.");
                 return null;
             }
 
-            InsulationLiningBase ins;
+            Document doc = host.Document;
+            InsulationLiningBase ins = null;
             ICollection<ElementId> insIds = InsulationLiningBase.GetInsulationIds(doc, host.Id);
-            insulationThickness = insulationThickness / 304.8;
+            insulationThickness = insulationThickness.FromSI(UnitType.UT_Length);
             BuiltInCategory hostCategory = (BuiltInCategory)host.Category.Id.IntegerValue;
-            if (insIds.Count == 0)
+
+            if (insIds.Count == 0 && insulationType != null)
             {
                 if (host is Pipe || hostCategory is BuiltInCategory.OST_PipeFitting || hostCategory is BuiltInCategory.OST_PipeAccessory || hostCategory is BuiltInCategory.OST_FlexPipeCurves)
                 {
@@ -85,16 +79,21 @@ namespace BH.Revit.Engine.Core
             {
                 ElementId insId = insIds.ToList()[0];
                 ins = doc.GetElement(insId) as InsulationLiningBase;
-                if (ins.GetTypeId() != insulationType.Id)
+                if (insulationType != null)
                 {
-                    ins.ChangeTypeId(insulationType.Id);
-                }
-                if (ins.Thickness != insulationThickness)
-                {
+                    if (ins.GetTypeId() != insulationType.Id)
+                    {
+                        ins.ChangeTypeId(insulationType.Id);
+                    }
+                    
                     ins.Thickness = insulationThickness;
                 }
+                else
+                {
+                    doc.Delete(insId);
+                }
             }
-            else
+            else if (insIds.Count > 1)
             {
                 BH.Engine.Reflection.Compute.RecordError("Insulation could not be changed. Not supported type of host insulation.");
                 return null;
