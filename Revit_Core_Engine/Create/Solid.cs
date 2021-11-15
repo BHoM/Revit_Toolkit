@@ -15,10 +15,10 @@ namespace BH.Revit.Engine.Core
 
         [Description("Create solid object from filled region limited by bottom and top elevation.")]
         [Input("filledRegion", "Filled region that is extruded to the solid.")]
-        [Input("bottomElevation", "Bottom elevation of the solid.")]
-        [Input("topElevation", "Top elevation of the solid.")]
+        [Input("bottomElevation", "Bottom elevation of the solid (Revit unit system).")]
+        [Input("topElevation", "Top elevation of the solid (Revit unit system).")]
         [Output("solid", "Solid representation of extruded filled region.")]
-        public static Solid Solid(this FilledRegion filledRegion, double bottomElevation, double topElevation)
+        public static Solid Solid(FilledRegion filledRegion, double bottomElevation, double topElevation)
         {
             if (filledRegion == null)
             {
@@ -30,21 +30,20 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Reflection.Compute.RecordError($"Top elevation value must be greater than bottom elevation.");
                 return null;
             }
-
-            Document doc = filledRegion.Document;
+            
             IList<CurveLoop> boundaries = filledRegion.GetBoundaries();
 
-            return boundaries.Solid(bottomElevation, topElevation);
+            return Solid(boundaries, bottomElevation, topElevation);
         }
 
         /***************************************************/
 
         [Description("Create solid object from boundaries limited by bottom and top elevation.")]
         [Input("boundaries", "Boundaries list that is extruded to the solid.")]
-        [Input("bottomElevation", "Bottom elevation of the solid.")]
-        [Input("topElevation", "Top elevation of the solid.")]
+        [Input("bottomElevation", "Bottom elevation of the solid (Revit unit system).")]
+        [Input("topElevation", "Top elevation of the solid (Revit unit system).")]
         [Output("solid", "Solid representation of extruded boundaries.")]
-        public static Solid Solid(this IList<CurveLoop> boundaries, double bottomElevation, double topElevation)
+        public static Solid Solid(IList<CurveLoop> boundaries, double bottomElevation, double topElevation)
         {
             if (boundaries == null || boundaries.Count == 0)
             {
@@ -66,8 +65,7 @@ namespace BH.Revit.Engine.Core
             {
                 XYZ translation = new XYZ(0, 0, bottomElevation - elev);
                 Transform transform = Transform.CreateTranslation(translation);
-                Solid solid2 = SolidUtils.CreateTransformed(solid, transform);
-                solid = solid2;
+                solid = SolidUtils.CreateTransformed(solid, transform);
             }
 
             return solid;
