@@ -37,11 +37,20 @@ namespace BH.Revit.Engine.Core
         public static Element ContainingElement(this Document document, XYZ point, IEnumerable<BuiltInCategory> categories, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
-            if (!categories.Any())
-                return null;
 
-            LogicalAndFilter filter = new LogicalAndFilter(new List<ElementFilter>(categories.Select(x => new ElementCategoryFilter(x))));
-            return new FilteredElementCollector(document).WherePasses(filter).ToElements().FirstOrDefault(x => point.IsInside(x, settings));
+            FilteredElementCollector collector = new FilteredElementCollector(document).WhereElementIsNotElementType();
+            if (categories != null)
+            {
+                if (categories.Any())
+                {
+                    LogicalAndFilter filter = new LogicalAndFilter(new List<ElementFilter>(categories.Select(x => new ElementCategoryFilter(x))));
+                    collector = collector.WherePasses(filter);
+                }
+                else
+                    return null;
+            }
+
+            return collector.FirstOrDefault(x => point.IsInside(x, settings));
         }
 
         /***************************************************/

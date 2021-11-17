@@ -37,6 +37,9 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        //[Description("Returns integer representation of ElementId of Revit element that hosts the element correspondent to given BHoMObject. This value is stored in RevitIdentifiers fragment.")]
+        //[Input("bHoMObject", "BHoMObject to be queried.")]
+        //[Output("hostId", "Integer representation of ElementId of Revit element that hosts the element correspondent to given BHoMObject. - 1 if the Revit element is not a hosted element.")]
         public static Output<int, int> HostId(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)

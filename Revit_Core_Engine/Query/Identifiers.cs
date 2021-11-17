@@ -73,7 +73,6 @@ namespace BH.Revit.Engine.Core
             string familyTypeName = "";
             int familyTypeId = -1;
             string workset = "";
-            //int hostId = -1;
             int ownerViewId = -1;
             int parentElementId = -1;
             string linkPath = "";
