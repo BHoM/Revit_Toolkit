@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
         [Input("builtInCategory", "Optional, the Revit BuiltInCategory to filter elements in the closest elements search.")]
         [Input("includeLinkInstance", "Optional, whether or not to also search for elements in linked documents.")]
         [Output("closestElement", "The closest element from the input element.")]
-        public static Element ClosestElement(this Document document, Element originalElement, double searchRadius = Double.MaxValue, BuiltInCategory builtInCategory = default, bool includeLinkInstance = false)
+        public static Element ClosestElement(this Document document, Element originalElement, double searchRadius = Double.MaxValue, BuiltInCategory category = default, bool includeLinks = false)
         {
             List<Document> documentsToSearch = new List<Document>(){document};
             if (includeLinkInstance)
