@@ -150,36 +150,44 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\ProgramData\BHoM\Assemblies\Analytical_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Architecture_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Architecture_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Architecture_oM">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\ProgramData\BHoM\Assemblies\Architecture_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="BHoM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="BHoM_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Data_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Data_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Data_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Data_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Dimensional_oM">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\ProgramData\BHoM\Assemblies\Dimensional_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Environment_Engine">
       <SpecificVersion>False</SpecificVersion>
@@ -204,6 +212,7 @@
     <Reference Include="Geometry_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Geometry_oM">
       <SpecificVersion>False</SpecificVersion>
@@ -213,22 +222,27 @@
     <Reference Include="Graphics_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Graphics_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Graphics_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Graphics_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Library_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Library_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="MEP_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\MEP_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="MEP_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\MEP_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Physical_Engine">
       <SpecificVersion>False</SpecificVersion>
@@ -253,50 +267,62 @@
     <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018' Or '$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
       <HintPath>..\libs\2018\RevitAPI.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018' Or '$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
       <HintPath>..\libs\2018\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
       <HintPath>..\libs\2019\RevitAPI.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
       <HintPath>..\libs\2019\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
       <HintPath>..\libs\2020\RevitAPI.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
       <HintPath>..\libs\2020\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
       <HintPath>..\libs\2021\RevitAPI.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
       <HintPath>..\libs\2021\RevitAPIUI.dll</HintPath>
       <private>False</private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2022' Or '$(Configuration)'=='Release2022'">
       <HintPath>..\libs\2022\RevitAPI.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2022' Or '$(Configuration)'=='Release2022'">
       <HintPath>..\libs\2022\RevitAPIUI.dll</HintPath>
       <private>False</private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Spatial_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Spatial_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Spatial_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Spatial_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Structure_Engine">
       <SpecificVersion>False</SpecificVersion>
@@ -306,6 +332,7 @@
     <Reference Include="Structure_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Structure_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
