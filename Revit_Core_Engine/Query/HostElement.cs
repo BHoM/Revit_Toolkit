@@ -37,17 +37,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Element HostElement(this IBHoMObject bHoMObject, Document document, RevitSettings settings, bool geometryIfNotSpecified = false)
+        public static Element HostElement(this IBHoMObject bHoMObject, Document document, RevitSettings settings, bool searchIfNotSpecified = false)
         {
-            RevitHostFragment hostFragment = bHoMObject.FindFragment<RevitHostFragment>();
-            //if (hostFragment == null)
-            //{
-            //    // warning
-            //    return null;
-            //}
-
             settings = settings.DefaultIfNull();
+            Element host = null;
 
+            RevitHostFragment hostFragment = bHoMObject.FindFragment<RevitHostFragment>();
             if (hostFragment != null && hostFragment.HostId != -1)
             {
                 Document hostDoc = document;
@@ -57,17 +52,20 @@ namespace BH.Revit.Engine.Core
                     hostDoc = linkInstance?.Document;
                     if (hostDoc == null)
                     {
-                        //error or warning?
+                        BH.Engine.Reflection.Compute.RecordError("The link document declared in the host information of the input BHoM object does not exist.");
                         return null;
                     }
                 }
 
-                return hostDoc.GetElement(new ElementId(hostFragment.HostId));
+                host = hostDoc.GetElement(new ElementId(hostFragment.HostId));
             }
-            else if (geometryIfNotSpecified)
-                return bHoMObject.IFindHost(document, settings);
+            else if (searchIfNotSpecified)
+                host = bHoMObject.IFindHost(document, settings);
 
-            return null;
+            if (host == null)
+                BH.Engine.Reflection.Compute.RecordError("Revit host element could not be found for the given BHoM object.");
+
+            return host;
         }
 
         /***************************************************/

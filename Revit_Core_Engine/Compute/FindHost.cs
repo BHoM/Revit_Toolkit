@@ -64,7 +64,7 @@ namespace BH.Revit.Engine.Core
             XYZ location = element.IGeometry()?.ToRevit();
             if (location == null)
             {
-                //error or warning?
+                BH.Engine.Reflection.Compute.RecordError("The input BHoM object does not have a valid location.");
                 return null;
             }
 
@@ -77,7 +77,7 @@ namespace BH.Revit.Engine.Core
                 hostDoc = linkInstance?.Document;
                 if (hostDoc == null)
                 {
-                    //error or warning?
+                    BH.Engine.Reflection.Compute.RecordError("The link document declared in the host information of the input BHoM object does not exist.");
                     return null;
                 }
 
