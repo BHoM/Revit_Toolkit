@@ -364,10 +364,14 @@
     <Compile Include="Query\CableTraySectionProfile.cs" />
     <Compile Include="Query\CableTraySectionProperty.cs" />
     <Compile Include="Query\CategoriesWithBoundParameters.cs" />
+    <Compile Include="Query\ClosestElement.cs" />
     <Compile Include="Query\ConvertMethod.cs" />
     <Compile Include="Query\CoordinateSystem.cs" />
     <Compile Include="Query\CurtainWallCurves.cs" />
+    <Compile Include="Query\ElementIds\ElementIdsOfAnyLocationElements.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfEverything.cs" />
+    <Compile Include="Query\ElementIds\ElementIdsOfLocationCurveElements.cs" />
+    <Compile Include="Query\ElementIds\ElementIdsOfLocationPointElements.cs" />
     <Compile Include="Query\FacadePanelAsOpening.cs" />
     <Compile Include="Query\FacadeCurtainPanels.cs" />
     <Compile Include="Query\CurtainWallMullions.cs" />
