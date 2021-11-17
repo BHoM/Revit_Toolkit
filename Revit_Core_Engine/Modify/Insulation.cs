@@ -21,16 +21,12 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Structure;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Settings;
+using Autodesk.Revit.DB.Mechanical;
+using Autodesk.Revit.DB.Plumbing;
 using BH.oM.Reflection.Attributes;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Autodesk.Revit.DB.Mechanical;
-using Autodesk.Revit.DB.Plumbing;
 
 namespace BH.Revit.Engine.Core
 {
@@ -41,15 +37,20 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Add or update existing insulation of the duct or pipe with given inuslation type and thickness.")]
-        [Input("host", "Host element to add the insulation on.")]
-        [Input("insulationType", "Type of insulation to be added on the host object.")]
-        [Input("insulationThickness", "Thickness of insulation to be added on the host object in millimeters.")]
-        [Output("insulation", "Insulation that has been added on the host.")]
+        [Input("host", "Host element to add or update the insulation on.")]
+        [Input("insulationType", "Type of insulation to be added or updated on the host object. Null value removes host insulation if exist.")]
+        [Input("insulationThickness", "Thickness of insulation to be added or updated on the host object.")]
+        [Output("insulation", "Insulation that has been added or updated on the host element.")]
         public static InsulationLiningBase Insulation(this Element host, ElementType insulationType, double insulationThickness)
         {
             if (host == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Insulation could not be created. Host element not found.");
+                return null;
+            }
+            if (insulationType != null && insulationThickness < BH.oM.Geometry.Tolerance.Distance)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Insulation thickness cannot be 0 or negative. To remove existing host insulation, set insulation type as null.");
                 return null;
             }
 
