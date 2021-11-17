@@ -103,12 +103,6 @@ namespace BH.Revit.Engine.Core
                     }
                 }
             }
-
-            if (result == null)
-            {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Could not find any element within {0} feet near original element of id {1}",searchRadius.ToString(), originalElement.Id));
-                return null;
-            }
             
             return result;
         }
