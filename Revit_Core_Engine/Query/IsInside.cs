@@ -33,21 +33,21 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static bool IsContaining(this Element element, XYZ point, RevitSettings settings)
+        public static bool IsInside(this Element element, XYZ point, RevitSettings settings)
         {
             settings = settings.DefaultIfNull();
             double tolerance = settings.DistanceTolerance;
 
             BoundingBoxXYZ bbox = element.get_BoundingBox(null);
-            if (bbox == null || !bbox.IsContaining(point, tolerance))
+            if (bbox == null || !bbox.IsInside(point, tolerance))
                 return false;
 
-            return element.Solids(new Options(), settings).Any(x => x.IsContaining(point, tolerance));
+            return element.Solids(new Options(), settings).Any(x => x.IsInside(point, tolerance));
         }
 
         /***************************************************/
 
-        public static bool IsContaining(this Solid solid, XYZ point, double tolerance = BH.oM.Geometry.Tolerance.Distance)
+        public static bool IsInside(this Solid solid, XYZ point, double tolerance = BH.oM.Geometry.Tolerance.Distance)
         {
             if (solid == null || solid.Volume < tolerance)
                 return false;
@@ -77,7 +77,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static bool IsContaining(this BoundingBoxXYZ bbox, XYZ point, double tolerance = BH.oM.Geometry.Tolerance.Distance)
+        public static bool IsInside(this BoundingBoxXYZ bbox, XYZ point, double tolerance = BH.oM.Geometry.Tolerance.Distance)
         {
             XYZ max = bbox.Max;
             XYZ min = bbox.Min;
