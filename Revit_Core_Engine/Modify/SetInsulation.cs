@@ -100,8 +100,6 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Reflection.Compute.RecordError("Insulation could not be changed. Not supported type of host insulation.");
                 return;
             }
-
-            return;
         }
     }
 
