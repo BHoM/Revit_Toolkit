@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             LogicalAndFilter filter = new LogicalAndFilter(new List<ElementFilter>(categories.Select(x => new ElementCategoryFilter(x))));
-            return new FilteredElementCollector(document).WherePasses(filter).ToElements().FirstOrDefault(x => x.IsInside(point, settings));
+            return new FilteredElementCollector(document).WherePasses(filter).ToElements().FirstOrDefault(x => point.IsInside(x, settings));
         }
 
         /***************************************************/

@@ -33,21 +33,21 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static bool IsInside(this Element element, XYZ point, RevitSettings settings)
+        public static bool IsInside(this XYZ point, Element element, RevitSettings settings)
         {
             settings = settings.DefaultIfNull();
             double tolerance = settings.DistanceTolerance;
 
             BoundingBoxXYZ bbox = element.get_BoundingBox(null);
-            if (bbox == null || !bbox.IsInside(point, tolerance))
+            if (bbox == null || !point.IsInside(bbox, tolerance))
                 return false;
 
-            return element.Solids(new Options(), settings).Any(x => x.IsInside(point, tolerance));
+            return element.Solids(new Options(), settings).Any(x => point.IsInside(x, tolerance));
         }
 
         /***************************************************/
 
-        public static bool IsInside(this Solid solid, XYZ point, double tolerance = BH.oM.Geometry.Tolerance.Distance)
+        public static bool IsInside(this XYZ point, Solid solid, double tolerance = BH.oM.Geometry.Tolerance.Distance)
         {
             if (solid == null || solid.Volume < tolerance)
                 return false;
@@ -77,7 +77,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static bool IsInside(this BoundingBoxXYZ bbox, XYZ point, double tolerance = BH.oM.Geometry.Tolerance.Distance)
+        public static bool IsInside(this XYZ point, BoundingBoxXYZ bbox, double tolerance = BH.oM.Geometry.Tolerance.Distance)
         {
             XYZ max = bbox.Max;
             XYZ min = bbox.Min;
