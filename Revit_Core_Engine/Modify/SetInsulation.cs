@@ -38,20 +38,20 @@ namespace BH.Revit.Engine.Core
 
         [Description("Add or update existing insulation of the duct or pipe with given inuslation type and thickness.")]
         [Input("host", "Host element to add or update the insulation on.")]
-        [Input("insulationType", "Type of insulation to be added or updated on the host object. Null value removes host insulation if exist.")]
+        [Input("insulationType", "Type of insulation to be added or updated on the host object. Null value removes insulation from the host if it exist.")]
         [Input("insulationThickness", "Thickness of insulation to be added or updated on the host object.")]
         [Output("insulation", "Insulation that has been added or updated on the host element.")]
-        public static InsulationLiningBase Insulation(this Element host, ElementType insulationType, double insulationThickness)
+        public static void SetInsulation(this Element host, ElementType insulationType, double insulationThickness)
         {
             if (host == null)
             {
                 BH.Engine.Reflection.Compute.RecordError("Insulation could not be created. Host element not found.");
-                return null;
+                return;
             }
             if (insulationType != null && insulationThickness < BH.oM.Geometry.Tolerance.Distance)
             {
                 BH.Engine.Reflection.Compute.RecordError("Insulation thickness cannot be 0 or negative. To remove existing host insulation, set insulation type as null.");
-                return null;
+                return;
             }
 
             Document doc = host.Document;
@@ -73,7 +73,7 @@ namespace BH.Revit.Engine.Core
                 else
                 {
                     BH.Engine.Reflection.Compute.RecordError("Insulation could not be created. Host element type does not support insulation adding functionality.");
-                    return null;
+                    return;
                 }
             }
             else if (insIds.Count == 1)
@@ -92,15 +92,16 @@ namespace BH.Revit.Engine.Core
                 else
                 {
                     doc.Delete(insId);
+                    return;
                 }
             }
             else if (insIds.Count > 1)
             {
                 BH.Engine.Reflection.Compute.RecordError("Insulation could not be changed. Not supported type of host insulation.");
-                return null;
+                return;
             }
 
-            return ins;
+            return;
         }
     }
 
