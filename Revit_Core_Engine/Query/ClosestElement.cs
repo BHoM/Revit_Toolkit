@@ -74,22 +74,21 @@ namespace BH.Revit.Engine.Core
             
             foreach (Document doc in documentsToSearch)
             {
-                IEnumerable<ElementId> ids = new List<ElementId>();
+                FilteredElementCollector filteredElementCollector = new FilteredElementCollector(doc).WhereElementIsNotElementType();
                 if (builtInCategory != default)
                 {
-                    ids = ElementIdsOfLocationPointElements(document,ElementIdsByCategory(doc, CategoryName(builtInCategory,document)));
+                    filteredElementCollector.OfCategory(builtInCategory).Where(x=>x.HasLocation(true,false));
                 }
                 else
                 {
-                    ids = ElementIdsOfLocationPointElements(document);
+                    filteredElementCollector.Where(x => x.HasLocation());
                 }
                 
-                if (ids.Any())
+                if (filteredElementCollector.Any())
                 {
                     // check distances to each element from category 
-                    foreach (ElementId id in ids)
+                    foreach (Element searchedElement in filteredElementCollector)
                     {
-                        Element searchedElement = doc.GetElement(id);
                         Location searchedLocation = searchedElement.Location;
                         if (searchedLocation is LocationPoint)
                         {

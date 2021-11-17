@@ -21,8 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Structure;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Physical.Constructions;
 using BH.oM.Reflection.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -35,32 +37,28 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Filters ElementIds of Revit elements that have a curve location (line-based) in the Revit model, known as LocationCurve.")]
-        [Input("document", "Revit document to be processed.")]
-        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
-        [Output("elementIds", "Collection of filtered ElementIds.")]
-        public static IEnumerable<ElementId> ElementIdsOfLocationCurveElements(this Document document, IEnumerable<ElementId> ids = null)
+        [Description("Queries the element to check whether or not it contains a Revit Location, with options to pass test if it's LocationPoint or LocationCurve.")]
+        [Input("element", "The element to check if it contains a Revit Location.")]
+        [Input("allowLocationPoint", "Optional, whether or not to do a test to check if this element's location is a LocationPoint.")]
+        [Input("allowLocationCurve", "Optional, whether or not to do a test to check if this element's location is a LocationCurve.")]
+        [Output("hasLocation", "Whether or not the element has a location.")]
+        public static bool HasLocation(this Element element, bool allowLocationPoint = true, bool allowLocationCurve = true)
         {
-            if (document == null)
-                return null;
-
-            if (ids != null && ids.Count() == 0)
-                return new List<ElementId>();
-
-            List<ElementId> result = new List<ElementId>();
-            FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            foreach(Element element in collector.WhereElementIsNotElementType().WhereElementIsViewIndependent())
+            if (element.Location != null)
             {
-                if (element.IsAnalytical())
-                    continue;
+                if (element.Location is LocationPoint && !allowLocationPoint)
+                    return false;
+
+                if (element.Location is LocationCurve && !allowLocationCurve)
+                    return false;
                 
-                if(element.Location != null && element.Location is LocationCurve)
-                    result.Add(element.Id);
+                return true;
             }
 
-            return result;
+            return false;
         }
-
+        
         /***************************************************/
     }
 }
+
