@@ -36,35 +36,39 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("5.0", "BH.Engine.Adapters.Revit.Create.ModelInstance(System.String, System.String, BH.oM.Geometry.Point, BH.oM.Geometry.Basis, System.Int32)")]
         [Description("Creates ModelInstance object based on point location, Revit family name and family type name. Such ModelInstance can be pushed to Revit as a point-driven element, e.g. chair.")]
         [Input("familyName", "Name of Revit family to be used when creating the element.")]
         [Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
         [InputFromProperty("location")]
         [InputFromProperty("orientation")]
-        [InputFromProperty("hostId")]
+        [Input("hostId", "ElementId of the Revit element hosting the element represented by this ModelInstance.")]
+        [Input("hostDocumentId", "If the host element is belongs to a Revit link document, the ElementId of the Revit link instance needs to be specified here.")]
         [Output("modelInstance")]
-        public static ModelInstance ModelInstance(string familyName, string familyTypeName, Point location, Basis orientation = null, int hostId = -1)
+        public static ModelInstance ModelInstance(string familyName, string familyTypeName, Point location, Basis orientation = null, int hostId = -1, int hostDocumentId = -1)
         {
             if (location == null || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(familyName))
                 return null;
 
-            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), location, orientation, hostId);
+            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), location, orientation, hostId, hostDocumentId);
         }
 
         /***************************************************/
 
+        [PreviousVersion("5.0", "BH.Engine.Adapters.Revit.Create.ModelInstance(System.String, System.String, BH.oM.Geometry.ICurve, System.Int32)")]
         [Description("Creates ModelInstance object based on curve location, Revit family name and family type name. Such ModelInstance can be pushed to Revit as a curve-driven element, e.g. duct.")]
         [Input("familyName", "Name of Revit family to be used when creating the element.")]
         [Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
         [InputFromProperty("location")]
-        [InputFromProperty("hostId")]
+        [Input("hostId", "ElementId of the Revit element hosting the element represented by this ModelInstance.")]
+        [Input("hostDocumentId", "If the host element is belongs to a Revit link document, the ElementId of the Revit link instance needs to be specified here.")]
         [Output("modelInstance")]
-        public static ModelInstance ModelInstance(string familyName, string familyTypeName, ICurve location, int hostId = -1)
+        public static ModelInstance ModelInstance(string familyName, string familyTypeName, ICurve location, int hostId = -1, int hostDocumentId = -1)
         {
             if (location == null || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(familyName))
                 return null;
 
-            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), location, hostId);
+            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), location, hostId, hostDocumentId);
         }
 
         /***************************************************/
@@ -85,13 +89,15 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
+        [PreviousVersion("5.0", "BH.Engine.Adapters.Revit.Create.ModelInstance(BH.oM.Adapters.Revit.Properties.InstanceProperties, BH.oM.Geometry.Point, BH.oM.Geometry.Basis, System.Int32)")]
         [Description("Creates ModelInstance object based on point location and BHoM InstanceProperties. Such ModelInstance can be pushed to Revit as a point-driven element, e.g. chair.")]
         [InputFromProperty("properties")]
         [InputFromProperty("location")]
         [InputFromProperty("orientation")]
-        [InputFromProperty("hostId")]
+        [Input("hostId", "ElementId of the Revit element hosting the element represented by this ModelInstance.")]
+        [Input("hostDocumentId", "If the host element is belongs to a Revit link document, the ElementId of the Revit link instance needs to be specified here.")]
         [Output("modelInstance")]
-        public static ModelInstance ModelInstance(InstanceProperties properties, Point location, Basis orientation = null, int hostId = -1)
+        public static ModelInstance ModelInstance(InstanceProperties properties, Point location, Basis orientation = null, int hostId = -1, int hostDocumentId = -1)
         {
             if (properties == null || location == null)
                 return null;
@@ -105,19 +111,21 @@ namespace BH.Engine.Adapters.Revit
             };
 
             if (hostId != -1)
-                modelInstance.Fragments.AddOrReplace(new RevitHostFragment(hostId));
+                modelInstance.Fragments.AddOrReplace(new RevitHostFragment(hostId, hostDocumentId));
 
             return modelInstance;
         }
 
         /***************************************************/
 
+        [PreviousVersion("5.0", "BH.Engine.Adapters.Revit.Create.ModelInstance(BH.oM.Adapters.Revit.Properties.InstanceProperties, BH.oM.Geometry.ICurve, System.Int32)")]
         [Description("Creates ModelInstance object based on curve location and BHoM InstanceProperties. Such ModelInstance can be pushed to Revit as a curve-driven element, e.g. duct.")]
         [InputFromProperty("properties")]
         [InputFromProperty("location")]
-        [InputFromProperty("hostId")]
+        [Input("hostId", "ElementId of the Revit element hosting the element represented by this ModelInstance.")]
+        [Input("hostDocumentId", "If the host element is belongs to a Revit link document, the ElementId of the Revit link instance needs to be specified here.")]
         [Output("modelInstance")]
-        public static ModelInstance ModelInstance(InstanceProperties properties, ICurve location, int hostId = -1)
+        public static ModelInstance ModelInstance(InstanceProperties properties, ICurve location, int hostId = -1, int hostDocumentId = -1)
         {
             if (properties == null || location == null)
                 return null;
@@ -130,7 +138,7 @@ namespace BH.Engine.Adapters.Revit
             };
 
             if (hostId != -1)
-                modelInstance.Fragments.AddOrReplace(new RevitHostFragment(hostId));
+                modelInstance.Fragments.AddOrReplace(new RevitHostFragment(hostId, hostDocumentId));
 
             return modelInstance;
         }
