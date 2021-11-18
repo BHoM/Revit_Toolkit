@@ -62,9 +62,6 @@ namespace BH.Revit.Engine.Core
             else if (searchIfNotSpecified)
                 host = bHoMObject.IFindHost(document, settings);
 
-            if (host == null)
-                BH.Engine.Reflection.Compute.RecordError("Revit host element could not be found for the given BHoM object.");
-
             return host;
         }
 
