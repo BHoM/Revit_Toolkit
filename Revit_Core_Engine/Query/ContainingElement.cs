@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
             {
                 if (categories.Any())
                 {
-                    LogicalAndFilter filter = new LogicalAndFilter(new List<ElementFilter>(categories.Select(x => new ElementCategoryFilter(x))));
+                    LogicalOrFilter filter = new LogicalOrFilter(new List<ElementFilter>(categories.Select(x => new ElementCategoryFilter(x))));
                     collector = collector.WherePasses(filter);
                 }
                 else

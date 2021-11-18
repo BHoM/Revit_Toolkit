@@ -62,7 +62,7 @@ namespace BH.Revit.Engine.Core
             opening.CoordinateSystem = instance.CoordinateSystem();
 
             IProfile profile = null;
-            Parameter diameterParam = instance.LookupParameter(settings.MappingSettings, typeof(oM.Architecture.BuildersWork.Opening), nameof(CircleProfile.Diameter));
+            Parameter diameterParam = instance.LookupParameter(settings.MappingSettings, typeof(oM.Architecture.BuildersWork.Opening), $"{nameof(oM.Architecture.BuildersWork.Opening.Profile)}.{nameof(CircleProfile.Diameter)}");
             if (diameterParam != null)
             {
                 double diameter = diameterParam.AsDouble().ToSI(diameterParam.Definition.GetSpecTypeId());
@@ -71,8 +71,8 @@ namespace BH.Revit.Engine.Core
 
             if (profile == null)
             {
-                Parameter widthParam = instance.LookupParameter(settings.MappingSettings, typeof(oM.Architecture.BuildersWork.Opening), nameof(RectangleProfile.Width));
-                Parameter heightParam = instance.LookupParameter(settings.MappingSettings, typeof(oM.Architecture.BuildersWork.Opening), nameof(RectangleProfile.Height));
+                Parameter widthParam = instance.LookupParameter(settings.MappingSettings, typeof(oM.Architecture.BuildersWork.Opening), $"{nameof(oM.Architecture.BuildersWork.Opening.Profile)}.{nameof(RectangleProfile.Width)}");
+                Parameter heightParam = instance.LookupParameter(settings.MappingSettings, typeof(oM.Architecture.BuildersWork.Opening), $"{nameof(oM.Architecture.BuildersWork.Opening.Profile)}.{nameof(RectangleProfile.Height)}");
                 if (widthParam != null && heightParam != null)
                 {
                     double width = widthParam.AsDouble().ToSI(widthParam.Definition.GetSpecTypeId());
