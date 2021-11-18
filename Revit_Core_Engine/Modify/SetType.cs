@@ -126,14 +126,23 @@ namespace BH.Revit.Engine.Core
         [Output("success", "True if the type of the Element has been successfully updated.")]
         public static bool SetType(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
+            Type type = element.GetType();
+            if (type == typeof(Autodesk.Revit.DB.Family) && typeof(ElementType).IsAssignableFrom(type))
+                return false;
+
             if (element.TrySetTypeFromString(bHoMObject, settings))
                 return true;
 
-            Type type = element.GetType();
-            if (type != typeof(Autodesk.Revit.DB.Family) && !typeof(ElementType).IsAssignableFrom(type))
-                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Element type has not been updated based on the BHoM object due to the lacking convert method. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, bHoMObject.BHoM_Guid));
+            Document doc = element.Document;
+            ElementType elementType = bHoMObject.IElementType(doc, settings);
 
-            return false;
+            if (elementType == null)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Element type has not been updated based on the BHoM object due to the lacking convert method. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, bHoMObject.BHoM_Guid));
+                return false;
+            }
+
+            return element.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, elementType.Id);
         }
 
 

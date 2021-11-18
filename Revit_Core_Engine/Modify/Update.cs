@@ -108,6 +108,23 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Updates the existing Revit FamilyInstance based on the given BHoM builders work Opening.")]
+        [Input("element", "Revit FamilyInstance to be updated.")]
+        [Input("bHoMObject", "BHoM builders work Opening, based on which the Revit element will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Input("setLocationOnUpdate", "If false, only parameters and properties of the FamilyInstance will be updated, if true, its location will be updated too.")]
+        [Output("success", "True if the Revit FamilyInstance has been updated successfully based on the input BHoM builders work Opening.")]
+        public static bool Update(this FamilyInstance element, BH.oM.Architecture.BuildersWork.Opening bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            bool success = ((Element)element).Update(bHoMObject, settings, setLocationOnUpdate);
+            success |= element.SetDimensions(bHoMObject, settings);
+            element.ErrorOnHostChange(bHoMObject);
+
+            return success;
+        }
+
+        /***************************************************/
+
         [Description("Updates the existing Revit FamilyInstance based on the given BHoM ModelInstance.")]
         [Input("element", "Revit FamilyInstance to be updated.")]
         [Input("bHoMObject", "BHoM ModelInstance, based on which the Revit element will be updated.")]
@@ -122,11 +139,8 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
-            if (!string.IsNullOrWhiteSpace(bHoMObject.Properties?.CategoryName) && element.Category?.Name != bHoMObject.Properties.CategoryName)
-                BH.Engine.Reflection.Compute.RecordWarning($"Updating the category of an existing element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
-
-            if (((element.Host == null || element.Host is ReferencePlane) && bHoMObject.HostId().Item1 != -1) || (element.Host != null && !(element.Host is ReferencePlane) && element.Host.Id.IntegerValue != bHoMObject.HostId().Item1))
-                BH.Engine.Reflection.Compute.RecordWarning($"Updating the host of an existing hosted element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
+            element.ErrorOnCategoryChange(bHoMObject);
+            element.ErrorOnHostChange(bHoMObject);
 
             return ((Element)element).Update(bHoMObject, settings, setLocationOnUpdate);
         }
@@ -147,8 +161,7 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
-            if (!string.IsNullOrWhiteSpace(bHoMObject.Properties?.CategoryName) && element.Category?.Name != bHoMObject.Properties.CategoryName)
-                BH.Engine.Reflection.Compute.RecordWarning($"Updating the category of an existing Revit element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
+            element.ErrorOnCategoryChange(bHoMObject);
 
             if (!string.IsNullOrWhiteSpace(bHoMObject.ViewName) && (element.Document.GetElement(element.OwnerViewId) as View)?.Name != bHoMObject.ViewName)
                 BH.Engine.Reflection.Compute.RecordWarning($"Updating the owner view of an existing Revit element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
@@ -231,6 +244,25 @@ namespace BH.Revit.Engine.Core
         {
             panel.ConvertBeforePushError(typeof(oM.Physical.Elements.ISurface));
             return false;
+        }
+
+
+        /***************************************************/
+        /****              Private Methods              ****/
+        /***************************************************/
+
+        private static void ErrorOnHostChange(this FamilyInstance element, IBHoMObject bHoMObject)
+        {
+            if (((element.Host == null || element.Host is ReferencePlane) && bHoMObject.HostId().Item1 != -1) || (element.Host != null && !(element.Host is ReferencePlane) && element.Host.Id.IntegerValue != bHoMObject.HostId().Item1))
+                BH.Engine.Reflection.Compute.RecordWarning($"Updating the host of an existing hosted element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
+        }
+
+        /***************************************************/
+
+        private static void ErrorOnCategoryChange(this FamilyInstance element, IInstance bHoMObject)
+        {
+            if (!string.IsNullOrWhiteSpace(bHoMObject.Properties?.CategoryName) && element.Category?.Name != bHoMObject.Properties.CategoryName)
+                BH.Engine.Reflection.Compute.RecordWarning($"Updating the category of an existing Revit element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
         }
 
         /***************************************************/

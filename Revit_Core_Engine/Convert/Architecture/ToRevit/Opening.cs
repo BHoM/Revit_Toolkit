@@ -59,11 +59,9 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            //TODO: unify linkPath on identifiers with Id on host? how? HostFragment to carry link name?
-            //TODO: make sure it works for linked hosts on push & pull
-            //TODO: add SetLocation!
-            //TODO: on Update remember about a check regarding inability to set new host
-            //TODO: remember about Update, remember about Create instances on linked elements
+            //TODO: unify linkPath on identifiers with Id on host? how? HostFragment and Identifiers to carry link NAME! NOT PATH NOR ID
+            //TODO: when above sorted, SetHost needs update
+            //TODO: make sure it works for linked hosts on push & pull - check if transforms OK
 
             Element host = opening.HostElement(document, settings, true);
             if (host == null)
@@ -86,42 +84,13 @@ namespace BH.Revit.Engine.Core
             if (familyInstance == null)
                 return null;
 
-            // Set dimensions based on parameter mapping.
-            HashSet<string> parameterNames = settings.MappingSettings.ParameterNames(typeof(oM.Architecture.BuildersWork.Opening), nameof(oM.Architecture.BuildersWork.Opening.Depth));
-            if (parameterNames == null || !familyInstance.SetParameters(parameterNames, opening.Depth))
-                familyInstance.DimensionNotSetWarning("depth");
-
-            if (opening.Profile is RectangleProfile)
-            {
-                parameterNames = settings.MappingSettings.ParameterNames(typeof(oM.Architecture.BuildersWork.Opening), $"{nameof(oM.Architecture.BuildersWork.Opening.Profile)}.{nameof(RectangleProfile.Width)}");
-                if (parameterNames == null || !familyInstance.SetParameters(parameterNames, ((RectangleProfile)opening.Profile).Width))
-                    familyInstance.DimensionNotSetWarning("width");
-
-                parameterNames = settings.MappingSettings.ParameterNames(typeof(oM.Architecture.BuildersWork.Opening), $"{nameof(oM.Architecture.BuildersWork.Opening.Profile)}.{nameof(RectangleProfile.Height)}");
-                if (parameterNames == null || !familyInstance.SetParameters(parameterNames, ((RectangleProfile)opening.Profile).Height))
-                    familyInstance.DimensionNotSetWarning("height");
-            }
-            else if (opening.Profile is CircleProfile)
-            {
-                parameterNames = settings.MappingSettings.ParameterNames(typeof(oM.Architecture.BuildersWork.Opening), $"{nameof(oM.Architecture.BuildersWork.Opening.Profile)}.{nameof(CircleProfile.Diameter)}");
-                if (parameterNames == null || !familyInstance.SetParameters(parameterNames, ((CircleProfile)opening.Profile).Diameter))
-                    familyInstance.DimensionNotSetWarning("diameter");
-            }
+            // Set dimensions using a dedicated method.
+            familyInstance.SetDimensions(opening, settings);
 
             familyInstance.CopyParameters(opening, settings);
 
             refObjects.AddOrReplace(opening, familyInstance);
             return familyInstance;
-        }
-
-
-        /***************************************************/
-        /****              Private methods              ****/
-        /***************************************************/
-
-        private static void DimensionNotSetWarning(this Element element, string dimension)
-        {
-            BH.Engine.Reflection.Compute.RecordWarning($"The family instance has been created, but its {dimension} could not be set. ElementId: {element.Id}");
         }
 
         /***************************************************/
