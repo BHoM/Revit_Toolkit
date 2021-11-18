@@ -59,6 +59,21 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets the location of a given Revit FamilyInstance based on a given BHoM builders work Opening.")]
+        [Input("element", "Revit FamilyInstance to be modified.")]
+        [Input("instance", "BHoM builders work Opening acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit FamilyInstance has been successfully set.")]
+        public static bool SetLocation(this FamilyInstance element, BH.oM.Architecture.BuildersWork.Opening opening, RevitSettings settings)
+        {
+            if (element == null || opening?.CoordinateSystem == null)
+                return false;
+
+            return element.SetLocation(opening.CoordinateSystem.Origin, new Basis(opening.CoordinateSystem.X, opening.CoordinateSystem.Y, opening.CoordinateSystem.Z), settings);
+        }
+
+        /***************************************************/
+
         [Description("Sets the location of a given Revit FamilyInstance based on a given BHoM IInstance.")]
         [Input("element", "Revit FamilyInstance to be modified.")]
         [Input("instance", "BHoM IInsance acting as a source of information about the new location.")]
@@ -71,99 +86,7 @@ namespace BH.Revit.Engine.Core
 
             bool success = false;
             if (instance.Location is BH.oM.Geometry.Point)
-            {
-                LocationPoint location = element.Location as LocationPoint;
-                if (location == null)
-                    return false;
-
-                XYZ newLocation = ((BH.oM.Geometry.Point)instance.Location).ToRevit();
-                
-                if (location.Point.DistanceTo(newLocation) > settings.DistanceTolerance)
-                {
-                    if (element.Host != null)
-                    {
-                        if (element.HostFace == null)
-                        {
-                            List<Solid> hostSolids = element.Host.Solids(new Options());
-                            if (hostSolids != null && hostSolids.All(x => !newLocation.IsInside(x, settings.DistanceTolerance)))
-                                BH.Engine.Reflection.Compute.RecordWarning($"The new location point used to update the location of a family instance was outside of the host solid, the point has been snapped to the host. BHoM_Guid: {instance.BHoM_Guid} ElementId: {element.Id.IntegerValue}");
-                        }
-                        else
-                        {
-                            if (element.Host is ReferencePlane)
-                            {
-                                Autodesk.Revit.DB.Plane p = ((ReferencePlane)element.Host).GetPlane();
-                                if (p.Origin.DistanceTo(newLocation) > settings.DistanceTolerance && Math.Abs((p.Origin - newLocation).Normalize().DotProduct(p.Normal)) > settings.AngleTolerance)
-                                {
-                                    BH.Engine.Reflection.Compute.RecordError($"Location update failed: the new location point used on update of a family instance does not lie in plane with its reference plane. BHoM_Guid: {instance.BHoM_Guid} ElementId: {element.Id.IntegerValue}");
-                                    return false;
-                                }
-                            }
-                            else
-                            {
-                                Autodesk.Revit.DB.Face face = element.Host.GetGeometryObjectFromReference(element.HostFace) as Autodesk.Revit.DB.Face;
-
-                                XYZ toProject = newLocation;
-                                Transform instanceTransform = null;
-                                if (element.Host is FamilyInstance && !((FamilyInstance)element.Host).HasModifiedGeometry())
-                                {
-                                    instanceTransform = ((FamilyInstance)element.Host).GetTotalTransform();
-                                    toProject = (instanceTransform.Inverse.OfPoint(newLocation));
-                                }
-
-                                IntersectionResult ir = face?.Project(toProject);
-                                if (ir == null)
-                                {
-                                    BH.Engine.Reflection.Compute.RecordError($"Location update failed: the new location point used on update of a family instance could not be placed on its host face. BHoM_Guid: {instance.BHoM_Guid} ElementId: {element.Id.IntegerValue}");
-                                    return false;
-                                }
-
-                                newLocation = ir.XYZPoint;
-                                if (instanceTransform != null)
-                                    newLocation = (instanceTransform.OfPoint(newLocation));
-
-                                if (ir.Distance > settings.DistanceTolerance)
-                                    BH.Engine.Reflection.Compute.RecordWarning($"The location point used on update of a family instance has been snapped to its host face. BHoM_Guid: {instance.BHoM_Guid} ElementId: {element.Id.IntegerValue}");
-                            }
-                        }
-                    }
-
-                    location.Point = newLocation;
-                    success = true;
-                }
-
-                if (instance.Orientation?.X != null)
-                {
-                    Transform transform = element.GetTotalTransform();
-                    XYZ newX = instance.Orientation.X.ToRevit().Normalize();
-                    if (1 - Math.Abs(transform.BasisX.DotProduct(newX)) > settings.AngleTolerance)
-                    {
-                        XYZ revitNormal;
-                        XYZ bHoMNormal; 
-                        FamilySymbol fs = element.Document.GetElement(element.GetTypeId()) as FamilySymbol;
-                        if (fs != null && fs.Family.FamilyPlacementType == FamilyPlacementType.OneLevelBasedHosted)
-                        {
-                            revitNormal = transform.BasisY;
-                            bHoMNormal = instance.Orientation.Y.ToRevit().Normalize();
-                        }
-                        else
-                        {
-                            revitNormal = transform.BasisZ;
-                            bHoMNormal = instance.Orientation.Z.ToRevit().Normalize();
-                        }
-
-                        if (1 - Math.Abs(revitNormal.DotProduct(bHoMNormal)) > settings.AngleTolerance)
-                            BH.Engine.Reflection.Compute.RecordWarning($"The orientation applied to the family instance on update has different normal than the original one. Only in-plane rotation has been applied, the orientation out of plane has been ignored. BHoM_Guid: {instance.BHoM_Guid} ElementId: {element.Id.IntegerValue}");
-
-                        double angle = transform.BasisX.AngleOnPlaneTo(newX, revitNormal);
-                        if (Math.Abs(angle) > settings.AngleTolerance)
-                        {
-                            ElementTransformUtils.RotateElement(element.Document, element.Id, Autodesk.Revit.DB.Line.CreateBound(newLocation, newLocation + transform.BasisZ), angle);
-                            success = true;
-                        }
-                    }
-                }
-            }
+                success = element.SetLocation((BH.oM.Geometry.Point)instance.Location, instance.Orientation, settings);
             else if (instance.Location is ICurve && element.Host != null)
             {
                 LocationCurve location = element.Location as LocationCurve;
@@ -501,6 +424,109 @@ namespace BH.Revit.Engine.Core
                 return false;
 
             return SetLocation(element as dynamic, bHoMObject as dynamic, settings);
+        }
+
+
+        /***************************************************/
+        /****              Private Methods              ****/
+        /***************************************************/
+
+        private static bool SetLocation(this FamilyInstance element, BH.oM.Geometry.Point location, Basis orientation, RevitSettings settings)
+        {
+            LocationPoint elementLocation = element.Location as LocationPoint;
+            if (elementLocation == null)
+                return false;
+
+            bool success = false;
+            XYZ newLocation = location.ToRevit();
+
+            if (elementLocation.Point.DistanceTo(newLocation) > settings.DistanceTolerance)
+            {
+                if (element.Host != null)
+                {
+                    if (element.HostFace == null)
+                    {
+                        List<Solid> hostSolids = element.Host.Solids(new Options());
+                        if (hostSolids != null && hostSolids.All(x => !newLocation.IsInside(x, settings.DistanceTolerance)))
+                            BH.Engine.Reflection.Compute.RecordWarning($"The new location point used to update the location of a family instance was outside of the host solid, the point has been snapped to the host. ElementId: {element.Id.IntegerValue}");
+                    }
+                    else
+                    {
+                        if (element.Host is ReferencePlane)
+                        {
+                            Autodesk.Revit.DB.Plane p = ((ReferencePlane)element.Host).GetPlane();
+                            if (p.Origin.DistanceTo(newLocation) > settings.DistanceTolerance && Math.Abs((p.Origin - newLocation).Normalize().DotProduct(p.Normal)) > settings.AngleTolerance)
+                            {
+                                BH.Engine.Reflection.Compute.RecordError($"Location update failed: the new location point used on update of a family instance does not lie in plane with its reference plane. ElementId: {element.Id.IntegerValue}");
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            Autodesk.Revit.DB.Face face = element.Host.GetGeometryObjectFromReference(element.HostFace) as Autodesk.Revit.DB.Face;
+
+                            XYZ toProject = newLocation;
+                            Transform instanceTransform = null;
+                            if (element.Host is FamilyInstance && !((FamilyInstance)element.Host).HasModifiedGeometry())
+                            {
+                                instanceTransform = ((FamilyInstance)element.Host).GetTotalTransform();
+                                toProject = (instanceTransform.Inverse.OfPoint(newLocation));
+                            }
+
+                            IntersectionResult ir = face?.Project(toProject);
+                            if (ir == null)
+                            {
+                                BH.Engine.Reflection.Compute.RecordError($"Location update failed: the new location point used on update of a family instance could not be placed on its host face. ElementId: {element.Id.IntegerValue}");
+                                return false;
+                            }
+
+                            newLocation = ir.XYZPoint;
+                            if (instanceTransform != null)
+                                newLocation = (instanceTransform.OfPoint(newLocation));
+
+                            if (ir.Distance > settings.DistanceTolerance)
+                                BH.Engine.Reflection.Compute.RecordWarning($"The location point used on update of a family instance has been snapped to its host face. ElementId: {element.Id.IntegerValue}");
+                        }
+                    }
+                }
+
+                elementLocation.Point = newLocation;
+                success = true;
+            }
+
+            if (orientation?.X != null)
+            {
+                Transform transform = element.GetTotalTransform();
+                XYZ newX = orientation.X.ToRevit().Normalize();
+                if (1 - Math.Abs(transform.BasisX.DotProduct(newX)) > settings.AngleTolerance)
+                {
+                    XYZ revitNormal;
+                    XYZ bHoMNormal;
+                    FamilySymbol fs = element.Document.GetElement(element.GetTypeId()) as FamilySymbol;
+                    if (fs != null && fs.Family.FamilyPlacementType == FamilyPlacementType.OneLevelBasedHosted)
+                    {
+                        revitNormal = transform.BasisY;
+                        bHoMNormal = orientation.Y.ToRevit().Normalize();
+                    }
+                    else
+                    {
+                        revitNormal = transform.BasisZ;
+                        bHoMNormal = orientation.Z.ToRevit().Normalize();
+                    }
+
+                    if (1 - Math.Abs(revitNormal.DotProduct(bHoMNormal)) > settings.AngleTolerance)
+                        BH.Engine.Reflection.Compute.RecordWarning($"The orientation applied to the family instance on update has different normal than the original one. Only in-plane rotation has been applied, the orientation out of plane has been ignored. ElementId: {element.Id.IntegerValue}");
+
+                    double angle = transform.BasisX.AngleOnPlaneTo(newX, revitNormal);
+                    if (Math.Abs(angle) > settings.AngleTolerance)
+                    {
+                        ElementTransformUtils.RotateElement(element.Document, element.Id, Autodesk.Revit.DB.Line.CreateBound(newLocation, newLocation + transform.BasisZ), angle);
+                        success = true;
+                    }
+                }
+            }
+
+            return success;
         }
 
 
