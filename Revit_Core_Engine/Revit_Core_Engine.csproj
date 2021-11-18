@@ -372,6 +372,7 @@
     <Compile Include="Create\View\ViewReflectedCeilingPlan.cs" />
     <Compile Include="Create\View\ViewSection.cs" />
     <Compile Include="Modify\Postprocess.cs" />
+    <Compile Include="Modify\SetDimensions.cs" />
     <Compile Include="Modify\SetProperty.cs" />
     <Compile Include="Modify\SetViewDetailLevel.cs" />
     <Compile Include="Objects\SpecTypeId.cs" />
