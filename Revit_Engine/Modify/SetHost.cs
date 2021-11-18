@@ -42,11 +42,8 @@ namespace BH.Engine.Adapters.Revit
         //[Output("revitSettings")]
         public static IBHoMObject SetHost(this IBHoMObject obj, int hostId, int linkDocument = -1)
         {
-            IBHoMObject clone = obj.DeepClone();
             RevitHostFragment hostFragment = new RevitHostFragment(hostId, linkDocument);
-            obj.AddFragment(hostFragment, true);
-
-            return clone;
+            return obj.AddFragment(hostFragment, true);
         }
 
         /***************************************************/
