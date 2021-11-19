@@ -111,7 +111,7 @@ namespace BH.Revit.Engine.Core
             }
 
             if (element.Document.IsLinked)
-                linkPath = element.Document.PathName;
+                linkPath = element.Document.Title;
 
             return new RevitIdentifiers(element.UniqueId, element.Id.IntegerValue, categoryName, familyName, familyTypeName, familyTypeId, workset, ownerViewId, parentElementId, linkPath);
         }

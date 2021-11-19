@@ -32,12 +32,12 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns path to the link document containing the Revit element correspondent to given BHoM object. This value is stored in RevitIdentifiers fragment.")]
+        [Description("Returns name of the link document containing the Revit element correspondent to given BHoM object. This value is stored in RevitIdentifiers fragment.")]
         [Input("bHoMObject", "BHoMObject to be queried.")]
-        [Output("path", "Path to the link document containing the Revit element correspondent to given BHoM object. Empty if the Revit element is not a link element.")]
-        public static string LinkPath(this IBHoMObject bHoMObject)
+        [Output("document", "Name the link document containing the Revit element correspondent to given BHoM object. Empty if the Revit element is not a link element.")]
+        public static string LinkDocument(this IBHoMObject bHoMObject)
         {
-            return bHoMObject?.GetRevitIdentifiers()?.LinkPath;
+            return bHoMObject?.GetRevitIdentifiers()?.LinkDocument;
         }
 
         /***************************************************/

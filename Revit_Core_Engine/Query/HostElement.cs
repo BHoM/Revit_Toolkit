@@ -46,10 +46,10 @@ namespace BH.Revit.Engine.Core
             if (hostFragment != null && hostFragment.HostId != -1)
             {
                 Document hostDoc = document;
-                if (hostFragment.LinkDocumentId != -1)
+                if (!string.IsNullOrWhiteSpace(hostFragment.LinkDocument))
                 {
-                    RevitLinkInstance linkInstance = document.GetElement(new ElementId(hostFragment.LinkDocumentId)) as RevitLinkInstance;
-                    hostDoc = linkInstance?.Document;
+                    RevitLinkInstance linkInstance = document.LinkInstance(hostFragment.LinkDocument);
+                    hostDoc = linkInstance?.GetLinkDocument();
                     if (hostDoc == null)
                     {
                         BH.Engine.Reflection.Compute.RecordError("The link document declared in the host information of the input BHoM object does not exist.");

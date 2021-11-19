@@ -30,6 +30,7 @@ using BH.oM.Base;
 using BH.oM.Dimensional;
 using BH.oM.Revit;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -69,11 +70,11 @@ namespace BH.Revit.Engine.Core
             }
 
             Document hostDoc = document;
-            int? linkId = (element as IBHoMObject)?.FindFragment<RevitHostFragment>()?.LinkDocumentId;
+            string linkName = (element as IBHoMObject)?.FindFragment<RevitHostFragment>()?.LinkDocument;
 
-            if (linkId.HasValue && linkId.Value != -1)
+            if (!string.IsNullOrWhiteSpace(linkName))
             {
-                RevitLinkInstance linkInstance = document.GetElement(new ElementId(linkId.Value)) as RevitLinkInstance;
+                RevitLinkInstance linkInstance = hostDoc.LinkInstance(linkName);
                 hostDoc = linkInstance?.Document;
                 if (hostDoc == null)
                 {

@@ -45,12 +45,12 @@ namespace BH.Engine.Adapters.Revit
         [Input("hostId", "ElementId of the Revit element hosting the element represented by this ModelInstance.")]
         [Input("hostDocumentId", "If the host element is belongs to a Revit link document, the ElementId of the Revit link instance needs to be specified here.")]
         [Output("modelInstance")]
-        public static ModelInstance ModelInstance(string familyName, string familyTypeName, Point location, Basis orientation = null, int hostId = -1, int hostDocumentId = -1)
+        public static ModelInstance ModelInstance(string familyName, string familyTypeName, Point location, Basis orientation = null, int hostId = -1, string hostDocument = "")
         {
             if (location == null || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(familyName))
                 return null;
 
-            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), location, orientation, hostId, hostDocumentId);
+            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), location, orientation, hostId, hostDocument);
         }
 
         /***************************************************/
@@ -63,12 +63,12 @@ namespace BH.Engine.Adapters.Revit
         [Input("hostId", "ElementId of the Revit element hosting the element represented by this ModelInstance.")]
         [Input("hostDocumentId", "If the host element is belongs to a Revit link document, the ElementId of the Revit link instance needs to be specified here.")]
         [Output("modelInstance")]
-        public static ModelInstance ModelInstance(string familyName, string familyTypeName, ICurve location, int hostId = -1, int hostDocumentId = -1)
+        public static ModelInstance ModelInstance(string familyName, string familyTypeName, ICurve location, int hostId = -1, string hostDocument = "")
         {
             if (location == null || string.IsNullOrWhiteSpace(familyTypeName) || string.IsNullOrWhiteSpace(familyName))
                 return null;
 
-            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), location, hostId, hostDocumentId);
+            return ModelInstance(Create.InstanceProperties(familyName, familyTypeName), location, hostId, hostDocument);
         }
 
         /***************************************************/
@@ -97,7 +97,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("hostId", "ElementId of the Revit element hosting the element represented by this ModelInstance.")]
         [Input("hostDocumentId", "If the host element is belongs to a Revit link document, the ElementId of the Revit link instance needs to be specified here.")]
         [Output("modelInstance")]
-        public static ModelInstance ModelInstance(InstanceProperties properties, Point location, Basis orientation = null, int hostId = -1, int hostDocumentId = -1)
+        public static ModelInstance ModelInstance(InstanceProperties properties, Point location, Basis orientation = null, int hostId = -1, string hostDocument = "")
         {
             if (properties == null || location == null)
                 return null;
@@ -111,7 +111,7 @@ namespace BH.Engine.Adapters.Revit
             };
 
             if (hostId != -1)
-                modelInstance.Fragments.AddOrReplace(new RevitHostFragment(hostId, hostDocumentId));
+                modelInstance.Fragments.AddOrReplace(new RevitHostFragment(hostId, hostDocument));
 
             return modelInstance;
         }
@@ -125,7 +125,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("hostId", "ElementId of the Revit element hosting the element represented by this ModelInstance.")]
         [Input("hostDocumentId", "If the host element is belongs to a Revit link document, the ElementId of the Revit link instance needs to be specified here.")]
         [Output("modelInstance")]
-        public static ModelInstance ModelInstance(InstanceProperties properties, ICurve location, int hostId = -1, int hostDocumentId = -1)
+        public static ModelInstance ModelInstance(InstanceProperties properties, ICurve location, int hostId = -1, string hostDocument = "")
         {
             if (properties == null || location == null)
                 return null;
@@ -138,7 +138,7 @@ namespace BH.Engine.Adapters.Revit
             };
 
             if (hostId != -1)
-                modelInstance.Fragments.AddOrReplace(new RevitHostFragment(hostId, hostDocumentId));
+                modelInstance.Fragments.AddOrReplace(new RevitHostFragment(hostId, hostDocument));
 
             return modelInstance;
         }

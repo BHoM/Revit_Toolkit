@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -45,6 +46,23 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Reflection.Compute.RecordError($"The link pointing to path {linkDocument.PathName} could not be found in active Revit document.");
 
             return linkInstance;
+        }
+
+        /***************************************************/
+
+        public static RevitLinkInstance LinkInstance(this Document hostDocument, string instanceName)
+        {
+            if (string.IsNullOrWhiteSpace(instanceName))
+                return null;
+
+            List<ElementId> ids = ElementIdsOfLinkInstances(hostDocument, instanceName);
+            if (ids.Count > 1)
+                BH.Engine.Reflection.Compute.RecordWarning($"More than one link instance named {instanceName} exists in document {hostDocument.Title}.");
+
+            if (ids.Count != 0)
+                return hostDocument.GetElement(ids[0]) as RevitLinkInstance;
+            else
+                return null;
         }
 
         /***************************************************/

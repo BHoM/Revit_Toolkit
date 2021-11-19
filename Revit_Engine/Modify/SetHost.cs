@@ -40,7 +40,7 @@ namespace BH.Engine.Adapters.Revit
         //[Description("Sets RevitSettings to default value if they are null.")]
         //[Input("settings", "RevitSettings to be set to default if null.")]
         //[Output("revitSettings")]
-        public static IBHoMObject SetHost(this IBHoMObject obj, int hostId, int linkDocument = -1)
+        public static IBHoMObject SetHost(this IBHoMObject obj, int hostId, string linkDocument = "")
         {
             RevitHostFragment hostFragment = new RevitHostFragment(hostId, linkDocument);
             return obj.AddFragment(hostFragment, true);
@@ -57,7 +57,7 @@ namespace BH.Engine.Adapters.Revit
                 return obj;
             }
 
-            return obj.SetHost(identifiers.ElementId);
+            return obj.SetHost(identifiers.ElementId, identifiers.LinkDocument);
         }
 
         /***************************************************/

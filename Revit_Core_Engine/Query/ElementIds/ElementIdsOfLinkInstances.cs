@@ -102,7 +102,7 @@ namespace BH.Revit.Engine.Core
             result.AddRange(fromPath.Select(x => x.Id));
 
             if (suffix && fromPath.Count != 0)
-                BH.Engine.Reflection.Compute.RecordWarning($"Link name {linkName} inside a link request does not end with .rvt - the suffix has been added to find the correspondent link instances.");
+                BH.Engine.Reflection.Compute.RecordWarning($"Requested link name {linkName} does not end with .rvt - the suffix has been added to find the correspondent link instances.");
 
             return result;
         }
