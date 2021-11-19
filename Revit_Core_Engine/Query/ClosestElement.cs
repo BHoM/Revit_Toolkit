@@ -37,12 +37,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Queries the document and its linked documents for the closest element of input category from the original element. Search includes only elements that are XYZ point based, not line-based.")]
+        [Description("Queries the document and optionally its linked documents for the closest element of input category from the original element. Search includes only elements that are XYZ point based.")]
         [Input("document", "The document to query elements and linked documents from.")]
-        [Input("originalElement", "The original element to find closest elements from.")]
+        [Input("originalElement", "The original element to find the closest element from.")]
         [Input("searchRadius", "Optional, search radius in Revit internal unit (ft) to exclude elements outside the range.")]
         [Input("builtInCategory", "Optional, the Revit BuiltInCategory to filter elements in the closest elements search.")]
-        [Input("includeLinkInstance", "Optional, whether or not to also search for elements in linked documents.")]
+        [Input("includeLinkInstance", "Optional: if true, elements from linked documents will also be taken into account.")]
         [Output("closestElement", "The closest element from the input element.")]
         public static Element ClosestElement(this Document document, Element originalElement, double searchRadius = Double.MaxValue, BuiltInCategory category = default, bool includeLinks = false)
         {
