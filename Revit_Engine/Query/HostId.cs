@@ -40,7 +40,7 @@ namespace BH.Engine.Adapters.Revit
         //[Description("Returns integer representation of ElementId of Revit element that hosts the element correspondent to given BHoMObject. This value is stored in RevitIdentifiers fragment.")]
         //[Input("bHoMObject", "BHoMObject to be queried.")]
         //[Output("hostId", "Integer representation of ElementId of Revit element that hosts the element correspondent to given BHoMObject. - 1 if the Revit element is not a hosted element.")]
-        public static Output<int, int> HostId(this IBHoMObject bHoMObject)
+        public static Output<int, string> HostId(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)
             {
@@ -49,16 +49,16 @@ namespace BH.Engine.Adapters.Revit
             }
 
             int hostId = -1;
-            int linkId = -1;
+            string hostLink = "";
 
             RevitHostFragment hostFragment = bHoMObject.FindFragment<RevitHostFragment>();
             if (hostFragment != null)
             {
                 hostId = hostFragment.HostId;
-                linkId = hostFragment.LinkDocumentId;
+                hostLink = hostFragment.LinkDocument;
             }
 
-            return new Output<int, int> { Item1 = hostId, Item2 = linkId };
+            return new Output<int, string> { Item1 = hostId, Item2 = hostLink };
         }
 
         /***************************************************/

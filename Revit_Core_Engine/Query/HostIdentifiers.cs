@@ -50,11 +50,11 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             int hostId = -1;
-            int linkId = -1;
+            string hostLink = "";
 
             if (host is RevitLinkInstance)
             {
-                linkId = host.Id.IntegerValue;
+                hostLink = (familyInstance.Document.GetElement(host.GetTypeId()) as RevitLinkType)?.Name;
 
                 Reference faceReference = familyInstance.HostFace?.CreateReferenceInLink();
                 if (faceReference != null)
@@ -65,7 +65,7 @@ namespace BH.Revit.Engine.Core
             else
                 hostId = host.Id.IntegerValue;
 
-            return new RevitHostFragment(hostId, linkId);
+            return new RevitHostFragment(hostId, hostLink);
         }
 
 
