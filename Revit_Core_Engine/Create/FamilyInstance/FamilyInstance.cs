@@ -388,7 +388,12 @@ namespace BH.Revit.Engine.Core
             {
                 Reference reference;
                 bool closest;
-                XYZ location = host.ClosestPointOn(origin, out reference, out closest, orientation?.BasisZ, settings);
+
+                RevitLinkInstance linkInstance = null;
+                if (document != host.Document)
+                    linkInstance = document.LinkInstance(host.Document.Title);
+
+                XYZ location = host.ClosestPointOn(origin, out reference, out closest, orientation?.BasisZ, linkInstance, settings);
                 if (location == null || reference == null)
                     return null;
 
@@ -401,6 +406,7 @@ namespace BH.Revit.Engine.Core
                 }
 
                 FamilyInstance familyInstance = document.Create.NewFamilyInstance(reference, location, refDir, familySymbol);
+
                 if (familyInstance == null)
                     return null;
 
@@ -636,7 +642,7 @@ namespace BH.Revit.Engine.Core
         /****          Private Methods - Others         ****/
         /***************************************************/
 
-        private static XYZ ClosestPointOn(this Element element, XYZ refPoint, out Reference reference, out bool closest, XYZ normal = null, RevitSettings settings = null)
+        private static XYZ ClosestPointOn(this Element element, XYZ refPoint, out Reference reference, out bool closest, XYZ normal = null, RevitLinkInstance linkDocument = null, RevitSettings settings = null)
         {
             closest = true;
             settings = settings.DefaultIfNull();
@@ -645,6 +651,9 @@ namespace BH.Revit.Engine.Core
             double minFactoredDist = double.MaxValue;
             double minDist = double.MaxValue;
             reference = null;
+
+            if (linkDocument != null)
+                refPoint = linkDocument.GetTotalTransform().Inverse.OfPoint(refPoint);
 
             Options opt = new Options();
             opt.ComputeReferences = true;
@@ -688,6 +697,12 @@ namespace BH.Revit.Engine.Core
             {
                 string instRef = ((FamilyInstance)element).UniqueId + ":0:INSTANCE:" + reference.ConvertToStableRepresentation(element.Document);
                 reference = Reference.ParseFromStableRepresentation(element.Document, instRef);
+            }
+
+            if (linkDocument != null)
+            {
+                pointOnFace = linkDocument.GetTotalTransform().OfPoint(pointOnFace);
+                reference = reference.CreateLinkReference(linkDocument);
             }
 
             return pointOnFace;
