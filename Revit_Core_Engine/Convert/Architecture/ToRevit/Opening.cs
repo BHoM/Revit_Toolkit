@@ -59,12 +59,6 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            //TODO: unify linkPath on identifiers with Id on host? how? HostFragment and Identifiers to carry link NAME! NOT PATH NOR ID
-            //TODO: when above sorted, SetHost needs update
-            //TODO: make sure it works for linked hosts on push & pull - check if transforms OK
-            //TODO: Version LINKPATH removal, replaced with LinkDocument! also prop versioning in V_TK
-
-
             Element host = opening.HostElement(document, settings, true);
             if (host == null)
                 BH.Engine.Reflection.Compute.RecordWarning("Host could not be found for the opening.");
@@ -79,7 +73,6 @@ namespace BH.Revit.Engine.Core
             orientation.set_Basis(2, basisZ);
 
             familyInstance = BH.Revit.Engine.Core.Create.FamilyInstance(document, familySymbol, opening.CoordinateSystem.Origin.ToRevit(), orientation, host, settings);
-            
             document.Regenerate();
 
             familyInstance.CheckIfNullPush(opening);
