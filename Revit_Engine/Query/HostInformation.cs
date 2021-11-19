@@ -41,7 +41,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("bHoMObject", "BHoMObject to be queried.")]
         [MultiOutput(0, "hostId", "Integer representation of ElementId of Revit element that hosts the element correspondent to given BHoMObject. - 1 if the Revit element is not a hosted element.")]
         [MultiOutput(1, "linkDocument", "Name of the link document, if the host Revit element is linked.")]
-        public static Output<int, string> HostId(this IBHoMObject bHoMObject)
+        public static Output<int, string> HostInformation(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)
             {
