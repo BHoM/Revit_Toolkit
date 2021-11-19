@@ -37,11 +37,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Queries the element to check whether or not it contains a Revit Location, with options to pass test if it's LocationPoint or LocationCurve.")]
-        [Input("element", "The element to check if it contains a Revit Location.")]
-        [Input("allowLocationPoint", "Optional, whether or not to do a test to check if this element's location is a LocationPoint.")]
-        [Input("allowLocationCurve", "Optional, whether or not to do a test to check if this element's location is a LocationCurve.")]
-        [Output("hasLocation", "Whether or not the element has a location.")]
+        [Description("Checks whether the element has a valid Revit Location property of type LocationPoint or LocationCurve.")]
+        [Input("element", "The element to validate its Location property.")]
+        [Input("allowLocationPoint", "If true, the method will pass if the element's location is LocationPoint.")]
+        [Input("allowLocationCurve", "If true, the method will pass if the element's location is LocationCurve.")]
+        [Output("hasLocation", "True if the element's Location property is of one of the allowed types.")]
         public static bool HasLocation(this Element element, bool allowLocationPoint = true, bool allowLocationCurve = true)
         {
             if (element.Location != null)
