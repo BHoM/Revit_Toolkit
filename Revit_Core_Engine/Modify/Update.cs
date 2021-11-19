@@ -256,7 +256,7 @@ namespace BH.Revit.Engine.Core
 
         private static void ErrorOnHostChange(this FamilyInstance element, IBHoMObject bHoMObject)
         {
-            if (((element.Host == null || element.Host is ReferencePlane) && bHoMObject.HostId().Item1 != -1) || (element.Host != null && !(element.Host is ReferencePlane) && element.Host.Id.IntegerValue != bHoMObject.HostId().Item1))
+            if (((element.Host == null || element.Host is ReferencePlane) && bHoMObject.HostInformation().Item1 != -1) || (element.Host != null && !(element.Host is ReferencePlane) && element.Host.Id.IntegerValue != bHoMObject.HostInformation().Item1))
                 BH.Engine.Reflection.Compute.RecordWarning($"Updating the host of an existing hosted element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
         }
 
