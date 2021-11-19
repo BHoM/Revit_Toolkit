@@ -37,14 +37,15 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Returns integer representation of ElementId of Revit element that hosts the element correspondent to given BHoMObject. This value is stored in RevitIdentifiers fragment.")]
-        //[Input("bHoMObject", "BHoMObject to be queried.")]
-        //[Output("hostId", "Integer representation of ElementId of Revit element that hosts the element correspondent to given BHoMObject. - 1 if the Revit element is not a hosted element.")]
+        [Description("Returns integer representation of ElementId of Revit element that hosts the element correspondent to given BHoMObject, along with name of the link document, if the host Revit element is linked. This value is stored in RevitHostFragment fragment.")]
+        [Input("bHoMObject", "BHoMObject to be queried.")]
+        [MultiOutput(0, "hostId", "Integer representation of ElementId of Revit element that hosts the element correspondent to given BHoMObject. - 1 if the Revit element is not a hosted element.")]
+        [MultiOutput(1, "linkDocument", "Name of the link document, if the host Revit element is linked.")]
         public static Output<int, string> HostId(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)
             {
-                //error
+                BH.Engine.Reflection.Compute.RecordError("Cannot extract the host information from a null BHoM object.");
                 return null;
             }
 
@@ -64,4 +65,3 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
     }
 }
-

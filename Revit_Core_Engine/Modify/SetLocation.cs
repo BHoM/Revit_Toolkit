@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
 
         [Description("Sets the location of a given Revit FamilyInstance based on a given BHoM builders work Opening.")]
         [Input("element", "Revit FamilyInstance to be modified.")]
-        [Input("instance", "BHoM builders work Opening acting as a source of information about the new location.")]
+        [Input("opening", "BHoM builders work Opening acting as a source of information about the new location.")]
         [Input("settings", "Revit adapter settings to be used while performing the operation.")]
         [Output("success", "True if location of the input Revit FamilyInstance has been successfully set.")]
         public static bool SetLocation(this FamilyInstance element, BH.oM.Architecture.BuildersWork.Opening opening, RevitSettings settings)

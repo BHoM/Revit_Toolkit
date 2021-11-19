@@ -116,6 +116,9 @@ namespace BH.Revit.Engine.Core
         [Output("success", "True if the Revit FamilyInstance has been updated successfully based on the input BHoM builders work Opening.")]
         public static bool Update(this FamilyInstance element, BH.oM.Architecture.BuildersWork.Opening bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
         {
+            if (element == null || bHoMObject == null)
+                return false;
+
             bool success = ((Element)element).Update(bHoMObject, settings, setLocationOnUpdate);
             success |= element.SetDimensions(bHoMObject, settings);
             element.ErrorOnHostChange(bHoMObject);

@@ -28,8 +28,10 @@ using BH.Engine.Spatial;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Dimensional;
+using BH.oM.Reflection.Attributes;
 using BH.oM.Revit;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -40,8 +42,19 @@ namespace BH.Revit.Engine.Core
         /****             Interface methods             ****/
         /***************************************************/
 
+        [Description("Looks for a Revit element that geometrically contains the given BHoM object.")]
+        [Input("bHoMObject", "BHoM object to find the containing element for.")]
+        [Input("document", "Revit document to be searched for the containing element.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("host", "First Revit element that contains the input BHoM object.")]
         public static Element IFindHost(this IBHoMObject bHoMObject, Document document, RevitSettings settings = null)
         {
+            if (bHoMObject == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Host element could not be found for a null BHoM object.");
+                return null;
+            }
+
             return FindHost(bHoMObject as dynamic, document, settings);
         }
 
@@ -50,6 +63,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Looks for a Revit element that geometrically contains the given builders work Opening.")]
+        [Input("opening", "Builders work Opening to find the containing element for.")]
+        [Input("document", "Revit document to be searched for the containing element.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("host", "First Revit element that contains the input builders work Opening.")]
         public static Element FindHost(this BH.oM.Architecture.BuildersWork.Opening opening, Document document, RevitSettings settings = null)
         {
             BuiltInCategory[] hostCategories = new BuiltInCategory[] { BuiltInCategory.OST_Floors, BuiltInCategory.OST_Walls, BuiltInCategory.OST_Roofs };
@@ -58,8 +76,26 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Looks for a Revit element that geometrically contains the given IElement0D.")]
+        [Input("element", "IElement0D to find the containing element for.")]
+        [Input("document", "Revit document to be searched for the containing element.")]
+        [Input("categories", "Revit categories to be taken into account when performing the search. If null, elements of all categories will be checked.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("host", "First Revit element that contains the input IElement0D.")]
         public static Element FindHost(this IElement0D element, Document document, IEnumerable<BuiltInCategory> categories, RevitSettings settings = null)
         {
+            if (element == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Host element could not be found for a null BHoM object.");
+                return null;
+            }
+
+            if (document == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Host element could not be found in a null Revit document.");
+                return null;
+            }
+
             settings = settings.DefaultIfNull();
 
             XYZ location = element.IGeometry()?.ToRevit();
@@ -85,7 +121,7 @@ namespace BH.Revit.Engine.Core
                 location = linkInstance.GetTotalTransform().Inverse.OfPoint(location);
             }
 
-            return ContainingElement(hostDoc, location, categories, settings);        
+            return location.ContainingElement(hostDoc, categories, settings);        
         }
 
 

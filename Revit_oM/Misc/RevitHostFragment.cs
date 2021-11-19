@@ -23,22 +23,37 @@
  using BH.oM.Base;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BH.oM.Revit
 {
+    [Description("Fragment containing the information about the Revit element that hosts the Revit element correspondent to the BHoM object that carries this.")]
     public class RevitHostFragment : IFragment, IImmutable
     {
+        /***************************************************/
+        /****             Public Properties             ****/
+        /***************************************************/
+
+        [Description("ElementId of the Revit element that hosts the Revit element correspondent to the BHoM object that carries this.")]
         public virtual int HostId { get; } = -1;
 
+        [Description("Name of the link document, if the host Revit element is linked.")]
         public virtual string LinkDocument { get; } = "";
+
+
+        /***************************************************/
+        /****            Public Constructors            ****/
+        /***************************************************/
 
         public RevitHostFragment(int hostId, string linkDocument = "")
         {
             HostId = hostId;
             LinkDocument = linkDocument;
         }
+
+        /***************************************************/
     }
 }

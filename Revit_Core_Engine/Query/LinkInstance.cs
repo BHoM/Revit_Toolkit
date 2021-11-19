@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -32,8 +34,17 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("From the current Revit document, extracts  the instance of RevitLinkInstance object that wraps the given linked Revit document.")]
+        [Input("linkDocument", "Revit link document to be queried for its representative RevitLinkInstance object.")]
+        [Output("linkInstance", "RevitLinkInstance object wrapping the input Revit link document.")]
         public static RevitLinkInstance LinkInstance(this Document linkDocument)
         {
+            if (linkDocument == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Link instance object cannot be queried from a null document.");
+                return null;
+            }
+
             Document mainDoc = linkDocument.HostDocument();
             if (linkDocument == mainDoc)
             {
@@ -50,8 +61,18 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Looks for the Revit link instance under the given name, path or ElementId in the given Revit document")]
+        [Input("hostDocument", "Revit document to be searched for the Revit link instance.")]
+        [Input("instanceName", "Name of the Revit link document to be searched for. Alternatively, full path or ElementId of the document can be used.")]
+        [Output("linkInstance", "Revit link instance object wrapping the document with the input name, path or ElementId.")]
         public static RevitLinkInstance LinkInstance(this Document hostDocument, string instanceName)
         {
+            if (hostDocument == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Link instance object cannot be queried from a null document.");
+                return null;
+            }
+
             if (string.IsNullOrWhiteSpace(instanceName))
                 return null;
 

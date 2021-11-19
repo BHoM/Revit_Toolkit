@@ -18,13 +18,16 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        //[Description("Updates the type of the Revit FamilyInstance based on the given BHoM IFramingElement.")]
-        //[Input("element", "Revit FamilyInstance to have its type updated.")]
-        //[Input("bHoMObject", "BHoM IFramingElement, based on which the Revit element type will be updated.")]
-        //[Input("settings", "Revit adapter settings to be used while performing the action.")]
-        //[Output("success", "True if the type of the FamilyInstance has been successfully updated.")]
+        [Description("Sets the dimensions of a given Revit FamilyInstance based on a given BHoM builders work Opening.")]
+        [Input("familyInstance", "Revit FamilyInstance to be modified.")]
+        [Input("opening", "BHoM builders work Opening acting as a source of information about the new dimensions.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if dimensions of the input Revit FamilyInstance has been successfully set.")]
         public static bool SetDimensions(this FamilyInstance familyInstance, BH.oM.Architecture.BuildersWork.Opening opening, RevitSettings settings)
         {
+            if (familyInstance == null || opening == null)
+                return false;
+
             bool success = false;
             settings = settings.DefaultIfNull();
 

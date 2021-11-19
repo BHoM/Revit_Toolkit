@@ -23,7 +23,9 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -34,8 +36,26 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Element ContainingElement(this Document document, XYZ point, IEnumerable<BuiltInCategory> categories, RevitSettings settings = null)
+        [Description("Looks for a Revit element that contains the given XYZ point.")]
+        [Input("point", "XYZ point to find the containing element for.")]
+        [Input("document", "Revit document to be searched for the containing element.")]
+        [Input("categories", "Revit categories to be taken into account when performing the search. If null, elements of all categories will be checked.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("host", "First Revit element that contains the input XYZ point.")]
+        public static Element ContainingElement(this XYZ point, Document document, IEnumerable<BuiltInCategory> categories, RevitSettings settings = null)
         {
+            if (point == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Host element could not be found for a null point.");
+                return null;
+            }
+
+            if (document == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Host element could not be found in a null Revit document.");
+                return null;
+            }
+
             settings = settings.DefaultIfNull();
 
             FilteredElementCollector collector = new FilteredElementCollector(document).WhereElementIsNotElementType();
