@@ -43,7 +43,7 @@ namespace BH.Engine.Adapters.Revit
         [InputFromProperty("location")]
         [InputFromProperty("orientation")]
         [Input("hostId", "ElementId of the Revit element hosting the element represented by this ModelInstance.")]
-        [Input("hostDocumentId", "If the host element is belongs to a Revit link document, the ElementId of the Revit link instance needs to be specified here.")]
+        [Input("hostDocument", "If the host element belongs to a Revit link document, the name, path or ElementId of the Revit link instance needs to be specified here.")]
         [Output("modelInstance")]
         public static ModelInstance ModelInstance(string familyName, string familyTypeName, Point location, Basis orientation = null, int hostId = -1, string hostDocument = "")
         {
@@ -61,7 +61,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
         [InputFromProperty("location")]
         [Input("hostId", "ElementId of the Revit element hosting the element represented by this ModelInstance.")]
-        [Input("hostDocumentId", "If the host element is belongs to a Revit link document, the ElementId of the Revit link instance needs to be specified here.")]
+        [Input("hostDocument", "If the host element belongs to a Revit link document, the name, path or ElementId of the Revit link instance needs to be specified here.")]
         [Output("modelInstance")]
         public static ModelInstance ModelInstance(string familyName, string familyTypeName, ICurve location, int hostId = -1, string hostDocument = "")
         {
@@ -95,7 +95,7 @@ namespace BH.Engine.Adapters.Revit
         [InputFromProperty("location")]
         [InputFromProperty("orientation")]
         [Input("hostId", "ElementId of the Revit element hosting the element represented by this ModelInstance.")]
-        [Input("hostDocumentId", "If the host element is belongs to a Revit link document, the ElementId of the Revit link instance needs to be specified here.")]
+        [Input("hostDocument", "If the host element belongs to a Revit link document, the name, path or ElementId of the Revit link instance needs to be specified here.")]
         [Output("modelInstance")]
         public static ModelInstance ModelInstance(InstanceProperties properties, Point location, Basis orientation = null, int hostId = -1, string hostDocument = "")
         {
@@ -123,7 +123,7 @@ namespace BH.Engine.Adapters.Revit
         [InputFromProperty("properties")]
         [InputFromProperty("location")]
         [Input("hostId", "ElementId of the Revit element hosting the element represented by this ModelInstance.")]
-        [Input("hostDocumentId", "If the host element is belongs to a Revit link document, the ElementId of the Revit link instance needs to be specified here.")]
+        [Input("hostDocument", "If the host element belongs to a Revit link document, the name, path or ElementId of the Revit link instance needs to be specified here.")]
         [Output("modelInstance")]
         public static ModelInstance ModelInstance(InstanceProperties properties, ICurve location, int hostId = -1, string hostDocument = "")
         {

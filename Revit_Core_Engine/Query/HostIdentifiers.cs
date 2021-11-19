@@ -22,8 +22,10 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Parameters;
+using BH.oM.Reflection.Attributes;
 using BH.oM.Revit;
 using System;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -33,6 +35,9 @@ namespace BH.Revit.Engine.Core
         /****             Interface methods             ****/
         /***************************************************/
 
+        [Description("Extracts the information about the host element of the given Revit element, if found, packs it into a BHoM RevitHostFragment.")]
+        [Input("element", "Revit element to be queried for its host element.")]
+        [Output("hostFragment", "BHoM RevitHostFragment containing the information about the host element of the input Revit element. Null if the input element is not hosted.")]
         public static RevitHostFragment IHostIdentifiers(this Element element)
         {
             return HostIdentifiers(element as dynamic);
@@ -43,6 +48,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the information about the host element of the given Revit FamilyInstance, if found, packs it into a BHoM RevitHostFragment.")]
+        [Input("familyInstance", "Revit FamilyInstance to be queried for its host element.")]
+        [Output("hostFragment", "BHoM RevitHostFragment containing the information about the host element of the input Revit FamilyInstance. Null if the input FamilyInstance is not hosted.")]
         public static RevitHostFragment HostIdentifiers(this FamilyInstance familyInstance)
         {
             Element host = familyInstance?.Host;

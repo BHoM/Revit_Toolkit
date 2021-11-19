@@ -325,6 +325,12 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts BH.oM.Architecture.BuildersWork.Opening to a Revit FamilyInstance.")]
+        [Input("opening", "BH.oM.Architecture.BuildersWork.Opening to be converted.")]
+        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("familyInstance", "Revit FamilyInstance resulting from converting the input BH.oM.Architecture.BuildersWork.Opening.")]
         public static Element ToRevit(this BH.oM.Architecture.BuildersWork.Opening opening, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             return opening.ToRevitFamilyInstance(document, settings, refObjects);

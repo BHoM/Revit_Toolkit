@@ -23,6 +23,8 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -33,8 +35,16 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Checks whether the given XYZ point is inside the given Revit element.")]
+        [Input("point", "XYZ point to be checked whether it is inside the element.")]
+        [Input("element", "Revit element to be checked whether it contains the XYZ point.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("inside", "True if the input XYZ point is inside the input Revit element, otherwise false.")]
         public static bool IsInside(this XYZ point, Element element, RevitSettings settings)
         {
+            if (point == null || element == null)
+                return false;
+
             settings = settings.DefaultIfNull();
             double tolerance = settings.DistanceTolerance;
 
@@ -47,9 +57,14 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether the given XYZ point is inside the given Revit solid.")]
+        [Input("point", "XYZ point to be checked whether it is inside the solid.")]
+        [Input("solid", "Revit solid to be checked whether it contains the XYZ point.")]
+        [Input("tolerance", "Distance tolerance to be used while performing the query.")]
+        [Output("inside", "True if the input XYZ point is inside the input Revit solid, otherwise false.")]
         public static bool IsInside(this XYZ point, Solid solid, double tolerance = BH.oM.Geometry.Tolerance.Distance)
         {
-            if (solid == null || solid.Volume < tolerance)
+            if (point == null || solid == null || solid.Volume < tolerance)
                 return false;
 
             SolidCurveIntersectionOptions sco = new SolidCurveIntersectionOptions();
@@ -77,8 +92,16 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether the given XYZ point is inside the given Revit bounding box.")]
+        [Input("point", "XYZ point to be checked whether it is inside the bounding box.")]
+        [Input("bbox", "Revit bounding box to be checked whether it contains the XYZ point.")]
+        [Input("tolerance", "Distance tolerance to be used while performing the query.")]
+        [Output("inside", "True if the input XYZ point is inside the input Revit bounding box, otherwise false.")]
         public static bool IsInside(this XYZ point, BoundingBoxXYZ bbox, double tolerance = BH.oM.Geometry.Tolerance.Distance)
         {
+            if (point == null || bbox == null)
+                return false;
+
             XYZ max = bbox.Max;
             XYZ min = bbox.Min;
 
