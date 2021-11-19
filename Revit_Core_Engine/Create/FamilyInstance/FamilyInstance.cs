@@ -502,7 +502,13 @@ namespace BH.Revit.Engine.Core
             Line location;
             Reference reference;
             if (host != null)
-                location = host.ClosestLineOn(line, out reference);
+            {
+                RevitLinkInstance linkInstance = null;
+                if (document != host.Document)
+                    linkInstance = document.LinkInstance(host.Document.Title);
+
+                location = host.ClosestLineOn(line, out reference, linkInstance);
+            }
             else
             {
                 location = line;
@@ -555,8 +561,12 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
+                RevitLinkInstance linkInstance = null;
+                if (document != host.Document)
+                    linkInstance = document.LinkInstance(host.Document.Title);
+
                 Reference reference;
-                Line location = host.ClosestLineOn(line, out reference);
+                Line location = host.ClosestLineOn(line, out reference, linkInstance);
                 if (location != null && reference != null)
                     familyInstance = document.Create.NewFamilyInstance(reference, location, familySymbol);
 
@@ -710,7 +720,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static Line ClosestLineOn(this Element element, Line refLine, out Reference reference)
+        private static Line ClosestLineOn(this Element element, Line refLine, out Reference reference, RevitLinkInstance linkDocument = null)
         {
             double minDist = double.MaxValue;
             reference = null;
@@ -719,8 +729,15 @@ namespace BH.Revit.Engine.Core
             opt.ComputeReferences = true;
             List<Face> faces = element.Faces(opt);
             IntersectionResult ir1, ir2;
+
             XYZ start = refLine.GetEndPoint(0);
             XYZ end = refLine.GetEndPoint(1);
+            if (linkDocument != null)
+            {
+                start = linkDocument.GetTotalTransform().Inverse.OfPoint(start);
+                end = linkDocument.GetTotalTransform().Inverse.OfPoint(end);
+            }
+
             XYZ startOnFace = null;
             XYZ endOnFace = null;
 
@@ -751,6 +768,13 @@ namespace BH.Revit.Engine.Core
             {
                 string instRef = ((FamilyInstance)element).UniqueId + ":0:INSTANCE:" + reference.ConvertToStableRepresentation(element.Document);
                 reference = Reference.ParseFromStableRepresentation(element.Document, instRef);
+            }
+
+            if (linkDocument != null)
+            {
+                startOnFace = linkDocument.GetTotalTransform().OfPoint(startOnFace);
+                endOnFace = linkDocument.GetTotalTransform().OfPoint(endOnFace);
+                reference = reference.CreateLinkReference(linkDocument);
             }
 
             return Line.CreateBound(startOnFace, endOnFace);
