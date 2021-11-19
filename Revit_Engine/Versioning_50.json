@@ -1,0 +1,5 @@
+﻿{
+  "MessageForDeleted": {
+    "BH.Engine.Adapters.Revit.Query.LinkPath(BH.oM.Base.IBHoMObject)": "Link path information has been replaced with link document name stored under LinkDocument property and avaialble through LinkDocument query."
+  }
+}
