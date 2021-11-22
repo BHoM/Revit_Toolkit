@@ -48,6 +48,8 @@ namespace BH.Revit.Adapter.Core
         public RevitListenerAdapter(UIControlledApplication uIControlledApplication, Document document)
             : base()
         {
+            BH.Engine.Reflection.Compute.LoadAllAssemblies();
+
             m_AdapterSettings.UseAdapterId = false;
 
             m_Document = document;
