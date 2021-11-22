@@ -36,6 +36,9 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Query
     {
+        [Description("Computes the Hash string for a Revit Parameter. This will then be used by the Hash algorithm to compute the overall Hash of an object owning Revit Parameters.")]
+        [Input("propertyFullName", "Full name of the RevitParameter property whose Hash is being computed. This name will be used to seek matches in the ComparisonConfig custom named tolerances/significant figures to determine if any custom numerical approximation should be done.")]
+        [Input("comparisonConfig", "Settings specified for this Hash computation. This can be a RevitComparisonConfig object.")]
         public static string HashString(this RevitParameter revitParameter, string propertyFullName, BaseComparisonConfig comparisonConfig)
         {
             // Null check.
