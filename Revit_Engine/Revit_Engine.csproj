@@ -188,6 +188,7 @@
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
     <Compile Include="Modify\Transform.cs" />
+    <Compile Include="Query\HashString.cs" />
     <Compile Include="Query\ComparisonInclusion.cs" />
     <Compile Include="Query\FilterDescription.cs" />
     <Compile Include="Query\HostId.cs" />

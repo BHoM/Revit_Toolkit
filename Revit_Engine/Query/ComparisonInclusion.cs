@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Base;
 using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Parameters;
@@ -35,37 +36,41 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Query
     {
-        [Description("When Diffing or Hashing, determine if and how `RevitParameter`'s properties should be included. In other words, this method is triggered:" +
-            "\n\t- when Diffing, if a property difference that is within a RevitParameter is found;" +
-            "\n\t- when computing the Hash of an object, if the object has a RevitParameter.")]
-        [Input("revitParameter", "RevitParameter that triggered the property difference or that was found on the object.")]
-        [Input("propertyFullName", "The Full Name of the RevitParameter stored on the object whose Hash/Diffing was being computed.")]
-        [Input("comparisonConfig", "Additional comparison configurations. You can specify a default `ComparisonConfig` or a `RevitComparisonConfig`." +
-            "\nBecause this method is called automatically for you when computing Hash/Diffing, you can specify the ComparisonConfig as an input to the Hash or Diff function.")]
-        public static ComparisonInclusion ComparisonInclusion(this RevitParameter revitParameter, string propertyFullName, BaseComparisonConfig comparisonConfig)
+        [Description("When Diffing (Comparing objects), determine if and how RevitParameters should be considered.")]
+        [Input("parameter1", "First RevitParameter that is being compared.")]
+        [Input("parameter2", "Second RevitParameter that is being compared.")]
+        [Input("propertyFullName", "The Full Name of the RevitParameter stored on the object whose Comparison is being computed.")]
+        [Input("comparisonConfig", "Additional comparison configurations. You can specify a `ComparisonConfig` or a `RevitComparisonConfig`.")]
+        public static ComparisonInclusion ComparisonInclusion(this RevitParameter parameter1, RevitParameter parameter2, string propertyFullName, BaseComparisonConfig comparisonConfig)
         {
             ComparisonInclusion result = new ComparisonInclusion();
-            result.DisplayName = revitParameter.Name + " (RevitParameter)"; // differences in any property of RevitParameters will be displayed like this.
+            result.DisplayName = parameter1.Name + " (RevitParameter)"; // differences in any property of RevitParameters will be displayed like this.
 
-            // Check if the caller (the Diffing or Hashing process) had a RevitComparisonConfig input.
+            // Check if we have a RevitComparisonConfig input.
             RevitComparisonConfig rcc = comparisonConfig as RevitComparisonConfig;
-            if (rcc == null)
-                return result;
-
-            // If a RevitComparisonConfig was input, check the ParametersToConsider.
-            // If there is at least one name in the list, make sure that the current revitParameter's Name is contained in the list.
-            if ((rcc.ParametersToConsider?.Any() ?? false) && !rcc.ParametersToConsider.Contains(revitParameter.Name))
+            if (rcc != null)
             {
-                // The parameter is not within the ParametersToConsider.
-                result.Include = false; // RevitParameter must be skipped
-                return result; 
-            }
+                // Check the ParametersToConsider: if there is at least one name in the list, make sure that the current revitParameter's Name is contained in the list.
+                if ((rcc.ParametersToConsider?.Any() ?? false) && !rcc.ParametersToConsider.Contains(parameter1.Name) || !rcc.ParametersToConsider.Any(ptc => parameter1.Name.WildcardMatch(ptc)))
+                {
+                    // The parameter is not within the ParametersToConsider.
+                    result.Include = false; // RevitParameter must be skipped
+                    return result;
+                }
 
-            // If a RevitComparisonConfig was input, check if the current revitParameter is within the ParametersExceptions.
-            if (rcc.ParametersExceptions?.Contains(revitParameter.Name) ?? false)
-            {
-                result.Include = false; // RevitParameter must be skipped
-                return result;
+                // Check if the current revitParameter is within the ParametersExceptions.
+                if ((rcc.ParametersExceptions?.Any() ?? false) && rcc.ParametersExceptions.Contains(parameter1.Name) || rcc.ParametersExceptions.Any(ptc => parameter1.Name.WildcardMatch(ptc)) 
+                {
+                    result.Include = false; // RevitParameter must be skipped
+                    return result;
+                }
+
+                // Check the difference in the RevitParameters is a numerical difference, and if so whether it should be included given the input tolerances/significantFigures.
+                if (!BH.Engine.Diffing.Query.NumericalDifferenceInclusion(parameter1.Value, parameter2.Value, parameter1.Name, rcc.NumericTolerance, rcc.SignificantFigures, rcc.ParameterNumericTolerances, rcc.ParameterSignificantFigures))
+                {
+                    result.Include = false; // RevitParameter must be skipped
+                    return result;
+                }
             }
 
             return result; // pass the RevitParameter (do not skip it)

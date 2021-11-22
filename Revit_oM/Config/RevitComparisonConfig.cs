@@ -44,6 +44,18 @@ namespace BH.oM.Adapters.Revit
             "If this list is populated with one or more values, it takes higher priority over `ParametersExceptions`.")]
         public virtual List<string> ParametersToConsider { get; set; } = new List<string>() { };
 
+        [Description("Tolerance used for individual RevitParameters. When computing Hash or the property Diffing, if the analysed property name is found in this collection, the corresponding tolerance is applied." +
+            "\nSupports * wildcard in the property name matching. E.g. `StartNode.Point.*, 2`." +
+            "\nIf a match is found, this take precedence over the global `NumericTolerance`." +
+            "\nIf conflicting values/multiple matches are found among the Configurations on numerical precision, the largest approximation among all (least precise number) is registered.")]
+        public virtual HashSet<NamedNumericTolerance> ParameterNumericTolerances { get; set; } = new HashSet<NamedNumericTolerance>();
+
+        [Description("Number of significant figures allowed for numerical data on a per-RevitParameter base. " +
+             "\nSupports * wildcard in the property name matching. E.g. `StartNode.Point.*, 2`." +
+             "\nIf a match is found, this take precedence over the global `SignificantFigures`." +
+             "\nIf conflicting values/multiple matches are found among the Configurations on numerical precision, the largest approximation among all (least precise number) is registered.")]
+        public virtual HashSet<NamedSignificantFigures> ParameterSignificantFigures { get; set; } = new HashSet<NamedSignificantFigures>();
+
         /***************************************************/
     }
 }
