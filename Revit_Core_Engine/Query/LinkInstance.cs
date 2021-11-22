@@ -34,29 +34,43 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("From the current Revit document, extracts  the instance of RevitLinkInstance object that wraps the given linked Revit document.")]
+        [Description("From the host Revit document, extracts  the instance of RevitLinkInstance object that wraps the given linked Revit document.")]
         [Input("linkDocument", "Revit link document to be queried for its representative RevitLinkInstance object.")]
+        [Input("hostDocument", "Revit host document to be searched for the relevant RevitLinkInstance object.")]
         [Output("linkInstance", "RevitLinkInstance object wrapping the input Revit link document.")]
-        public static RevitLinkInstance LinkInstance(this Document linkDocument)
+        public static RevitLinkInstance LinkInstance(this Document linkDocument, Document hostDocument)
         {
             if (linkDocument == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Link instance object cannot be queried from a null document.");
+                BH.Engine.Reflection.Compute.RecordError("Link instance object cannot be queried from a null link document.");
                 return null;
             }
 
-            Document mainDoc = linkDocument.HostDocument();
-            if (linkDocument == mainDoc)
+            if (hostDocument == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Link instance object cannot be queried from a null host document.");
+                return null;
+            }
+
+            if (linkDocument == hostDocument)
             {
                 BH.Engine.Reflection.Compute.RecordWarning($"The document under path {linkDocument.PathName} is a host document.");
                 return null;
             }
 
-            RevitLinkInstance linkInstance = new FilteredElementCollector(mainDoc).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().FirstOrDefault(x => x.GetLinkDocument().PathName == linkDocument.PathName);
+            RevitLinkInstance linkInstance = new FilteredElementCollector(hostDocument).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().FirstOrDefault(x => x.GetLinkDocument().PathName == linkDocument.PathName);
             if (linkInstance == null)
                 BH.Engine.Reflection.Compute.RecordError($"The link pointing to path {linkDocument.PathName} could not be found in active Revit document.");
 
             return linkInstance;
+        }
+
+        [Description("From the current Revit document, extracts  the instance of RevitLinkInstance object that wraps the given linked Revit document.")]
+        [Input("linkDocument", "Revit link document to be queried for its representative RevitLinkInstance object.")]
+        [Output("linkInstance", "RevitLinkInstance object wrapping the input Revit link document.")]
+        public static RevitLinkInstance LinkInstance(this Document linkDocument)
+        {
+            return linkDocument?.LinkInstance(linkDocument.HostDocument());
         }
 
         /***************************************************/

@@ -463,7 +463,11 @@ namespace BH.Revit.Engine.Core
                         }
                         else
                         {
-                            Autodesk.Revit.DB.Face face = element.Host.GetGeometryObjectFromReference(element.HostFace) as Autodesk.Revit.DB.Face;
+                            Reference reference = element.HostFace;
+                            if (element.Document != element.Host.Document)
+                                reference = reference.CreateLinkReference(element.Host.Document.LinkInstance(element.Document));
+
+                            Autodesk.Revit.DB.Face face = element.Host.GetGeometryObjectFromReference(reference) as Autodesk.Revit.DB.Face;
 
                             XYZ toProject = newLocation;
                             Transform instanceTransform = null;
