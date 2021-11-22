@@ -51,7 +51,7 @@ namespace BH.Engine.Adapters.Revit
             if (rcc != null)
             {
                 // Check the ParametersToConsider: if there is at least one name in the list, make sure that the current revitParameter's Name is contained in the list.
-                if ((rcc.ParametersToConsider?.Any() ?? false) && !rcc.ParametersToConsider.Contains(parameter1.Name) || !rcc.ParametersToConsider.Any(ptc => parameter1.Name.WildcardMatch(ptc)))
+                if ((rcc.ParametersToConsider?.Any() ?? false) && !rcc.ParametersToConsider.Any(ptc => parameter1.Name == ptc || parameter1.Name.WildcardMatch(ptc)))
                 {
                     // The parameter is not within the ParametersToConsider.
                     result.Include = false; // RevitParameter must be skipped
@@ -59,7 +59,7 @@ namespace BH.Engine.Adapters.Revit
                 }
 
                 // Check if the current revitParameter is within the ParametersExceptions.
-                if ((rcc.ParametersExceptions?.Any() ?? false) && rcc.ParametersExceptions.Contains(parameter1.Name) || rcc.ParametersExceptions.Any(ptc => parameter1.Name.WildcardMatch(ptc)) 
+                if ((rcc.ParametersExceptions?.Any() ?? false) && rcc.ParametersExceptions.Any(ptc => parameter1.Name == ptc || parameter1.Name.WildcardMatch(ptc))) 
                 {
                     result.Include = false; // RevitParameter must be skipped
                     return result;
