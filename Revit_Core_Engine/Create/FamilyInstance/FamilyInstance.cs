@@ -722,25 +722,25 @@ namespace BH.Revit.Engine.Core
 
         private static Line ClosestLineOn(this Element element, Line refLine, out Reference reference, RevitLinkInstance linkDocument = null)
         {
-            double minDist = double.MaxValue;
             reference = null;
+
+            if (linkDocument != null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Revit API seems to currently not support curve-based family instances hosted on linked elements.");
+                return null;
+            }
 
             Options opt = new Options();
             opt.ComputeReferences = true;
             List<Face> faces = element.Faces(opt);
             IntersectionResult ir1, ir2;
-
             XYZ start = refLine.GetEndPoint(0);
             XYZ end = refLine.GetEndPoint(1);
-            if (linkDocument != null)
-            {
-                start = linkDocument.GetTotalTransform().Inverse.OfPoint(start);
-                end = linkDocument.GetTotalTransform().Inverse.OfPoint(end);
-            }
 
             XYZ startOnFace = null;
             XYZ endOnFace = null;
 
+            double minDist = double.MaxValue;
             foreach (Face face in faces)
             {
                 if (!(face is PlanarFace))
@@ -768,13 +768,6 @@ namespace BH.Revit.Engine.Core
             {
                 string instRef = ((FamilyInstance)element).UniqueId + ":0:INSTANCE:" + reference.ConvertToStableRepresentation(element.Document);
                 reference = Reference.ParseFromStableRepresentation(element.Document, instRef);
-            }
-
-            if (linkDocument != null)
-            {
-                startOnFace = linkDocument.GetTotalTransform().OfPoint(startOnFace);
-                endOnFace = linkDocument.GetTotalTransform().OfPoint(endOnFace);
-                reference = reference.CreateLinkReference(linkDocument);
             }
 
             return Line.CreateBound(startOnFace, endOnFace);
