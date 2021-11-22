@@ -463,12 +463,18 @@ namespace BH.Revit.Engine.Core
                         }
                         else
                         {
-                            Reference reference = element.HostFace;
-                            if (element.Document != element.Host.Document)
-                                reference = reference.CreateLinkReference(element.Host.Document.LinkInstance(element.Document));
-
-                            Autodesk.Revit.DB.Face face = element.Host.GetGeometryObjectFromReference(reference) as Autodesk.Revit.DB.Face;
-
+                            Autodesk.Revit.DB.Face face;
+                            Transform linkTransform = null;
+                            if (element.Host is RevitLinkInstance)
+                            {
+                                Element linkElement = ((RevitLinkInstance)element.Host).GetLinkDocument().GetElement(element.HostFace.LinkedElementId);
+                                face = linkElement.GetGeometryObjectFromReference(element.HostFace.CreateReferenceInLink()) as Autodesk.Revit.DB.Face;
+                                linkTransform = ((RevitLinkInstance)element.Host).GetTotalTransform();
+                                newLocation = linkTransform.Inverse.OfPoint(newLocation);
+                            }
+                            else
+                                face = element.Host.GetGeometryObjectFromReference(element.HostFace) as Autodesk.Revit.DB.Face;
+                        
                             XYZ toProject = newLocation;
                             Transform instanceTransform = null;
                             if (element.Host is FamilyInstance && !((FamilyInstance)element.Host).HasModifiedGeometry())
@@ -486,7 +492,10 @@ namespace BH.Revit.Engine.Core
 
                             newLocation = ir.XYZPoint;
                             if (instanceTransform != null)
-                                newLocation = (instanceTransform.OfPoint(newLocation));
+                                newLocation = instanceTransform.OfPoint(newLocation);
+
+                            if (linkTransform != null)
+                                newLocation = linkTransform.OfPoint(newLocation);
 
                             if (ir.Distance > settings.DistanceTolerance)
                                 BH.Engine.Reflection.Compute.RecordWarning($"The location point used on update of a family instance has been snapped to its host face. ElementId: {element.Id.IntegerValue}");
