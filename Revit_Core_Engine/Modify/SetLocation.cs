@@ -463,23 +463,24 @@ namespace BH.Revit.Engine.Core
                         }
                         else
                         {
-                            Autodesk.Revit.DB.Face face;
                             Transform linkTransform = null;
+                            Element hostElement = element.Host;
+                            Reference reference = element.HostFace;
                             if (element.Host is RevitLinkInstance)
                             {
-                                Element linkElement = ((RevitLinkInstance)element.Host).GetLinkDocument().GetElement(element.HostFace.LinkedElementId);
-                                face = linkElement.GetGeometryObjectFromReference(element.HostFace.CreateReferenceInLink()) as Autodesk.Revit.DB.Face;
+                                hostElement = ((RevitLinkInstance)element.Host).GetLinkDocument().GetElement(element.HostFace.LinkedElementId);
+                                reference = element.HostFace.CreateReferenceInLink();
                                 linkTransform = ((RevitLinkInstance)element.Host).GetTotalTransform();
                                 newLocation = linkTransform.Inverse.OfPoint(newLocation);
                             }
-                            else
-                                face = element.Host.GetGeometryObjectFromReference(element.HostFace) as Autodesk.Revit.DB.Face;
+
+                            Autodesk.Revit.DB.Face face = hostElement.GetGeometryObjectFromReference(reference) as Autodesk.Revit.DB.Face;
                         
                             XYZ toProject = newLocation;
                             Transform instanceTransform = null;
-                            if (element.Host is FamilyInstance && !((FamilyInstance)element.Host).HasModifiedGeometry())
+                            if (hostElement is FamilyInstance && !((FamilyInstance)hostElement).HasModifiedGeometry())
                             {
-                                instanceTransform = ((FamilyInstance)element.Host).GetTotalTransform();
+                                instanceTransform = ((FamilyInstance)hostElement).GetTotalTransform();
                                 toProject = (instanceTransform.Inverse.OfPoint(newLocation));
                             }
 
