@@ -25,6 +25,7 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Reflection;
 using BH.oM.Reflection.Attributes;
 using System;
 using System.ComponentModel;
@@ -256,7 +257,22 @@ namespace BH.Revit.Engine.Core
 
         private static void ErrorOnHostChange(this FamilyInstance element, IBHoMObject bHoMObject)
         {
-            if (((element.Host == null || element.Host is ReferencePlane) && bHoMObject.HostInformation().Item1 != -1) || (element.Host != null && !(element.Host is ReferencePlane) && element.Host.Id.IntegerValue != bHoMObject.HostInformation().Item1))
+            bool ok = true;
+            Output<int, string> hostInfo = bHoMObject.HostInformation();
+            int hostId = hostInfo.Item1;
+            if (hostId == -1)
+                ok = element.Host == null || element.Host is ReferencePlane;
+            else
+            {
+                if (element.Host == null)
+                    ok = false;
+                else if (element.Host is RevitLinkInstance)
+                    ok = hostId == element.HostFace?.LinkedElementId.IntegerValue && hostInfo.Item2 == (element.Document.GetElement(element.Host.GetTypeId()) as RevitLinkType)?.Name;
+                else
+                    ok = hostId == element.Host.Id.IntegerValue;
+            }
+
+            if (!ok)
                 BH.Engine.Reflection.Compute.RecordWarning($"Updating the host of an existing hosted element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
         }
 
