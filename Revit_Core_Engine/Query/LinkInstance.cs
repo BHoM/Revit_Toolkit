@@ -52,7 +52,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            if (linkDocument == hostDocument)
+            if (linkDocument.PathName == hostDocument.PathName)
             {
                 BH.Engine.Reflection.Compute.RecordWarning($"The document under path {linkDocument.PathName} is a host document.");
                 return null;

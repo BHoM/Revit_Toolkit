@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Reflection.Attributes;
 using BH.oM.Revit;
@@ -71,7 +72,17 @@ namespace BH.Revit.Engine.Core
                     BH.Engine.Reflection.Compute.RecordWarning("The Revit element has been identified as hosted on a linked element, but the host could not be identified.");
             }
             else
+            {
                 hostId = host.Id.IntegerValue;
+                if (host.Document.IsLinked)
+                {
+                    RevitLinkInstance linkInstance = host.Document.LinkInstance(new UIApplication(host.Document.Application).ActiveUIDocument.Document);
+                    if (linkInstance != null)
+                        hostLink = (familyInstance.Document.GetElement(linkInstance.GetTypeId()) as RevitLinkType)?.Name;
+                    else
+                        BH.Engine.Reflection.Compute.RecordWarning("The Revit element has been identified as hosted on a linked element, but the link document could not be identified.");
+                }
+            }
 
             return new RevitHostFragment(hostId, hostLink);
         }
