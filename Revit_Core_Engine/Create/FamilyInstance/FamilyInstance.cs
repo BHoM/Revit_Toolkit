@@ -699,7 +699,10 @@ namespace BH.Revit.Engine.Core
             }
 
             if (pointOnFace == null || reference == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("The input location of the created FamilyInstance could not be snapped to the host element.");
                 return null;
+            }
 
             closest = !(refPoint.DistanceTo(pointOnFace) - minDist > settings.DistanceTolerance);
 
@@ -762,7 +765,10 @@ namespace BH.Revit.Engine.Core
             }
 
             if (startOnFace == null || endOnFace == null || reference == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("The input location of the created FamilyInstance could not be snapped to the host element.");
                 return null;
+            }
 
             if (element is FamilyInstance && !((FamilyInstance)element).HasModifiedGeometry())
             {
