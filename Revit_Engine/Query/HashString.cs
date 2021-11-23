@@ -39,7 +39,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Computes the Hash string for a Revit Parameter. This will then be used by the Hash algorithm to compute the overall Hash of an object owning Revit Parameters.")]
         [Input("propertyFullName", "Full name of the RevitParameter property whose Hash is being computed. This name will be used to seek matches in the ComparisonConfig custom named tolerances/significant figures to determine if any custom numerical approximation should be done.")]
         [Input("comparisonConfig", "Settings specified for this Hash computation. This can be a RevitComparisonConfig object.")]
-        public static string HashString(this RevitParameter revitParameter, string propertyFullName, BaseComparisonConfig comparisonConfig)
+        public static string HashString(this RevitParameter revitParameter, string propertyFullName = null, BaseComparisonConfig comparisonConfig = null)
         {
             // Null check.
             if (revitParameter == null)
@@ -76,8 +76,8 @@ namespace BH.Engine.Adapters.Revit
                 }
             }
 
-            // Pass the RevitParameter (do not skip it). Return a string that uniquely represents this object.
-            return revitParameter.Name + revitParameter.Value;
+            // Pass the RevitParameter (do not skip it). Return a string that represents this RevitParameter.
+            return $"{revitParameter.Name}:{revitParameter.Value}";
         }
     }
 }
