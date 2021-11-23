@@ -83,7 +83,6 @@ namespace BH.Revit.Engine.Core
             familyInstance = BH.Revit.Engine.Core.Create.FamilyInstance(document, familySymbol, opening.CoordinateSystem.Origin.ToRevit(), orientation, host, settings);
             document.Regenerate();
 
-            familyInstance.CheckIfNullPush(opening);
             if (familyInstance == null)
                 return null;
 
