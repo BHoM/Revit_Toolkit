@@ -570,7 +570,7 @@ namespace BH.Revit.Engine.Core
                 if (location != null && reference != null)
                     familyInstance = document.Create.NewFamilyInstance(reference, location, familySymbol);
 
-                if (familyInstance != null && location.GetEndPoint(0).DistanceTo(line.GetEndPoint(0)) > settings.DistanceTolerance || location.GetEndPoint(1).DistanceTo(line.GetEndPoint(1)) > settings.DistanceTolerance)
+                if (familyInstance != null && (location.GetEndPoint(0).DistanceTo(line.GetEndPoint(0)) > settings.DistanceTolerance || location.GetEndPoint(1).DistanceTo(line.GetEndPoint(1)) > settings.DistanceTolerance))
                     BH.Engine.Reflection.Compute.RecordWarning($"The location line of the created family instance has been snapped to the closest face of the host element. ElementId: {familyInstance.Id.IntegerValue}");
             }
 
