@@ -22,7 +22,9 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Parameters;
+using BH.oM.Reflection.Attributes;
 using System;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +34,9 @@ namespace BH.Revit.Engine.Core
         /****             Interface methods             ****/
         /***************************************************/
 
+        [Description("Extracts the identification information from a given Revit element and returns it in a form of RevitIdentifiers fragment.")]
+        [Input("element", "Revit element to be queried for its identification information.")]
+        [Output("identifiers", "Input Revit element's identification information in a form of RevitIdentifiers fragment.")]
         public static RevitIdentifiers IIdentifiers(this Element element)
         {
             return Identifiers(element as dynamic);
@@ -42,6 +47,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the identification information from a given Revit family and returns it in a form of RevitIdentifiers fragment.")]
+        [Input("family", "Revit family to be queried for its identification information.")]
+        [Output("identifiers", "Input Revit family's identification information in a form of RevitIdentifiers fragment.")]
         public static RevitIdentifiers Identifiers(this Family family)
         {
             return new RevitIdentifiers(family.UniqueId, family.Id.IntegerValue, family.FamilyCategory.Name, family.Name);
@@ -49,6 +57,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Extracts the identification information from a given Revit graphics style and returns it in a form of RevitIdentifiers fragment.")]
+        [Input("graphicsStyle", "Revit graphics style to be queried for its identification information.")]
+        [Output("identifiers", "Input Revit graphics style's identification information in a form of RevitIdentifiers fragment.")]
         public static RevitIdentifiers Identifiers(this GraphicsStyle graphicsStyle)
         {
             return new RevitIdentifiers(graphicsStyle.UniqueId, graphicsStyle.Id.IntegerValue, graphicsStyle.GraphicsStyleCategory.Parent.Name);
@@ -56,6 +67,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Extracts the identification information from a given Revit element type and returns it in a form of RevitIdentifiers fragment.")]
+        [Input("elementType", "Revit element type to be queried for its identification information.")]
+        [Output("identifiers", "Input Revit element type's identification information in a form of RevitIdentifiers fragment.")]
         public static RevitIdentifiers Identifiers(this ElementType elementType)
         {
             return new RevitIdentifiers(elementType.UniqueId, elementType.Id.IntegerValue, elementType.Category?.Name, elementType.FamilyName, elementType.Name, elementType.Id.IntegerValue);
@@ -63,6 +77,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Extracts the identification information from a given Revit element and returns it in a form of RevitIdentifiers fragment.")]
+        [Input("element", "Revit element to be queried for its identification information.")]
+        [Output("identifiers", "Input Revit element's identification information in a form of RevitIdentifiers fragment.")]
         public static RevitIdentifiers Identifiers(this Element element)
         {
             if (element == null)

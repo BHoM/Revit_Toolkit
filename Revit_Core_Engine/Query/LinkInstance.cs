@@ -75,7 +75,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Looks for the Revit link instance under the given name, path or ElementId in the given Revit document")]
+        [Description("Looks for the Revit link instance under the given name, path or ElementId in the given Revit document.")]
         [Input("hostDocument", "Revit document to be searched for the Revit link instance.")]
         [Input("instanceName", "Name of the Revit link document to be searched for. Alternatively, full path or ElementId of the document can be used.")]
         [Output("linkInstance", "Revit link instance object wrapping the document with the input name, path or ElementId.")]
