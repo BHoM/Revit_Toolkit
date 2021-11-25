@@ -46,6 +46,9 @@ namespace BH.Revit.Engine.Core
         [Output("closestElement", "The closest element from the input element.")]
         public static Element ClosestElement(this Document document, Element originalElement, double searchRadius = Double.MaxValue, BuiltInCategory category = default, bool includeLinks = false)
         {
+            if (document == null || originalElement == null)
+                return null;
+            
             List<Document> documentsToSearch = new List<Document>(){document};
             if (includeLinks)
             {
@@ -54,11 +57,15 @@ namespace BH.Revit.Engine.Core
                 {
                     foreach (ElementId id in linkInstancesIds)
                     {
-                        RevitLinkInstance linkInstance = document.GetElement(id) as RevitLinkInstance;
-                        Document doc = linkInstance.GetLinkDocument();
-                        // Linked files that are not loaded will be null
-                        if(doc != null)
-                            documentsToSearch.Add(doc);
+                        try
+                        {
+                            RevitLinkInstance linkInstance = document.GetElement(id) as RevitLinkInstance;
+                            Document doc = linkInstance.GetLinkDocument();
+                            // Linked files that are not loaded will be null
+                            if(doc != null)
+                                documentsToSearch.Add(doc);
+                        }
+                        catch (Exception e){}
                     }
                 }
             }
