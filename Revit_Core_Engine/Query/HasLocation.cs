@@ -44,18 +44,7 @@ namespace BH.Revit.Engine.Core
         [Output("hasLocation", "True if the element's Location property is of one of the allowed types.")]
         public static bool HasLocation(this Element element, bool allowLocationPoint = true, bool allowLocationCurve = true)
         {
-            if (element.Location != null)
-            {
-                if (element.Location is LocationPoint && !allowLocationPoint)
-                    return false;
-
-                if (element.Location is LocationCurve && !allowLocationCurve)
-                    return false;
-                
-                return true;
-            }
-
-            return false;
+            return ((allowLocationPoint && element?.Location is LocationPoint) ||(allowLocationCurve && element?.Location is LocationCurve));
         }
         
         /***************************************************/

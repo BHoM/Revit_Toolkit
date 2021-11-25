@@ -47,7 +47,7 @@ namespace BH.Revit.Engine.Core
         public static Element ClosestElement(this Document document, Element originalElement, double searchRadius = Double.MaxValue, BuiltInCategory category = default, bool includeLinks = false)
         {
             List<Document> documentsToSearch = new List<Document>(){document};
-            if (includeLinkInstance)
+            if (includeLinks)
             {
                 List<ElementId> linkInstancesIds = Core.Query.ElementIdsOfLinkInstances(document);
                 if (linkInstancesIds.Any())
@@ -75,35 +75,37 @@ namespace BH.Revit.Engine.Core
             foreach (Document doc in documentsToSearch)
             {
                 FilteredElementCollector filteredElementCollector = new FilteredElementCollector(doc).WhereElementIsNotElementType();
-                if (builtInCategory != default)
+                if (category != default)
                 {
-                    filteredElementCollector.OfCategory(builtInCategory).Where(x=>x.HasLocation(true,false));
-                }
-                else
-                {
-                    filteredElementCollector.Where(x => x.HasLocation());
+                    filteredElementCollector.OfCategory(category);
                 }
                 
-                if (filteredElementCollector.Any())
+                IEnumerable<Element> elements = filteredElementCollector.Where(x=>x.HasLocation(true,false));
+
+                //if document is from linked file we need to make sure location is corrected
+                Transform transform = null;
+                if(doc.LinkInstance() != null)
+                    transform = doc.LinkTransform();
+                
+                // check distances to each element from category 
+                foreach (Element searchedElement in elements)
                 {
-                    // check distances to each element from category 
-                    foreach (Element searchedElement in filteredElementCollector)
+                    Location searchedLocation = searchedElement.Location;
+                    XYZ searchedPoint = (searchedLocation as LocationPoint).Point;
+
+                    // fix location if from linked file
+                    if (transform != null)
+                        searchedPoint = transform.OfPoint(searchedPoint);
+                    
+                    double distance = searchedPoint.DistanceTo(point);
+                    if (distance < smallestDistance)
                     {
-                        Location searchedLocation = searchedElement.Location;
-                        if (searchedLocation is LocationPoint)
-                        {
-                            XYZ searchedPoint = (searchedLocation as LocationPoint).Point;
-                            double distance = searchedPoint.DistanceTo(point);
-                            if (distance < smallestDistance)
-                            {
-                                result = searchedElement;
-                                smallestDistance = distance;
-                            }
-                        }
+                        result = searchedElement;
+                        smallestDistance = distance;
                     }
                 }
             }
-            
+             
             return result;
         }
         
