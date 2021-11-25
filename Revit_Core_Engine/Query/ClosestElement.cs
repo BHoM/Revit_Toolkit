@@ -55,7 +55,10 @@ namespace BH.Revit.Engine.Core
                     foreach (ElementId id in linkInstancesIds)
                     {
                         RevitLinkInstance linkInstance = document.GetElement(id) as RevitLinkInstance;
-                        documentsToSearch.Add(linkInstance.GetLinkDocument());
+                        Document doc = linkInstance.GetLinkDocument();
+                        // Linked files that are not loaded will be null
+                        if(doc != null)
+                            documentsToSearch.Add(doc);
                     }
                 }
             }
