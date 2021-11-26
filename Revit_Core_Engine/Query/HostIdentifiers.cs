@@ -41,6 +41,9 @@ namespace BH.Revit.Engine.Core
         [Output("hostFragment", "BHoM RevitHostFragment containing the information about the host element of the input Revit element. Null if the input element is not hosted.")]
         public static RevitHostFragment IHostIdentifiers(this Element element)
         {
+            if (element == null)
+                return null;
+
             return HostIdentifiers(element as dynamic);
         }
 
