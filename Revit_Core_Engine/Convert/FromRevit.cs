@@ -48,7 +48,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("fromRevit", "Resulted BHoM object converted from a Revit Element.")]
-        public static object IFromRevit(this Element element, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static IEnumerable<IBHoMObject> IFromRevit(this Element element, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             return FromRevit(element as dynamic, discipline, transform, settings, refObjects);
         }

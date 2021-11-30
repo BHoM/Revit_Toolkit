@@ -232,30 +232,21 @@ namespace BH.Revit.Adapter.Core
             if (element == null || !element.IsValidObject)
                 return new List<IBHoMObject>();
 
-            object obj = null;
+            List<IBHoMObject> result = null;
             try
             {
-                obj = element.IFromRevit(discipline, transform, settings, refObjects);
+                result = element.IFromRevit(discipline, transform, settings, refObjects).ToList();
             }
             catch (Exception exception)
             {
                 BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, exception.Message));
             }
-            
-            List<IBHoMObject> result = new List<IBHoMObject>();
-            if (obj != null)
-            {
-                if (obj is IBHoMObject)
-                    result.Add((IBHoMObject)obj);
-                else if (obj is IEnumerable<IBHoMObject>)
-                    result.AddRange((IEnumerable<IBHoMObject>)obj);
-            }
 
-            //Assign Tags
-            string tagsParameterName = null;
-            if (settings != null)
-                tagsParameterName = settings.MappingSettings.TagsParameter;
-
+            if (result == null)
+                return new List<IBHoMObject>();
+                
+            // Set tags
+            string tagsParameterName = settings?.MappingSettings?.TagsParameter;
             if (!string.IsNullOrEmpty(tagsParameterName))
             {
                 foreach(IBHoMObject o in result)
