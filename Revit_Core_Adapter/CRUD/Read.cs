@@ -235,7 +235,7 @@ namespace BH.Revit.Adapter.Core
             List<IBHoMObject> result = null;
             try
             {
-                result = element.IFromRevit(discipline, transform, settings, refObjects).ToList();
+                result = element.IFromRevit(discipline, transform, settings, refObjects);
             }
             catch (Exception exception)
             {
