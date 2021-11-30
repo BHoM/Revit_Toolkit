@@ -48,7 +48,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("fromRevit", "Resulted BHoM object converted from a Revit Element.")]
-        public static IEnumerable<IBHoMObject> IFromRevit(this Element element, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<IBHoMObject> IFromRevit(this Element element, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             return FromRevit(element as dynamic, discipline, transform, settings, refObjects);
         }
@@ -78,7 +78,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("fromRevit", "Resulted BHoM object converted from a Revit EnergyAnalysisDetailModel.")]
-        public static IEnumerable<IBHoMObject> FromRevit(this EnergyAnalysisDetailModel energyAnalysisModel, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<IBHoMObject> FromRevit(this EnergyAnalysisDetailModel energyAnalysisModel, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (energyAnalysisModel == null)
             {
@@ -104,7 +104,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("fromRevit", "Resulted BHoM object converted from a Revit Element.")]
-        public static IEnumerable<IBHoMObject> FromRevit(this Element element, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<IBHoMObject> FromRevit(this Element element, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (element == null)
             {
