@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Base;
 using BH.Engine.Geometry;
 using BH.Engine.Graphics;
 using BH.oM.Adapter;
@@ -56,23 +57,35 @@ namespace BH.Revit.Adapter.Core
                 return new List<IBHoMObject>();
             }
 
-            RevitPullConfig pullConfig = actionConfig as RevitPullConfig;
-            if (pullConfig == null)
+            if (actionConfig != null && !(actionConfig is RevitPullConfig))
             {
                 BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided actionConfig is not a valid RevitPullConfig.");
                 return new List<IBHoMObject>();
             }
 
-            Discipline? requestDiscipline = request.Discipline(pullConfig.Discipline);
+            RevitPullConfig pullConfig = (actionConfig as RevitPullConfig).DefaultIfNull();
+
+            Discipline? requestDiscipline = request.Discipline();
             if (requestDiscipline == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Conflicting disciplines have been detected.");
+                BH.Engine.Reflection.Compute.RecordError("Conflicting disciplines have been detected inside the provided request.");
                 return new List<IBHoMObject>();
             }
 
-            Discipline discipline = requestDiscipline.Value;
-            if (discipline == Discipline.Undefined)
-                discipline = Discipline.Physical;
+            if (pullConfig.Discipline != requestDiscipline)
+            {
+                if (pullConfig.Discipline == Discipline.Undefined)
+                {
+                    pullConfig = pullConfig.DeepClone();
+                    pullConfig.Discipline = requestDiscipline.Value;
+                    BH.Engine.Reflection.Compute.RecordNote($"Discipline {pullConfig.Discipline} has been deducted from the provided request and will be used in the Pull.");
+                }
+                else if (requestDiscipline != Discipline.Undefined)
+                {
+                    BH.Engine.Reflection.Compute.RecordError("Discipline set in Revit pull config conflicts with the discipline deducted from the provided request.");
+                    return new List<IBHoMObject>();
+                }
+            }
 
             Dictionary<Document, IRequest> requestsByLinks = request.SplitRequestTreeByLinks(this.Document);
             if (requestsByLinks == null)
@@ -86,12 +99,8 @@ namespace BH.Revit.Adapter.Core
             List<IBHoMObject> result = new List<IBHoMObject>();
             foreach (KeyValuePair<Document, IRequest> requestByLink in requestsByLinks)
             {
-                result.AddRange(Read(requestByLink.Key, requestByLink.Value, pullConfig, discipline, settings));
+                result.AddRange(Read(requestByLink.Key, requestByLink.Value, pullConfig, settings));
             }
-            
-            bool?[] activePulls = new bool?[] { pullConfig.GeometryConfig?.PullEdges, pullConfig.GeometryConfig?.PullSurfaces, pullConfig.GeometryConfig?.PullMeshes, pullConfig.RepresentationConfig?.PullRenderMesh };
-            if (activePulls.Count(x => x == true) > 1)
-                BH.Engine.Reflection.Compute.RecordWarning("Pull of more than one geometry/representation type has been specified in RevitPullConfig. Please consider this can be time consuming due to the amount of conversions.");
 
             this.UIDocument.Selection.SetElementIds(selected);
 
@@ -103,17 +112,28 @@ namespace BH.Revit.Adapter.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static IEnumerable<IBHoMObject> Read(Document document, IRequest request, RevitPullConfig pullConfig, Discipline discipline, RevitSettings settings)
+        public static List<IBHoMObject> Read(Document document, IRequest request, RevitPullConfig pullConfig = null, RevitSettings settings = null)
         {
-            Transform linkTransform = null;
-            if (document.IsLinked)
-                linkTransform = document.LinkTransform();
+            if (document == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided Revit document is null.");
+                return new List<IBHoMObject>();
+            }
+
+            if (request == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided IRequest is null.");
+                return new List<IBHoMObject>();
+            }
+
+            pullConfig = pullConfig.DefaultIfNull();
+            settings = settings.DefaultIfNull();
 
             IEnumerable<ElementId> worksetPrefilter = null;
             if (!pullConfig.IncludeClosedWorksets)
                 worksetPrefilter = document.ElementIdsByWorksets(document.OpenWorksetIds().Union(document.SystemWorksetIds()).ToList());
 
-            List<ElementId> elementIds = request.IElementIds(document, discipline, settings, worksetPrefilter).RemoveGridSegmentIds(document)?.ToList();
+            List<ElementId> elementIds = request.IElementIds(document, pullConfig.Discipline, settings, worksetPrefilter).RemoveGridSegmentIds(document)?.ToList();
             if (elementIds == null)
                 return new List<IBHoMObject>();
 
@@ -133,6 +153,28 @@ namespace BH.Revit.Adapter.Core
                 elementIds.AddRange(elemIds);
             }
 
+            return Read(document, elementIds, pullConfig, settings);
+        }
+
+        /***************************************************/
+
+        public static List<IBHoMObject> Read(Document document, List<ElementId> elementIds, RevitPullConfig pullConfig = null, RevitSettings settings = null)
+        {
+            if (document == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided Revit document is null.");
+                return new List<IBHoMObject>();
+            }
+
+            if (elementIds == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided element ids are null.");
+                return new List<IBHoMObject>();
+            }
+
+            pullConfig = pullConfig.DefaultIfNull();
+            settings = settings.DefaultIfNull();
+
             PullGeometryConfig geometryConfig = pullConfig.GeometryConfig;
             if (geometryConfig == null)
                 geometryConfig = new PullGeometryConfig();
@@ -141,17 +183,28 @@ namespace BH.Revit.Adapter.Core
             if (representationConfig == null)
                 representationConfig = new PullRepresentationConfig();
 
+            Discipline discipline = pullConfig.Discipline;
+            if (discipline == Discipline.Undefined)
+            {
+                BH.Engine.Reflection.Compute.RecordNote($"Conversion discipline has not been specified, default {Discipline.Physical} will be used.");
+                discipline = Discipline.Physical;
+            }
+
             Options geometryOptions = BH.Revit.Engine.Core.Create.Options(ViewDetailLevel.Fine, geometryConfig.IncludeNonVisible, false);
             Options meshOptions = BH.Revit.Engine.Core.Create.Options(geometryConfig.MeshDetailLevel.ViewDetailLevel(), geometryConfig.IncludeNonVisible, false);
             Options renderMeshOptions = BH.Revit.Engine.Core.Create.Options(representationConfig.DetailLevel.ViewDetailLevel(), representationConfig.IncludeNonVisible, false);
 
-            Dictionary<string, List<IBHoMObject>> refObjects = new Dictionary<string, List<IBHoMObject>>();
-
+            Transform linkTransform = null;
             TransformMatrix bHoMTransform = null;
-            if (linkTransform?.IsIdentity == false)
-                bHoMTransform = linkTransform.FromRevit();
+            if (document.IsLinked)
+            {
+                linkTransform = document.LinkTransform();
+                if (linkTransform?.IsIdentity == false)
+                    bHoMTransform = linkTransform.FromRevit();
+            }
 
-                List<IBHoMObject> result = new List<IBHoMObject>();
+            Dictionary<string, List<IBHoMObject>> refObjects = new Dictionary<string, List<IBHoMObject>>();
+            List<IBHoMObject> result = new List<IBHoMObject>();
             foreach (ElementId id in elementIds)
             {
                 Element element = document.GetElement(id);
@@ -159,7 +212,7 @@ namespace BH.Revit.Adapter.Core
                     continue;
 
                 IEnumerable<IBHoMObject> iBHoMObjects = Read(element, discipline, linkTransform, settings, refObjects);
-                
+
                 if (iBHoMObjects != null && iBHoMObjects.Any())
                 {
                     if (pullConfig.PullMaterialTakeOff)
@@ -222,12 +275,16 @@ namespace BH.Revit.Adapter.Core
                 }
             }
 
+            bool[] activePulls = new bool[] { geometryConfig.PullEdges, geometryConfig.PullSurfaces, geometryConfig.PullMeshes, representationConfig.PullRenderMesh };
+            if (activePulls.Count(x => x) > 1)
+                BH.Engine.Reflection.Compute.RecordWarning("Pull of more than one geometry/representation type has been specified in RevitPullConfig. Please consider this can be time consuming due to the amount of conversions.");
+
             return result;
         }
 
         /***************************************************/
 
-        public static IEnumerable<IBHoMObject> Read(Element element, Discipline discipline, Transform transform, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects)
+        public static List<IBHoMObject> Read(Element element, Discipline discipline, Transform transform, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (element == null || !element.IsValidObject)
                 return new List<IBHoMObject>();
@@ -239,7 +296,7 @@ namespace BH.Revit.Adapter.Core
             }
             catch (Exception exception)
             {
-                BH.Engine.Reflection.Compute.RecordError(string.Format("BHoM object could not be properly converted. Element Id: {0}, Element Name: {1}, Exception Message: {2}", element.Id.IntegerValue, element.Name, exception.Message));
+                BH.Engine.Reflection.Compute.RecordError($"Element named {element.Name} with Id {element.Id} failed to convert for discipline {discipline} with the following error: {exception.Message}.");
             }
 
             if (result == null)
