@@ -388,7 +388,12 @@ namespace BH.Revit.Engine.Core
             {
                 Reference reference;
                 bool closest;
-                XYZ location = host.ClosestPointOn(origin, out reference, out closest, orientation?.BasisZ, settings);
+
+                RevitLinkInstance linkInstance = null;
+                if (document != host.Document)
+                    linkInstance = document.LinkInstance(host.Document.Title);
+
+                XYZ location = host.ClosestPointOn(origin, out reference, out closest, orientation?.BasisZ, linkInstance, settings);
                 if (location == null || reference == null)
                     return null;
 
@@ -401,6 +406,7 @@ namespace BH.Revit.Engine.Core
                 }
 
                 FamilyInstance familyInstance = document.Create.NewFamilyInstance(reference, location, refDir, familySymbol);
+
                 if (familyInstance == null)
                     return null;
 
@@ -496,7 +502,13 @@ namespace BH.Revit.Engine.Core
             Line location;
             Reference reference;
             if (host != null)
-                location = host.ClosestLineOn(line, out reference);
+            {
+                RevitLinkInstance linkInstance = null;
+                if (document != host.Document)
+                    linkInstance = document.LinkInstance(host.Document.Title);
+
+                location = host.ClosestLineOn(line, out reference, linkInstance);
+            }
             else
             {
                 location = line;
@@ -549,12 +561,16 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
+                RevitLinkInstance linkInstance = null;
+                if (document != host.Document)
+                    linkInstance = document.LinkInstance(host.Document.Title);
+
                 Reference reference;
-                Line location = host.ClosestLineOn(line, out reference);
+                Line location = host.ClosestLineOn(line, out reference, linkInstance);
                 if (location != null && reference != null)
                     familyInstance = document.Create.NewFamilyInstance(reference, location, familySymbol);
 
-                if (familyInstance != null && location.GetEndPoint(0).DistanceTo(line.GetEndPoint(0)) > settings.DistanceTolerance || location.GetEndPoint(1).DistanceTo(line.GetEndPoint(1)) > settings.DistanceTolerance)
+                if (familyInstance != null && (location.GetEndPoint(0).DistanceTo(line.GetEndPoint(0)) > settings.DistanceTolerance || location.GetEndPoint(1).DistanceTo(line.GetEndPoint(1)) > settings.DistanceTolerance))
                     BH.Engine.Reflection.Compute.RecordWarning($"The location line of the created family instance has been snapped to the closest face of the host element. ElementId: {familyInstance.Id.IntegerValue}");
             }
 
@@ -636,7 +652,7 @@ namespace BH.Revit.Engine.Core
         /****          Private Methods - Others         ****/
         /***************************************************/
 
-        private static XYZ ClosestPointOn(this Element element, XYZ refPoint, out Reference reference, out bool closest, XYZ normal = null, RevitSettings settings = null)
+        private static XYZ ClosestPointOn(this Element element, XYZ refPoint, out Reference reference, out bool closest, XYZ normal = null, RevitLinkInstance linkDocument = null, RevitSettings settings = null)
         {
             closest = true;
             settings = settings.DefaultIfNull();
@@ -645,6 +661,9 @@ namespace BH.Revit.Engine.Core
             double minFactoredDist = double.MaxValue;
             double minDist = double.MaxValue;
             reference = null;
+
+            if (linkDocument != null)
+                refPoint = linkDocument.GetTotalTransform().Inverse.OfPoint(refPoint);
 
             Options opt = new Options();
             opt.ComputeReferences = true;
@@ -680,7 +699,10 @@ namespace BH.Revit.Engine.Core
             }
 
             if (pointOnFace == null || reference == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("The input location of the created FamilyInstance could not be snapped to the host element.");
                 return null;
+            }
 
             closest = !(refPoint.DistanceTo(pointOnFace) - minDist > settings.DistanceTolerance);
 
@@ -690,15 +712,26 @@ namespace BH.Revit.Engine.Core
                 reference = Reference.ParseFromStableRepresentation(element.Document, instRef);
             }
 
+            if (linkDocument != null)
+            {
+                pointOnFace = linkDocument.GetTotalTransform().OfPoint(pointOnFace);
+                reference = reference.CreateLinkReference(linkDocument);
+            }
+
             return pointOnFace;
         }
 
         /***************************************************/
 
-        private static Line ClosestLineOn(this Element element, Line refLine, out Reference reference)
+        private static Line ClosestLineOn(this Element element, Line refLine, out Reference reference, RevitLinkInstance linkDocument = null)
         {
-            double minDist = double.MaxValue;
             reference = null;
+
+            if (linkDocument != null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Revit API seems to currently not support curve-based family instances hosted on linked elements.");
+                return null;
+            }
 
             Options opt = new Options();
             opt.ComputeReferences = true;
@@ -706,9 +739,11 @@ namespace BH.Revit.Engine.Core
             IntersectionResult ir1, ir2;
             XYZ start = refLine.GetEndPoint(0);
             XYZ end = refLine.GetEndPoint(1);
+
             XYZ startOnFace = null;
             XYZ endOnFace = null;
 
+            double minDist = double.MaxValue;
             foreach (Face face in faces)
             {
                 if (!(face is PlanarFace))
@@ -730,7 +765,10 @@ namespace BH.Revit.Engine.Core
             }
 
             if (startOnFace == null || endOnFace == null || reference == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("The input location of the created FamilyInstance could not be snapped to the host element.");
                 return null;
+            }
 
             if (element is FamilyInstance && !((FamilyInstance)element).HasModifiedGeometry())
             {

@@ -1,0 +1,6 @@
+﻿{
+  "MessageForDeleted": {
+    "BH.Engine.Adapters.Revit.Query.LinkPath(BH.oM.Base.IBHoMObject)": "Link path information has been replaced with link document name stored under LinkDocument property and avaialble through LinkDocument query.",
+    "BH.Engine.Adapters.Revit.Query.HostId(BH.oM.Base.IBHoMObject)": "HostId query has been replaced with a more comprehensive query available under HostInformation."
+  }
+}

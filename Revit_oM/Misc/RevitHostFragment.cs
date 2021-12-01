@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -19,33 +19,36 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
- 
-using BH.oM.Adapters.Revit.Properties;
+
 using BH.oM.Base;
-using BH.oM.Geometry;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Elements
+namespace BH.oM.Revit
 {
-    [Description("A generic wrapper BHoM type corresponding to any view-independent Revit element (model elements, e.g. duct or beam). On Push it can be used to generate or update Revit model elements that do not have a correspondent BHoM type, on Pull all Revit model elements that do not have explicit Convert method for given discipline will be converted to ModelInstance.")]
-    public class ModelInstance : BHoMObject, IInstance
+    [Description("Fragment containing the information about the Revit element that hosts the Revit element correspondent to the BHoM object that carries this.")]
+    public class RevitHostFragment : IFragment, IImmutable
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Information about Revit family type of the instance.")]
-        public virtual InstanceProperties Properties { get; set; } = new InstanceProperties();
+        [Description("ElementId of the Revit element that hosts the Revit element correspondent to the BHoM object that carries this.")]
+        public virtual int HostId { get; } = -1;
 
-        [Description("Location of the instance in in three dimensional space.")]
-        public virtual IGeometry Location { get; set; } = new Point();
+        [Description("Name of the link document, if the host Revit element is linked.")]
+        public virtual string LinkDocument { get; } = "";
 
-        [Description("Orientation of the instance in 3 dimensional space. Applicable only to point-based ModelInstances. If null, a default orientation will be applied.")]
-        public virtual Basis Orientation { get; set; } = null;
+
+        /***************************************************/
+        /****            Public Constructors            ****/
+        /***************************************************/
+
+        public RevitHostFragment(int hostId, string linkDocument = "")
+        {
+            HostId = hostId;
+            LinkDocument = linkDocument;
+        }
 
         /***************************************************/
     }
 }
-
-
-

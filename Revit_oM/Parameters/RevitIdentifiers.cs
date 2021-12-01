@@ -53,24 +53,21 @@ namespace BH.oM.Adapters.Revit.Parameters
         [Description("Name of the parent workset of the Revit element correspondent to the BHoM object that carries this fragment. Empty if the Revit model is not shared.")]
         public virtual string Workset { get; } = "";
 
-        [Description("ElementId of the host element of the Revit element correspondent to the BHoM object that carries this fragment. -1 if the Revit element is not a hosted element.")]
-        public virtual int HostId { get; } = -1;
-
         [Description("ElementId of view that owns the Revit element correspondent to the BHoM object that carries this fragment. -1 if the Revit element is not view-dependent.")]
         public virtual int OwnerViewId { get; } = -1;
 
         [Description("ElementId of the parent element of the Revit element correspondent to the BHoM object that carries this fragment. -1 if the Revit element is not a nested element.")]
         public virtual int ParentElementId { get; } = -1;
 
-        [Description("Path to the link document containing the Revit element correspondent to the BHoM object that carries this fragment. Empty if the Revit element is not a link element.")]
-        public virtual string LinkPath { get; } = "";
+        [Description("Name of the link document containing the Revit element correspondent to the BHoM object that carries this fragment. Empty if the Revit element is not a link element.")]
+        public virtual string LinkDocument { get; } = "";
 
 
         /***************************************************/
         /****            Public Constructors            ****/
         /***************************************************/
 
-        public RevitIdentifiers(string persistentId = "", int elementId = -1, string categoryName = "", string familyName = "", string familyTypeName = "", int familyTypeId = -1, string workset = "", int hostId = -1, int ownerViewId = -1, int parentElementId = -1, string linkPath = "")
+        public RevitIdentifiers(string persistentId = "", int elementId = -1, string categoryName = "", string familyName = "", string familyTypeName = "", int familyTypeId = -1, string workset = "", int ownerViewId = -1, int parentElementId = -1, string linkDocument = "")
         {
             PersistentId = persistentId;
             ElementId = elementId;
@@ -79,10 +76,9 @@ namespace BH.oM.Adapters.Revit.Parameters
             FamilyTypeName = familyTypeName;
             FamilyTypeId = familyTypeId;
             Workset = workset;
-            HostId = hostId;
             OwnerViewId = ownerViewId;
             ParentElementId = parentElementId;
-            LinkPath = linkPath;
+            LinkDocument = linkDocument;
         }
 
         /***************************************************/

@@ -184,6 +184,7 @@
     <Compile Include="Modify\DefaultIfNull.cs" />
     <Compile Include="Modify\RemoveParameterLinks.cs" />
     <Compile Include="Modify\RemoveParameterMaps.cs" />
+    <Compile Include="Modify\SetHost.cs" />
     <Compile Include="Modify\SetRevitParameter.cs" />
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
@@ -191,8 +192,8 @@
     <Compile Include="Query\HashString.cs" />
     <Compile Include="Query\ComparisonInclusion.cs" />
     <Compile Include="Query\FilterDescription.cs" />
-    <Compile Include="Query\HostId.cs" />
-    <Compile Include="Query\LinkPath.cs" />
+    <Compile Include="Query\HostInformation.cs" />
+    <Compile Include="Query\LinkDocument.cs" />
     <Compile Include="Query\MappedFamilyNames.cs" />
     <Compile Include="Query\RenderMeshes.cs" />
     <Compile Include="Query\Workset.cs" />
@@ -236,6 +237,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Convert\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Versioning_50.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

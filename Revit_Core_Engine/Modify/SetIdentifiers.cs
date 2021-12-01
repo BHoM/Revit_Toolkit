@@ -23,6 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
+using BH.oM.Revit;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
@@ -39,7 +40,13 @@ namespace BH.Revit.Engine.Core
         public static void SetIdentifiers(this IBHoMObject bHoMObject, Element element)
         {
             if (bHoMObject != null && element != null)
+            {
                 bHoMObject.Fragments.AddOrReplace(element.IIdentifiers());
+
+                RevitHostFragment hostFragment = element.IHostIdentifiers();
+                if (hostFragment != null)
+                    bHoMObject.Fragments.AddOrReplace(hostFragment);
+            }
         }
 
         /***************************************************/

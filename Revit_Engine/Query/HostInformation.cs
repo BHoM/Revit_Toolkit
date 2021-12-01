@@ -19,9 +19,14 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
- 
+
+using BH.Engine.Base;
+using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
+using BH.oM.Reflection;
 using BH.oM.Reflection.Attributes;
+using BH.oM.Revit;
 using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
@@ -32,15 +37,31 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns path to the link document containing the Revit element correspondent to given BHoM object. This value is stored in RevitIdentifiers fragment.")]
+        [Description("Returns integer representation of ElementId of Revit element that hosts the element correspondent to given BHoMObject, along with name of the link document, if the host Revit element is linked. This value is stored in RevitHostFragment fragment.")]
         [Input("bHoMObject", "BHoMObject to be queried.")]
-        [Output("path", "Path to the link document containing the Revit element correspondent to given BHoM object. Empty if the Revit element is not a link element.")]
-        public static string LinkPath(this IBHoMObject bHoMObject)
+        [MultiOutput(0, "hostId", "Integer representation of ElementId of Revit element that hosts the element correspondent to given BHoMObject. - 1 if the Revit element is not a hosted element.")]
+        [MultiOutput(1, "linkDocument", "Name of the link document, if the host Revit element is linked.")]
+        public static Output<int, string> HostInformation(this IBHoMObject bHoMObject)
         {
-            return bHoMObject?.GetRevitIdentifiers()?.LinkPath;
+            if (bHoMObject == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Cannot extract the host information from a null BHoM object.");
+                return null;
+            }
+
+            int hostId = -1;
+            string hostLink = "";
+
+            RevitHostFragment hostFragment = bHoMObject.FindFragment<RevitHostFragment>();
+            if (hostFragment != null)
+            {
+                hostId = hostFragment.HostId;
+                hostLink = hostFragment.LinkDocument;
+            }
+
+            return new Output<int, string> { Item1 = hostId, Item2 = hostLink };
         }
 
         /***************************************************/
     }
 }
-

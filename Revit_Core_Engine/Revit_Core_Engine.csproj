@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -154,6 +154,7 @@
     <Reference Include="Architecture_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Architecture_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Architecture_oM">
       <SpecificVersion>False</SpecificVersion>
@@ -163,18 +164,22 @@
     <Reference Include="BHoM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="BHoM_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Data_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Data_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Data_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Data_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Dimensional_oM">
       <SpecificVersion>False</SpecificVersion>
@@ -204,6 +209,7 @@
     <Reference Include="Geometry_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Geometry_oM">
       <SpecificVersion>False</SpecificVersion>
@@ -213,22 +219,27 @@
     <Reference Include="Graphics_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Graphics_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Graphics_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Graphics_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Library_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Library_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="MEP_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\MEP_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="MEP_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\MEP_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Physical_Engine">
       <SpecificVersion>False</SpecificVersion>
@@ -293,10 +304,12 @@
     <Reference Include="Spatial_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Spatial_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Spatial_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Spatial_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Structure_Engine">
       <SpecificVersion>False</SpecificVersion>
@@ -306,6 +319,7 @@
     <Reference Include="Structure_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Structure_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -325,6 +339,7 @@
     <Compile Include="Compute\SplitRequestTreeByLinks.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Opening.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Room.cs" />
+    <Compile Include="Convert\Architecture\ToRevit\Opening.cs" />
     <Compile Include="Convert\Facade\FromRevit\FrameEdge.cs" />
     <Compile Include="Convert\MEP\FromRevit\CableTray.cs" />
     <Compile Include="Convert\MEP\FromRevit\Duct.cs" />
@@ -341,6 +356,7 @@
     <Compile Include="Convert\Revit\Internal\ToSolid.cs" />
     <Compile Include="Convert\Physical\ToRevit\Rebar.cs" />
     <Compile Include="Convert\Revit\ToRevit\ParameterElement.cs" />
+    <Compile Include="Modify\SetInsulation.cs" />
     <Compile Include="Create\CategorySet.cs" />
     <Compile Include="Create\Definition\Parameter.cs" />
     <Compile Include="Create\FamilyInstance\AdaptiveComponent.cs" />
@@ -350,11 +366,13 @@
     <Compile Include="Create\Definition\SharedParameter.cs" />
     <Compile Include="Create\ReferencePlane.cs" />
     <Compile Include="Create\SectionBoundingBox.cs" />
+    <Compile Include="Create\Solid.cs" />
     <Compile Include="Create\View\View3D.cs" />
     <Compile Include="Create\View\ViewPlan.cs" />
     <Compile Include="Create\View\ViewReflectedCeilingPlan.cs" />
     <Compile Include="Create\View\ViewSection.cs" />
     <Compile Include="Modify\Postprocess.cs" />
+    <Compile Include="Modify\SetDimensions.cs" />
     <Compile Include="Modify\SetProperty.cs" />
     <Compile Include="Modify\SetViewDetailLevel.cs" />
     <Compile Include="Objects\SpecTypeId.cs" />
@@ -364,6 +382,7 @@
     <Compile Include="Query\CableTraySectionProfile.cs" />
     <Compile Include="Query\CableTraySectionProperty.cs" />
     <Compile Include="Query\CategoriesWithBoundParameters.cs" />
+    <Compile Include="Query\ContainingElement.cs" />
     <Compile Include="Query\ConvertMethod.cs" />
     <Compile Include="Query\CoordinateSystem.cs" />
     <Compile Include="Query\CurtainWallCurves.cs" />
@@ -371,9 +390,13 @@
     <Compile Include="Query\FacadePanelAsOpening.cs" />
     <Compile Include="Query\FacadeCurtainPanels.cs" />
     <Compile Include="Query\CurtainWallMullions.cs" />
+    <Compile Include="Compute\FindHost.cs" />
     <Compile Include="Query\FrameEdgeProperty.cs" />
     <Compile Include="Query\GetSpecTypeId.cs" />
     <Compile Include="Query\GetUnitTypeId.cs" />
+    <Compile Include="Query\HostElement.cs" />
+    <Compile Include="Query\HostIdentifiers.cs" />
+    <Compile Include="Query\IsInside.cs" />
     <Compile Include="Query\MEPConnectorsLocation.cs" />
     <Compile Include="Query\MullionElementProperty.cs" />
     <Compile Include="Query\GlazingConstruction.cs" />
@@ -382,7 +405,6 @@
     <Compile Include="Query\ElementIds\ElementIdsByScopeBox.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfLinkInstances.cs" />
     <Compile Include="Query\HostDocument.cs" />
-    <Compile Include="Query\IsInside.cs" />
     <Compile Include="Query\IsOnFace.cs" />
     <Compile Include="Query\LinkInstance.cs" />
     <Compile Include="Query\LinkPanelFaces.cs" />
