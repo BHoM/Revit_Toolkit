@@ -62,15 +62,23 @@ namespace BH.Revit.Adapter.Core
             Document document = this.Document;
             RevitRemoveConfig removeConfig = actionConfig as RevitRemoveConfig;
 
-            Discipline discipline = request.Discipline(Discipline.Undefined).Value;
-            if (discipline == Discipline.Undefined)
+            Discipline? discipline = request.Discipline();
+            if (discipline == null)
+            {
+                BH.Engine.Reflection.Compute.RecordError("Conflicting disciplines have been detected inside the provided request.");
+                return 0;
+            }
+            else if (discipline == Discipline.Undefined)
+            {
+                BH.Engine.Reflection.Compute.RecordNote($"Discipline has not been specified, default {Discipline.Physical} will be used.");
                 discipline = Discipline.Physical;
+            }
 
             IEnumerable<ElementId> worksetPrefilter = null;
             if (!removeConfig.IncludeClosedWorksets)
                 worksetPrefilter = document.ElementIdsByWorksets(document.OpenWorksetIds().Union(document.SystemWorksetIds()).ToList());
 
-            IEnumerable<ElementId> elementIds = request.IElementIds(document, discipline, settings, worksetPrefilter).RemoveGridSegmentIds(document);
+            IEnumerable<ElementId> elementIds = request.IElementIds(document, discipline.Value, settings, worksetPrefilter).RemoveGridSegmentIds(document);
 
             List<ElementId> deletedIds = Delete(elementIds, document, removeConfig.RemovePinned);
             if (deletedIds == null)

@@ -46,16 +46,8 @@ namespace BH.Revit.Adapter.Core
                 return new List<object>();
             }
 
-            // Set config
-            RevitPullConfig pullConfig = actionConfig as RevitPullConfig;
-            if (pullConfig == null)
-            {
-                BH.Engine.Reflection.Compute.RecordNote("Revit Pull Config has not been specified. Default Revit Pull Config is used.");
-                pullConfig = new RevitPullConfig();
-            }
-
             // Read the objects based on the request
-            return Read(request, pullConfig);
+            return Read(request, actionConfig);
         }
 
         /***************************************************/

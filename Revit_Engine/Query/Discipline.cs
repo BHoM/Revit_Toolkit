@@ -68,7 +68,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("request", "BHoM Request to be queried.")]
         [Input("defaultDiscipline", "Default discipline set in adapter's ActionConfig (RevitPullConfig).")]
         [Output("discipline")]
-        public static Discipline? Discipline(this IRequest request, Discipline? defaultDiscipline)
+        public static Discipline? Discipline(this IRequest request, Discipline? defaultDiscipline = oM.Adapters.Revit.Enums.Discipline.Undefined)
         {
             Discipline? discipline = defaultDiscipline;
             if (request is ILogicalRequest)

@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Reflection.Attributes;
 using System.ComponentModel;
@@ -48,9 +49,21 @@ namespace BH.Engine.Adapters.Revit
         }
 
         /***************************************************/
+
+        [Description("Sets RevitPullConfig to default value if it is null.")]
+        [Input("pullConfig", "RevitPullConfig to be set to default if null.")]
+        [Output("pullConfig")]
+        public static RevitPullConfig DefaultIfNull(this RevitPullConfig pullConfig)
+        {
+            if (pullConfig == null)
+            {
+                BH.Engine.Reflection.Compute.RecordNote("Revit pull config has not been specified. Default Revit pull config is used.");
+                pullConfig = new RevitPullConfig();
+            }
+
+            return pullConfig;
+        }
+
+        /***************************************************/
     }
 }
-
-
-
-
