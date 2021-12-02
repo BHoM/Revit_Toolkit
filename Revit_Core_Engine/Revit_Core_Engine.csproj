@@ -382,6 +382,7 @@
     <Compile Include="Query\CableTraySectionProfile.cs" />
     <Compile Include="Query\CableTraySectionProperty.cs" />
     <Compile Include="Query\CategoriesWithBoundParameters.cs" />
+    <Compile Include="Query\ClosestElement.cs" />
     <Compile Include="Query\ContainingElement.cs" />
     <Compile Include="Query\ConvertMethod.cs" />
     <Compile Include="Query\CoordinateSystem.cs" />
@@ -394,6 +395,7 @@
     <Compile Include="Query\FrameEdgeProperty.cs" />
     <Compile Include="Query\GetSpecTypeId.cs" />
     <Compile Include="Query\GetUnitTypeId.cs" />
+    <Compile Include="Query\HasLocation.cs" />
     <Compile Include="Query\HostElement.cs" />
     <Compile Include="Query\HostIdentifiers.cs" />
     <Compile Include="Query\IsInside.cs" />
