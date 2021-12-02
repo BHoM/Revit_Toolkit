@@ -40,51 +40,73 @@ namespace BH.Engine.Adapters.Revit
         /****              Public Methods               ****/
         /***************************************************/
 
-        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects. This relies on the ID assigned to the objects by Revit: the objects should have been pulled from a Revit_Adapter. An option below allows to use either Revit's ElementId or UniqueId.")]
+        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects.\nThis relies on Revit's `UniqueId`: the objects must have been pulled from a Revit_Adapter (they must own a `RevitIdentifiers` fragment).")]
         [Input("pastObjects", "Past objects. Objects whose creation precedes 'followingObjects'.")]
         [Input("followingObjects", "Following objects. Objects that were created after 'pastObjects'.")]
-        [Input("propertiesOrParamsToConsider", "Object properties to be considered when comparing two objects for differences. If null or empty, all properties will be considered." +
-            "\nYou can specify also Revit parameter names.")]
+        [Input("parametersToConsider", "Revit parameters to be considered when comparing two objects for differences. If null or empty, all Revit Parameters will be considered.")]
+        [Input("onlyParameters", "Whether to return only Differences in terms of RevitParameters.")]
         [Output("Diff", "Holds the differences between the two sets of objects. Explode it to see all differences.")]
-        public static Diff RevitDiffing(IEnumerable<object> pastObjects, IEnumerable<object> followingObjects, IEnumerable<string> propertiesOrParamsToConsider = null)
+        public static Diff RevitDiffing(IEnumerable<object> pastObjects, IEnumerable<object> followingObjects, IEnumerable<string> parametersToConsider = null, bool onlyParameters = true)
         {
-            return Diffing(pastObjects, followingObjects, "UniqueId", propertiesOrParamsToConsider, null);
+            RevitComparisonConfig rcc = new RevitComparisonConfig()
+            {
+                ParametersToConsider = parametersToConsider?.ToList(),
+                PropertiesToConsider = onlyParameters ? new List<string>() { "Considering only Revit Parameter Differnces" } : new List<string>() // using a very improbable PropertyToConsider name to exclude all differences that are not Revit Parameter differences.
+            };
+
+            return Diffing(pastObjects, followingObjects, null, new DiffingConfig() { ComparisonConfig = rcc });
         }
 
         /***************************************************/
 
-        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects. This relies on the ID assigned to the objects by Revit: the objects should have been pulled from a Revit_Adapter. An option below allows to use either Revit's ElementId or UniqueId.")]
+        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects.\nThis relies on Revit's `UniqueId`: the objects must have been pulled from a Revit_Adapter (they must own a `RevitIdentifiers` fragment)")]
         [Input("pastObjects", "Past objects. Objects whose creation precedes 'followingObjects'.")]
         [Input("followingObjects", "Following objects. Objects that were created after 'pastObjects'.")]
-        [Input("revitIdName", "(Optional) Defaults to UniqueId. Name of the Revit ID that will be used to perform the diffing, and recognize what objects were modified. Appropriate choices are `ElementId`, `UniqueId` or `PersistentId` (which is BHoM's equivalent to Revit's UniqueId). For more information, see Revit documentation to see how Revit Ids work.")]
-        [Input("propertiesOrParamsToConsider", "Object properties to be considered when comparing two objects for differences. If null or empty, all properties will be considered." +
-            "\nYou can specify also Revit parameter names.")]
+        [Input("propertiesToConsider", "Object properties to be considered when comparing two objects for differences. If null or empty, all properties will be considered.")]
+        [Input("parametersToConsider", "Revit parameters to be considered when comparing two objects for differences. If null or empty, all Revit Parameters will be considered.")]
         [Output("Diff", "Holds the differences between the two sets of objects. Explode it to see all differences.")]
-        public static Diff RevitDiffing(IEnumerable<object> pastObjects, IEnumerable<object> followingObjects, string revitIdName = "UniqueId", IEnumerable<string> propertiesOrParamsToConsider = null)
+        public static Diff RevitDiffing(IEnumerable<object> pastObjects, IEnumerable<object> followingObjects, IEnumerable<string> propertiesToConsider = null, IEnumerable<string> parametersToConsider = null)
         {
-            return Diffing(pastObjects, followingObjects, revitIdName, propertiesOrParamsToConsider, null);
+            RevitComparisonConfig rcc = new RevitComparisonConfig()
+            {
+                PropertiesToConsider = propertiesToConsider?.ToList(),
+                ParametersToConsider = parametersToConsider?.ToList()
+            };
+
+            return Diffing(pastObjects, followingObjects, null, new DiffingConfig() { ComparisonConfig = rcc });
         }
 
         /***************************************************/
 
-        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects. This relies on the ID assigned to the objects by Revit: the objects should have been pulled from a Revit_Adapter. An option below allows to use either Revit's ElementId or UniqueId.")]
+        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects.\nThis relies on Revit's identifiers: the objects must have been pulled from a Revit_Adapter (they must own a `RevitIdentifiers` fragment).\nBy default, Revit's `UniqueId` is used, but an option allows to select `ElementId`.")]
         [Input("pastObjects", "Past objects. Objects whose creation precedes 'followingObjects'.")]
         [Input("followingObjects", "Following objects. Objects that were created after 'pastObjects'.")]
         [Input("revitIdName", "(Optional) Defaults to UniqueId. Name of the Revit ID that will be used to perform the diffing, and recognize what objects were modified. Appropriate choices are `ElementId`, `UniqueId` or `PersistentId` (which is BHoM's equivalent to Revit's UniqueId). For more information, see Revit documentation to see how Revit Ids work.")]
-        [Input("propertiesOrParamsToConsider", "Object properties to be considered when comparing two objects for differences. If null or empty, all properties will be considered." +
-            "\nYou can specify also Revit parameter names.")]
-        [Input("diffConfig", "Further Diffing configurations.")]
+        [Input("revitComparisonConfig", "(Optional) Revit-specific options for the comparison.")]
         [Output("Diff", "Holds the differences between the two sets of objects. Explode it to see all differences.")]
-        public static Diff RevitDiffing(IEnumerable<object> pastObjects, IEnumerable<object> followingObjects, string revitIdName = "UniqueId", IEnumerable<string> propertiesOrParamsToConsider = null, DiffingConfig diffConfig = null)
+        public static Diff RevitDiffing(IEnumerable<object> pastObjects, IEnumerable<object> followingObjects, string revitIdName = "UniqueId", RevitComparisonConfig revitComparisonConfig = null)
         {
-            return Diffing(pastObjects, followingObjects, revitIdName, propertiesOrParamsToConsider, diffConfig);
+            return Diffing(pastObjects, followingObjects, revitIdName, new DiffingConfig() { ComparisonConfig = revitComparisonConfig });
+        }
+
+        /***************************************************/
+
+        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects.\nThis relies on Revit's identifiers: the objects must have been pulled from a Revit_Adapter (they must own a `RevitIdentifiers` fragment).\nBy default, Revit's `UniqueId` is used, but an option allows to select `ElementId`.")]
+        [Input("pastObjects", "Past objects. Objects whose creation precedes 'followingObjects'.")]
+        [Input("followingObjects", "Following objects. Objects that were created after 'pastObjects'.")]
+        [Input("revitIdName", "(Optional) Defaults to UniqueId. Name of the Revit ID that will be used to perform the diffing, and recognize what objects were modified. Appropriate choices are `ElementId`, `UniqueId` or `PersistentId` (which is BHoM's equivalent to Revit's UniqueId). For more information, see Revit documentation to see how Revit Ids work.")]
+        [Input("diffConfig", "(Optional) Additional diffing configurations.")]
+        [Output("Diff", "Holds the differences between the two sets of objects. Explode it to see all differences.")]
+        public static Diff RevitDiffing(IEnumerable<object> pastObjects, IEnumerable<object> followingObjects, string revitIdName = "UniqueId", DiffingConfig diffConfig = null)
+        {
+            return Diffing(pastObjects, followingObjects, revitIdName, diffConfig);
         }
 
         /***************************************************/
         /****              Private Methods              ****/
         /***************************************************/
 
-        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects. This relies on the ID assigned to the objects by Revit: the objects should have been pulled from a Revit_Adapter. An option below allows to use either Revit's ElementId or UniqueId.")]
+        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects.\nThis relies on Revit's identifiers: the objects must have been pulled from a Revit_Adapter (they must own a `RevitIdentifiers` fragment).\nBy default, Revit's `UniqueId` is used, but an option allows to select `ElementId`.")]
         [Input("pastObjects", "Past objects. Objects whose creation precedes 'followingObjects'.")]
         [Input("followingObjects", "Following objects. Objects that were created after 'pastObjects'.")]
         [Input("revitIdName", "(Optional) Defaults to UniqueId. Name of the Revit ID that will be used to perform the diffing, and recognize what objects were modified. Appropriate choices are `ElementId`, `UniqueId` or `PersistentId` (which is BHoM's equivalent to Revit's UniqueId). For more information, see Revit documentation to see how Revit Ids work.")]
@@ -92,21 +114,14 @@ namespace BH.Engine.Adapters.Revit
         "\nYou can specify also Revit parameter names.")]
         [Input("diffConfig", "Further Diffing configurations.")]
         [Output("diff", "Holds the differences between the two sets of objects. Explode it to see all differences.")]
-        private static Diff Diffing(IEnumerable<object> pastObjects, IEnumerable<object> followingObjects, string revitIdName = "UniqueId", IEnumerable<string> propertiesOrParamsToConsider = null, DiffingConfig diffConfig = null)
+        private static Diff Diffing(IEnumerable<object> pastObjects, IEnumerable<object> followingObjects, string revitIdName = "UniqueId", DiffingConfig diffConfig = null)
         {
-            // Set configurations if diffConfig is null. Clone it for immutability in the UI.
-            DiffingConfig diffConfigClone = diffConfig == null ? new DiffingConfig() { IncludeUnchangedObjects = true } : diffConfig.DeepClone();
-
-            if (pastObjects == null)
-                pastObjects = new List<object>();
-
-            if (followingObjects == null)
-                followingObjects = new List<object>();
-
-            // // - Now do the necessary configurations for the Revit-specific diffing.
+            // Checks and setup of input objects.
+            if (pastObjects == null) pastObjects = new List<object>();
+            if (followingObjects == null) followingObjects = new List<object>();
 
             // Checks and setup of revitIdName.
-            if (revitIdName == "UniqueId" || revitIdName == nameof(RevitIdentifiers.PersistentId))
+            if (revitIdName == "UniqueId" || revitIdName == nameof(RevitIdentifiers.PersistentId) || string.IsNullOrEmpty(revitIdName))
                 revitIdName = nameof(RevitIdentifiers.PersistentId);
             else if (revitIdName != "ElementId")
             {
@@ -114,98 +129,36 @@ namespace BH.Engine.Adapters.Revit
                 return null;
             }
 
-            // Get only the BHoMObjects from the input collections.
-            IEnumerable<IBHoMObject> pastBHoMObjects = pastObjects.OfType<IBHoMObject>();
-            IEnumerable<IBHoMObject> followingBHoMObjects = followingObjects.OfType<IBHoMObject>();
-
-            // Make sure all input objects are BHoMObjects.
-            if (pastBHoMObjects.Count() != pastObjects.Count())
+            // Checks and setup of DiffingConfig/ComparisonConfig.
+            DiffingConfig diffConfigClone = diffConfig == null ? new DiffingConfig() { IncludeUnchangedObjects = true } : diffConfig.DeepClone();
+            RevitComparisonConfig rcc = diffConfigClone.ComparisonConfig as RevitComparisonConfig;
+            if (rcc == null)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Some of the input {nameof(pastObjects)} were not BHoMObjects. This method only works with BHoMObjects.");
+                rcc = new RevitComparisonConfig();
+                BH.Engine.Reflection.Modify.CopyPropertiesFromParent(rcc, diffConfigClone.ComparisonConfig);
+            }
+            diffConfigClone.ComparisonConfig = rcc;
+
+            // Check if input objects all have RevitIdentifiers assigned.
+            IEnumerable<IBHoMObject> revitBHoMObjects_past = pastObjects.OfType<IBHoMObject>().Where(obj => obj.GetRevitIdentifiers() != null);
+            IEnumerable<IBHoMObject> revitBHoMObjects_following = followingObjects.OfType<IBHoMObject>().Where(obj => obj.GetRevitIdentifiers() != null);
+
+            if (revitBHoMObjects_past.Count() != pastObjects.Count())
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Some of the {nameof(pastObjects)} do not have a {nameof(RevitIdentifiers)} fragment attached.");
                 return null;
             }
 
-            if (followingBHoMObjects.Count() != followingObjects.Count())
+            if (revitBHoMObjects_following.Count() != followingObjects.Count())
             {
-                BH.Engine.Reflection.Compute.RecordError($"Some of the input {nameof(followingObjects)} were not BHoMObjects. This method only works with BHoMObjects.");
+                BH.Engine.Reflection.Compute.RecordError($"Some of the {nameof(followingObjects)} do not have a {nameof(RevitIdentifiers)} fragment attached.");
                 return null;
             }
 
-            // Make sure all input BHoMObjects have a RevitIdentifier Fragment attached.
-            foreach (var o in pastBHoMObjects)
-                if (o.GetAllFragments(typeof(RevitIdentifiers)).Count < 1)
-                {
-                    BH.Engine.Reflection.Compute.RecordError($"Some of the input {nameof(pastObjects)} did not have a {nameof(RevitIdentifiers)} fragment attached. This method works with objects pulled from Revit, that therefore have it attached.");
-                    return null;
-                }
+            // Compute the diffing through DiffWithFragmentId(), which allows us to specify a Fragment and FragmentIdProperty where to find an ID to fragment by.
+            Diff revitDiff = BH.Engine.Diffing.Compute.DiffWithFragmentId(revitBHoMObjects_past, revitBHoMObjects_following, typeof(RevitIdentifiers), revitIdName, diffConfigClone);
 
-            foreach (var o in followingBHoMObjects)
-                if (o.GetAllFragments(typeof(RevitIdentifiers)).Count < 1)
-                {
-                    BH.Engine.Reflection.Compute.RecordError($"Some of the input {nameof(pastObjects)} did not have a {nameof(RevitIdentifiers)} fragment attached. This method works with objects pulled from Revit, that therefore have it attached.");
-                    return null;
-                }
-
-            // Set up the diffingConfig so it deals with Revit objects correctly.
-            if (propertiesOrParamsToConsider != null)
-                diffConfigClone.ComparisonConfig.PropertiesToConsider.AddRange(propertiesOrParamsToConsider);
-            diffConfigClone.ComparisonConfig.TypeExceptions.Add(typeof(IRevitParameterFragment));
-
-            // Check if we already specified some ComparisonFunctions or not.
-            if (diffConfigClone.ComparisonConfig.ComparisonFunctions == null)
-                diffConfigClone.ComparisonConfig.ComparisonFunctions = new ComparisonFunctions();
-
-            // set a PropertyFullNameModifier, so that Revit Parameters are considered as object declared properties.
-            diffConfigClone.ComparisonConfig.ComparisonFunctions.PropertyFullNameModifier = diffConfigClone.ComparisonConfig.ComparisonFunctions.PropertyFullNameModifier ?? PropertyFullNameModifier_RevitParameterNameAsPropertyName;
-            diffConfigClone.ComparisonConfig.ComparisonFunctions.PropertyDisplayNameModifier = diffConfigClone.ComparisonConfig.ComparisonFunctions.PropertyDisplayNameModifier ?? PropertyDisplayNameModifier;
-
-            // Compute the diffing through DiffWithFragmentId() with revitDiffingConfig.
-            BH.Engine.Reflection.Compute.RecordNote("Computing the revit-specific Diffing.");
-            Diff revitDiff = BH.Engine.Diffing.Compute.DiffWithFragmentId(pastBHoMObjects, followingBHoMObjects, typeof(RevitIdentifiers), revitIdName, diffConfigClone);
-
-            // Combine and return the Diffs.
             return revitDiff;
-        }
-
-
-        /***************************************************/
-
-        // This method is to be passed to the DiffingConfig.ComparisonConfig.ComparisonFunctions (as Func delegate).
-        // It will be called when needed by the base Diffing methods.
-        // The method ensures that Revit Parameters are treated as main properties of an object,
-        // e.g. we can specify as exception to the diffing `someRevitObj.SomeParameter`, as like `SomeParameter` was a property of the object (when instead it's stored on a RevitParameter fragment).
-        private static string PropertyFullNameModifier_RevitParameterNameAsPropertyName(string propertyFullName, object propertyValue)
-        {
-            // If the object is not a RevitParameter, just return the propertyFullName as-is.
-            RevitParameter revitParameter = propertyValue as RevitParameter;
-            if (revitParameter == null)
-                return propertyFullName;
-
-            // Get the parameter name, and modify the input propertyFullName as if the parameter was a declared property of the object.
-            string parameterName = revitParameter.Name;
-            string modifiedPropertyFullName = propertyFullName.Split(new string[] { "Fragments" }, StringSplitOptions.None).First() + parameterName;
-
-            return modifiedPropertyFullName;
-        }
-
-        /***************************************************/
-
-        // This method is to be passed to the DiffingConfig.ComparisonConfig.ComparisonFunctions (as Func delegate).
-        // It will be called when needed by the base Diffing methods.
-        // The method displays the property difference for Revit parameters using the parameter name.
-        // e.g. we can specify as exception to the diffing `someRevitObj.SomeParameter`, as like `SomeParameter` was a property of the object (when instead it's stored on a RevitParameter fragment).
-        private static string PropertyDisplayNameModifier(string propertyFullName, object propertyValue)
-        {
-            // If the object is not a RevitParameter, just return the propertyFullName as-is.
-            RevitParameter revitParameter = propertyValue as RevitParameter;
-            if (revitParameter == null)
-                return propertyFullName;
-
-            // Get the parameter name, and modify the input propertyFullName as if the parameter was a declared property of the object.
-            string parameterName = revitParameter.Name;
-            string modifiedPropertyFullName = parameterName + " (RevitParameter)";
-
-            return modifiedPropertyFullName;
         }
     }
 }
