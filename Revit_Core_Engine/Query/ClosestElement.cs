@@ -41,8 +41,8 @@ namespace BH.Revit.Engine.Core
         [Input("document", "The document to query elements and linked documents from.")]
         [Input("originalElement", "The original element to find the closest element from.")]
         [Input("searchRadius", "Optional, search radius in Revit internal unit (ft) to exclude elements outside the range.")]
-        [Input("builtInCategory", "Optional, the Revit BuiltInCategory to filter elements in the closest elements search.")]
-        [Input("includeLinkInstance", "Optional: if true, elements from linked documents will also be taken into account.")]
+        [Input("category", "Optional, the Revit BuiltInCategory to filter elements in the closest elements search.")]
+        [Input("includeLinks", "Optional: if true, elements from linked documents will also be taken into account.")]
         [Output("closestElement", "The closest element from the input element.")]
         public static Element ClosestElement(this Document document, Element originalElement, double searchRadius = Double.MaxValue, BuiltInCategory category = default, bool includeLinks = false)
         {
