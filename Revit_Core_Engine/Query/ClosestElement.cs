@@ -57,15 +57,11 @@ namespace BH.Revit.Engine.Core
                 {
                     foreach (ElementId id in linkInstancesIds)
                     {
-                        try
-                        {
-                            RevitLinkInstance linkInstance = document.GetElement(id) as RevitLinkInstance;
-                            Document doc = linkInstance.GetLinkDocument();
-                            // Linked files that are not loaded will be null
-                            if(doc != null)
-                                documentsToSearch.Add(doc);
-                        }
-                        catch (Exception e){}
+                        RevitLinkInstance linkInstance = document.GetElement(id) as RevitLinkInstance;
+                        Document doc = linkInstance?.GetLinkDocument();
+                        // Linked files that are not loaded will be null
+                        if(doc != null)
+                            documentsToSearch.Add(doc);
                     }
                 }
             }
@@ -94,18 +90,11 @@ namespace BH.Revit.Engine.Core
 
                 //if document is from linked file we need to make sure location is corrected
                 Transform transform = null;
-                try
+                if (doc.IsLinked && doc != document)
                 {
-                    if (doc != document)
-                        transform = doc.LinkTransform();
+                    transform = doc.LinkTransform();
                 }
-                catch (Exception e)
-                {
-                    BH.Engine.Reflection.Compute.RecordError(String.Format("The linked document named {0} has crashed when querying transform with following message {1}.",doc.PathName, e));
-                    continue;
-                }
-                
-                
+
                 // check distances to each element from category 
                 foreach (Element searchedElement in elements)
                 {
