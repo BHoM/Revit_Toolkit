@@ -58,7 +58,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            RevitLinkInstance linkInstance = new FilteredElementCollector(hostDocument).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().FirstOrDefault(x => x.GetLinkDocument().PathName == linkDocument.PathName);
+            RevitLinkInstance linkInstance = new FilteredElementCollector(hostDocument).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().FirstOrDefault(x => x.GetLinkDocument()?.PathName == linkDocument.PathName);
             if (linkInstance == null)
                 BH.Engine.Reflection.Compute.RecordError($"The link pointing to path {linkDocument.PathName} could not be found in active Revit document.");
 
