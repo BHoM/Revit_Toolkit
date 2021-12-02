@@ -276,6 +276,10 @@ namespace BH.Revit.Engine.Core
             if (zJustification != null && !zJustification.IsReadOnly)
                 zJustification.Set((int)Autodesk.Revit.DB.Structure.ZJustification.Origin);
 
+            //Set the extension values to zero.
+            familyInstance.SetParameter(BuiltInParameter.START_EXTENSION, 0.0, false);
+            familyInstance.SetParameter(BuiltInParameter.END_EXTENSION, 0.0, false);
+
             familyInstance.CopyParameters(framingElement, settings);
             familyInstance.SetLocation(framingElement, settings);
 
