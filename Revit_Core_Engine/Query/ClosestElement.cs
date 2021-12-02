@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
         [Output("closestElement", "The closest element from the input element.")]
         public static Element ClosestElement(this Document document, Element originalElement, double searchRadius = Double.MaxValue, BuiltInCategory category = default, bool includeLinks = false)
         {
-            if (document == null || originalElement == null)
+            if (document == null || originalElement == null || searchRadius == 0)
                 return null;
             
             List<Document> documentsToSearch = new List<Document>(){document};
