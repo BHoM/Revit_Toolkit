@@ -89,6 +89,9 @@
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AssemblyName>Revit_Core_Engine_2020</AssemblyName>
+    <DebugEngines>{351668CC-8477-4fbf-BFE3-5F1006E4DB1F}</DebugEngines>
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Program Files\Autodesk\Revit 2020\Revit.exe</StartProgram>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2020|AnyCPU'">
     <OutputPath>..\Build\</OutputPath>
@@ -133,6 +136,9 @@
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <AssemblyName>Revit_Core_Engine_2022</AssemblyName>
+    <DebugEngines>{351668CC-8477-4fbf-BFE3-5F1006E4DB1F}</DebugEngines>
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Program Files\Autodesk\Revit 2022\Revit.exe</StartProgram>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2022|AnyCPU'">
     <OutputPath>..\Build\</OutputPath>
@@ -335,6 +341,7 @@
     <Compile Include="Compute\Activate.cs" />
     <Compile Include="Compute\CheckFamilyMapUsage.cs" />
     <Compile Include="Compute\Errors.cs" />
+    <Compile Include="Compute\LoadSensitiveDynamoAssemblies.cs" />
     <Compile Include="Compute\PrepareForLinkDimensioning.cs" />
     <Compile Include="Compute\SplitRequestTreeByLinks.cs" />
     <Compile Include="Convert\Architecture\FromRevit\Opening.cs" />

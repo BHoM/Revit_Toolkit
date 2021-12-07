@@ -159,6 +159,9 @@ namespace BH.Revit.Adapter.Core
 
         public Result OnStartup(UIControlledApplication uIControlledApplication)
         {
+            // Load sensitive Dynamo assemblies prior to BHoM to prevent the former from crashing.
+            BH.Revit.Engine.Core.Compute.LoadSensitiveDynamoAssemblies();
+
             UIControlledApplication = uIControlledApplication;
 
             //Make sure all BHoM assemblies and methods are loaded
