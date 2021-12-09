@@ -30,7 +30,7 @@ using System.ComponentModel;
 namespace BH.oM.Adapters.Revit
 {
     [Description("Settings to determine the uniqueness of an Object for comparison (e.g. when Diffing or computing an object Hash).")]
-    public class RevitComparisonConfig : ComparisonConfig
+    public class RevitComparisonConfig : BaseComparisonConfig
     {
         /***************************************************/
         /**** Properties                                ****/
