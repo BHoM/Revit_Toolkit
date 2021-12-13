@@ -583,7 +583,6 @@
     <Compile Include="Query\ViewDetailLevel.cs" />
     <Compile Include="Query\ViewType.cs" />
     <Compile Include="Query\Name.cs" />
-    <Compile Include="Query\Layer.cs" />
     <Compile Include="Query\FamilyTypeFullName.cs" />
     <Compile Include="Query\Construction.cs" />
     <Compile Include="Query\StructuralMaterialType.cs" />
