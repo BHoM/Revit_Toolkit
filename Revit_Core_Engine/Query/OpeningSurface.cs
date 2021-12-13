@@ -23,11 +23,12 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
-using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -38,6 +39,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the defining surface of a given Revit FamilyInstance representing an opening.")]
+        [Input("familyInstance", "Revit FamilyInstance representing an opening to extract the surface from.")]
+        [Input("host", "Revit element hosting the opening.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("surface", "Defining surface of the input opening.")]
         public static ISurface OpeningSurface(this FamilyInstance familyInstance, HostObject host = null, RevitSettings settings = null)
         {
             if (familyInstance == null)
