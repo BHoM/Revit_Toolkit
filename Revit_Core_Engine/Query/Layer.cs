@@ -61,6 +61,9 @@ namespace BH.Revit.Engine.Core
 
                 layer.Material = revitMaterial.MaterialFromRevit(materialGrade, settings, refObjects);
 
+                if (compoundStructureLayer.DeckProfileId.IntegerValue != -1)
+                    BH.Engine.Reflection.Compute.RecordWarning("Conversion of Revit composite deck layers is not supported - it has been converted into a zero thickness BHoM layer instead.");
+
                 if (compoundStructureLayer.LayerId == owner.GetCompoundStructure().VariableLayerIndex)
                     BH.Engine.Reflection.Compute.RecordWarning("Conversion of Revit layers with variable thickness is not supported - it has been converted into a constant thickness BHoM layer instead.");
             }
