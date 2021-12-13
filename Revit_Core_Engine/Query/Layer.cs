@@ -53,11 +53,20 @@ namespace BH.Revit.Engine.Core
             oM.Physical.Constructions.Layer layer = new oM.Physical.Constructions.Layer();
             layer.Thickness = compoundStructureLayer.Width.ToSI(SpecTypeId.Length);
 
-            Material revitMaterial = owner.Document.GetElement(compoundStructureLayer.MaterialId) as Material;
-            if (revitMaterial == null)
-                revitMaterial = owner.Category.Material;
+            if (owner != null)
+            {
+                Material revitMaterial = owner.Document.GetElement(compoundStructureLayer.MaterialId) as Material;
+                if (revitMaterial == null)
+                    revitMaterial = owner.Category.Material;
 
-            layer.Material = revitMaterial.MaterialFromRevit(materialGrade, settings, refObjects);
+                layer.Material = revitMaterial.MaterialFromRevit(materialGrade, settings, refObjects);
+
+                if (compoundStructureLayer.LayerId == owner.GetCompoundStructure().VariableLayerIndex)
+                    BH.Engine.Reflection.Compute.RecordWarning("Conversion of Revit layers with variable thickness is not supported - it has been converted into a constant thickness BHoM layer instead.");
+            }
+            else
+                BH.Engine.Reflection.Compute.RecordError("Material and variable thickness information could not be determined for the layer due to lack of owner construction information.");
+
             return layer;
         }
 
