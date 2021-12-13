@@ -587,7 +587,7 @@
     <Compile Include="Query\ViewType.cs" />
     <Compile Include="Query\Name.cs" />
     <Compile Include="Query\EnergyAnalysisElementName.cs" />
-    <Compile Include="Query\Layer.cs" />
+    <Compile Include="Convert\Physical\FromRevit\Layer.cs" />
     <Compile Include="Query\FamilyTypeFullName.cs" />
     <Compile Include="Query\Construction.cs" />
     <Compile Include="Query\StructuralMaterialType.cs" />

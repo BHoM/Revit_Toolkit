@@ -30,7 +30,7 @@ using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Query
+    public static partial class Convert
     {
         /***************************************************/
         /****              Public methods               ****/
@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("layer", "Physical.Constructions.Layer resulting from converting the input Revit CompoundStructureLayer.")]
-        public static oM.Physical.Constructions.Layer Layer(this CompoundStructureLayer compoundStructureLayer, HostObjAttributes owner, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static oM.Physical.Constructions.Layer LayerFromRevit(this CompoundStructureLayer compoundStructureLayer, HostObjAttributes owner, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (compoundStructureLayer == null)
                 return null;
