@@ -218,7 +218,7 @@ namespace BH.Revit.Engine.Core
                         {
                             foreach (PolyCurve curve in cells[i].CurveLoops.FromRevit())
                             {
-                                PlanarSurface surface = new PlanarSurface(curve, null);
+                                PlanarSurface surface = BH.Engine.Geometry.Create.PlanarSurface(curve, null);
                                 if (surface == null)
                                     return null;
 
