@@ -21,6 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -30,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Returns Revit document's categories that allow bound parameters.")]
+        [Input("document", "Revit document to query the categories from.")]
+        [Output("categories", "Revit categories that allow bound parameters.")]
         public static CategorySet CategoriesWithBoundParameters(this Document document)
         {
             CategorySet result = document.Application.Create.NewCategorySet();
@@ -45,6 +50,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

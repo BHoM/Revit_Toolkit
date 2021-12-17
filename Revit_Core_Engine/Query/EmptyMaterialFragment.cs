@@ -21,8 +21,10 @@
  */
 
 using Autodesk.Revit.DB.Structure;
+using BH.oM.Reflection.Attributes;
 using BH.oM.Structure.MaterialFragments;
 using System;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +34,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Returns an empty BHoM material fragment representing a given material type with given grade.")]
+        [Input("structuralMaterialType", "Base Revit structural material type for the empty material fragment.")]
+        [Input("grade", "Material grade to be assigned to the empty material fragment.")]
+        [Output("emptyFragment", "Empty BHoM material fragment based on the input Revit structural material type and grade.")]
         public static IMaterialFragment EmptyMaterialFragment(this StructuralMaterialType structuralMaterialType, string grade)
         {
             string name;
@@ -62,6 +68,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

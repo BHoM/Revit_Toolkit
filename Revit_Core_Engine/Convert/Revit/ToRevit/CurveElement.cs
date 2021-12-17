@@ -151,6 +151,20 @@ namespace BH.Revit.Engine.Core
             return curveElement;
         }
 
+
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        private static Autodesk.Revit.DB.Plane ArbitraryPlane(this Curve curve)
+        {
+            XYZ origin = curve.GetEndPoint(0);
+            XYZ x = (curve.GetEndPoint(1) - origin).Normalize();
+            XYZ helper = 1 - Math.Abs(x.DotProduct(XYZ.BasisZ)) > BH.oM.Geometry.Tolerance.Angle ? XYZ.BasisZ : XYZ.BasisX;
+            XYZ y = x.CrossProduct(helper).Normalize();
+            return Autodesk.Revit.DB.Plane.CreateByOriginAndBasis(origin, x, y);
+        }
+
         /***************************************************/
     }
 }

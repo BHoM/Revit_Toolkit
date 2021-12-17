@@ -21,6 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -30,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Returns the quality factor to be used by the meshing algorithm, depending on the Revit view detail level.")]
+        [Input("viewDetailLevel", "Revit view detail level to find the meshing quality factor for.")]
+        [Output("factor", "Meshing quality factor correspondent to the input Revit view detail level.")]
         public static double FaceTriangulationFactor(this ViewDetailLevel viewDetailLevel)
         {
             switch (viewDetailLevel)
@@ -46,6 +51,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

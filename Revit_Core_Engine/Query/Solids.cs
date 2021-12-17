@@ -22,7 +22,9 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -33,6 +35,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the solids from a given Revit element.")]
+        [Input("element", "Revit element to extract the solids from.")]
+        [Input("options", "Options for parsing the geometry of a Revit element.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("solids", "Solids extracted from the input Revit element.")]
         public static List<Solid> Solids(this Element element, Options options, RevitSettings settings = null)
         {
             List<GeometryObject> geometryPrimitives = element.GeometryPrimitives(options, settings);
@@ -45,6 +52,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

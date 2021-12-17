@@ -20,13 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
-
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Environment.MaterialFragments;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -36,6 +35,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the construction of the given Revit energy analysis opening.")]
+        [Input("energyAnalysisOpening", "Revit energy analysis opening to extract the construction from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("construction", "Construction of the input Revit energy analysis opening.")]
         public static oM.Physical.Constructions.Construction Construction(this EnergyAnalysisOpening energyAnalysisOpening, RevitSettings settings = null)
         {
             if (energyAnalysisOpening == null)
@@ -45,12 +48,15 @@ namespace BH.Revit.Engine.Core
             if (element == null)
                 return null;
 
-            return element.EnergyAnalysisElementName().Construction(energyAnalysisOpening.OpeningType.ToString());
+            return Query.Construction(element.FamilyTypeFullName(), energyAnalysisOpening.OpeningType.ToString());
         }
 
+
+        /***************************************************/
+        /****              Private methods              ****/
         /***************************************************/
 
-        public static oM.Physical.Constructions.Construction Construction(this string constructionName, string materialName)
+        private static oM.Physical.Constructions.Construction Construction(string constructionName, string materialName)
         {
             if (string.IsNullOrEmpty(constructionName) || string.IsNullOrEmpty(materialName))
                 return null;
@@ -81,5 +87,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

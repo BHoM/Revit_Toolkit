@@ -21,6 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -30,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
         
+        [Description("Queries the WorksetId of the active workset in a given Revit document.")]
+        [Input("document", "Revit document to be queried for the active workset.")]
+        [Output("worksetId", "WorksetId of the active workset in the input Revit document.")]
         public static WorksetId ActiveWorksetId(this Document document)
         {
             if (document == null)
@@ -42,6 +47,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

@@ -23,14 +23,14 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Spatial.ShapeProfiles;
-using BH.oM.Physical.FramingProperties;
 using BH.oM.Facade.SectionProperties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Geometry;
 using BH.Engine.Geometry;
+using System.ComponentModel;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Revit.Engine.Core
 {
@@ -40,6 +40,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the frame edge property from a Revit FamilyInstance.")]
+        [Input("familyInstance", "Revit FamilyInstance to be queried.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("property", "BHoM frame edge property extracted from the input Revit FamilyInstance.")]
         public static FrameEdgeProperty FrameEdgeProperty(this FamilyInstance familyInstance, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (familyInstance == null )
@@ -69,5 +74,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

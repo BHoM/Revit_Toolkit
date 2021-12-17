@@ -22,6 +22,8 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,6 +33,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
         
+        [Description("Returns the Revit ElementId stored by a given BHoM object.")]
+        [Input("bHoMObject", "BHoM object to extract the Revit ElementId from.")]
+        [Output("elementId", "Revit ElementId extracted from the input BHoM object.")]
         public static ElementId ElementId(this IBHoMObject bHoMObject)
         {
             int id = BH.Engine.Adapters.Revit.Query.ElementId(bHoMObject);
@@ -42,6 +47,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Extracts the Revit ElementId from the originating element description stored by Revit energy analysis opening.")]
+        [Input("originatingElementDescription", "Originating element description to extract the Revit ElementId from.")]
+        [Output("elementId", "Revit ElementId extracted from the input originating element description.")]
         public static ElementId ElementId(this string originatingElementDescription)
         {
             if (string.IsNullOrEmpty(originatingElementDescription))
@@ -67,5 +75,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

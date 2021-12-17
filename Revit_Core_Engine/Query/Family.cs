@@ -21,10 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -35,6 +35,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Searches a given Revit document for a family that corresponds to the input BHoM family wrapper.")]
+        [Input("family", "BHoM family wrapper to find the corresponding Revit family for.")]
+        [Input("document", "Revit document to parse for the correspondent family.")]
+        [Input("builtInCategories", "Revit built-in categories to be taken into account when parsing the document.")]
+        [Input("familyLoadSettings", "Settings specifying whether and how should the Revit families be dynamically loaded.")]
+        [Output("family", "Revit family correspondent to the input BHoM family wrapper.")]
         public static Family Family(this oM.Adapters.Revit.Elements.Family family, Document document, IEnumerable<BuiltInCategory> builtInCategories, FamilyLoadSettings familyLoadSettings = null)
         {
             if (family == null || string.IsNullOrWhiteSpace(family.Name) || document == null)
@@ -74,6 +80,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

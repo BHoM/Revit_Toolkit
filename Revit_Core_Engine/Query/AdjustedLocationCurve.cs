@@ -28,6 +28,7 @@ using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
 using BH.oM.Base;
 using System;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -37,6 +38,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
         
+        [Description("Finds the location curve that should be assigned to the Revit FamilyInstance representing a framing element in order to make this instance's centroid overlap with the centreline of a given BHoM framing element, taken all offsets and justifications into account.")]
+        [Input("framingElement", "BHoM framing element to align the Revit framing to.")]
+        [Input("familyInstance", "Revit FamilyInstance to align to the BHoM framing element.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("curve", "Location curve for the input Revit FamilyInstance that aligns its centreline to the input BHoM framing element.")]
         public static ICurve AdjustedLocationCurveFraming(this IFramingElement framingElement, FamilyInstance familyInstance, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
@@ -92,6 +98,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-
