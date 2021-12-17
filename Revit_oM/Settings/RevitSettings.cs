@@ -33,11 +33,14 @@ namespace BH.oM.Adapters.Revit.Settings
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
-        
+
+        [Description("Socket connection settings (ports, timeout) for the adapter.")]
         public virtual ConnectionSettings ConnectionSettings { get; set; } = new ConnectionSettings();
-        
+
+        [Description("Revit family load settings for the adapter.")]
         public virtual FamilyLoadSettings FamilyLoadSettings { get; set; } = new FamilyLoadSettings();
-        
+
+        [Description("An entity holding information about the enforced convert relationships between Revit families and BHoM types on Pull as well as mapping between Revit parameters and BHoM object properties on Push/Pull.")]
         public virtual MappingSettings MappingSettings { get; set; } = new MappingSettings();
 
         [Length]
