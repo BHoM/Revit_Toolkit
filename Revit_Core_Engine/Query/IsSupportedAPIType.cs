@@ -19,8 +19,10 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
- 
+
+using BH.oM.Reflection.Attributes;
 using System;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -31,6 +33,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Checks whether a given type is a supported Revit API type (unsupported types are the ones that exist in the API but cannot be interacted with).")]
+        [Input("type", "Type to be checked whether it is a supported Revit API type.")]
+        [Output("supported", "True if the input type is not an unsupported Revit API type, otherwise false.")]
         public static bool IsSupportedAPIType(this Type type)
         {
             return !UnsupportedAPITypes.Values.Any(x => x.Contains(type));
@@ -39,5 +44,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

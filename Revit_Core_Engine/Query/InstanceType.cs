@@ -24,8 +24,10 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Electrical;
 using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB.Plumbing;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -35,6 +37,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Looks for the instance type correspondent to a given Revit element type, e.g. Wall for WallType.")]
+        [Input("elementType", "Revit element type to find an instance type for.")]
+        [Output("instanceType", "Revit instance type correspondent to the input element type.")]
         public static Type InstanceType(this ElementType elementType)
         {
             Type type = elementType.GetType();
@@ -72,5 +77,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

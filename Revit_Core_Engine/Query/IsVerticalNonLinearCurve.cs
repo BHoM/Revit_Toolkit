@@ -22,7 +22,9 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +34,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Checks whether a given Revit curve is nonlinear and vertical (planar in a vertical plane).")]
+        [Input("revitCurve", "Revit curve to be checked.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("verticalNonLinear", "True if the input Revit curve is nonlinear and vertical, otherwise false.")]
         public static bool IsVerticalNonLinearCurve(this Curve revitCurve, RevitSettings settings)
         {
             if (!(revitCurve is Line))
@@ -52,5 +58,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

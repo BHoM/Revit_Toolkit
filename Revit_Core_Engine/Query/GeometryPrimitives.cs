@@ -22,7 +22,9 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -33,6 +35,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the geometry primitives from a given Revit geometry element.")]
+        [Input("geometryElement", "Revit geometry element to extract the geometry primitives from.")]
+        [Input("transform", "Transform to apply to the output primitives.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("primitives", "Geometry primitives extracted from the input Revit geometry element.")]
         public static List<GeometryObject> GeometryPrimitives(this GeometryElement geometryElement, Transform transform = null, RevitSettings settings = null)
         {
             if (geometryElement == null)
@@ -66,6 +73,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Extracts the geometry primitives from a given Revit element.")]
+        [Input("element", "Revit element to extract the geometry primitives from.")]
+        [Input("options", "Options for parsing the geometry of a Revit element.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("primitives", "Geometry primitives extracted from the input Revit element.")]
         public static List<GeometryObject> GeometryPrimitives(this Element element, Options options, RevitSettings settings = null)
         {
             if (element == null)
@@ -91,6 +103,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-
