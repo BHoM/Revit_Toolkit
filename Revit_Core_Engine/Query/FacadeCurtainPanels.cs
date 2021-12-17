@@ -30,6 +30,8 @@ using BH.Engine.Facade;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ComponentModel;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Revit.Engine.Core
 {
@@ -39,6 +41,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the panels from a Revit curtain grid and returns them in a form of BHoM facade Openings.")]
+        [Input("curtainGrid", "Revit curtain grid to extract the panels from.")]
+        [Input("document", "Revit document, to which the curtain grid belongs.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("panels", "Panels extracted from the input Revit curtain grid and converted to BHoM facade Openings.")]
         public static List<oM.Facade.Elements.Opening> FacadeCurtainPanels(this CurtainGrid curtainGrid, Document document, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (curtainGrid == null)
@@ -102,6 +110,25 @@ namespace BH.Revit.Engine.Core
             }
             
             return result;
+        }
+
+
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        private static oM.Facade.Elements.Opening FacadePanelAsOpening(this oM.Facade.Elements.Panel panel, string refId = "", Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            if (panel == null)
+                return null;
+            ;
+            oM.Facade.Elements.Opening opening = refObjects.GetValue<oM.Facade.Elements.Opening>(refId);
+            if (opening != null)
+                return opening;
+
+            opening = new oM.Facade.Elements.Opening { Name = panel.Name, Edges = panel.ExternalEdges, Fragments = panel.Fragments, OpeningConstruction = panel.Construction, Tags = panel.Tags, CustomData = panel.CustomData, Type = oM.Facade.Elements.OpeningType.Undefined };
+
+            return opening;
         }
 
         /***************************************************/

@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,6 +33,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts colour of a given Revit element's face.")]
+        [Input("face", "Revit element's face to extract the colour from.")]
+        [Input("document", "Revit document, to which the face belongs.")]
+        [Output("colour", "Colour of the input Revit element's face.")]
         public static System.Drawing.Color Color(this Face face, Document document)
         {
             Material material = document.GetElement(face.MaterialElementId) as Material;
@@ -42,6 +48,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Extracts colour of a given Revit curve.")]
+        [Input("curve", "Revit curve to extract the colour from.")]
+        [Input("document", "Revit document, to which the curve belongs.")]
+        [Output("colour", "Colour of the input Revit curve.")]
         public static System.Drawing.Color Color(this Curve curve, Document document)
         {
             GraphicsStyle gs = document.GetElement(curve.GraphicsStyleId) as GraphicsStyle;
@@ -54,5 +64,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

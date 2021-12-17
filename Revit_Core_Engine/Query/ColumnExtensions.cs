@@ -24,6 +24,7 @@ using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using System;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -33,6 +34,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Calculates the start and end extension of the Revit column.")]
+        [Input("familyInstance", "Revit column to extract the extensions from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [MultiOutput(0, "start", "Start extension extracted from the input Revit column.")]
+        [MultiOutput(1, "end", "End extension extracted from the input Revit column.")]
         public static Output<double, double> ColumnExtensions(this FamilyInstance familyInstance, RevitSettings settings)
         {
             double startExtension = 0;
@@ -101,5 +107,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 
@@ -33,6 +35,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Returns the name of a given Revit built-in category.")]
+        [Input("builtInCategory", "Revit built-in category to get the name for.")]
+        [Input("document", "Revit document to parse for the category name.")]
+        [Output("name", "Name of the input Revit category.")]
         public static string CategoryName(this BuiltInCategory builtInCategory, Document document)
         {
             if (document == null || document.Settings == null || document.Settings.Categories == null)
@@ -48,6 +54,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

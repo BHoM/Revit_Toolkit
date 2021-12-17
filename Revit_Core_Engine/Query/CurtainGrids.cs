@@ -21,8 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
-using System;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +33,9 @@ namespace BH.Revit.Engine.Core
         /****            Interface methods              ****/
         /***************************************************/
 
+        [Description("Extracts the curtain grids from a given Revit host object.")]
+        [Input("hostObject", "Revit host object to extract the curtain grids from.")]
+        [Output("grids", "Curtain grids extracted from the input Revit host object.")]
         public static List<CurtainGrid> ICurtainGrids(this HostObject hostObject)
         {
             return CurtainGrids(hostObject as dynamic);
@@ -42,6 +46,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the curtain grids from a given Revit wall.")]
+        [Input("wall", "Revit wall to extract the curtain grids from.")]
+        [Output("grids", "Curtain grids extracted from the input Revit wall.")]
         public static List<CurtainGrid> CurtainGrids(this Wall wall)
         {
             List<CurtainGrid> result = new List<CurtainGrid>();
@@ -53,6 +60,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Extracts the curtain grids from a given Revit roof.")]
+        [Input("roof", "Revit roof to extract the curtain grids from.")]
+        [Output("grids", "Curtain grids extracted from the input Revit roof.")]
         public static List<CurtainGrid> CurtainGrids(this ExtrusionRoof roof)
         {
             List<CurtainGrid> result = new List<CurtainGrid>();
@@ -68,7 +78,10 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-
+        
+        [Description("Extracts the curtain grids from a given Revit roof.")]
+        [Input("roof", "Revit roof to extract the curtain grids from.")]
+        [Output("grids", "Curtain grids extracted from the input Revit roof.")]
         public static List<CurtainGrid> CurtainGrids(this FootPrintRoof roof)
         {
             List<CurtainGrid> result = new List<CurtainGrid>();
@@ -85,6 +98,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Extracts the curtain grids from a given Revit curtain system.")]
+        [Input("curtainSystem", "Revit curtain system to extract the curtain grids from.")]
+        [Output("grids", "Curtain grids extracted from the input Revit curtain system.")]
         public static List<CurtainGrid> CurtainGrids(this CurtainSystem curtainSystem)
         {
             List<CurtainGrid> result = new List<CurtainGrid>();
@@ -104,6 +120,9 @@ namespace BH.Revit.Engine.Core
         /****             Fallback methods              ****/
         /***************************************************/
 
+        [Description("Extracts the curtain grids from a given Revit host object.")]
+        [Input("hostObject", "Revit host object to extract the curtain grids from.")]
+        [Output("grids", "Curtain grids extracted from the input Revit host object.")]
         private static List<CurtainGrid> CurtainGrids(this HostObject hostObject)
         {
             return new List<CurtainGrid>();

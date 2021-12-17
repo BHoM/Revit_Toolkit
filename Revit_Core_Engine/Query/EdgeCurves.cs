@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,6 +33,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the edge curves from a Revit solid.")]
+        [Input("solid", "Revit solid to extract the edge curves from.")]
+        [Output("edgeCurves", "Edge curves extracted from the input Revit solid.")]
         public static List<Curve> EdgeCurves(this Solid solid)
         {
             if (solid == null)
@@ -48,6 +53,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

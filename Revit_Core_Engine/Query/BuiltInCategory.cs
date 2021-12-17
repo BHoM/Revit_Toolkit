@@ -23,7 +23,9 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Properties;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -34,6 +36,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Returns the Revit built-in category matching a given category name.")]
+        [Input("document", "Revit document to query the categories from.")]
+        [Input("categoryName", "Name of the sought built-in Revit category.")]
+        [Input("caseSensitive", "If true, the category name matching is case sensitive, otherwise not.")]
+        [Output("Revit built-in category matching the input name.")]
         public static BuiltInCategory BuiltInCategory(this Document document, string categoryName, bool caseSensitive = true)
         {
             if (string.IsNullOrEmpty(categoryName) || document?.Settings?.Categories == null)
@@ -51,6 +58,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Returns Revit category, to which a given BHoM IInstance belongs.")]
+        [Input("instance", "BHoM IInstance to extract the category information from.")]
+        [Input("document", "Revit document to query the categories from.")]
+        [Input("caseSensitive", "If true, the category name matching is case sensitive, otherwise not.")]
+        [Output("Revit built-in category, to which the input BHoM IInstance belongs.")]
         public static BuiltInCategory BuiltInCategory(this IInstance instance, Document document, bool caseSensitive = true)
         {
             return (instance?.Properties).BuiltInCategory(document, caseSensitive);
@@ -58,6 +70,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Returns Revit category, reference to which is stored in a given BHoM InstanceProperties.")]
+        [Input("properties", "BHoM InstanceProperties to extract the category information from.")]
+        [Input("document", "Revit document to query the categories from.")]
+        [Input("caseSensitive", "If true, the category name matching is case sensitive, otherwise not.")]
+        [Output("Revit built-in category, reference to which is stored in the input BHoM InstanceProperties.")]
         public static BuiltInCategory BuiltInCategory(this InstanceProperties properties, Document document, bool caseSensitive = true)
         {
             return document.BuiltInCategory(properties?.CategoryName, caseSensitive);
@@ -66,6 +83,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

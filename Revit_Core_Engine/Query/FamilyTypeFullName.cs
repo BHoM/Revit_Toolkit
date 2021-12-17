@@ -21,6 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -30,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Gets full name of Revit element's family type (in format FamilyName: FamilyTypeName).")]
+        [Input("element", "Revit element to extract the full family type name from.")]
+        [Output("name", "Full family type name of the input Revit element.")]
         public static string FamilyTypeFullName(this Element element)
         {
             if (element == null)
@@ -58,6 +63,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

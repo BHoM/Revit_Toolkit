@@ -25,8 +25,10 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -37,6 +39,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the panels from a Revit curtain grid and returns them in a form of BHoM IOpenings.")]
+        [Input("curtainGrid", "Revit curtain grid to extract the panels from.")]
+        [Input("document", "Revit document, to which the curtain grid belongs.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("panels", "Panels extracted from the input Revit curtain grid and converted to BHoM IOpenings.")]
         public static List<IOpening> CurtainPanels(this CurtainGrid curtainGrid, Document document, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (curtainGrid == null)

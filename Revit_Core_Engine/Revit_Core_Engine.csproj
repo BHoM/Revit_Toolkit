@@ -388,9 +388,7 @@
     <Compile Include="Query\ContainingElement.cs" />
     <Compile Include="Query\ConvertMethod.cs" />
     <Compile Include="Query\CoordinateSystem.cs" />
-    <Compile Include="Query\CurtainWallCurves.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfEverything.cs" />
-    <Compile Include="Query\FacadePanelAsOpening.cs" />
     <Compile Include="Query\FacadeCurtainPanels.cs" />
     <Compile Include="Query\CurtainWallMullions.cs" />
     <Compile Include="Compute\FindHost.cs" />
@@ -538,7 +536,6 @@
     <Compile Include="Query\ElementIds\ElementIdsOfMemberElements.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfModelElements.cs" />
     <Compile Include="Query\GeometryPrimitives.cs" />
-    <Compile Include="Query\ArbitraryPlane.cs" />
     <Compile Include="Query\FaceTriangulationFactor.cs" />
     <Compile Include="Query\Faces.cs" />
     <Compile Include="Query\CeilingPattern.cs" />
@@ -586,7 +583,6 @@
     <Compile Include="Query\ViewDetailLevel.cs" />
     <Compile Include="Query\ViewType.cs" />
     <Compile Include="Query\Name.cs" />
-    <Compile Include="Query\EnergyAnalysisElementName.cs" />
     <Compile Include="Query\Layer.cs" />
     <Compile Include="Query\FamilyTypeFullName.cs" />
     <Compile Include="Query\Construction.cs" />
