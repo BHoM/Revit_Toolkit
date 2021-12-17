@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,6 +33,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Checks whether a Revit point lies on a face of a Revit element.")]
+        [Input("point", "Revit point to be checked whether it lies on a face of an element.")]
+        [Input("face", "Face of a Revit element to check the point against.")]
+        [Input("tolerance", "Distance tolerance to be used in the query")]
+        [Output("onFace", "True if the input point lies on the input face within the tolerance, otherwise false.")]
         public static bool IsOnFace(this XYZ point, Face face, double tolerance)
         {
             IntersectionResult ir = face?.Project(point);
@@ -40,5 +47,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

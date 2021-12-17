@@ -22,6 +22,8 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,6 +33,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Finds a Revit document hosting the given link document.")]
+        [Input("linkDocument", "Revit link document to find the host for.")]
+        [Output("hostDocument", "Revit document hosting the input link document.")]
         public static Document HostDocument(this Document linkDocument)
         {
             if (!linkDocument.IsLinked)
@@ -46,5 +51,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

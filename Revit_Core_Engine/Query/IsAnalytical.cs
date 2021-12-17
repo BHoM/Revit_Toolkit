@@ -21,7 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Structure;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -32,6 +33,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Checks whether a given Revit element is an analytical element.")]
+        [Input("element", "Revit element to be checked whether it is analytical.")]
+        [Output("analytical", "True if the input Revit element is analytical, otherwise false.")]
         public static bool IsAnalytical(this Element element)
         {
             if (element == null || element.Category == null)
@@ -75,6 +79,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

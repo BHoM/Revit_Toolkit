@@ -21,8 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -33,6 +35,9 @@ namespace BH.Revit.Engine.Core
         /****             Interface methods             ****/
         /***************************************************/
 
+        [Description("Checks whether a given Revit element (type, family, view template etc.) is used (applied to any other element) in the document to which it belongs.")]
+        [Input("element", "Revit element to be checked whether it is used in the model.")]
+        [Output("used", "True if the input Revit element is used, otherwise false.")]
         public static bool IIsUsed(this Element element)
         {
             if (element == null)
@@ -46,6 +51,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Checks whether a given Revit family is used (applied to any other element) in the document to which it belongs.")]
+        [Input("family", "Revit family to be checked whether it is used in the model.")]
+        [Output("used", "True if the input Revit family is used, otherwise false.")]
         public static bool IsUsed(this Family family)
         {
             return new FilteredElementCollector(family.Document).OfClass(typeof(ElementType)).Cast<ElementType>().Count(x => x.FamilyName == family.Name) != 0;
@@ -53,6 +61,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether a given Revit element type is used (applied to any other element) in the document to which it belongs.")]
+        [Input("family", "Revit element type to be checked whether it is used in the model.")]
+        [Output("used", "True if the input Revit element type is used, otherwise false.")]
         public static bool IsUsed(this ElementType elementType)
         {
             FilteredElementCollector collector = new FilteredElementCollector(elementType.Document);
@@ -72,6 +83,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether a given Revit view template is used (applied to any other element) in the document to which it belongs.")]
+        [Input("family", "Revit view template to be checked whether it is used in the model.")]
+        [Output("used", "True if the input Revit view template is used, otherwise false.")]
         public static bool IsUsed(this View viewTemplate)
         {
             if (!viewTemplate.IsTemplate)
@@ -85,7 +99,7 @@ namespace BH.Revit.Engine.Core
         /****             Fallback methods              ****/
         /***************************************************/
 
-        public static bool IsUsed(this Element element)
+        private static bool IsUsed(this Element element)
         {
             return true;
         }
@@ -93,5 +107,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

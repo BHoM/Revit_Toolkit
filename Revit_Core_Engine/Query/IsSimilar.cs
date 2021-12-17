@@ -22,8 +22,10 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -33,6 +35,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
         
+        [Description("Checks whether two Revit curves are similar within the tolerance specified in the settings.")]
+        [Input("curve1", "First Revit curve to compare.")]
+        [Input("curve2", "Second Revit curve to compare.")]
+        [Input("settings", "Revit adapter settings to be used while performing the comparison.")]
+        [Input("flippedIsEqual", "If true, flipped curves will be considered as similar, otherwise not.")]
+        [Output("similar", "True if the input Revit curves are similar within the tolerance, otherwise false.")]
         public static bool IsSimilar(this Curve curve1, Curve curve2, RevitSettings settings, bool flippedIsEqual = false)
         {
             if (curve2 == null || curve1 == null)
@@ -61,5 +69,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

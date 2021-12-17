@@ -22,8 +22,10 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -34,6 +36,10 @@ namespace BH.Revit.Engine.Core
         /****             Public Methods              ****/
         /***************************************************/
 
+        [Description("Queries the collection of BHoM objects already processed in the current adapter action for the ones correspondent to a given key.")]
+        [Input("refObjects", "Collection of BHoM objects to be queried for values.")]
+        [Input("key", "Key to find the correspondent objects for.")]
+        [Output("values", "Already processed BHoM objects correspondent to the input key.")]
         public static List<T> GetValues<T>(this Dictionary<string, List<IBHoMObject>> refObjects, string key) where T : IBHoMObject
         {
             if (refObjects == null || string.IsNullOrWhiteSpace(key))
@@ -48,6 +54,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Queries the collection of BHoM objects already processed in the current adapter action for the ones correspondent to a given key.")]
+        [Input("refObjects", "Collection of BHoM objects to be queried for values.")]
+        [Input("key", "Key to find the correspondent objects for.")]
+        [Output("values", "Already processed BHoM objects correspondent to the input key.")]
         public static List<T> GetValues<T>(this Dictionary<string, List<IBHoMObject>> refObjects, int key) where T : IBHoMObject
         {
             return refObjects.GetValues<T>(key.ToString());
@@ -55,6 +65,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Queries the collection of BHoM objects already processed in the current adapter action for the ones correspondent to a given key.")]
+        [Input("refObjects", "Collection of BHoM objects to be queried for values.")]
+        [Input("key", "Key to find the correspondent objects for.")]
+        [Output("values", "Already processed BHoM objects correspondent to the input key.")]
         public static List<T> GetValues<T>(this Dictionary<string, List<IBHoMObject>> refObjects, ElementId key) where T : IBHoMObject
         {
             return refObjects.GetValues<T>(key.ToString());
@@ -62,6 +76,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Queries the collection of BHoM objects already processed in the current adapter action for the one correspondent to a given key.")]
+        [Input("refObjects", "Collection of BHoM objects to be queried for values.")]
+        [Input("key", "Key to find the correspondent objects for.")]
+        [Output("value", "Already processed BHoM object correspondent to the input key.")]
         public static T GetValue<T>(this Dictionary<string, List<IBHoMObject>> refObjects, string key) where T : IBHoMObject
         {
             List<T> values = refObjects.GetValues<T>(key);
@@ -73,6 +91,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Queries the collection of BHoM objects already processed in the current adapter action for the one correspondent to a given key.")]
+        [Input("refObjects", "Collection of BHoM objects to be queried for values.")]
+        [Input("key", "Key to find the correspondent objects for.")]
+        [Output("value", "Already processed BHoM object correspondent to the input key.")]
         public static T GetValue<T>(this Dictionary<string, List<IBHoMObject>> refObjects, int key) where T : IBHoMObject
         {
             return refObjects.GetValue<T>(key.ToString());
@@ -80,6 +102,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Queries the collection of BHoM objects already processed in the current adapter action for the one correspondent to a given key.")]
+        [Input("refObjects", "Collection of BHoM objects to be queried for values.")]
+        [Input("key", "Key to find the correspondent objects for.")]
+        [Output("value", "Already processed BHoM object correspondent to the input key.")]
         public static T GetValue<T>(this Dictionary<string, List<IBHoMObject>> refObjects, ElementId key) where T : IBHoMObject
         {
             return refObjects.GetValue<T>(key.ToString());
@@ -87,6 +113,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Queries the collection of Revit Elements already processed in the current adapter action for the ones correspondent to a given key.")]
+        [Input("refObjects", "Collection of Revit elements to be queried for values.")]
+        [Input("document", "Revit document hosting the already processed Revit elements.")]
+        [Input("key", "Key to find the correspondent elements for.")]
+        [Output("values", "Already processed Revit elements correspondent to the input key.")]
         public static List<T> GetValues<T>(this Dictionary<Guid, List<int>> refObjects, Document document, Guid key) where T : Element
         {
             if (refObjects == null || document == null)
@@ -100,6 +131,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Queries the collection of Revit Elements already processed in the current adapter action for the one correspondent to a given key.")]
+        [Input("refObjects", "Collection of Revit elements to be queried for values.")]
+        [Input("document", "Revit document hosting the already processed Revit elements.")]
+        [Input("key", "Key to find the correspondent element for.")]
+        [Output("value", "Already processed Revit element correspondent to the input key.")]
         public static T GetValue<T>(this Dictionary<Guid, List<int>> refObjects, Document document, Guid key) where T : Element
         {
             if (refObjects == null || document == null)
@@ -114,6 +150,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-
