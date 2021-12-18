@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,6 +33,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
         
+        [Description("Returns workset Ids of all worksets open in a given Revit document.")]
+        [Input("document", "Revit document to query for open worksets.")]
+        [Output("worksets", "Collection of workset Ids of all worksets open in the input Revit document.")]
         public static IEnumerable<WorksetId> OpenWorksetIds(this Document document)
         {
             if (document == null)
@@ -49,6 +54,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

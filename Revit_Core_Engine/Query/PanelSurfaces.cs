@@ -25,8 +25,10 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -37,6 +39,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the BHoM-representative location surfaces from a given Revit host object.")]
+        [Input("hostObject", "Revit host object to extract the location surfaces from.")]
+        [Input("insertsToIgnore", "Revit inserts (doors, windows etc.) to ignore when extracting the location surfaces.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("surfaces", "BHoM-representative location surfaces extracted from the input Revit host object.")]
         public static Dictionary<PlanarSurface, List<PlanarSurface>> PanelSurfaces(this HostObject hostObject, IEnumerable<ElementId> insertsToIgnore = null, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();

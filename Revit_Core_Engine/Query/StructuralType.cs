@@ -22,7 +22,9 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
+using BH.oM.Reflection.Attributes;
 using System;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +34,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Returns the Revit structural type enum value relevant to a given Revit built-in category.")]
+        [Input("category", "Revit built-in category to be queried for its correspondent structural type enum value.")]
+        [Output("structuralType", "Revit structural type enum value relevant to the input Revit built-in category.")]
         public static StructuralType StructuralType(this BuiltInCategory category)
         {
             StructuralType structuralType = Autodesk.Revit.DB.Structure.StructuralType.NonStructural;
@@ -48,5 +53,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

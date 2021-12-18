@@ -21,8 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -33,6 +35,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Finds a parent supported Revit API type for an unsupported one (unsupported types are the ones that exist in the API but cannot be interacted with).\n" +
+                     "If the input type is not unsupported, it will be returned.")]
+        [Input("type", "Type to be queried for its parent supported Revit API type.")]
+        [Output("supportedType", "Supported Revit API type - either the input type or the first of its parents that is supported.")]
         public static Type SupportedAPIType(this Type type)
         {
             foreach (KeyValuePair<Type, Type[]> kvp in UnsupportedAPITypes)
@@ -47,6 +53,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-
