@@ -22,8 +22,10 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -34,6 +36,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the BHoM-representative faces from a Revit host object defined in a link document.")]
+        [Input("hostObject", "Revit host object to extract the BHoM-representative faces from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("faces", "BHoM-representative faces of the input linked Revit host object.")]
         public static List<Face> ILinkPanelFaces(this HostObject hostObject, RevitSettings settings)
         {
             return LinkPanelFaces(hostObject as dynamic, settings);
@@ -41,6 +47,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Extracts the BHoM-representative faces from a Revit wall defined in a link document.")]
+        [Input("wall", "Revit wall to extract the BHoM-representative faces from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("faces", "BHoM-representative faces of the input linked Revit wall.")]
         public static List<Face> LinkPanelFaces(this Wall wall, RevitSettings settings)
         {
             Line line = (wall?.Location as LocationCurve)?.Curve as Line;
@@ -80,6 +90,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Extracts the BHoM-representative faces from a Revit floor defined in a link document.")]
+        [Input("floor", "Revit floor to extract the BHoM-representative faces from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("faces", "BHoM-representative faces of the input linked Revit floor.")]
         public static List<Face> LinkPanelFaces(this Floor floor, RevitSettings settings)
         {
             List<Face> result = new List<Face>();
@@ -95,6 +109,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Extracts the BHoM-representative faces from a Revit roof defined in a link document.")]
+        [Input("roof", "Revit roof to extract the BHoM-representative faces from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("faces", "BHoM-representative faces of the input linked Revit roof.")]
         public static List<Face> LinkPanelFaces(this RoofBase roof, RevitSettings settings)
         {
             List<Face> result = new List<Face>();
@@ -110,6 +128,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Extracts the BHoM-representative faces from a Revit ceiling defined in a link document.")]
+        [Input("ceiling", "Revit ceiling to extract the BHoM-representative faces from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("faces", "BHoM-representative faces of the input linked Revit ceiling.")]
         public static List<Face> LinkPanelFaces(this Ceiling ceiling, RevitSettings settings)
         {
             List<Face> result = new List<Face>();
@@ -137,6 +159,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

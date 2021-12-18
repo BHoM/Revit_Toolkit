@@ -603,7 +603,6 @@
     <Compile Include="Query\ElementId.cs" />
     <Compile Include="Query\MaterialGrade.cs" />
     <Compile Include="Query\AnalyticalOutlines.cs" />
-    <Compile Include="Query\Level.cs" />
     <Compile Include="Query\LookupParameter.cs" />
     <Compile Include="Query\Perimeter.cs" />
     <Compile Include="Query\Curves.cs" />

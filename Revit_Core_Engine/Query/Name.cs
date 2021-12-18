@@ -21,6 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -29,7 +31,9 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-
+        [Description("Queries the name (consisting of Name parameter value and number) of a given Revit spatial element.")]
+        [Input("spatialElement", "Revit spatial element to query the name from.")]
+        [Output("name", "Name of the input Revit spatial element consisting of Name parameter value and number.")]
         public static string Name(this SpatialElement spatialElement)
         {
             if (spatialElement == null)
@@ -60,6 +64,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-
