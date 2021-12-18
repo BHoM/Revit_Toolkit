@@ -25,6 +25,8 @@ using BH.oM.Structure.MaterialFragments;
 
 using BH.oM.Base;
 using System.Linq;
+using System.ComponentModel;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.Revit.Engine.Core
 {
@@ -34,6 +36,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
         
+        [Description("Parses the BHoM library in search for the material matching a given Revit structural material type and grade.")]
+        [Input("structuralMaterialType", "Revit structural material type to search for in the BHoM library.")]
+        [Input("materialGrade", "Material grade to search for in the BHoM library.")]
+        [Output("material", "BHoM library material matching the input Revit structural material type and grade.")]
         public static IMaterialFragment LibraryMaterial(this StructuralMaterialType structuralMaterialType, string materialGrade)
         {
             if (string.IsNullOrWhiteSpace(materialGrade))
@@ -78,6 +84,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

@@ -21,6 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -31,6 +33,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Queries the transform of a given Revit link document in relation to its host document.")]
+        [Input("linkDocument", "Revit link document to query the transform from.")]
+        [Output("transform", "Transform of the input Revit link document in relation to its host document.")]
         public static Transform LinkTransform(this Document linkDocument)
         {
             return linkDocument.LinkInstance()?.GetTotalTransform();
@@ -39,5 +44,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

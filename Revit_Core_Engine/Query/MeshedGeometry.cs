@@ -22,7 +22,9 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -32,7 +34,12 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-
+        
+        [Description("Meshes the Revit element and returns the mesh converted to BHoM format.")]
+        [Input("element", "Revit element to be meshed.")]
+        [Input("options", "Options for parsing the geometry of a Revit element.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("meshes", "BHoM meshes extracted from the input Revit element.")]
         public static List<oM.Geometry.Mesh> MeshedGeometry(this Element element, Options options, RevitSettings settings = null)
         {
             if (element == null)
@@ -47,6 +54,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-
