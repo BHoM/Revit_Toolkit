@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,6 +33,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
         
+        [Description("Returns the workset Ids of system worksets in a given Revit document.")]
+        [Input("document", "Revit document to be queried for system worksets.")]
+        [Output("ids", "Workset Ids of system worksets in the input Revit document.")]
         public static IEnumerable<WorksetId> SystemWorksetIds(this Document document)
         {
             if (document == null)
@@ -42,5 +47,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

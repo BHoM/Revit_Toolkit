@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB.Structure.StructuralSections;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -32,6 +34,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Returns the Revit structural section shape type correspondent to a given family name suffix - based on emprirical findings.")]
+        [Input("familyName", "Revit family name suffix to find a correspondent structural section shape for.")]
+        [Output("shape", "Revit structural section shape type correspondent to the input family name suffix.")]
         public static StructuralSectionShape SectionShape(this string familyName)
         {
             foreach (KeyValuePair<StructuralSectionShape, string[]> shapeNameEndingSet in ProfileShapeNameEndings)
@@ -43,6 +48,9 @@ namespace BH.Revit.Engine.Core
             return StructuralSectionShape.NotDefined;
         }
 
+
+        /***************************************************/
+        /****            Private Collections            ****/
         /***************************************************/
 
         private static readonly Dictionary<StructuralSectionShape, string[]> ProfileShapeNameEndings = new Dictionary<StructuralSectionShape, string[]>()
@@ -239,5 +247,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

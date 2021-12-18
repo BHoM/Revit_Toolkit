@@ -21,8 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +34,9 @@ namespace BH.Revit.Engine.Core
         /****            Interface methods              ****/
         /***************************************************/
 
+        [Description("Extracts the BHoM-representative (centre, top or bottom, depending on element category) planes from a given Revit host object.")]
+        [Input("hostObject", "Revit host object to extract the BHoM-representative planes from.")]
+        [Output("planes", "BHoM-representative planes extracted from the input Revit host object.")]
         public static List<Plane> IPanelPlanes(this HostObject hostObject)
         {
             return PanelPlanes(hostObject as dynamic);
@@ -42,6 +47,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the BHoM-representative (centre) planes from a given Revit wall.")]
+        [Input("wall", "Revit wall to extract the BHoM-representative planes from.")]
+        [Output("planes", "BHoM-representative planes extracted from the input Revit wall.")]
         public static List<Plane> PanelPlanes(this Wall wall)
         {
             Line line = (wall.Location as LocationCurve)?.Curve as Line;
@@ -53,6 +61,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Extracts the BHoM-representative (top) planes from a given Revit floor.")]
+        [Input("floor", "Revit floor to extract the BHoM-representative planes from.")]
+        [Output("planes", "BHoM-representative planes extracted from the input Revit floor.")]
         public static List<Plane> PanelPlanes(this Floor floor)
         {
             List<Plane> result = new List<Plane>();
@@ -68,6 +79,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Extracts the BHoM-representative (top) planes from a given Revit roof.")]
+        [Input("roof", "Revit floor to extract the BHoM-representative planes from.")]
+        [Output("planes", "BHoM-representative planes extracted from the input Revit roof.")]
         public static List<Plane> PanelPlanes(this RoofBase roof)
         {
             List<Plane> result = new List<Plane>();
@@ -83,6 +97,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Extracts the BHoM-representative (bottom) planes from a given Revit ceiling.")]
+        [Input("ceiling", "Revit ceiling to extract the BHoM-representative planes from.")]
+        [Output("planes", "BHoM-representative planes extracted from the input Revit ceiling.")]
         public static List<Plane> PanelPlanes(this Ceiling ceiling)
         {
             List<Plane> result = new List<Plane>();

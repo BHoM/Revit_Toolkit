@@ -23,7 +23,9 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
+using BH.oM.Reflection.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -33,6 +35,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the perimeter curves from a given Revit spatial element and converts them to BHoM.")]
+        [Input("spatialElement", "Revit spatial element to extract the perimeter curves from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("curves", "BHoM perimeter curves extracted from the input Revit spatial element.")]
         public static List<PolyCurve> Perimeter(this SpatialElement spatialElement, RevitSettings settings = null)
         {
             if (spatialElement == null)
@@ -64,6 +70,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

@@ -23,6 +23,8 @@
 using Autodesk.Revit.DB;
 
 using BH.oM.Environment.Elements;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +34,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Returns the BHoM environment panel type enum value relevant to a given Revit built-in category.")]
+        [Input("category", "Revit built-in category to be queried for its correspondent panel type enum value.")]
+        [Output("panelType", "BHoM environment panel type enum value relevant to the input Revit built-in category.")]
         public static oM.Environment.Elements.PanelType? PanelType(this BuiltInCategory builtInCategory)
         {
             switch (builtInCategory)
@@ -51,6 +56,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Returns the BHoM environment panel type enum value relevant to a given Revit category.")]
+        [Input("category", "Revit category to be queried for its correspondent panel type enum value.")]
+        [Output("panelType", "BHoM environment panel type enum value relevant to the input Revit category.")]
         public static oM.Environment.Elements.PanelType? PanelType(this Category category)
         {
             if (category == null)
@@ -62,5 +70,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

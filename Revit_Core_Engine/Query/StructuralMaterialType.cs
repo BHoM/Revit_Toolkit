@@ -21,9 +21,9 @@
  */
 
 using Autodesk.Revit.DB.Structure;
-
-using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 using System;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -33,6 +33,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
         
+        [Description("Finds the Revit structural material type correspondent to a given material class value.")]
+        [Input("materialClass", "Material class value to find a correspondent Revit structural material type for.")]
+        [Output("materialType", "Revit structural material type correspondent to the input material class value.")]
         public static StructuralMaterialType StructuralMaterialType(this string materialClass)
         {
             if (string.IsNullOrEmpty(materialClass))
@@ -63,6 +66,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

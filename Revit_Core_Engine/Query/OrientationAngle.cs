@@ -21,7 +21,6 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Mechanical;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
@@ -39,6 +38,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts a BHoM-representative orientation angle from a given Revit family instance.")]
+        [Input("familyInstance", "Revit family instance to extract the orientation angle from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("angle", "BHoM-representative orientation angle extracted from the input Revit family instance.")]
         public static double OrientationAngle(this FamilyInstance familyInstance, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
@@ -97,6 +100,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Extracts a BHoM-representative column orientation angle from a given Revit family instance.")]
+        [Input("familyInstance", "Revit family instance to extract the orientation angle from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("angle", "BHoM-representative column orientation angle extracted from the input Revit family instance.")]
         public static double OrientationAngleColumn(this FamilyInstance familyInstance, RevitSettings settings)
         {
             double rotation = double.NaN;
@@ -119,6 +126,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Extracts a BHoM-representative framing orientation angle from a given Revit family instance.")]
+        [Input("familyInstance", "Revit family instance to extract the orientation angle from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("angle", "BHoM-representative framing orientation angle extracted from the input Revit family instance.")]
         public static double OrientationAngleFraming(this FamilyInstance familyInstance, RevitSettings settings = null)
         {
             double rotation;
@@ -151,5 +162,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

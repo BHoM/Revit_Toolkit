@@ -21,8 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -33,6 +35,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Generates unique identifier for a given Revit element in order to store it in a collection of objects already processed in the current adapter action.")]
+        [Input("elementId", "Revit element Id to be contained in the unique identifier.")]
+        [Input("host", "Revit host element to be contained in the unique identifier.")]
+        [Output("identifier", "Unique identifier generated based on the input Revit element.")]
         public static string ReferenceIdentifier(this ElementId elementId, Element host = null)
         {
             if (elementId == null)
@@ -47,6 +53,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Generates unique identifier for a given Revit element in order to store it in a collection of objects already processed in the current adapter action.")]
+        [Input("elementId", "Revit element Id to be contained in the unique identifier.")]
+        [Input("grade", "Material grade information to be contained in the unique identifier.")]
+        [Output("identifier", "Unique identifier generated based on the input Revit element.")]
         public static string ReferenceIdentifier(this ElementId elementId, string grade = null)
         {
             if (elementId == null)
@@ -62,5 +72,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
