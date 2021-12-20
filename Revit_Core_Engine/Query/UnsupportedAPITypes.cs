@@ -26,6 +26,7 @@ using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.DB.Mechanical;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -35,6 +36,8 @@ namespace BH.Revit.Engine.Core
         /****             Public dictionary             ****/
         /***************************************************/
 
+        [Description("A dictionary of supported Revit API types and collections of unsupported ones that inherit from them." +
+                     "Unsupported types are the ones that exist in the API but cannot be interacted with.")]
         public static readonly Dictionary<Type, Type[]> UnsupportedAPITypes = new Dictionary<Type, Type[]>
         {
             {
@@ -119,6 +122,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

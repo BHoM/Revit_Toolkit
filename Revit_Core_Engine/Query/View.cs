@@ -20,12 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Linq;
-using System.Collections.Generic;
-
 using Autodesk.Revit.DB;
-
 using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Reflection.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -35,6 +35,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Finds Revit view that owns a given BHoM drafting instance.")]
+        [Input("draftingInstance", "BHoM drafting instance to find owner Revit view for.")]
+        [Input("document", "Revit document to parse in view search.")]
+        [Output("view", "Revit view owning the input BHoM drafting instance.")]
         public static View View(this DraftingInstance draftingInstance, Document document)
         {
             if (string.IsNullOrWhiteSpace(draftingInstance.ViewName))
@@ -64,5 +68,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
