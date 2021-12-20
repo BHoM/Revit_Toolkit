@@ -36,11 +36,11 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Checks whether the given XYZ point is inside the given Revit element.")]
-        [Input("point", "XYZ point to be checked whether it is inside the element.")]
         [Input("element", "Revit element to be checked whether it contains the XYZ point.")]
+        [Input("point", "XYZ point to be checked whether it is inside the element.")]
         [Input("settings", "Revit adapter settings to be used while performing the query.")]
         [Output("inside", "True if the input XYZ point is inside the input Revit element, otherwise false.")]
-        public static bool IsInside(this XYZ point, Element element, RevitSettings settings)
+        public static bool IsContaining(this Element element, XYZ point, RevitSettings settings)
         {
             if (point == null || element == null)
                 return false;
@@ -49,20 +49,20 @@ namespace BH.Revit.Engine.Core
             double tolerance = settings.DistanceTolerance;
 
             BoundingBoxXYZ bbox = element.get_BoundingBox(null);
-            if (bbox == null || !point.IsInside(bbox, tolerance))
+            if (bbox == null || !bbox.IsContaining(point, tolerance))
                 return false;
 
-            return element.Solids(new Options(), settings).Any(x => point.IsInside(x, tolerance));
+            return element.Solids(new Options(), settings).Any(x => x.IsContaining(point, tolerance));
         }
 
         /***************************************************/
 
         [Description("Checks whether the given XYZ point is inside the given Revit solid.")]
-        [Input("point", "XYZ point to be checked whether it is inside the solid.")]
         [Input("solid", "Revit solid to be checked whether it contains the XYZ point.")]
+        [Input("point", "XYZ point to be checked whether it is inside the solid.")]
         [Input("tolerance", "Distance tolerance to be used while performing the query.")]
         [Output("inside", "True if the input XYZ point is inside the input Revit solid, otherwise false.")]
-        public static bool IsInside(this XYZ point, Solid solid, double tolerance = BH.oM.Geometry.Tolerance.Distance)
+        public static bool IsContaining(this Solid solid, XYZ point, double tolerance = BH.oM.Geometry.Tolerance.Distance)
         {
             if (point == null || solid == null || solid.Volume < tolerance)
                 return false;
@@ -93,11 +93,11 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Checks whether the given XYZ point is inside the given Revit bounding box.")]
-        [Input("point", "XYZ point to be checked whether it is inside the bounding box.")]
         [Input("bbox", "Revit bounding box to be checked whether it contains the XYZ point.")]
+        [Input("point", "XYZ point to be checked whether it is inside the bounding box.")]
         [Input("tolerance", "Distance tolerance to be used while performing the query.")]
         [Output("inside", "True if the input XYZ point is inside the input Revit bounding box, otherwise false.")]
-        public static bool IsInside(this XYZ point, BoundingBoxXYZ bbox, double tolerance = BH.oM.Geometry.Tolerance.Distance)
+        public static bool IsContaining(this BoundingBoxXYZ bbox, XYZ point, double tolerance = BH.oM.Geometry.Tolerance.Distance)
         {
             if (point == null || bbox == null)
                 return false;

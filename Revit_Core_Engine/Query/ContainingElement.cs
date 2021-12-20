@@ -70,7 +70,7 @@ namespace BH.Revit.Engine.Core
                     return null;
             }
 
-            return collector.FirstOrDefault(x => point.IsInside(x, settings));
+            return collector.FirstOrDefault(x => x.IsContaining(point, settings));
         }
 
         /***************************************************/
