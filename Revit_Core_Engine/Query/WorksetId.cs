@@ -22,6 +22,8 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -32,6 +34,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Looks for a workset under given name in given Revit document and returns its workset Id.")]
+        [Input("document", "Revit document to find the workset in.")]
+        [Input("worksetName", "Name of the workset to be searched for.")]
+        [Output("worksetId", "Workset Id of the workset under the input name in the input Revit document.")]
         public static WorksetId WorksetId(this Document document, string worksetName)
         {
             if (document == null || string.IsNullOrEmpty(worksetName))
@@ -47,6 +53,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

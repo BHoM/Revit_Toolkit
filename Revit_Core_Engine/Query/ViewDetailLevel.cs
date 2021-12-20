@@ -21,6 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -30,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Finds a Revit view detail level correspondent to a BHoM detail level enum value.")]
+        [Input("detailLevel", "BHoM detail level enum value to find a correspondent Revit one for.")]
+        [Output("viewDetailLevel", "Revit view detail level correspondent to the input BHoM detail level enum value.")]
         public static ViewDetailLevel ViewDetailLevel(this oM.Adapters.Revit.Enums.DetailLevel detailLevel)
         {
             return (ViewDetailLevel)(detailLevel);
@@ -38,6 +43,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

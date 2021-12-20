@@ -21,6 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Reflection.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -30,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Finds a Revit view type correspondent to a BHoM view type enum value.")]
+        [Input("revitViewType", "BHoM view type enum value to find a correspondent Revit one for.")]
+        [Output("viewType", "Revit view type correspondent to the input BHoM view type enum value.")]
         public static ViewType ViewType(this oM.Adapters.Revit.Enums.RevitViewType revitViewType)
         {
             return (ViewType)(revitViewType);
@@ -38,6 +43,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-
