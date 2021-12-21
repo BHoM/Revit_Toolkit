@@ -96,10 +96,6 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            RevitParametersToPush fragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
-            if (fragment == null)
-                return;
-
             ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
             
             Type type = bHoMObject.GetType();
@@ -127,22 +123,26 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            // Sort the parameters so that doubles get assigned last, to make sure all reference levels etc. go first.
-            foreach (RevitParameter param in fragment.Parameters.Where(x => !(x.Value is double)).Union(fragment.Parameters.Where(x => x.Value is double)))
+            RevitParametersToPush fragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
+            if (fragment != null)
             {
-                IEnumerable<IParameterLink> parameterLinks = parameterMap.ParameterLinks(param.Name);
-                if (parameterLinks != null)
+                // Sort the parameters so that doubles get assigned last, to make sure all reference levels etc. go first.
+                foreach (RevitParameter param in fragment.Parameters.Where(x => !(x.Value is double)).Union(fragment.Parameters.Where(x => x.Value is double)))
                 {
-                    foreach (IParameterLink parameterLink in parameterLinks)
+                    IEnumerable<IParameterLink> parameterLinks = parameterMap.ParameterLinks(param.Name);
+                    if (parameterLinks != null)
                     {
-                        if (parameterLink is ElementParameterLink)
-                            element.SetParameters(parameterLink.ParameterNames, param.Value);
-                        else if (elementType != null)
-                            elementType.SetParameters(parameterLink.ParameterNames, param.Value);
+                        foreach (IParameterLink parameterLink in parameterLinks)
+                        {
+                            if (parameterLink is ElementParameterLink)
+                                element.SetParameters(parameterLink.ParameterNames, param.Value);
+                            else if (elementType != null)
+                                elementType.SetParameters(parameterLink.ParameterNames, param.Value);
+                        }
                     }
+                    else
+                        element.SetParameters(param.Name, param.Value);
                 }
-                else
-                    element.SetParameters(param.Name, param.Value);
             }
 
             element.Document.Regenerate();
