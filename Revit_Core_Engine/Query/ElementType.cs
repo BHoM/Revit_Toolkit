@@ -88,13 +88,11 @@ namespace BH.Revit.Engine.Core
             if (bhomType == null)
                 return null;
 
-            HashSet<BuiltInCategory> categories = new HashSet<BuiltInCategory> { instance.BuiltInCategory(document) };
-
             bool differentNames = !string.IsNullOrWhiteSpace(instance?.Properties?.Name) && !string.IsNullOrWhiteSpace(instance?.Name) && instance.Properties.Name != instance.Name;
-            ElementType elementType = instance.Properties.ElementType(document, categories, settings);
+            ElementType elementType = instance.Properties.ToRevitElementType(document, settings);
             if (elementType == null)
             {
-                elementType = instance.ElementType(document, categories, settings);
+                elementType = instance.ElementType(document, new HashSet<BuiltInCategory> { instance.BuiltInCategory(document) }, settings);
                 if (elementType != null && differentNames)
                     BH.Engine.Reflection.Compute.RecordWarning($"BHoM {bhomType.Name}'s name and its {nameof(BH.oM.Adapters.Revit.Elements.IInstance.Properties)} name are different. Revit element type has been set based on the latter as it is meant to take precedence. BHoM_Guid: {instance.BHoM_Guid}");
             }
@@ -313,6 +311,4 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
 
