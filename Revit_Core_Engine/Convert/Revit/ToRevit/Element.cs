@@ -80,7 +80,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                ElementType elementType = modelInstance.Properties.ElementType(document, new List<BuiltInCategory> { builtInCategory }, settings);
+                ElementType elementType = modelInstance.ElementType(document, settings, refObjects);
                 element = modelInstance.IToRevitElement(elementType, settings);
             }
             
@@ -123,7 +123,7 @@ namespace BH.Revit.Engine.Core
             if (view == null)
                 return null;
 
-            ElementType elementType = draftingInstance.Properties.ElementType(document, draftingInstance.BuiltInCategories(document), settings);
+            ElementType elementType = draftingInstance.ElementType(document, settings, refObjects);
             element = draftingInstance.IToRevitElement(elementType, view, settings);
             
             if (element == null)

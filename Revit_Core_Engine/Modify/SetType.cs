@@ -49,11 +49,7 @@ namespace BH.Revit.Engine.Core
             if (element.TrySetTypeFromString(bHoMObject, settings))
                 return true;
 
-            Document doc = element.Document;
-            FamilySymbol familySymbol = bHoMObject.Property.ToRevitElementType(doc, bHoMObject.BuiltInCategories(doc), settings);
-            if (familySymbol == null)
-                familySymbol = bHoMObject.IElementType(doc, settings) as FamilySymbol;
-
+            FamilySymbol familySymbol = bHoMObject.ElementType(element.Document, settings);
             if (familySymbol == null)
             {
                 Compute.ElementTypeNotFoundWarning(bHoMObject);
@@ -75,11 +71,7 @@ namespace BH.Revit.Engine.Core
             if (element.TrySetTypeFromString(bHoMObject, settings))
                 return true;
 
-            Document doc = element.Document;
-            HostObjAttributes hostObjAttr = bHoMObject.Construction.ToRevitElementType(doc, bHoMObject.BuiltInCategories(doc), settings);
-            if (hostObjAttr == null)
-                hostObjAttr = bHoMObject.IElementType(doc, settings) as HostObjAttributes;
-
+            HostObjAttributes hostObjAttr = bHoMObject.IElementType(element.Document, settings) as HostObjAttributes;
             if (hostObjAttr != null && hostObjAttr.Id.IntegerValue != element.GetTypeId().IntegerValue)
                 return element.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, hostObjAttr.Id);
 
@@ -98,10 +90,7 @@ namespace BH.Revit.Engine.Core
             if (element.TrySetTypeFromString(instance, settings))
                 return true;
 
-            ElementType elementType = instance.Properties.ElementType(element.Document, settings);
-            if (elementType == null)
-                elementType = instance.IElementType(element.Document, settings);
-
+            ElementType elementType = instance.ElementType(element.Document, settings);
             if (elementType != null)
             {
                 try

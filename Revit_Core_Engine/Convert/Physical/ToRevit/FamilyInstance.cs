@@ -96,10 +96,7 @@ namespace BH.Revit.Engine.Core
 
             Line columnLine = framingElement.Location.IToRevit() as Line;
 
-            FamilySymbol familySymbol = framingElement.Property.ToRevitElementType(document, framingElement.BuiltInCategories(document), settings, refObjects);
-            if (familySymbol == null)
-                familySymbol = framingElement.ElementType(document, settings) as FamilySymbol;
-
+            FamilySymbol familySymbol = framingElement.ElementType(document, settings, refObjects);
             if (familySymbol == null)
             {
                 Compute.ElementTypeNotFoundWarning(framingElement);
@@ -203,13 +200,7 @@ namespace BH.Revit.Engine.Core
 
             Level level = document.LevelBelow(framingElement.Location, settings);
 
-            // Always taking StructuralFraming category because most families belong to it.
-            HashSet<BuiltInCategory> categories = framingElement.BuiltInCategories(document);
-            categories.Add(BuiltInCategory.OST_StructuralFraming);
-            FamilySymbol familySymbol = framingElement.Property.ToRevitElementType(document, categories, settings, refObjects);
-            if (familySymbol == null)
-                familySymbol = framingElement.ElementType(document, categories, settings) as FamilySymbol;
-
+            FamilySymbol familySymbol = framingElement.ElementType(document, settings, refObjects);
             if (familySymbol == null)
             {
                 Compute.ElementTypeNotFoundWarning(framingElement);
