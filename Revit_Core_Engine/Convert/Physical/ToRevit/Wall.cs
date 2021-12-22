@@ -59,7 +59,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            WallType wallType = wall.ElementType(document, settings, refObjects);
+            WallType wallType = wall.ElementType(document, settings);
             if (wallType == null)
             {
                 Compute.ElementTypeNotFoundWarning(wall);
