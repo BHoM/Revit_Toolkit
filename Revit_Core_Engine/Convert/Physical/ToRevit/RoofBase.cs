@@ -59,7 +59,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            RoofType roofType = roof.ElementType(document, settings, refObjects);
+            RoofType roofType = roof.ElementType(document, settings);
             if (roofType == null)
             {
                 Compute.ElementTypeNotFoundWarning(roof);

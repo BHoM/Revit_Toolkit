@@ -59,7 +59,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            FloorType floorType = floor.ElementType(document, settings, refObjects);
+            FloorType floorType = floor.ElementType(document, settings);
             if (floorType == null)
             {
                 Compute.ElementTypeNotFoundWarning(floor);

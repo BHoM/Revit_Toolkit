@@ -80,7 +80,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                ElementType elementType = modelInstance.ElementType(document, settings, refObjects);
+                ElementType elementType = modelInstance.ElementType(document, settings);
                 element = modelInstance.IToRevitElement(elementType, settings);
             }
             
@@ -123,7 +123,7 @@ namespace BH.Revit.Engine.Core
             if (view == null)
                 return null;
 
-            ElementType elementType = draftingInstance.ElementType(document, settings, refObjects);
+            ElementType elementType = draftingInstance.ElementType(document, settings);
             element = draftingInstance.IToRevitElement(elementType, view, settings);
             
             if (element == null)
