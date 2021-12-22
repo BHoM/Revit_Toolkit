@@ -54,52 +54,22 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static FamilySymbol ElementType(this BH.oM.Physical.Elements.IFramingElement framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static FamilySymbol ElementType(this BH.oM.Physical.Elements.IFramingElement framingElement, Document document, RevitSettings settings = null)
         {
-            Type bhomType = framingElement?.GetType();
-            if (bhomType == null)
-                return null;
-
             HashSet<BuiltInCategory> categories = framingElement.BuiltInCategories(document);
 
             // Taking StructuralFraming category when not a column because most families belong to it.
-            if (bhomType != typeof(BH.oM.Physical.Elements.Column))
+            if (framingElement is BH.oM.Physical.Elements.Column)
                 categories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming);
 
-            bool differentNames = !string.IsNullOrWhiteSpace(framingElement?.Property?.Name) && !string.IsNullOrWhiteSpace(framingElement?.Name) && framingElement.Property.Name != framingElement.Name;
-            FamilySymbol familySymbol = framingElement.Property.ToRevitElementType(document, categories, settings, refObjects);
-            if (familySymbol == null)
-            {
-                familySymbol = framingElement.ElementType(document, categories, settings) as FamilySymbol;
-                if (familySymbol != null && differentNames)
-                    BH.Engine.Reflection.Compute.RecordWarning($"BHoM {bhomType.Name}'s name and its {nameof(BH.oM.Physical.Elements.IFramingElement.Property)} name are different. Revit element type has been set based on the latter as it is meant to take precedence. BHoM_Guid: {framingElement.BHoM_Guid}");
-            }
-            else if (differentNames)
-                BH.Engine.Reflection.Compute.RecordWarning($"BHoM {bhomType.Name}'s name and its {nameof(BH.oM.Physical.Elements.IFramingElement.Property)} name are different. Revit element type has been set based on the former because no type has been found for the latter. BHoM_Guid: {framingElement.BHoM_Guid}");
-
-            return familySymbol;
+            return framingElement.ElementTypeInclProperty(framingElement.Property, document, categories, settings) as FamilySymbol;
         }
 
         /***************************************************/
 
-        public static ElementType ElementType(this BH.oM.Adapters.Revit.Elements.IInstance instance, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static ElementType ElementType(this BH.oM.Adapters.Revit.Elements.IInstance instance, Document document, RevitSettings settings = null)
         {
-            Type bhomType = instance?.GetType();
-            if (bhomType == null)
-                return null;
-
-            bool differentNames = !string.IsNullOrWhiteSpace(instance?.Properties?.Name) && !string.IsNullOrWhiteSpace(instance?.Name) && instance.Properties.Name != instance.Name;
-            ElementType elementType = instance.Properties.ToRevitElementType(document, settings);
-            if (elementType == null)
-            {
-                elementType = instance.ElementType(document, new HashSet<BuiltInCategory> { instance.BuiltInCategory(document) }, settings);
-                if (elementType != null && differentNames)
-                    BH.Engine.Reflection.Compute.RecordWarning($"BHoM {bhomType.Name}'s name and its {nameof(BH.oM.Adapters.Revit.Elements.IInstance.Properties)} name are different. Revit element type has been set based on the latter as it is meant to take precedence. BHoM_Guid: {instance.BHoM_Guid}");
-            }
-            else if (differentNames)
-                BH.Engine.Reflection.Compute.RecordWarning($"BHoM {bhomType.Name}'s name and its {nameof(BH.oM.Adapters.Revit.Elements.IInstance.Properties)} name are different. Revit element type has been set based on the former because no type has been found for the latter. BHoM_Guid: {instance.BHoM_Guid}");
-
-            return elementType;
+            return instance.ElementTypeInclProperty(instance.Properties, document, new HashSet<BuiltInCategory> { instance.BuiltInCategory(document) }, settings);
         }
 
         /***************************************************/
@@ -109,9 +79,9 @@ namespace BH.Revit.Engine.Core
         [Input("document", "Revit document to parse in search for the element type.")]
         [Input("settings", "Revit adapter settings to be used while performing the query.")]
         [Output("wallType", "Revit wall type to be used when converting the input BHoM object to Revit.")]
-        public static WallType ElementType(this BH.oM.Physical.Elements.Wall wall, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static WallType ElementType(this BH.oM.Physical.Elements.Wall wall, Document document, RevitSettings settings = null)
         {
-            return wall.ElementTypeInclProperty<WallType>(document, settings, refObjects);
+            return wall.ElementTypeInclProperty<WallType>(document, settings);
         }
 
         /***************************************************/
@@ -121,9 +91,9 @@ namespace BH.Revit.Engine.Core
         [Input("document", "Revit document to parse in search for the element type.")]
         [Input("settings", "Revit adapter settings to be used while performing the query.")]
         [Output("floorType", "Revit floor type to be used when converting the input BHoM object to Revit.")]
-        public static FloorType ElementType(this BH.oM.Physical.Elements.Floor floor, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static FloorType ElementType(this BH.oM.Physical.Elements.Floor floor, Document document, RevitSettings settings = null)
         {
-            return floor.ElementTypeInclProperty<FloorType>(document, settings, refObjects);
+            return floor.ElementTypeInclProperty<FloorType>(document, settings);
         }
 
         /***************************************************/
@@ -133,9 +103,9 @@ namespace BH.Revit.Engine.Core
         [Input("document", "Revit document to parse in search for the element type.")]
         [Input("settings", "Revit adapter settings to be used while performing the query.")]
         [Output("roofType", "Revit roof type to be used when converting the input BHoM object to Revit.")]
-        public static RoofType ElementType(this BH.oM.Physical.Elements.Roof roof, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static RoofType ElementType(this BH.oM.Physical.Elements.Roof roof, Document document, RevitSettings settings = null)
         {
-            return roof.ElementTypeInclProperty<RoofType>(document, settings, refObjects);
+            return roof.ElementTypeInclProperty<RoofType>(document, settings);
         }
 
         /***************************************************/
@@ -288,14 +258,14 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static T ElementTypeInclProperty<T>(this BH.oM.Physical.Elements.ISurface surface, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null) where T : HostObjAttributes
+        private static T ElementTypeInclProperty<T>(this BH.oM.Physical.Elements.ISurface surface, Document document, RevitSettings settings = null) where T : HostObjAttributes
         {
             Type bhomType = surface?.GetType();
             if (bhomType == null)
                 return null;
 
             bool differentNames = !string.IsNullOrWhiteSpace(surface.Construction?.Name) && !string.IsNullOrWhiteSpace(surface.Name) && surface.Construction.Name != surface.Name;
-            T elementType = surface.Construction.ToRevitElementType(document, bhomType.BuiltInCategories(), settings, refObjects) as T;
+            T elementType = surface.Construction.ElementType(document, bhomType.BuiltInCategories(), settings) as T;
             if (elementType == null)
             {
                 elementType = surface.ElementType<T>(document);
@@ -304,6 +274,28 @@ namespace BH.Revit.Engine.Core
             }
             else if (differentNames)
                 BH.Engine.Reflection.Compute.RecordWarning($"BHoM {bhomType.Name}'s name and its {nameof(BH.oM.Physical.Elements.ISurface.Construction)} name are different. Revit element type has been set based on the former because no type has been found for the latter. BHoM_Guid: {surface.BHoM_Guid}");
+
+            return elementType;
+        }
+
+        /***************************************************/
+
+        private static ElementType ElementTypeInclProperty(this IBHoMObject bhomObject, IBHoMObject property, Document document, IEnumerable<BuiltInCategory> categories, RevitSettings settings = null)
+        {
+            Type bhomType = bhomObject?.GetType();
+            if (bhomType == null)
+                return null;
+
+            bool differentNames = !string.IsNullOrWhiteSpace(property?.Name) && !string.IsNullOrWhiteSpace(bhomObject.Name) && property.Name != bhomObject.Name;
+            ElementType elementType = property.ElementType(document, categories, settings);
+            if (elementType == null)
+            {
+                elementType = bhomObject.ElementType(document, categories, settings);
+                if (elementType != null && differentNames)
+                    BH.Engine.Reflection.Compute.RecordWarning($"BHoM {bhomType.Name}'s name and its {nameof(BH.oM.Physical.Elements.ISurface.Construction)} name are different. Revit element type has been set based on the latter as it is meant to take precedence. BHoM_Guid: {bhomObject.BHoM_Guid}");
+            }
+            else if (differentNames)
+                BH.Engine.Reflection.Compute.RecordWarning($"BHoM {bhomType.Name}'s name and its {nameof(BH.oM.Physical.Elements.ISurface.Construction)} name are different. Revit element type has been set based on the former because no type has been found for the latter. BHoM_Guid: {bhomObject.BHoM_Guid}");
 
             return elementType;
         }
