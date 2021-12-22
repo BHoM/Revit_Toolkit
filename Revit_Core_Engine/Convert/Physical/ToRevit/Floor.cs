@@ -59,10 +59,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            FloorType floorType = floor.Construction?.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_Floors, BuiltInCategory.OST_StructuralFoundation }, settings, refObjects) as FloorType;
-            if (floorType == null)
-                floorType = floor.ElementType(document, settings);
-
+            FloorType floorType = floor.ElementType(document, settings, refObjects);
             if (floorType == null)
             {
                 Compute.ElementTypeNotFoundWarning(floor);

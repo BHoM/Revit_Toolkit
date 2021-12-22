@@ -207,6 +207,25 @@ namespace BH.Revit.Engine.Core
                 {
                     Autodesk.Revit.DB.BuiltInCategory.OST_GenericModel,
                 }
+            },
+            {
+                typeof (BH.oM.Physical.Elements.Wall), new BuiltInCategory[]
+                {
+                    Autodesk.Revit.DB.BuiltInCategory.OST_Walls,
+                }
+            },
+            {
+                typeof (BH.oM.Physical.Elements.Floor), new BuiltInCategory[]
+                {
+                    Autodesk.Revit.DB.BuiltInCategory.OST_Floors,
+                    Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFoundation,
+                }
+            },
+            {
+                typeof (BH.oM.Physical.Elements.Roof), new BuiltInCategory[]
+                {
+                    Autodesk.Revit.DB.BuiltInCategory.OST_Roofs,
+                }
             }
         };
 
