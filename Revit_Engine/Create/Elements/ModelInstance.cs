@@ -36,7 +36,6 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("5.0", "BH.Engine.Adapters.Revit.Create.ModelInstance(System.String, System.String, BH.oM.Geometry.Point, BH.oM.Geometry.Basis, System.Int32)")]
         [Description("Creates ModelInstance object based on point location, Revit family name and family type name. Such ModelInstance can be pushed to Revit as a point-driven element, e.g. chair.")]
         [Input("familyName", "Name of Revit family to be used when creating the element.")]
         [Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
@@ -55,7 +54,6 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [PreviousVersion("5.0", "BH.Engine.Adapters.Revit.Create.ModelInstance(System.String, System.String, BH.oM.Geometry.ICurve, System.Int32)")]
         [Description("Creates ModelInstance object based on curve location, Revit family name and family type name. Such ModelInstance can be pushed to Revit as a curve-driven element, e.g. duct.")]
         [Input("familyName", "Name of Revit family to be used when creating the element.")]
         [Input("familyTypeName", "Name of Revit family type to be used when creating the element.")]
@@ -89,7 +87,6 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [PreviousVersion("5.0", "BH.Engine.Adapters.Revit.Create.ModelInstance(BH.oM.Adapters.Revit.Properties.InstanceProperties, BH.oM.Geometry.Point, BH.oM.Geometry.Basis, System.Int32)")]
         [Description("Creates ModelInstance object based on point location and BHoM InstanceProperties. Such ModelInstance can be pushed to Revit as a point-driven element, e.g. chair.")]
         [InputFromProperty("properties")]
         [InputFromProperty("location")]
@@ -118,7 +115,6 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [PreviousVersion("5.0", "BH.Engine.Adapters.Revit.Create.ModelInstance(BH.oM.Adapters.Revit.Properties.InstanceProperties, BH.oM.Geometry.ICurve, System.Int32)")]
         [Description("Creates ModelInstance object based on curve location and BHoM InstanceProperties. Such ModelInstance can be pushed to Revit as a curve-driven element, e.g. duct.")]
         [InputFromProperty("properties")]
         [InputFromProperty("location")]
