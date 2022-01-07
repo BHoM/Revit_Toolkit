@@ -62,7 +62,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Checks whether a given Revit element type is used (applied to any other element) in the document to which it belongs.")]
-        [Input("family", "Revit element type to be checked whether it is used in the model.")]
+        [Input("elementType", "Revit element type to be checked whether it is used in the model.")]
         [Output("used", "True if the input Revit element type is used, otherwise false.")]
         public static bool IsUsed(this ElementType elementType)
         {
@@ -84,7 +84,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Checks whether a given Revit view template is used (applied to any other element) in the document to which it belongs.")]
-        [Input("family", "Revit view template to be checked whether it is used in the model.")]
+        [Input("viewTemplate", "Revit view template to be checked whether it is used in the model.")]
         [Output("used", "True if the input Revit view template is used, otherwise false.")]
         public static bool IsUsed(this View viewTemplate)
         {

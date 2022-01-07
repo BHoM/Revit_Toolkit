@@ -34,7 +34,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Returns the BHoM environment opening type enum value relevant to a given Revit built-in category.")]
-        [Input("category", "Revit built-in category to be queried for its correspondent opening type enum value.")]
+        [Input("builtInCategory", "Revit built-in category to be queried for its correspondent opening type enum value.")]
         [Output("openingType", "BHoM environment opening type enum value relevant to the input Revit built-in category.")]
         public static oM.Environment.Elements.OpeningType? OpeningType(this BuiltInCategory builtInCategory)
         {

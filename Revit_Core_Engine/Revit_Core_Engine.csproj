@@ -561,7 +561,7 @@
     <Compile Include="Query\EmptyMaterialFragment.cs" />
     <Compile Include="Query\OrientationAngle.cs" />
     <Compile Include="Query\FramingElementProperty.cs" />
-    <Compile Include="Query\GetValues.cs" />
+    <Compile Include="Query\GetValue.cs" />
     <Compile Include="Query\InstanceType.cs" />
     <Compile Include="Query\IsAnalytical.cs" />
     <Compile Include="Query\IsSupportedAPIType.cs" />
