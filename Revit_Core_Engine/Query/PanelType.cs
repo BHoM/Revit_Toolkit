@@ -35,7 +35,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Returns the BHoM environment panel type enum value relevant to a given Revit built-in category.")]
-        [Input("category", "Revit built-in category to be queried for its correspondent panel type enum value.")]
+        [Input("builtInCategory", "Revit built-in category to be queried for its correspondent panel type enum value.")]
         [Output("panelType", "BHoM environment panel type enum value relevant to the input Revit built-in category.")]
         public static oM.Environment.Elements.PanelType? PanelType(this BuiltInCategory builtInCategory)
         {
