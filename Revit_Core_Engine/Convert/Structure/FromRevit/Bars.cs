@@ -27,7 +27,7 @@ using BH.Engine.Base;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Spatial.ShapeProfiles;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.MaterialFragments;
@@ -120,7 +120,7 @@ namespace BH.Revit.Engine.Core
                 property = property.ShallowClone();
 
                 if (!materialFound)
-                    BH.Engine.Reflection.Compute.RecordNote($"A matching section was found in the library. No valid material was defined in Revit, so the default material for this section was used. Revit ElementId: {familyInstance.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordNote($"A matching section was found in the library. No valid material was defined in Revit, so the default material for this section was used. Revit ElementId: {familyInstance.Id.IntegerValue}");
                 else
                     property.Material = materialFragment;
 

@@ -26,12 +26,12 @@ using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
-using BH.oM.Reflection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
+using BH.oM.Base;
 
 namespace BH.Revit.Engine.Core
 {

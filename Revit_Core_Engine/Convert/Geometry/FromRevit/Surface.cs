@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -70,7 +70,7 @@ namespace BH.Revit.Engine.Core
         
         private static oM.Geometry.ISurface FromRevit(this Face face)
         {
-            BH.Engine.Reflection.Compute.RecordError(String.Format("Revit face of type {0} could not be converted to BHoM due to a missing convert method.", face.GetType()));
+            BH.Engine.Base.Compute.RecordError(String.Format("Revit face of type {0} could not be converted to BHoM due to a missing convert method.", face.GetType()));
             return null;
         }
         

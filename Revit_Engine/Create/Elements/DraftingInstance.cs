@@ -24,7 +24,7 @@ using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -204,7 +204,7 @@ namespace BH.Engine.Adapters.Revit
                 PolySurface polySurface = (PolySurface)location;
                 if (polySurface.Surfaces.Any(x => !(x is PlanarSurface)))
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Only PlanarSurfaces and PolySurfaces consisting of PlanarSurfaces can be used as location for ISurface-based DraftingInstances.");
+                    BH.Engine.Base.Compute.RecordError("Only PlanarSurfaces and PolySurfaces consisting of PlanarSurfaces can be used as location for ISurface-based DraftingInstances.");
                     return null;
                 }
 
@@ -212,7 +212,7 @@ namespace BH.Engine.Adapters.Revit
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordError("Only PlanarSurfaces and PolySurfaces consisting of PlanarSurfaces can be used as location for ISurface-based DraftingInstances.");
+                BH.Engine.Base.Compute.RecordError("Only PlanarSurfaces and PolySurfaces consisting of PlanarSurfaces can be used as location for ISurface-based DraftingInstances.");
                 return null;
             }
 
@@ -221,7 +221,7 @@ namespace BH.Engine.Adapters.Revit
                 Vector normal = (surface).Normal();
                 if (normal == null || 1 - Math.Abs(normal.DotProduct(Vector.ZAxis)) > Tolerance.Angle)
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Normal of the surface or its components is not parallel to the global Z axis.");
+                    BH.Engine.Base.Compute.RecordError("Normal of the surface or its components is not parallel to the global Z axis.");
                     return null;
                 }
             }

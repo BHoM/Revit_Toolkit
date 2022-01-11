@@ -21,7 +21,7 @@
  */
 
 using BH.oM.Adapters.Revit;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -61,7 +61,7 @@ namespace BH.Engine.Adapters.Revit
 
             if (!File.Exists(path))
             {
-                BH.Engine.Reflection.Compute.RecordError($"Revit file does not exist under path {path}.");
+                BH.Engine.Base.Compute.RecordError($"Revit file does not exist under path {path}.");
                 return null;
             }
 
@@ -84,7 +84,7 @@ namespace BH.Engine.Adapters.Revit
                         }
                         catch
                         {
-                            BH.Engine.Reflection.Compute.RecordError($"Internal error occurred when attempting to convert a file under path {path} into RevitFilePreview.");
+                            BH.Engine.Base.Compute.RecordError($"Internal error occurred when attempting to convert a file under path {path} into RevitFilePreview.");
                             return null;
                         }
 
@@ -96,7 +96,7 @@ namespace BH.Engine.Adapters.Revit
                             }
                             catch
                             {
-                                BH.Engine.Reflection.Compute.RecordError($"Internal error occurred when attempting to convert a file under path {path} into RevitFilePreview.");
+                                BH.Engine.Base.Compute.RecordError($"Internal error occurred when attempting to convert a file under path {path} into RevitFilePreview.");
                                 return null;
                             }
                         }

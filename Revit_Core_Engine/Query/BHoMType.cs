@@ -26,7 +26,7 @@ using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Structure.Elements;
 using System;
 using System.ComponentModel;

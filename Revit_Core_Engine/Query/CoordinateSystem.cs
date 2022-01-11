@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.oM.Geometry;
 using BH.oM.Geometry.CoordinateSystem;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
         {
             if (familyInstance == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Coordinate system of the FamilyInstance could not be retrieved because the instance is null.");
+                BH.Engine.Base.Compute.RecordError("Coordinate system of the FamilyInstance could not be retrieved because the instance is null.");
                 return null;
             }
 

@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -63,11 +63,11 @@ namespace BH.Revit.Engine.Core
                             corruptIds.Add(uniqueID);
                     }
                     else
-                        BH.Engine.Reflection.Compute.RecordError("An attempt to use empty Unique Revit Id has been found.");
+                        BH.Engine.Base.Compute.RecordError("An attempt to use empty Unique Revit Id has been found.");
                 }
 
                 if (corruptIds.Count != 0)
-                    BH.Engine.Reflection.Compute.RecordError(String.Format("Elements have not been found in the document. Unique Revit Ids: {0}", string.Join(", ", corruptIds)));
+                    BH.Engine.Base.Compute.RecordError(String.Format("Elements have not been found in the document. Unique Revit Ids: {0}", string.Join(", ", corruptIds)));
 
                 if (ids != null)
                     result.IntersectWith(ids);

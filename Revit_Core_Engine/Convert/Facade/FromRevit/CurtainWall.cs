@@ -36,7 +36,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 
 namespace BH.Revit.Engine.Core
 {
@@ -68,7 +68,7 @@ namespace BH.Revit.Engine.Core
             IEnumerable<oM.Facade.Elements.Opening> curtainPanels = wall.CurtainGrid.FacadeCurtainPanels(wall.Document, settings, refObjects);
 
             if (curtainPanels == null || !curtainPanels.Any())
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Processing of panels of Revit curtain wall failed. BHoM curtain wall without location has been returned. Revit ElementId: {0}", wall.Id.IntegerValue));
+                BH.Engine.Base.Compute.RecordError(String.Format("Processing of panels of Revit curtain wall failed. BHoM curtain wall without location has been returned. Revit ElementId: {0}", wall.Id.IntegerValue));
 
 
             // Get external edges of whole curtain wall

@@ -34,21 +34,21 @@ namespace BH.Revit.Adapter.Core
 
         private static void NullObjectCreateError(Type type)
         {
-            BH.Engine.Reflection.Compute.RecordError(string.Format("Revit object could not be created. BHoM {0} is null", type.Name));
+            BH.Engine.Base.Compute.RecordError(string.Format("Revit object could not be created. BHoM {0} is null", type.Name));
         }
 
         /***************************************************/
 
         private static void ObjectNotCreatedError(IBHoMObject iBHoMObject, Exception ex)
         {
-            BH.Engine.Reflection.Compute.RecordError($"Revit object could not be created due to the following exception:\n{ex.Message}\nBHoM object Guid: {iBHoMObject.BHoM_Guid}");
+            BH.Engine.Base.Compute.RecordError($"Revit object could not be created due to the following exception:\n{ex.Message}\nBHoM object Guid: {iBHoMObject.BHoM_Guid}");
         }
 
         /***************************************************/
 
         private static void ObjectNotUpdatedError(Element element, IBHoMObject iBHoMObject)
         {
-            BH.Engine.Reflection.Compute.RecordError(string.Format("Revit object could not be updated. Revit ElementId: {0} BHoM object Guid: {1}", element.Id, iBHoMObject.BHoM_Guid));
+            BH.Engine.Base.Compute.RecordError(string.Format("Revit object could not be updated. Revit ElementId: {0} BHoM object Guid: {1}", element.Id, iBHoMObject.BHoM_Guid));
         }
 
         /***************************************************/

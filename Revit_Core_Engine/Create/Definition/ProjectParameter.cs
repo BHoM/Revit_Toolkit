@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -48,7 +48,7 @@ namespace BH.Revit.Engine.Core
 
             if (categories != null && !categories.Any())
             {
-                BH.Engine.Reflection.Compute.RecordError($"Parameter {parameterName} of type {LabelUtils.GetLabelFor(parameterType)} could not be created because no category bindings were provided.");
+                BH.Engine.Base.Compute.RecordError($"Parameter {parameterName} of type {LabelUtils.GetLabelFor(parameterType)} could not be created because no category bindings were provided.");
                 return null;
             }
 
@@ -60,11 +60,11 @@ namespace BH.Revit.Engine.Core
             {
                 if (document.ParameterBindings.Contains(def))
                 {
-                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} already exists in group {LabelUtils.GetLabelFor(parameterGroup)}. It already has category bindings, they were not updated - please make sure they are correct.");
+                    BH.Engine.Base.Compute.RecordWarning($"Parameter {parameterName} already exists in group {LabelUtils.GetLabelFor(parameterGroup)}. It already has category bindings, they were not updated - please make sure they are correct.");
                     bindings = true;
                 }
                 else
-                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} already exists in group {LabelUtils.GetLabelFor(parameterGroup)}. It did not have any category bindings, so input bindings were applied.");
+                    BH.Engine.Base.Compute.RecordWarning($"Parameter {parameterName} already exists in group {LabelUtils.GetLabelFor(parameterGroup)}. It did not have any category bindings, so input bindings were applied.");
             }
             else
             {

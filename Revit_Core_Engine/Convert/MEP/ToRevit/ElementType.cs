@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -69,7 +69,7 @@ namespace BH.Revit.Engine.Core
 
             if (elementType != null)
             {
-                BH.Engine.Reflection.Compute.RecordNote($"Duct is being pushed as the first type available in the Revit model, in this case {elementType.Name}.");
+                BH.Engine.Base.Compute.RecordNote($"Duct is being pushed as the first type available in the Revit model, in this case {elementType.Name}.");
             }
             else
                 return null;
@@ -112,7 +112,7 @@ namespace BH.Revit.Engine.Core
 
             if (elementType != null)
             {
-                BH.Engine.Reflection.Compute.RecordNote($"Pipe is being pushed as the first type available in the Revit model, in this case {elementType.Name}.");
+                BH.Engine.Base.Compute.RecordNote($"Pipe is being pushed as the first type available in the Revit model, in this case {elementType.Name}.");
             }
             else
                 return null;
@@ -155,7 +155,7 @@ namespace BH.Revit.Engine.Core
 
             if (elementType != null)
             {
-                BH.Engine.Reflection.Compute.RecordNote($"CableTray is being pushed as the first type available in the Revit model, in this case {elementType.Name}.");
+                BH.Engine.Base.Compute.RecordNote($"CableTray is being pushed as the first type available in the Revit model, in this case {elementType.Name}.");
             }
             else
                 return null;

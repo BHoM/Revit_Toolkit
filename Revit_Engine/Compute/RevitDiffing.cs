@@ -26,7 +26,7 @@ using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
 using BH.oM.Diffing;
 using BH.Engine.Diffing;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -125,7 +125,7 @@ namespace BH.Engine.Adapters.Revit
                 revitIdName = nameof(RevitIdentifiers.PersistentId);
             else if (revitIdName != "ElementId")
             {
-                BH.Engine.Reflection.Compute.RecordError($"The input parameter {nameof(revitIdName)} can only be 'ElementId', 'UniqueId' or '{nameof(RevitIdentifiers.PersistentId)}' (BHoM's equivalent of Revit's UniqueId), but '{revitIdName}' was specified.");
+                BH.Engine.Base.Compute.RecordError($"The input parameter {nameof(revitIdName)} can only be 'ElementId', 'UniqueId' or '{nameof(RevitIdentifiers.PersistentId)}' (BHoM's equivalent of Revit's UniqueId), but '{revitIdName}' was specified.");
                 return null;
             }
 
@@ -145,13 +145,13 @@ namespace BH.Engine.Adapters.Revit
 
             if (revitBHoMObjects_past.Count() != pastObjects.Count())
             {
-                BH.Engine.Reflection.Compute.RecordError($"Some of the {nameof(pastObjects)} do not have a {nameof(RevitIdentifiers)} fragment attached.");
+                BH.Engine.Base.Compute.RecordError($"Some of the {nameof(pastObjects)} do not have a {nameof(RevitIdentifiers)} fragment attached.");
                 return null;
             }
 
             if (revitBHoMObjects_following.Count() != followingObjects.Count())
             {
-                BH.Engine.Reflection.Compute.RecordError($"Some of the {nameof(followingObjects)} do not have a {nameof(RevitIdentifiers)} fragment attached.");
+                BH.Engine.Base.Compute.RecordError($"Some of the {nameof(followingObjects)} do not have a {nameof(RevitIdentifiers)} fragment attached.");
                 return null;
             }
 

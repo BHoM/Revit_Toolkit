@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
             Line line = (wall?.Location as LocationCurve)?.Curve as Line;
             if (line == null)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Querying panel surfaces from links for Revit curved walls is currently not supported.");
+                BH.Engine.Base.Compute.RecordError($"Querying panel surfaces from links for Revit curved walls is currently not supported.");
                 return null;
             }
 
@@ -130,7 +130,7 @@ namespace BH.Revit.Engine.Core
 
         private static List<Face> LinkPanelFaces(this HostObject hostObject, RevitSettings settings)
         {
-            BH.Engine.Reflection.Compute.RecordError($"Querying panel surfaces from links for Revit elements of type {hostObject.GetType().Name} is currently not supported.");
+            BH.Engine.Base.Compute.RecordError($"Querying panel surfaces from links for Revit elements of type {hostObject.GetType().Name} is currently not supported.");
             return new List<Face>();
         }
 

@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -56,7 +56,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Couldn't find a View under ElementId {0}", viewId));
+                BH.Engine.Base.Compute.RecordError(String.Format("Couldn't find a View under ElementId {0}", viewId));
                 return new HashSet<ElementId>();
             }
         }

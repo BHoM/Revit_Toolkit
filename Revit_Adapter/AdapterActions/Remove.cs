@@ -39,7 +39,7 @@ namespace BH.Adapter.Revit
             //Check if request is not null or empty
             if (request == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided IRequest is null or empty.");
+                BH.Engine.Base.Compute.RecordError("BHoM objects could not be read because provided IRequest is null or empty.");
                 return 0;
             }
             else if (request is FilterRequest)
@@ -47,7 +47,7 @@ namespace BH.Adapter.Revit
                 FilterRequest filterRequest = (FilterRequest)request;
                 if (filterRequest.Type == null && String.IsNullOrWhiteSpace(filterRequest.Tag) && (filterRequest.Equalities == null || filterRequest.Equalities.Count == 0))
                 {
-                    BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided IRequest is null or empty.");
+                    BH.Engine.Base.Compute.RecordError("BHoM objects could not be read because provided IRequest is null or empty.");
                     return 0;
                 }
             }
@@ -64,7 +64,7 @@ namespace BH.Adapter.Revit
 
             if (!this.IsValid())
             {
-                BH.Engine.Reflection.Compute.RecordError("Revit Adapter is not valid. Please check if it has been set up correctly and activated.");
+                BH.Engine.Base.Compute.RecordError("Revit Adapter is not valid. Please check if it has been set up correctly and activated.");
                 return 0;
             }
 
@@ -79,7 +79,7 @@ namespace BH.Adapter.Revit
 
             //Wait until the return message has been recieved
             if (!m_WaitEvent.WaitOne(TimeSpan.FromMinutes(m_WaitTime)))
-                BH.Engine.Reflection.Compute.RecordError("The connection with Revit timed out. If working on a big model, try to increase the max wait time");
+                BH.Engine.Base.Compute.RecordError("The connection with Revit timed out. If working on a big model, try to increase the max wait time");
 
             //Grab the return count from the latest package
             List<object> returnObjs = new List<object>(m_ReturnPackage);
@@ -93,7 +93,7 @@ namespace BH.Adapter.Revit
             //Check if the return package contains error message
             if (returnObjs.Count == 1 && returnObjs[0] is string)
             {
-                Engine.Reflection.Compute.RecordError(returnObjs[0] as string);
+                Engine.Base.Compute.RecordError(returnObjs[0] as string);
                 return 0;
             }
 

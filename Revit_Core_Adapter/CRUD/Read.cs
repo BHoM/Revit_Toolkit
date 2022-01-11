@@ -53,13 +53,13 @@ namespace BH.Revit.Adapter.Core
 
             if (request == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided IRequest is null.");
+                BH.Engine.Base.Compute.RecordError("BHoM objects could not be read because provided IRequest is null.");
                 return new List<IBHoMObject>();
             }
 
             if (actionConfig != null && !(actionConfig is RevitPullConfig))
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided actionConfig is not a valid RevitPullConfig.");
+                BH.Engine.Base.Compute.RecordError("BHoM objects could not be read because provided actionConfig is not a valid RevitPullConfig.");
                 return new List<IBHoMObject>();
             }
 
@@ -68,7 +68,7 @@ namespace BH.Revit.Adapter.Core
             Discipline? requestDiscipline = request.Discipline();
             if (requestDiscipline == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Conflicting disciplines have been detected inside the provided request.");
+                BH.Engine.Base.Compute.RecordError("Conflicting disciplines have been detected inside the provided request.");
                 return new List<IBHoMObject>();
             }
 
@@ -78,11 +78,11 @@ namespace BH.Revit.Adapter.Core
                 {
                     pullConfig = pullConfig.DeepClone();
                     pullConfig.Discipline = requestDiscipline.Value;
-                    BH.Engine.Reflection.Compute.RecordNote($"Discipline {pullConfig.Discipline} has been deducted from the provided request and will be used in the Pull.");
+                    BH.Engine.Base.Compute.RecordNote($"Discipline {pullConfig.Discipline} has been deducted from the provided request and will be used in the Pull.");
                 }
                 else if (requestDiscipline != Discipline.Undefined)
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Discipline set in Revit pull config conflicts with the discipline deducted from the provided request.");
+                    BH.Engine.Base.Compute.RecordError("Discipline set in Revit pull config conflicts with the discipline deducted from the provided request.");
                     return new List<IBHoMObject>();
                 }
             }
@@ -90,7 +90,7 @@ namespace BH.Revit.Adapter.Core
             Dictionary<Document, IRequest> requestsByLinks = request.SplitRequestTreeByLinks(this.Document);
             if (requestsByLinks == null)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Pull failed due to issues with the request containing {nameof(FilterByLink)}. Please try to restructure the used Request and try again.");
+                BH.Engine.Base.Compute.RecordError($"Pull failed due to issues with the request containing {nameof(FilterByLink)}. Please try to restructure the used Request and try again.");
                 return new List<IBHoMObject>();
             }
 
@@ -116,13 +116,13 @@ namespace BH.Revit.Adapter.Core
         {
             if (document == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided Revit document is null.");
+                BH.Engine.Base.Compute.RecordError("BHoM objects could not be read because provided Revit document is null.");
                 return new List<IBHoMObject>();
             }
 
             if (request == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided IRequest is null.");
+                BH.Engine.Base.Compute.RecordError("BHoM objects could not be read because provided IRequest is null.");
                 return new List<IBHoMObject>();
             }
 
@@ -162,13 +162,13 @@ namespace BH.Revit.Adapter.Core
         {
             if (document == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided Revit document is null.");
+                BH.Engine.Base.Compute.RecordError("BHoM objects could not be read because provided Revit document is null.");
                 return new List<IBHoMObject>();
             }
 
             if (elementIds == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be read because provided element ids are null.");
+                BH.Engine.Base.Compute.RecordError("BHoM objects could not be read because provided element ids are null.");
                 return new List<IBHoMObject>();
             }
 
@@ -186,7 +186,7 @@ namespace BH.Revit.Adapter.Core
             Discipline discipline = pullConfig.Discipline;
             if (discipline == Discipline.Undefined)
             {
-                BH.Engine.Reflection.Compute.RecordNote($"Conversion discipline has not been specified, default {Discipline.Physical} will be used.");
+                BH.Engine.Base.Compute.RecordNote($"Conversion discipline has not been specified, default {Discipline.Physical} will be used.");
                 discipline = Discipline.Physical;
             }
 
@@ -277,7 +277,7 @@ namespace BH.Revit.Adapter.Core
 
             bool[] activePulls = new bool[] { geometryConfig.PullEdges, geometryConfig.PullSurfaces, geometryConfig.PullMeshes, representationConfig.PullRenderMesh };
             if (activePulls.Count(x => x) > 1)
-                BH.Engine.Reflection.Compute.RecordWarning("Pull of more than one geometry/representation type has been specified in RevitPullConfig. Please consider this can be time consuming due to the amount of conversions.");
+                BH.Engine.Base.Compute.RecordWarning("Pull of more than one geometry/representation type has been specified in RevitPullConfig. Please consider this can be time consuming due to the amount of conversions.");
 
             return result;
         }
@@ -296,7 +296,7 @@ namespace BH.Revit.Adapter.Core
             }
             catch (Exception exception)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Element named {element.Name} with Id {element.Id} failed to convert for discipline {discipline} with the following error: {exception.Message}.");
+                BH.Engine.Base.Compute.RecordError($"Element named {element.Name} with Id {element.Id} failed to convert for discipline {discipline} with the following error: {exception.Message}.");
             }
 
             if (result == null)

@@ -23,7 +23,7 @@
 using BH.oM.Adapters.Revit;
 using BH.oM.Base;
 using BH.oM.Physical.Elements;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 using System.Linq;
 

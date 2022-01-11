@@ -22,7 +22,7 @@
 
 using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.ComponentModel;
 
@@ -43,7 +43,7 @@ namespace BH.Engine.Adapters.Revit
             int elementId = idElement.ElementId();
             if (elementId == -1)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", idElement.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", idElement.BHoM_Guid));
                 return null;
             }
             else

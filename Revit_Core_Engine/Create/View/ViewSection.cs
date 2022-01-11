@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using System;
 using System.ComponentModel;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 
 namespace BH.Revit.Engine.Core
 {
@@ -58,7 +58,7 @@ namespace BH.Revit.Engine.Core
                 }
                 catch (Exception)
                 {
-                    BH.Engine.Reflection.Compute.RecordWarning("Could not apply the View Template of Id " + viewTemplateId + "'." + ". Please check if it's a valid ElementId.");
+                    BH.Engine.Base.Compute.RecordWarning("Could not apply the View Template of Id " + viewTemplateId + "'." + ". Please check if it's a valid ElementId.");
                 }
             }
 
@@ -74,7 +74,7 @@ namespace BH.Revit.Engine.Core
                 }
                 catch
                 {
-                    BH.Engine.Reflection.Compute.RecordWarning("There is already a view named '" + viewName + "'." + " It has been named '" + result.Name + "' instead.");
+                    BH.Engine.Base.Compute.RecordWarning("There is already a view named '" + viewName + "'." + " It has been named '" + result.Name + "' instead.");
                 }
             }
 

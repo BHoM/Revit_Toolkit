@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Base;
 using BH.Engine.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -137,7 +137,7 @@ namespace BH.Revit.Engine.Core
                 }
                 catch
                 {
-                    BH.Engine.Reflection.Compute.RecordWarning("Conversion of a nurbs curve from BHoM to Revit failed. An approximate, 100-segment polyline has been created instead.");
+                    BH.Engine.Base.Compute.RecordWarning("Conversion of a nurbs curve from BHoM to Revit failed. An approximate, 100-segment polyline has been created instead.");
                     
                     List<XYZ> pts = new List<XYZ>();
                     int k = 100;

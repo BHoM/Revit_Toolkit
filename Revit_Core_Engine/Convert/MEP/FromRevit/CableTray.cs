@@ -29,7 +29,7 @@ using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.MEP.System;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 
 namespace BH.Revit.Engine.Core

@@ -24,8 +24,7 @@ using BH.Engine.Base;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
-using BH.oM.Reflection;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Revit;
 using System.ComponentModel;
 
@@ -45,7 +44,7 @@ namespace BH.Engine.Adapters.Revit
         {
             if (bHoMObject == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Cannot extract the host information from a null BHoM object.");
+                BH.Engine.Base.Compute.RecordError("Cannot extract the host information from a null BHoM object.");
                 return null;
             }
 

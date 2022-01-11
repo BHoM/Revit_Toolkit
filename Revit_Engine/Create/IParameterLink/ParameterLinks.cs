@@ -21,7 +21,7 @@
  */
 
 using BH.oM.Adapters.Revit.Mapping;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -42,13 +42,13 @@ namespace BH.Engine.Adapters.Revit
         {
             if (string.IsNullOrEmpty(propertyName))
             {
-                BH.Engine.Reflection.Compute.RecordError("It is impossible to create parameter links for an empty property name.");
+                BH.Engine.Base.Compute.RecordError("It is impossible to create parameter links for an empty property name.");
                 return new List<IParameterLink>();
             }
 
             if (parameterNames == null || !parameterNames.Any())
             {
-                BH.Engine.Reflection.Compute.RecordError("It is impossible to create parameter links for an empty parameter name collection.");
+                BH.Engine.Base.Compute.RecordError("It is impossible to create parameter links for an empty parameter name collection.");
                 return new List<IParameterLink>();
             }
 

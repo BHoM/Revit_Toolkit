@@ -25,7 +25,7 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -62,7 +62,7 @@ namespace BH.Revit.Engine.Core
 
             if (material == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Ceiling patterns could not be pulled because there is no material assigned to the ceiling. Revit ElementId: {0}", ceiling.Id));
+                BH.Engine.Base.Compute.RecordWarning(String.Format("Ceiling patterns could not be pulled because there is no material assigned to the ceiling. Revit ElementId: {0}", ceiling.Id));
                 return new List<oM.Geometry.Line>();
             }
 

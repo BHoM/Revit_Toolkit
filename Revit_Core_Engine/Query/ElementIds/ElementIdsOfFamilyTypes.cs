@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -51,7 +51,7 @@ namespace BH.Revit.Engine.Core
             Family family = document.GetElement(new ElementId(familyId)) as Family;
             if (family == null)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Couldn't find a Family under ElementId {0}", familyId));
+                BH.Engine.Base.Compute.RecordError(String.Format("Couldn't find a Family under ElementId {0}", familyId));
                 return new List<ElementId>();
             }
 
@@ -87,7 +87,7 @@ namespace BH.Revit.Engine.Core
 
                 if (elementTypes.Count() == 0)
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Couldn't find any family named " + familyName + ".");
+                    BH.Engine.Base.Compute.RecordError("Couldn't find any family named " + familyName + ".");
                     return result;
                 }
             }
@@ -100,7 +100,7 @@ namespace BH.Revit.Engine.Core
                     elementTypes = elementTypes.Where(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToUpper() == familyTypeName.ToUpper());
 
                 if (elementTypes.Count() > 1)
-                    BH.Engine.Reflection.Compute.RecordWarning(String.Format("More than one family type named {0} has been found. It may be desirable to narrow down the search by specifying family name explicitly.", familyTypeName));
+                    BH.Engine.Base.Compute.RecordWarning(String.Format("More than one family type named {0} has been found. It may be desirable to narrow down the search by specifying family name explicitly.", familyTypeName));
             }
 
             if (elementTypes.Count() == 0)
@@ -111,7 +111,7 @@ namespace BH.Revit.Engine.Core
                 else
                     error += ".";
 
-                BH.Engine.Reflection.Compute.RecordError(error);
+                BH.Engine.Base.Compute.RecordError(error);
                 return result;
             }
 

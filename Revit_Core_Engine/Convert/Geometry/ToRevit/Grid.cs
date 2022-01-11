@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -53,7 +53,7 @@ namespace BH.Revit.Engine.Core
 
             if (BH.Engine.Geometry.Query.IIsClosed(grid.Curve))
             {
-                BH.Engine.Reflection.Compute.RecordError("Element could not be created: Revit allows only open curve-based grids. BHoM_Guid: " + grid.BHoM_Guid);
+                BH.Engine.Base.Compute.RecordError("Element could not be created: Revit allows only open curve-based grids. BHoM_Guid: " + grid.BHoM_Guid);
                 return null;
             }
 
@@ -70,7 +70,7 @@ namespace BH.Revit.Engine.Core
                     revitGrid = Grid.Create(document, (Arc)curve);
                 else
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Element could not be created: Revit allows only line- and arc-based grids. BHoM_Guid: " + grid.BHoM_Guid);
+                    BH.Engine.Base.Compute.RecordError("Element could not be created: Revit allows only line- and arc-based grids. BHoM_Guid: " + grid.BHoM_Guid);
                     return null;
                 }
             }
@@ -84,7 +84,7 @@ namespace BH.Revit.Engine.Core
                         loop.Append(revitCurve);
                     else
                     {
-                        BH.Engine.Reflection.Compute.RecordError("Element could not be created: Revit allows only line- and arc-based grids. BHoM_Guid: " + grid.BHoM_Guid);
+                        BH.Engine.Base.Compute.RecordError("Element could not be created: Revit allows only line- and arc-based grids. BHoM_Guid: " + grid.BHoM_Guid);
                         return null;
                     }
                 }
@@ -96,7 +96,7 @@ namespace BH.Revit.Engine.Core
                 }
                 catch
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Grid curves need to be coplanar. BHoM_Guid: " + grid.BHoM_Guid);
+                    BH.Engine.Base.Compute.RecordError("Grid curves need to be coplanar. BHoM_Guid: " + grid.BHoM_Guid);
                     return null;
                 }
 
@@ -116,7 +116,7 @@ namespace BH.Revit.Engine.Core
             }
             catch
             {
-                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Grid name '{0}' was not unique, name '{1}' has been assigned instead. BHoM_Guid: {2}", grid.Name, revitGrid.Name, grid.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordWarning(String.Format("Grid name '{0}' was not unique, name '{1}' has been assigned instead. BHoM_Guid: {2}", grid.Name, revitGrid.Name, grid.BHoM_Guid));
             }
 
             // Copy parameters from BHoM object to Revit element

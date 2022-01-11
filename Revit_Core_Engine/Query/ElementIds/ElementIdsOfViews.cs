@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -60,9 +60,9 @@ namespace BH.Revit.Engine.Core
                     result = collector.OfClass(typeof(View)).Where(x => x.Name.ToUpper() == viewName.ToUpper()).Select(x => x.Id);
 
                 if (result.Count() == 0)
-                    BH.Engine.Reflection.Compute.RecordWarning("Couldn't find any View named " + viewName + ".");
+                    BH.Engine.Base.Compute.RecordWarning("Couldn't find any View named " + viewName + ".");
                 else if (result.Count() != 1)
-                    BH.Engine.Reflection.Compute.RecordWarning("More than one View named " + viewName + " has been found.");
+                    BH.Engine.Base.Compute.RecordWarning("More than one View named " + viewName + " has been found.");
 
                 return result;
             }
@@ -98,7 +98,7 @@ namespace BH.Revit.Engine.Core
             View viewTemplate = document.GetElement(new ElementId(templateId)) as View;
             if (viewTemplate == null || !viewTemplate.IsTemplate)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Couldn't find a View Template under ElementId {0}", templateId));
+                BH.Engine.Base.Compute.RecordError(String.Format("Couldn't find a View Template under ElementId {0}", templateId));
                 return new List<ElementId>();
             }
 

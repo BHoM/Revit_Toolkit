@@ -25,7 +25,7 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -170,11 +170,11 @@ namespace BH.Revit.Engine.Core
 
             ISurface location = null;
             if (openings == null || openings.Count == 0)
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Processing of panels of Revit curtain roof failed. BHoM roof without location has been returned. Revit ElementId: {0}", roof.Id.IntegerValue));
+                BH.Engine.Base.Compute.RecordError(String.Format("Processing of panels of Revit curtain roof failed. BHoM roof without location has been returned. Revit ElementId: {0}", roof.Id.IntegerValue));
             else
             {
                 if (partFailed)
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Processing of panels of a Revit curtain roof failed. Parts of the geometry of the BHoM roof may be missing. Revit ElementId: {0}", roof.Id.IntegerValue));
+                BH.Engine.Base.Compute.RecordError(String.Format("Processing of panels of a Revit curtain roof failed. Parts of the geometry of the BHoM roof may be missing. Revit ElementId: {0}", roof.Id.IntegerValue));
 
                 if (openings.Count == 1)
                     location = openings[0].Location;

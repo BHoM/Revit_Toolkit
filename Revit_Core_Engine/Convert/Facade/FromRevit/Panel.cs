@@ -27,7 +27,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Facade.Elements;
 using BH.oM.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -47,7 +47,7 @@ namespace BH.Revit.Engine.Core
         [Output("panel", "BH.oM.Facade.Elements.Panel resulting from converting the input Revit FamilyInstance.")]
         public static oM.Facade.Elements.Panel FacadePanelFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            BH.Engine.Reflection.Compute.RecordError("Conversion of Panels from Revit for the Facade discipline is not yet implemented.");
+            BH.Engine.Base.Compute.RecordError("Conversion of Panels from Revit for the Facade discipline is not yet implemented.");
             return null;
         }
 

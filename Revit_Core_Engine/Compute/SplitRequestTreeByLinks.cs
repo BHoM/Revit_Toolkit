@@ -24,7 +24,7 @@ using Autodesk.Revit.DB;
 using BH.Engine.Data;
 using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.Revit.Engine.Core;
 using System;
 using System.Collections.Generic;
@@ -69,7 +69,7 @@ namespace BH.Revit.Engine.Core
 
             if (request is FilterByLink)
             {
-                BH.Engine.Reflection.Compute.RecordError($"It is not allowed to pull from links without any filtering (IRequest of type {nameof(FilterByLink)} needs to be wrapped into a {nameof(LogicalAndRequest)} with at least one more request).");
+                BH.Engine.Base.Compute.RecordError($"It is not allowed to pull from links without any filtering (IRequest of type {nameof(FilterByLink)} needs to be wrapped into a {nameof(LogicalAndRequest)} with at least one more request).");
                 return false;
             }
             else if (!request.IsValidToOrganize())
@@ -94,9 +94,9 @@ namespace BH.Revit.Engine.Core
                     return true;
                 }
                 else if (linkInstanceIds.Count == 0)
-                    BH.Engine.Reflection.Compute.RecordError($"Active Revit document does not contain links with neither name nor path nor ElementId equal to {linkRequest.LinkName}.");
+                    BH.Engine.Base.Compute.RecordError($"Active Revit document does not contain links with neither name nor path nor ElementId equal to {linkRequest.LinkName}.");
                 else
-                    BH.Engine.Reflection.Compute.RecordError($"There is more than one link document named {linkRequest.LinkName} - please use full link path or its ElementId instead of link name to pull.");
+                    BH.Engine.Base.Compute.RecordError($"There is more than one link document named {linkRequest.LinkName} - please use full link path or its ElementId instead of link name to pull.");
             }
 
             return false;
@@ -173,17 +173,17 @@ namespace BH.Revit.Engine.Core
 
                 if (subRequest.GetType() == typeof(FilterByLink))
                 {
-                    BH.Engine.Reflection.Compute.RecordError($"It is not allowed to wrap IRequests of type {nameof(FilterByLink)} into a {nameof(LogicalNotRequest)} request.");
+                    BH.Engine.Base.Compute.RecordError($"It is not allowed to wrap IRequests of type {nameof(FilterByLink)} into a {nameof(LogicalNotRequest)} request.");
                     return false;
                 }
                 else if (subRequest.AllRequestsOfType(typeof(LogicalNotRequest)).Count != 0)
                 {
-                    BH.Engine.Reflection.Compute.RecordError($"A chain of nested {nameof(LogicalNotRequest)}s has been detected, which is not allowed.");
+                    BH.Engine.Base.Compute.RecordError($"A chain of nested {nameof(LogicalNotRequest)}s has been detected, which is not allowed.");
                     return false;
                 }
                 else if (subRequest.AllRequestsOfType(typeof(FilterByLink)).Count != 0)
                 {
-                    BH.Engine.Reflection.Compute.RecordError($"A {nameof(FilterByLink)} nested in {nameof(LogicalNotRequest)} has been detected, which is not allowed.");
+                    BH.Engine.Base.Compute.RecordError($"A {nameof(FilterByLink)} nested in {nameof(LogicalNotRequest)} has been detected, which is not allowed.");
                     return false;
                 }
                 else
@@ -195,7 +195,7 @@ namespace BH.Revit.Engine.Core
                 if (subRequests.Any(x => x.GetType() == typeof(FilterByLink))
                     && (request is LogicalOrRequest || (request is LogicalAndRequest && subRequests.Count == 1)))
                 {
-                    BH.Engine.Reflection.Compute.RecordError($"It is not allowed to pull from links without any filtering (IRequest of type {nameof(FilterByLink)} needs to be wrapped into a {nameof(LogicalAndRequest)}).");
+                    BH.Engine.Base.Compute.RecordError($"It is not allowed to pull from links without any filtering (IRequest of type {nameof(FilterByLink)} needs to be wrapped into a {nameof(LogicalAndRequest)}).");
                     return false;
                 }
 

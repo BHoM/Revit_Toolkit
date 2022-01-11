@@ -28,7 +28,7 @@ using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Spatial.ShapeProfiles;
 using BH.oM.Structure.SectionProperties;
 using System;
@@ -149,7 +149,7 @@ namespace BH.Revit.Engine.Core
                 diameter = (section as StructuralSectionConcreteRound).Diameter.ToSI(SpecTypeId.SectionDimension);
             else
             {
-                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
+                BH.Engine.Base.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 diameter = familySymbol.LookupParameterDouble(diameterNames, dimensionGroups);
             }
 
@@ -187,7 +187,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
+                BH.Engine.Base.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
                 topFlangeWidth = familySymbol.LookupParameterDouble(topFlangeWidthNames, dimensionGroups);
                 botFlangeWidth = familySymbol.LookupParameterDouble(botFlangeWidthNames, dimensionGroups);
@@ -244,7 +244,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
+                BH.Engine.Base.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
                 width = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
                 cornerRadius = familySymbol.LookupParameterDouble(cornerRadiusNames, dimensionGroups);
@@ -291,7 +291,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
+                BH.Engine.Base.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
                 width = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
                 webThickness = familySymbol.LookupParameterDouble(webThicknessNames, dimensionGroups);
@@ -332,7 +332,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
+                BH.Engine.Base.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
                 width = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
                 thickness = familySymbol.LookupParameterDouble(wallThicknessNames, dimensionGroups);
@@ -384,7 +384,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
+                BH.Engine.Base.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
                 flangeWidth = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
                 webThickness = familySymbol.LookupParameterDouble(webThicknessNames, dimensionGroups);
@@ -436,7 +436,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
+                BH.Engine.Base.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
                 width = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
                 webThickness = familySymbol.LookupParameterDouble(webThicknessNames, dimensionGroups);
@@ -499,7 +499,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
+                BH.Engine.Base.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
                 width = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
                 webThickness = familySymbol.LookupParameterDouble(webThicknessNames, dimensionGroups);
@@ -541,7 +541,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
+                BH.Engine.Base.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 height = familySymbol.LookupParameterDouble(heightNames, dimensionGroups);
                 flangeWidth = familySymbol.LookupParameterDouble(widthNames, dimensionGroups);
                 webThickness = familySymbol.LookupParameterDouble(webThicknessNames, dimensionGroups);
@@ -585,7 +585,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
+                BH.Engine.Base.Compute.RecordWarning($"Dimensions of section profile {familySymbol.Name} (Revit ElementId {familySymbol.Id.IntegerValue}) were extracted using name matching and may be incorrect in some cases.");
                 thickness = familySymbol.LookupParameterDouble(wallThicknessNames, dimensionGroups);
                 diameter = familySymbol.LookupParameterDouble(diameterNames, dimensionGroups);
             }
@@ -614,7 +614,7 @@ namespace BH.Revit.Engine.Core
                 direction = XYZ.BasisZ;
             else
             {
-                BH.Engine.Reflection.Compute.RecordWarning("The profile of a family type could not be found. ElementId: " + familySymbol.Id.IntegerValue.ToString());
+                BH.Engine.Base.Compute.RecordWarning("The profile of a family type could not be found. ElementId: " + familySymbol.Id.IntegerValue.ToString());
                 return null;
             }
 
@@ -664,7 +664,7 @@ namespace BH.Revit.Engine.Core
 
             if (solid == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning("The profile of a family type could not be found because it is empty or it consists of more than one solid. ElementId: " + familySymbol.Id.IntegerValue.ToString());
+                BH.Engine.Base.Compute.RecordWarning("The profile of a family type could not be found because it is empty or it consists of more than one solid. ElementId: " + familySymbol.Id.IntegerValue.ToString());
                 return null;
             }
 
@@ -677,7 +677,7 @@ namespace BH.Revit.Engine.Core
                         face = f;
                     else
                     {
-                        BH.Engine.Reflection.Compute.RecordWarning("The profile of a family type could not be found. ElementId: " + familySymbol.Id.IntegerValue.ToString());
+                        BH.Engine.Base.Compute.RecordWarning("The profile of a family type could not be found. ElementId: " + familySymbol.Id.IntegerValue.ToString());
                         return null;
                     }
                 }
@@ -685,7 +685,7 @@ namespace BH.Revit.Engine.Core
 
             if (face == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning("The profile of a family type could not be found. ElementId: " + familySymbol.Id.IntegerValue.ToString());
+                BH.Engine.Base.Compute.RecordWarning("The profile of a family type could not be found. ElementId: " + familySymbol.Id.IntegerValue.ToString());
                 return null;
             }
             
@@ -697,7 +697,7 @@ namespace BH.Revit.Engine.Core
                     ICurve curve = c.AsCurve().IFromRevit();
                     if (curve == null)
                     {
-                        BH.Engine.Reflection.Compute.RecordWarning("The profile of a family type could not be converted due to curve conversion issues. ElementId: " + familySymbol.Id.IntegerValue.ToString());
+                        BH.Engine.Base.Compute.RecordWarning("The profile of a family type could not be converted due to curve conversion issues. ElementId: " + familySymbol.Id.IntegerValue.ToString());
                         return null;
                     }
                     profileCurves.Add(curve);

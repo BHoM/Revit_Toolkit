@@ -25,7 +25,7 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -82,14 +82,14 @@ namespace BH.Revit.Engine.Core
             Element source = document.GetElement(new ElementId(clonedType.SourceTypeId));
             if (source == null)
             {
-                BH.Engine.Reflection.Compute.RecordError($"The element with ElementId {clonedType.SourceTypeId} does not exist in the active Revit document.");
+                BH.Engine.Base.Compute.RecordError($"The element with ElementId {clonedType.SourceTypeId} does not exist in the active Revit document.");
                 return null;
             }
 
             ElementType sourceType = source as ElementType;
             if (sourceType == null)
             {
-                BH.Engine.Reflection.Compute.RecordError($"The element with ElementId {clonedType.SourceTypeId} exists in the active Revit document, but it is not an element type.");
+                BH.Engine.Base.Compute.RecordError($"The element with ElementId {clonedType.SourceTypeId} exists in the active Revit document, but it is not an element type.");
                 return null;
             }
 

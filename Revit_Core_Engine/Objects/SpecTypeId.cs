@@ -198,7 +198,7 @@ namespace BH.Revit.Engine.Core
 
         private static UnitType NonExistent(string name, int version)
         {
-            BH.Engine.Reflection.Compute.RecordWarning($"SpecTypeId.{name} does not have a UnitType equivalent in Revit versions older than {version}. UnitType.UT_Undefined has been used which may cause unit conversion issues.");
+            BH.Engine.Base.Compute.RecordWarning($"SpecTypeId.{name} does not have a UnitType equivalent in Revit versions older than {version}. UnitType.UT_Undefined has been used which may cause unit conversion issues.");
             return UnitType.UT_Undefined;
         }
 

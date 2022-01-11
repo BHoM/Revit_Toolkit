@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -57,13 +57,13 @@ namespace BH.Revit.Engine.Core
                 {
                     Transform linkTransform = document.LinkTransform();
                     box = SolidUtils.CreateTransformed(box, linkTransform.Inverse);
-                    BH.Engine.Reflection.Compute.RecordNote($"The Scope Box named {boxName} used to filter the elements was found in the document hosting the link document it was originally requested with.");
+                    BH.Engine.Base.Compute.RecordNote($"The Scope Box named {boxName} used to filter the elements was found in the document hosting the link document it was originally requested with.");
                 }
             }
 
             if (box == null)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Couldn't find a Scope Box named {boxName}.");
+                BH.Engine.Base.Compute.RecordError($"Couldn't find a Scope Box named {boxName}.");
                 return new HashSet<ElementId>();
             }
 

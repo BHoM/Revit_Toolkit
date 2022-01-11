@@ -42,7 +42,7 @@ namespace BH.Revit.Adapter.Core
             Document document = this.Document;
             if (document == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because Revit Document is null (possibly there is no open documents in Revit).");
+                BH.Engine.Base.Compute.RecordError("BHoM objects could not be removed because Revit Document is null (possibly there is no open documents in Revit).");
                 return new List<object>();
             }
 

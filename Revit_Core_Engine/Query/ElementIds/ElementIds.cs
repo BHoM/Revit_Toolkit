@@ -27,7 +27,7 @@ using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -63,7 +63,7 @@ namespace BH.Revit.Engine.Core
                 elementIds = document.ElementIdsByBHoMType(request.Type, settings, elementIds);
 
             if (!string.IsNullOrWhiteSpace(request.Tag))
-                BH.Engine.Reflection.Compute.RecordError("Filtering based on tag declared in FilterRequest is currently not supported. The tag-related filter has not been applied.");
+                BH.Engine.Base.Compute.RecordError("Filtering based on tag declared in FilterRequest is currently not supported. The tag-related filter has not been applied.");
 
             return elementIds;
         }
@@ -137,7 +137,7 @@ namespace BH.Revit.Engine.Core
         {
             if (document.IsLinked)
             {
-                BH.Engine.Reflection.Compute.RecordError("It is not allowed to combine active workset requests with link requests.");
+                BH.Engine.Base.Compute.RecordError("It is not allowed to combine active workset requests with link requests.");
                 return null;
             }
 
@@ -171,7 +171,7 @@ namespace BH.Revit.Engine.Core
         {
             if (document.IsLinked)
             {
-                BH.Engine.Reflection.Compute.RecordError("It is not allowed to combine selection requests with link requests - Revit selection does not work with links.");
+                BH.Engine.Base.Compute.RecordError("It is not allowed to combine selection requests with link requests - Revit selection does not work with links.");
                 return null;
             }
 

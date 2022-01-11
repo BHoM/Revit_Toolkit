@@ -25,7 +25,7 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -94,7 +94,7 @@ namespace BH.Revit.Engine.Core
                 bHoMCeiling.Tiles = BH.Engine.Architecture.Compute.CeilingTiles(bHoMCeiling, ceilingPatterns);
 
             if (surfaces.Values.Where(x => x != null).Sum(x => x.Count) != 0)
-                BH.Engine.Reflection.Compute.RecordWarning("Currently ceiling openings are not taken into account when generating ceilings.");
+                BH.Engine.Base.Compute.RecordWarning("Currently ceiling openings are not taken into account when generating ceilings.");
             
             //Set identifiers, parameters & custom data
             bHoMCeiling.SetIdentifiers(ceiling);

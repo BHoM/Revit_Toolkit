@@ -24,7 +24,7 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Spatial.ShapeProfiles;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
         {
             if (instance == null)
             {
-                BH.Engine.Reflection.Compute.RecordError($"The convert from Revit element of type {typeof(FamilyInstance).Name} to {typeof(oM.Architecture.BuildersWork.Opening).Name} failed because the input element is null.");
+                BH.Engine.Base.Compute.RecordError($"The convert from Revit element of type {typeof(FamilyInstance).Name} to {typeof(oM.Architecture.BuildersWork.Opening).Name} failed because the input element is null.");
                 return null;
             }
 
@@ -82,7 +82,7 @@ namespace BH.Revit.Engine.Core
             }
 
             if (profile == null)
-                BH.Engine.Reflection.Compute.RecordWarning($"The profile of the opening could not be extracted from the Revit element because the parameters correspondent to their dimensions could not be found. Revit ElementId: {instance.Id}"
+                BH.Engine.Base.Compute.RecordWarning($"The profile of the opening could not be extracted from the Revit element because the parameters correspondent to their dimensions could not be found. Revit ElementId: {instance.Id}"
                     + "\nTo link the specific parameter values with opening height/width/diameter, add relevant ParameterMap to RevitSettings.MappingSettings.");
 
             opening.Profile = profile;
@@ -94,7 +94,7 @@ namespace BH.Revit.Engine.Core
                 opening.Depth = depth;
             }
             else
-                BH.Engine.Reflection.Compute.RecordWarning($"The depth of the opening could not be extracted from the Revit element because the correspondent parameter could not be found. Revit ElementId: {instance.Id}"
+                BH.Engine.Base.Compute.RecordWarning($"The depth of the opening could not be extracted from the Revit element because the correspondent parameter could not be found. Revit ElementId: {instance.Id}"
                     + "\nTo link the specific parameter values with opening depth, add relevant ParameterMap to RevitSettings.MappingSettings.");
 
             //Set identifiers, parameters & custom data

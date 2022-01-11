@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Spatial.ShapeProfiles;
 using System;
 using System.Collections.Generic;
@@ -93,7 +93,7 @@ namespace BH.Revit.Engine.Core
 
         private static void DimensionNotSetWarning(this Element element, string dimension)
         {
-            BH.Engine.Reflection.Compute.RecordWarning($"The family instance has been created, but its {dimension} could not be set. ElementId: {element.Id}");
+            BH.Engine.Base.Compute.RecordWarning($"The family instance has been created, but its {dimension} could not be set. ElementId: {element.Id}");
         }
 
         /***************************************************/

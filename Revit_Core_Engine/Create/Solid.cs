@@ -22,7 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -44,12 +44,12 @@ namespace BH.Revit.Engine.Core
         {
             if (filledRegion == null)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Filled region cannot be null.");
+                BH.Engine.Base.Compute.RecordError($"Filled region cannot be null.");
                 return null;
             }
             else if (topElevation - bottomElevation < Tolerance.Distance)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Top elevation value must be greater than bottom elevation.");
+                BH.Engine.Base.Compute.RecordError($"Top elevation value must be greater than bottom elevation.");
                 return null;
             }
             
@@ -69,12 +69,12 @@ namespace BH.Revit.Engine.Core
         {
             if (boundaries == null || boundaries.Count == 0)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Boundaries cannot be null or empty.");
+                BH.Engine.Base.Compute.RecordError($"Boundaries cannot be null or empty.");
                 return null;
             }
             else if (topElevation - bottomElevation < Tolerance.Distance)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Top elevation value must be greater than bottom elevation.");
+                BH.Engine.Base.Compute.RecordError($"Top elevation value must be greater than bottom elevation.");
                 return null;
             }
 

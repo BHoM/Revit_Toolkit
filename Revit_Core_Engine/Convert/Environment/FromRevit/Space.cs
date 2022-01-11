@@ -23,17 +23,17 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 using BH.Engine.Adapters.Revit;
-using BH.Engine.Environment;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Fragments;
 using BH.oM.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using BH.Engine.Base;
 
 namespace BH.Revit.Engine.Core
 {

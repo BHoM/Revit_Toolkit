@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -55,7 +55,7 @@ namespace BH.Revit.Engine.Core
 
             if (pointIds.Count != points.Count)
             {
-                BH.Engine.Reflection.Compute.RecordError($"An adaptive component could not be created based on the given ModelInstance because its definition requires different number of points than provided.");
+                BH.Engine.Base.Compute.RecordError($"An adaptive component could not be created based on the given ModelInstance because its definition requires different number of points than provided.");
                 document.Delete(adaptiveComponent.Id);
                 return null;
             }

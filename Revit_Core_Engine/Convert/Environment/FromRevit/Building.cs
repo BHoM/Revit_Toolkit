@@ -22,12 +22,12 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
-using BH.Engine.Environment;
+using BH.Engine.Base;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Fragments;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 

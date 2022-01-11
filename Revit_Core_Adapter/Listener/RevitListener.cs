@@ -93,7 +93,7 @@ namespace BH.Revit.Adapter.Core
             oM.Adapters.Socket.DataPackage package = new oM.Adapters.Socket.DataPackage
             {
                 Data = objs.ToList(),
-                Events = BH.Engine.Reflection.Query.CurrentEvents(),
+                Events = BH.Engine.Base.Query.CurrentEvents(),
                 Tag = ""
             };
 
@@ -165,7 +165,7 @@ namespace BH.Revit.Adapter.Core
             UIControlledApplication = uIControlledApplication;
 
             //Make sure all BHoM assemblies and methods are loaded
-            BH.Engine.Reflection.Compute.LoadAllAssemblies();
+            BH.Engine.Base.Compute.LoadAllAssemblies();
 
             //Add buttons to manage the adapter
             AddAdapterButtons(uIControlledApplication);
@@ -204,7 +204,7 @@ namespace BH.Revit.Adapter.Core
 
         private void M_linkIn_DataObservers(oM.Adapters.Socket.DataPackage package)
         {
-            BH.Engine.Reflection.Compute.ClearCurrentEvents();
+            BH.Engine.Base.Compute.ClearCurrentEvents();
 
             ExternalEvent eve = null;
 

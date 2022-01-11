@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             // Create FrameEdgeProperties, currently only using default
-            BH.Engine.Reflection.Compute.RecordWarning(String.Format("Revit specific FrameEdgeProperty conversion for this element is not currently supported, and a default FrameEdgeProperty has been assigned. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
+            BH.Engine.Base.Compute.RecordWarning(String.Format("Revit specific FrameEdgeProperty conversion for this element is not currently supported, and a default FrameEdgeProperty has been assigned. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
             List<oM.Physical.FramingProperties.ConstantFramingProperty> frameEdgeSectionProps = new List<oM.Physical.FramingProperties.ConstantFramingProperty>();
             oM.Physical.Materials.Material alumMullion = new oM.Physical.Materials.Material { Name = "Aluminum" };
             BH.oM.Spatial.ShapeProfiles.RectangleProfile rect = BH.Engine.Spatial.Create.RectangleProfile(0.1, 0.2);

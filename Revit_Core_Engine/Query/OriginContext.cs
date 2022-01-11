@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Environment.Fragments;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core

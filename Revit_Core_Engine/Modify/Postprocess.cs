@@ -29,7 +29,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Dimensional;
 using BH.oM.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
@@ -64,7 +64,7 @@ namespace BH.Revit.Engine.Core
         {
             if (element == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Unable to postprocess a null BHoM object.");
+                BH.Engine.Base.Compute.RecordError("Unable to postprocess a null BHoM object.");
                 return null;
             }
 
@@ -87,7 +87,7 @@ namespace BH.Revit.Engine.Core
         {
             if (instance == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Unable to postprocess a null BHoM object.");
+                BH.Engine.Base.Compute.RecordError("Unable to postprocess a null BHoM object.");
                 return null;
             }
 
@@ -110,7 +110,7 @@ namespace BH.Revit.Engine.Core
         {
             if (level == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Unable to postprocess a null BHoM object.");
+                BH.Engine.Base.Compute.RecordError("Unable to postprocess a null BHoM object.");
                 return null;
             }
             

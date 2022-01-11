@@ -47,13 +47,13 @@ namespace BH.Revit.Adapter.Core
         {
             if (request == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Deletion could not be executed because provided IRequest is null.");
+                BH.Engine.Base.Compute.RecordError("Deletion could not be executed because provided IRequest is null.");
                 return 0;
             }
 
             if (request.AllRequestsOfType(typeof(FilterByLink)).Count != 0)
             {
-                BH.Engine.Reflection.Compute.RecordError($"It is not allowed to remove objects from Revit links - please remove the requests of type {nameof(FilterByLink)} from the request.");
+                BH.Engine.Base.Compute.RecordError($"It is not allowed to remove objects from Revit links - please remove the requests of type {nameof(FilterByLink)} from the request.");
                 return 0;
             }
 
@@ -65,12 +65,12 @@ namespace BH.Revit.Adapter.Core
             Discipline? discipline = request.Discipline();
             if (discipline == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Conflicting disciplines have been detected inside the provided request.");
+                BH.Engine.Base.Compute.RecordError("Conflicting disciplines have been detected inside the provided request.");
                 return 0;
             }
             else if (discipline == Discipline.Undefined)
             {
-                BH.Engine.Reflection.Compute.RecordNote($"Discipline has not been specified, default {Discipline.Physical} will be used.");
+                BH.Engine.Base.Compute.RecordNote($"Discipline has not been specified, default {Discipline.Physical} will be used.");
                 discipline = Discipline.Physical;
             }
 
@@ -118,7 +118,7 @@ namespace BH.Revit.Adapter.Core
         {
             if (elementIds == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Revit elements could not be deleted because element Ids are null.");
+                BH.Engine.Base.Compute.RecordError("Revit elements could not be deleted because element Ids are null.");
                 return null;
             }
 
@@ -138,12 +138,12 @@ namespace BH.Revit.Adapter.Core
             Element element = document.GetElement(elementId);
             if (element == null)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Element has not been deleted because it does not exist in the current model. ElementId: {0}", elementId));
+                BH.Engine.Base.Compute.RecordError(String.Format("Element has not been deleted because it does not exist in the current model. ElementId: {0}", elementId));
                 return new List<ElementId>();
             }
             else if(!deletePinned && element.Pinned)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Element has not been deleted because it is pinned. ElementId: {0}", elementId));
+                BH.Engine.Base.Compute.RecordError(String.Format("Element has not been deleted because it is pinned. ElementId: {0}", elementId));
                 return new List<ElementId>();
             }
             else
@@ -154,7 +154,7 @@ namespace BH.Revit.Adapter.Core
                 }
                 catch (Exception e)
                 {
-                    BH.Engine.Reflection.Compute.RecordError(String.Format("Element has not been deleted due to a Revit error. Error message: {0} ElementId: {1}", e.Message, elementId));
+                    BH.Engine.Base.Compute.RecordError(String.Format("Element has not been deleted due to a Revit error. Error message: {0} ElementId: {1}", e.Message, elementId));
                     return new List<ElementId>();
                 }
             }

@@ -24,7 +24,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB.Plumbing;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
             // Input validation
             if (mEPCurve == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Duct not provided. Please input a Autodesk.Revit.DB.Mechanical.Duct object.");
+                BH.Engine.Base.Compute.RecordError("Duct not provided. Please input a Autodesk.Revit.DB.Mechanical.Duct object.");
 
                 return Autodesk.Revit.DB.ConnectorProfileType.Invalid;
             }

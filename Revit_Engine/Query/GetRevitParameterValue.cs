@@ -22,7 +22,7 @@
 
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 using System.Linq;
 using System.Collections.Generic;
@@ -64,11 +64,11 @@ namespace BH.Engine.Adapters.Revit
             if (identifierFragment != null)
             {
                 string paramName = string.Concat(parameterName.Where(c => !char.IsWhiteSpace(c)));
-                if (Reflection.Query.PropertyNames(identifierFragment).Contains(paramName))
-                    return Reflection.Query.PropertyValue(identifierFragment, paramName);
+                if (BH.Engine.Reflection.Query.PropertyNames(identifierFragment).Contains(paramName))
+                    return Base.Query.PropertyValue(identifierFragment, paramName);
             }
 
-            Dictionary <string, object> bHoMPropDic = Reflection.Query.PropertyDictionary(bHoMObject);
+            Dictionary <string, object> bHoMPropDic = BH.Engine.Reflection.Query.PropertyDictionary(bHoMObject);
             foreach (KeyValuePair<string, object> bHoMPropEntry in bHoMPropDic)
             {
                 IBHoMObject bHoMProp = bHoMPropEntry.Value as IBHoMObject;
@@ -80,7 +80,7 @@ namespace BH.Engine.Adapters.Revit
                         RevitParameter param = typePullFragment.Parameters.FirstOrDefault(x => x.Name == parameterName);
                         if (param != null)
                         {
-                            Engine.Reflection.Compute.RecordWarning("The value for parameter " + parameterName + " for the object with BHoM_Guid " + bHoMObject.BHoM_Guid + " has been retrieved from its property " + bHoMPropEntry.Key + ".");
+                            Engine.Base.Compute.RecordWarning("The value for parameter " + parameterName + " for the object with BHoM_Guid " + bHoMObject.BHoM_Guid + " has been retrieved from its property " + bHoMPropEntry.Key + ".");
                             return param.Value;
                         }
                     }

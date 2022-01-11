@@ -22,7 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -86,7 +86,7 @@ namespace BH.Revit.Engine.Core
         {
             if (curve.IsPeriodic())
             {
-                BH.Engine.Reflection.Compute.RecordError("Conversion of BHoM nurbs curve to Revit failed as Revit does not support periodic nurbs curves.");
+                BH.Engine.Base.Compute.RecordError("Conversion of BHoM nurbs curve to Revit failed as Revit does not support periodic nurbs curves.");
                 return null;
             }
 
@@ -105,7 +105,7 @@ namespace BH.Revit.Engine.Core
                 }
                 catch
                 {
-                    BH.Engine.Reflection.Compute.RecordWarning("Conversion of a nurbs curve from BHoM to Revit failed. A simplified (possibly distorted) hermite spline has been created instead.");
+                    BH.Engine.Base.Compute.RecordWarning("Conversion of a nurbs curve from BHoM to Revit failed. A simplified (possibly distorted) hermite spline has been created instead.");
 
                     List<XYZ> cps = new List<XYZ>();
                     for (int i = 0; i < controlPoints.Count; i++)

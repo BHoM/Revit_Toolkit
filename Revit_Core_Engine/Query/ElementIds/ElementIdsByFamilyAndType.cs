@@ -25,7 +25,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 
 namespace BH.Revit.Engine.Core
 {
@@ -50,7 +50,7 @@ namespace BH.Revit.Engine.Core
             List<ElementId> result = new List<ElementId>();
             if (string.IsNullOrEmpty(familyName) && string.IsNullOrEmpty(familyTypeName))
             {
-                BH.Engine.Reflection.Compute.RecordError("Family type query could not be executed because neither family name nor family type name has been provided.");
+                BH.Engine.Base.Compute.RecordError("Family type query could not be executed because neither family name nor family type name has been provided.");
                 return result;
             }
 

@@ -335,7 +335,7 @@ namespace BH.Revit.Engine.Core
 
         private static DisplayUnitType NonExistent(string name, int version)
         {
-            BH.Engine.Reflection.Compute.RecordWarning($"UnitTypeId.{name} does not have a DisplayUnitType equivalent in Revit versions older than {version}. UnitType.UT_Undefined has been used which may cause unit conversion issues.");
+            BH.Engine.Base.Compute.RecordWarning($"UnitTypeId.{name} does not have a DisplayUnitType equivalent in Revit versions older than {version}. UnitType.UT_Undefined has been used which may cause unit conversion issues.");
             return DisplayUnitType.DUT_UNDEFINED;
         }
 

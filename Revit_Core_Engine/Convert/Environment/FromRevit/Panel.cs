@@ -28,9 +28,10 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Environment.Fragments;
 using BH.oM.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using BH.Engine.Base;
 
 namespace BH.Revit.Engine.Core
 {

@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB.Plumbing;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -45,12 +45,12 @@ namespace BH.Revit.Engine.Core
         {
             if (host == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Insulation could not be created. Host element not found.");
+                BH.Engine.Base.Compute.RecordError("Insulation could not be created. Host element not found.");
                 return;
             }
             if (insulationType != null && insulationThickness < BH.oM.Geometry.Tolerance.Distance)
             {
-                BH.Engine.Reflection.Compute.RecordError("Insulation thickness cannot be 0 or negative. To remove existing host insulation, set insulation type as null.");
+                BH.Engine.Base.Compute.RecordError("Insulation thickness cannot be 0 or negative. To remove existing host insulation, set insulation type as null.");
                 return;
             }
 
@@ -72,7 +72,7 @@ namespace BH.Revit.Engine.Core
                 }
                 else
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Insulation could not be created. Host element type does not support insulation adding functionality.");
+                    BH.Engine.Base.Compute.RecordError("Insulation could not be created. Host element type does not support insulation adding functionality.");
                     return;
                 }
             }
@@ -97,7 +97,7 @@ namespace BH.Revit.Engine.Core
             }
             else if (insIds.Count > 1)
             {
-                BH.Engine.Reflection.Compute.RecordError("Insulation could not be changed. Not supported type of host insulation.");
+                BH.Engine.Base.Compute.RecordError("Insulation could not be changed. Not supported type of host insulation.");
                 return;
             }
         }

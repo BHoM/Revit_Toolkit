@@ -26,7 +26,7 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Environment.Elements;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -48,7 +48,7 @@ namespace BH.Revit.Engine.Core
         {
             if (energyAnalysisModel.Document.IsLinked)
             {
-                BH.Engine.Reflection.Compute.RecordError($"It is not allowed to pull the energy analysis model from linked models - please open the document {energyAnalysisModel.Document.PathName} and pull directly from it instead.");
+                BH.Engine.Base.Compute.RecordError($"It is not allowed to pull the energy analysis model from linked models - please open the document {energyAnalysisModel.Document.PathName} and pull directly from it instead.");
                 return null;
             }
 
@@ -63,7 +63,7 @@ namespace BH.Revit.Engine.Core
 
             ProjectInfo projectInfo = new FilteredElementCollector(document).OfClass(typeof(ProjectInfo)).FirstOrDefault() as ProjectInfo;
             if (projectInfo == null)
-                BH.Engine.Reflection.Compute.RecordError("Project info of a document has not been found.");
+                BH.Engine.Base.Compute.RecordError("Project info of a document has not been found.");
             else
                 projectInfo.BuildingFromRevit(settings, refObjects);
                 

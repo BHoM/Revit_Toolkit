@@ -26,7 +26,7 @@ using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -233,7 +233,7 @@ namespace BH.Revit.Engine.Core
                 List<IGeometry> pts = (modelInstance.Location as CompositeGeometry)?.Elements;
                 if (pts == null || !pts.All(x => x is BH.oM.Geometry.Point))
                 {
-                    BH.Engine.Reflection.Compute.RecordError($"A family could not be created based on the given ModelInstance because its family type is adaptive, but location was not a collection of points. BHoM_Guid: {modelInstance.BHoM_Guid}");
+                    BH.Engine.Base.Compute.RecordError($"A family could not be created based on the given ModelInstance because its family type is adaptive, but location was not a collection of points. BHoM_Guid: {modelInstance.BHoM_Guid}");
                     return null;
                 }
 
@@ -246,7 +246,7 @@ namespace BH.Revit.Engine.Core
                 return Create.FamilyInstance(doc, familySymbol, ((ICurve)modelInstance.Location).IToRevit(), modelInstance.HostElement(doc, settings), settings);
             else
             {
-                BH.Engine.Reflection.Compute.RecordError($"A family could not be created based on the given ModelInstance because its location was neither a point nor a curve. BHoM_Guid: {modelInstance.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordError($"A family could not be created based on the given ModelInstance because its location was neither a point nor a curve. BHoM_Guid: {modelInstance.BHoM_Guid}");
                 return null;
             }
         }

@@ -29,8 +29,7 @@ using BH.oM.Environment.Elements;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
 using BH.oM.Physical.FramingProperties;
-using BH.oM.Reflection;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -109,12 +108,12 @@ namespace BH.Revit.Engine.Core
                 IntersectionResult ir2 = face?.Project(end);
                 if (ir1 == null || ir2 == null)
                 {
-                    BH.Engine.Reflection.Compute.RecordError($"Location update failed: the new location line used on update of a family instance could not be placed on its host face. BHoM_Guid: {instance.BHoM_Guid} ElementId: {element.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordError($"Location update failed: the new location line used on update of a family instance could not be placed on its host face. BHoM_Guid: {instance.BHoM_Guid} ElementId: {element.Id.IntegerValue}");
                     return false;
                 }
 
                 if (ir1.Distance > settings.DistanceTolerance || ir2.Distance > settings.DistanceTolerance)
-                    BH.Engine.Reflection.Compute.RecordWarning($"The location line used on update of a family instance has been snapped to its host face. BHoM_Guid: {instance.BHoM_Guid} ElementId: {element.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordWarning($"The location line used on update of a family instance has been snapped to its host face. BHoM_Guid: {instance.BHoM_Guid} ElementId: {element.Id.IntegerValue}");
 
                 start = ir1.XYZPoint;
                 end = ir2.XYZPoint;
@@ -152,19 +151,19 @@ namespace BH.Revit.Engine.Core
             oM.Geometry.Line columnLine = column.Location as oM.Geometry.Line;
             if (columnLine == null)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Location has not been updated, only linear columns are allowed in Revit. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, column.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError(String.Format("Location has not been updated, only linear columns are allowed in Revit. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, column.BHoM_Guid));
                 return false;
             }
 
             if (columnLine.Start.Z >= columnLine.End.Z)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Location of the column has not been updated because BHoM column has start above end. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, column.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError(String.Format("Location of the column has not been updated because BHoM column has start above end. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, column.BHoM_Guid));
                 return false;
             }
 
             if (1 - columnLine.Direction().DotProduct(Vector.ZAxis) > settings.AngleTolerance && element.LookupParameterInteger(BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM) == 0)
             {
-                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Column style has been set to Vertical, but its driving curve is slanted. Column style changed to Slanted. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, column.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordWarning(String.Format("Column style has been set to Vertical, but its driving curve is slanted. Column style changed to Slanted. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, column.BHoM_Guid));
                 element.SetParameter(BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM, 2);
                 element.Document.Regenerate();
             }
@@ -213,7 +212,7 @@ namespace BH.Revit.Engine.Core
             double rotation = 0;
             ConstantFramingProperty framingProperty = column.Property as ConstantFramingProperty;
             if (framingProperty == null)
-                BH.Engine.Reflection.Compute.RecordWarning(String.Format("BHoM object's property is not a ConstantFramingProperty, therefore its orientation angle could not be retrieved. BHoM_Guid: {0}", column.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordWarning(String.Format("BHoM object's property is not a ConstantFramingProperty, therefore its orientation angle could not be retrieved. BHoM_Guid: {0}", column.BHoM_Guid));
             else
                 rotation = ((ConstantFramingProperty)column.Property).OrientationAngle;
 
@@ -251,13 +250,13 @@ namespace BH.Revit.Engine.Core
             double rotation = 0;
             ConstantFramingProperty framingProperty = framingElement.Property as ConstantFramingProperty;
             if (framingProperty == null)
-                BH.Engine.Reflection.Compute.RecordWarning(String.Format("BHoM object's property is not a ConstantFramingProperty, therefore its orientation angle could not be retrieved. BHoM_Guid: {0}", framingElement.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordWarning(String.Format("BHoM object's property is not a ConstantFramingProperty, therefore its orientation angle could not be retrieved. BHoM_Guid: {0}", framingElement.BHoM_Guid));
             else
                 rotation = ((ConstantFramingProperty)framingElement.Property).OrientationAngle;
 
             if (element.LookupParameterInteger(BuiltInParameter.YZ_JUSTIFICATION) == 1)
             {
-                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Pushing of framing elements with non-uniform offsets at ends is currently not supported. yz Justification parameter has been set to Uniform. Revit ElementId: {0}", element.Id));
+                BH.Engine.Base.Compute.RecordWarning(String.Format("Pushing of framing elements with non-uniform offsets at ends is currently not supported. yz Justification parameter has been set to Uniform. Revit ElementId: {0}", element.Id));
                 element.SetParameter(BuiltInParameter.YZ_JUSTIFICATION, 0);
                 element.Document.Regenerate();
             }
@@ -319,7 +318,7 @@ namespace BH.Revit.Engine.Core
         public static bool SetLocation(this Grid grid, BH.oM.Geometry.SettingOut.Grid bHoMGrid, RevitSettings settings)
         {
             if (!bHoMGrid.Curve.IToRevit().IsSimilar(grid.Curve, settings))
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Revit does not allow changing the geometry of an existing grid programatically. Try using DeleteThenCreate PushType instead. Revit ElementId: {0} BHoM_Guid: {1}", grid.Id, bHoMGrid.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError(String.Format("Revit does not allow changing the geometry of an existing grid programatically. Try using DeleteThenCreate PushType instead. Revit ElementId: {0} BHoM_Guid: {1}", grid.Id, bHoMGrid.BHoM_Guid));
 
             return false;
         }
@@ -379,7 +378,7 @@ namespace BH.Revit.Engine.Core
         [Output("success", "True if location of the input Revit HostObject has been successfully set.")]
         public static bool SetLocation(this HostObject element, BH.oM.Physical.Elements.ISurface bHoMObject, RevitSettings settings)
         {
-            BH.Engine.Reflection.Compute.RecordWarning(String.Format("Update of location of surface-based elements is currently not supported. Possibly DeleteThenCreate PushType could be used instead. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, bHoMObject.BHoM_Guid));
+            BH.Engine.Base.Compute.RecordWarning(String.Format("Update of location of surface-based elements is currently not supported. Possibly DeleteThenCreate PushType could be used instead. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, bHoMObject.BHoM_Guid));
             return false;
         }
 
@@ -392,7 +391,7 @@ namespace BH.Revit.Engine.Core
         {
             Type type = element.GetType();
             if (AbstractRevitTypes.All(x => !x.IsAssignableFrom(type)))
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Setting Revit element location based on BHoM geometry of type {0} is currently not supported. Only parameters were updated. Revit ElementId: {1}", geometry.GetType(), element.Id));
+                BH.Engine.Base.Compute.RecordError(String.Format("Setting Revit element location based on BHoM geometry of type {0} is currently not supported. Only parameters were updated. Revit ElementId: {1}", geometry.GetType(), element.Id));
 
             return false;
         }
@@ -403,7 +402,7 @@ namespace BH.Revit.Engine.Core
         {
             Type type = element.GetType();
             if (AbstractRevitTypes.All(x => !x.IsAssignableFrom(type)))
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Unable to set location of Revit element of type {0} based on BHoM object of type {1} beacuse no suitable method could be found. Only parameters were updated. Revit ElementId: {2} BHoM_Guid: {3}", element.GetType(), bHoMObject.GetType(), element.Id, bHoMObject.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError(String.Format("Unable to set location of Revit element of type {0} based on BHoM object of type {1} beacuse no suitable method could be found. Only parameters were updated. Revit ElementId: {2} BHoM_Guid: {3}", element.GetType(), bHoMObject.GetType(), element.Id, bHoMObject.BHoM_Guid));
 
             return false;
         }
@@ -448,7 +447,7 @@ namespace BH.Revit.Engine.Core
                     {
                         List<Solid> hostSolids = element.Host.Solids(new Options());
                         if (hostSolids != null && hostSolids.All(x => !newLocation.IsInside(x, settings.DistanceTolerance)))
-                            BH.Engine.Reflection.Compute.RecordWarning($"The new location point used to update the location of a family instance was outside of the host solid, the point has been snapped to the host. ElementId: {element.Id.IntegerValue}");
+                            BH.Engine.Base.Compute.RecordWarning($"The new location point used to update the location of a family instance was outside of the host solid, the point has been snapped to the host. ElementId: {element.Id.IntegerValue}");
                     }
                     else
                     {
@@ -457,7 +456,7 @@ namespace BH.Revit.Engine.Core
                             Autodesk.Revit.DB.Plane p = ((ReferencePlane)element.Host).GetPlane();
                             if (p.Origin.DistanceTo(newLocation) > settings.DistanceTolerance && Math.Abs((p.Origin - newLocation).Normalize().DotProduct(p.Normal)) > settings.AngleTolerance)
                             {
-                                BH.Engine.Reflection.Compute.RecordError($"Location update failed: the new location point used on update of a family instance does not lie in plane with its reference plane. ElementId: {element.Id.IntegerValue}");
+                                BH.Engine.Base.Compute.RecordError($"Location update failed: the new location point used on update of a family instance does not lie in plane with its reference plane. ElementId: {element.Id.IntegerValue}");
                                 return false;
                             }
                         }
@@ -487,7 +486,7 @@ namespace BH.Revit.Engine.Core
                             IntersectionResult ir = face?.Project(toProject);
                             if (ir == null)
                             {
-                                BH.Engine.Reflection.Compute.RecordError($"Location update failed: the new location point used on update of a family instance could not be placed on its host face. ElementId: {element.Id.IntegerValue}");
+                                BH.Engine.Base.Compute.RecordError($"Location update failed: the new location point used on update of a family instance could not be placed on its host face. ElementId: {element.Id.IntegerValue}");
                                 return false;
                             }
 
@@ -499,7 +498,7 @@ namespace BH.Revit.Engine.Core
                                 newLocation = linkTransform.OfPoint(newLocation);
 
                             if (ir.Distance > settings.DistanceTolerance)
-                                BH.Engine.Reflection.Compute.RecordWarning($"The location point used on update of a family instance has been snapped to its host face. ElementId: {element.Id.IntegerValue}");
+                                BH.Engine.Base.Compute.RecordWarning($"The location point used on update of a family instance has been snapped to its host face. ElementId: {element.Id.IntegerValue}");
                         }
                     }
                 }
@@ -529,7 +528,7 @@ namespace BH.Revit.Engine.Core
                     }
 
                     if (1 - Math.Abs(revitNormal.DotProduct(bHoMNormal)) > settings.AngleTolerance)
-                        BH.Engine.Reflection.Compute.RecordWarning($"The orientation applied to the family instance on update has different normal than the original one. Only in-plane rotation has been applied, the orientation out of plane has been ignored. ElementId: {element.Id.IntegerValue}");
+                        BH.Engine.Base.Compute.RecordWarning($"The orientation applied to the family instance on update has different normal than the original one. Only in-plane rotation has been applied, the orientation out of plane has been ignored. ElementId: {element.Id.IntegerValue}");
 
                     double angle = transform.BasisX.AngleOnPlaneTo(newX, revitNormal);
                     if (Math.Abs(angle) > settings.AngleTolerance)

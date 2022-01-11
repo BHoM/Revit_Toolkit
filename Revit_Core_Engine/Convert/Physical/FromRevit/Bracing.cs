@@ -26,7 +26,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Physical.Elements;
 using BH.oM.Physical.FramingProperties;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 

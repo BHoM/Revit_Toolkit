@@ -24,7 +24,7 @@ using BH.Engine.Base;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Revit;
 using System.ComponentModel;
 using System.Linq;
@@ -46,7 +46,7 @@ namespace BH.Engine.Adapters.Revit
         {
             if (obj == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Cannot set host to a null target object.");
+                BH.Engine.Base.Compute.RecordError("Cannot set host to a null target object.");
                 return null;
             }
 
@@ -64,20 +64,20 @@ namespace BH.Engine.Adapters.Revit
         {
             if (obj == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Cannot set host to a null target object.");
+                BH.Engine.Base.Compute.RecordError("Cannot set host to a null target object.");
                 return null;
             }
 
             if (host == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Cannot set host based on a null host object.");
+                BH.Engine.Base.Compute.RecordError("Cannot set host based on a null host object.");
                 return null;
             }
 
             RevitIdentifiers identifiers = host.FindFragment<RevitIdentifiers>();
             if (identifiers == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning($"Setting the new host failed because the input host object is not originating from Revit pull. BHoM_Guid: {obj.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordWarning($"Setting the new host failed because the input host object is not originating from Revit pull. BHoM_Guid: {obj.BHoM_Guid}");
                 return obj;
             }
 

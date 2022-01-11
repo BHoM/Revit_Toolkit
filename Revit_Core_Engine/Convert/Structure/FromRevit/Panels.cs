@@ -26,7 +26,7 @@ using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Structure.SurfaceProperties;
 using System;
 using System.Collections.Generic;
@@ -99,7 +99,7 @@ namespace BH.Revit.Engine.Core
             ISurfaceProperty property2D = hostObjAttributes?.SurfacePropertyFromRevit(materialGrade, settings, refObjects);
 
             if (property2D == null)
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Conversion of Revit panel's construction to BHoM ISurfaceProperty failed. A panel without property is returned. Revit ElementId : {0}", hostObjAttributes.Id));
+                BH.Engine.Base.Compute.RecordError(String.Format("Conversion of Revit panel's construction to BHoM ISurfaceProperty failed. A panel without property is returned. Revit ElementId : {0}", hostObjAttributes.Id));
 
             List<ICurve> outlines = hostObject.AnalyticalOutlines(settings);
             if (outlines != null && outlines.Count != 0)
@@ -131,7 +131,7 @@ namespace BH.Revit.Engine.Core
             if (result.Count == 0)
             {
                 result.Add(new oM.Structure.Elements.Panel { Property = property2D });
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Conversion of Revit panel's location to BHoM failed. A panel without location is returned. Revit ElementId : {0}", hostObject.Id));
+                BH.Engine.Base.Compute.RecordError(String.Format("Conversion of Revit panel's location to BHoM failed. A panel without location is returned. Revit ElementId : {0}", hostObject.Id));
             }
 
             //Set identifiers, parameters & custom data

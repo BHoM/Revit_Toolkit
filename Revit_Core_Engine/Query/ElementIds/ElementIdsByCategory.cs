@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -49,7 +49,7 @@ namespace BH.Revit.Engine.Core
             BuiltInCategory builtInCategory = document.BuiltInCategory(categoryName, caseSensitive);
             if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
             {
-                BH.Engine.Reflection.Compute.RecordError("Couldn't find a Category named " + categoryName + ".");
+                BH.Engine.Base.Compute.RecordError("Couldn't find a Category named " + categoryName + ".");
                 return new List<ElementId>();
             }
 

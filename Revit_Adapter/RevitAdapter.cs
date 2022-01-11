@@ -23,8 +23,8 @@
 using BH.Adapter.Socket;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
-using BH.oM.Reflection.Debugging;
+using BH.oM.Base.Attributes;
+using BH.oM.Base.Debugging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -124,14 +124,14 @@ namespace BH.Adapter.Revit
                 m_WaitEvent.Reset();
 
                 if (!success)
-                    Engine.Reflection.Compute.RecordError("Failed to connect to Revit. Please check if the BHoM Revit Adapter plugin is activated on the same ports as this adapter (default ports: 14128 input and 14129 output)." +
+                    Engine.Base.Compute.RecordError("Failed to connect to Revit. Please check if the BHoM Revit Adapter plugin is activated on the same ports as this adapter (default ports: 14128 input and 14129 output)." +
                         "\nChecking and updating ports on the Revit side: navigate to the BHoM ribbon tab in Revit, click Activate (if not active) and then Update Ports." +
                         "\nChecking and updating ports on the BHoM side: extract the RevitSettings property of RevitAdapter object, then ConnectionSettings of RevitSettings, then extract/overwrite PushPort and PullPort properties." +
                         "\nPlease see the relevant Adapter/Setup Revit_Toolkit Wiki pages for more information.");
             }
             catch
             {
-                Engine.Reflection.Compute.RecordError("There is an issue with the outgoing connection in the Revit Adapter. Please reset the Revit Adapter and try to re-run.");
+                Engine.Base.Compute.RecordError("There is an issue with the outgoing connection in the Revit Adapter. Please reset the Revit Adapter and try to re-run.");
             }
             
             return success;
@@ -144,7 +144,7 @@ namespace BH.Adapter.Revit
             if (m_ReturnEvents == null)
                 return;
 
-            m_ReturnEvents.ForEach(x => Engine.Reflection.Compute.RecordEvent(x));
+            m_ReturnEvents.ForEach(x => Engine.Base.Compute.RecordEvent(x));
             m_ReturnEvents.Clear();
         }
 

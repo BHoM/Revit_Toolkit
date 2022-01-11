@@ -24,7 +24,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -73,7 +73,7 @@ namespace BH.Revit.Engine.Core
                     familySymbol.FamilyPlacementTypeDraftingError();
                     return null;
                 default:
-                    BH.Engine.Reflection.Compute.RecordError($"Revit family placement type named {familySymbol.Family.FamilyPlacementType} does not support point locations. Revit ElementId: {familySymbol.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordError($"Revit family placement type named {familySymbol.Family.FamilyPlacementType} does not support point locations. Revit ElementId: {familySymbol.Id.IntegerValue}");
                     return null;
             }
         }
@@ -109,7 +109,7 @@ namespace BH.Revit.Engine.Core
                     familySymbol.FamilyPlacementTypeDraftingError();
                     return null;
                 default:
-                    BH.Engine.Reflection.Compute.RecordError($"Revit family placement type named {familySymbol.Family.FamilyPlacementType} does not support curve locations. Revit ElementId: {familySymbol.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordError($"Revit family placement type named {familySymbol.Family.FamilyPlacementType} does not support curve locations. Revit ElementId: {familySymbol.Id.IntegerValue}");
                     return null;
             }
         }
@@ -197,13 +197,13 @@ namespace BH.Revit.Engine.Core
             //Check inputs
             if (familySymbol == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Element could not be created. Family Symbol not found.");
+                BH.Engine.Base.Compute.RecordError("Element could not be created. Family Symbol not found.");
                 return null;
             }
 
             if (host == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Element could not be created. Host element not found.");
+                BH.Engine.Base.Compute.RecordError("Element could not be created. Host element not found.");
                 return null;
             }
 
@@ -211,7 +211,7 @@ namespace BH.Revit.Engine.Core
             Line line = location.Curve as Line;
             if (line == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Element could not be created. Host element is not linear.");
+                BH.Engine.Base.Compute.RecordError("Element could not be created. Host element is not linear.");
                 return null;
             }
             
@@ -220,10 +220,10 @@ namespace BH.Revit.Engine.Core
                 origin = line.Project(origin).XYZPoint;
                 if (origin == null)
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Element could not be created. Its location point could not be projected on the host MEPCurve.");
+                    BH.Engine.Base.Compute.RecordError("Element could not be created. Its location point could not be projected on the host MEPCurve.");
                     return null;
                 }
-                BH.Engine.Reflection.Compute.RecordWarning("The input location does not lie on the host MEPCurve, therefore it has been projected on the curve.");
+                BH.Engine.Base.Compute.RecordWarning("The input location does not lie on the host MEPCurve, therefore it has been projected on the curve.");
             }
             
             //BreakCurve
@@ -238,7 +238,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordError("Element could not be created. Host element type does not support line breaking functionality.");
+                BH.Engine.Base.Compute.RecordError("Element could not be created. Host element type does not support line breaking functionality.");
                 return null;
             }
 
@@ -265,7 +265,7 @@ namespace BH.Revit.Engine.Core
             //Place family instance
             FamilyInstance familyInstance = document.Create.NewUnionFitting(conn1, conn2);
             if (!familyInstance.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, familySymbol.Id))
-                BH.Engine.Reflection.Compute.RecordWarning("The input family type could not be assigned to the created instance, possibly because it is not applicable to the host element.");
+                BH.Engine.Base.Compute.RecordWarning("The input family type could not be assigned to the created instance, possibly because it is not applicable to the host element.");
 
             //Rotate
             XYZ x = orientation?.BasisZ;
@@ -294,7 +294,7 @@ namespace BH.Revit.Engine.Core
         {
             if (host == null)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Element could not be created: instantiation of families with placement type of {familySymbol.Family.FamilyPlacementType} requires a host. ElementId: {familySymbol.Id.IntegerValue}");
+                BH.Engine.Base.Compute.RecordError($"Element could not be created: instantiation of families with placement type of {familySymbol.Family.FamilyPlacementType} requires a host. ElementId: {familySymbol.Id.IntegerValue}");
                 return null;
             }
 
@@ -320,7 +320,7 @@ namespace BH.Revit.Engine.Core
                     normal = localOrientation.BasisZ;
 
                 if (Math.Abs(normal.DotProduct(orientation.BasisX)) > settings.AngleTolerance)
-                    BH.Engine.Reflection.Compute.RecordWarning($"The orientation used to create the family instance was not perpendicular to the face on which the instance was placed. The orientation out of plane has been ignored. ElementId: {familyInstance.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordWarning($"The orientation used to create the family instance was not perpendicular to the face on which the instance was placed. The orientation out of plane has been ignored. ElementId: {familyInstance.Id.IntegerValue}");
 
                 double angle = localOrientation.BasisX.AngleOnPlaneTo(orientation.BasisX, normal);
                 if (Math.Abs(angle) > settings.AngleTolerance)
@@ -335,7 +335,7 @@ namespace BH.Revit.Engine.Core
             {
                 List<Solid> hostSolids = host.Solids(new Options());
                 if (hostSolids != null && hostSolids.All(x => !origin.IsInside(x, settings.DistanceTolerance)))
-                    BH.Engine.Reflection.Compute.RecordWarning($"The input location point for creation of a family instance was outside of the host solid, the point has been snapped to the host. ElementId: {familyInstance.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordWarning($"The input location point for creation of a family instance was outside of the host solid, the point has been snapped to the host. ElementId: {familyInstance.Id.IntegerValue}");
             }
 
             return familyInstance;
@@ -412,12 +412,12 @@ namespace BH.Revit.Engine.Core
 
                 document.Regenerate();
                 if (orientation?.BasisZ != null && 1 - Math.Abs(familyInstance.GetTotalTransform().BasisZ.DotProduct(orientation.BasisZ.Normalize())) > settings.AngleTolerance)
-                    BH.Engine.Reflection.Compute.RecordWarning($"The orientation used to create the family instance was not perpendicular to the face on which the instance was placed. The orientation out of plane has been ignored. ElementId: {familyInstance.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordWarning($"The orientation used to create the family instance was not perpendicular to the face on which the instance was placed. The orientation out of plane has been ignored. ElementId: {familyInstance.Id.IntegerValue}");
 
                 if (!closest)
-                    BH.Engine.Reflection.Compute.RecordWarning($"The location point of the created family instance has been snapped to the closest host element's face with normal matching the local Z of the BHoM object's orientation, skipping closer faces with non-matching normals. ElementId: {familyInstance.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordWarning($"The location point of the created family instance has been snapped to the closest host element's face with normal matching the local Z of the BHoM object's orientation, skipping closer faces with non-matching normals. ElementId: {familyInstance.Id.IntegerValue}");
                 else if (origin.DistanceTo(location) > settings.DistanceTolerance)
-                    BH.Engine.Reflection.Compute.RecordWarning($"The location point of the created family instance has been snapped to the closest face of the host element. ElementId: {familyInstance.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordWarning($"The location point of the created family instance has been snapped to the closest face of the host element. ElementId: {familyInstance.Id.IntegerValue}");
 
                 return familyInstance;
             }
@@ -571,7 +571,7 @@ namespace BH.Revit.Engine.Core
                     familyInstance = document.Create.NewFamilyInstance(reference, location, familySymbol);
 
                 if (familyInstance != null && (location.GetEndPoint(0).DistanceTo(line.GetEndPoint(0)) > settings.DistanceTolerance || location.GetEndPoint(1).DistanceTo(line.GetEndPoint(1)) > settings.DistanceTolerance))
-                    BH.Engine.Reflection.Compute.RecordWarning($"The location line of the created family instance has been snapped to the closest face of the host element. ElementId: {familyInstance.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordWarning($"The location line of the created family instance has been snapped to the closest face of the host element. ElementId: {familyInstance.Id.IntegerValue}");
             }
 
             return familyInstance;
@@ -700,7 +700,7 @@ namespace BH.Revit.Engine.Core
 
             if (pointOnFace == null || reference == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("The input location of the created FamilyInstance could not be snapped to the host element.");
+                BH.Engine.Base.Compute.RecordError("The input location of the created FamilyInstance could not be snapped to the host element.");
                 return null;
             }
 
@@ -729,7 +729,7 @@ namespace BH.Revit.Engine.Core
 
             if (linkDocument != null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Revit API seems to currently not support curve-based family instances hosted on linked elements.");
+                BH.Engine.Base.Compute.RecordError("Revit API seems to currently not support curve-based family instances hosted on linked elements.");
                 return null;
             }
 
@@ -766,7 +766,7 @@ namespace BH.Revit.Engine.Core
 
             if (startOnFace == null || endOnFace == null || reference == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("The input location of the created FamilyInstance could not be snapped to the host element.");
+                BH.Engine.Base.Compute.RecordError("The input location of the created FamilyInstance could not be snapped to the host element.");
                 return null;
             }
 

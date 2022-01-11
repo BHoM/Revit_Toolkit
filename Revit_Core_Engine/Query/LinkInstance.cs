@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -42,25 +42,25 @@ namespace BH.Revit.Engine.Core
         {
             if (linkDocument == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Link instance object cannot be queried from a null link document.");
+                BH.Engine.Base.Compute.RecordError("Link instance object cannot be queried from a null link document.");
                 return null;
             }
 
             if (hostDocument == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Link instance object cannot be queried from a null host document.");
+                BH.Engine.Base.Compute.RecordError("Link instance object cannot be queried from a null host document.");
                 return null;
             }
 
             if (linkDocument.PathName == hostDocument.PathName)
             {
-                BH.Engine.Reflection.Compute.RecordWarning($"The document under path {linkDocument.PathName} is a host document.");
+                BH.Engine.Base.Compute.RecordWarning($"The document under path {linkDocument.PathName} is a host document.");
                 return null;
             }
 
             RevitLinkInstance linkInstance = new FilteredElementCollector(hostDocument).OfClass(typeof(RevitLinkInstance)).Cast<RevitLinkInstance>().FirstOrDefault(x => x.GetLinkDocument()?.PathName == linkDocument.PathName);
             if (linkInstance == null)
-                BH.Engine.Reflection.Compute.RecordError($"The link pointing to path {linkDocument.PathName} could not be found in active Revit document.");
+                BH.Engine.Base.Compute.RecordError($"The link pointing to path {linkDocument.PathName} could not be found in active Revit document.");
 
             return linkInstance;
         }
@@ -83,7 +83,7 @@ namespace BH.Revit.Engine.Core
         {
             if (hostDocument == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Link instance object cannot be queried from a null document.");
+                BH.Engine.Base.Compute.RecordError("Link instance object cannot be queried from a null document.");
                 return null;
             }
 
@@ -92,7 +92,7 @@ namespace BH.Revit.Engine.Core
 
             List<ElementId> ids = ElementIdsOfLinkInstances(hostDocument, instanceName);
             if (ids.Count > 1)
-                BH.Engine.Reflection.Compute.RecordWarning($"More than one link instance named {instanceName} exists in document {hostDocument.Title}.");
+                BH.Engine.Base.Compute.RecordWarning($"More than one link instance named {instanceName} exists in document {hostDocument.Title}.");
 
             if (ids.Count != 0)
                 return hostDocument.GetElement(ids[0]) as RevitLinkInstance;

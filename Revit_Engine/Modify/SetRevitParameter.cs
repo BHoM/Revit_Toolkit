@@ -23,7 +23,7 @@
 using BH.Engine.Base;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -80,7 +80,7 @@ namespace BH.Engine.Adapters.Revit
 
             if (paramNames.Count != values.Count)
             {
-                BH.Engine.Reflection.Compute.RecordError("Number of input names needs to be equal to the number of input values. Parameters have not been set.");
+                BH.Engine.Base.Compute.RecordError("Number of input names needs to be equal to the number of input values. Parameters have not been set.");
                 return bHoMObject;
             }
 

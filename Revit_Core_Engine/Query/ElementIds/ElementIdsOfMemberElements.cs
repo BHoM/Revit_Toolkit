@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -68,7 +68,7 @@ namespace BH.Revit.Engine.Core
             Element element = document.GetElement(new ElementId(parentId));
             if (element == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Element under ElementId {0} does not exist in the Revit model.", parentId));
+                BH.Engine.Base.Compute.RecordWarning(String.Format("Element under ElementId {0} does not exist in the Revit model.", parentId));
                 return result;
             }
             else

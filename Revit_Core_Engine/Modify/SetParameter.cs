@@ -22,7 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -204,7 +204,7 @@ namespace BH.Revit.Engine.Core
                 else
                 {
                     // A workset with the specified name doesn't exist
-                    BH.Engine.Reflection.Compute.RecordWarning("Cannot set the Workset parameter because a workset with the specified name doesn't exist.");
+                    BH.Engine.Base.Compute.RecordWarning("Cannot set the Workset parameter because a workset with the specified name doesn't exist.");
                     return false;
                 }
             }

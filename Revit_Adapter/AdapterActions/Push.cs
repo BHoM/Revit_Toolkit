@@ -48,7 +48,7 @@ namespace BH.Adapter.Revit
 
             if (!this.IsValid())
             {
-                BH.Engine.Reflection.Compute.RecordError("Revit Adapter is not valid. Please check if it has been set up correctly and activated.");
+                BH.Engine.Base.Compute.RecordError("Revit Adapter is not valid. Please check if it has been set up correctly and activated.");
                 return new List<object>();
             }
 
@@ -63,7 +63,7 @@ namespace BH.Adapter.Revit
 
             //Wait until the return message has been recieved
             if (!m_WaitEvent.WaitOne(TimeSpan.FromMinutes(m_WaitTime)))
-                BH.Engine.Reflection.Compute.RecordError("The connection with Revit timed out. If working on a big model, try to increase the max wait time");
+                BH.Engine.Base.Compute.RecordError("The connection with Revit timed out. If working on a big model, try to increase the max wait time");
 
             //Grab the return objects from the latest package
             List<object> returnObjs = m_ReturnPackage.ToList();
@@ -76,7 +76,7 @@ namespace BH.Adapter.Revit
             //Check if the return package contains error message
             if (returnObjs.Count == 1 && returnObjs[0] is string)
             {
-                Engine.Reflection.Compute.RecordError(returnObjs[0] as string);
+                Engine.Base.Compute.RecordError(returnObjs[0] as string);
                 return new List<object>();
             }
 

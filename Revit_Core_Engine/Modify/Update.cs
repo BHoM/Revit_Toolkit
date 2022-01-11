@@ -25,8 +25,8 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Reflection;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base;
+using BH.oM.Base.Attributes;
 using System;
 using System.ComponentModel;
 
@@ -48,19 +48,19 @@ namespace BH.Revit.Engine.Core
         {
             if (element == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning("The element could not be updated because Revit element does not exist.");
+                BH.Engine.Base.Compute.RecordWarning("The element could not be updated because Revit element does not exist.");
                 return false;
             }
 
             if (bHoMObject == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning("The element could not be updated because BHoM object does not exist.");
+                BH.Engine.Base.Compute.RecordWarning("The element could not be updated because BHoM object does not exist.");
                 return false;
             }
 
             if (element.Pinned)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Element could not be updated because it is pinned. ElementId: {0}", element.Id));
+                BH.Engine.Base.Compute.RecordError(String.Format("Element could not be updated because it is pinned. ElementId: {0}", element.Id));
                 return false;
             }
 
@@ -139,7 +139,7 @@ namespace BH.Revit.Engine.Core
         {
             if (element.ViewSpecific)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Updating drafting elements using ModelInstances is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordError($"Updating drafting elements using ModelInstances is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
                 return false;
             }
 
@@ -161,14 +161,14 @@ namespace BH.Revit.Engine.Core
         {
             if (!element.ViewSpecific || element.OwnerViewId == null)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Updating model elements using DraftingInstances is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordError($"Updating model elements using DraftingInstances is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
                 return false;
             }
 
             element.ErrorOnCategoryChange(bHoMObject);
 
             if (!string.IsNullOrWhiteSpace(bHoMObject.ViewName) && (element.Document.GetElement(element.OwnerViewId) as View)?.Name != bHoMObject.ViewName)
-                BH.Engine.Reflection.Compute.RecordWarning($"Updating the owner view of an existing Revit element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordWarning($"Updating the owner view of an existing Revit element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
 
             return ((Element)element).Update(bHoMObject, settings, setLocationOnUpdate);
         }
@@ -273,7 +273,7 @@ namespace BH.Revit.Engine.Core
             }
 
             if (!ok)
-                BH.Engine.Reflection.Compute.RecordWarning($"Updating the host of an existing hosted element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordWarning($"Updating the host of an existing hosted element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
         }
 
         /***************************************************/
@@ -281,7 +281,7 @@ namespace BH.Revit.Engine.Core
         private static void ErrorOnCategoryChange(this FamilyInstance element, IInstance bHoMObject)
         {
             if (!string.IsNullOrWhiteSpace(bHoMObject.Properties?.CategoryName) && element.Category?.Name != bHoMObject.Properties.CategoryName)
-                BH.Engine.Reflection.Compute.RecordWarning($"Updating the category of an existing Revit element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordWarning($"Updating the category of an existing Revit element is not allowed. Revit ElementId: {element.Id} BHoM_Guid: {bHoMObject.BHoM_Guid}");
         }
 
         /***************************************************/

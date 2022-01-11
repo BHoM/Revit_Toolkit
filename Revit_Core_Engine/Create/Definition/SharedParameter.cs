@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -48,7 +48,7 @@ namespace BH.Revit.Engine.Core
 
             if (categories != null && !categories.Any())
             {
-                BH.Engine.Reflection.Compute.RecordError($"Parameter {parameterName} of type {LabelUtils.GetLabelFor(parameterType)} could not be created because no category bindings were provided.");
+                BH.Engine.Base.Compute.RecordError($"Parameter {parameterName} of type {LabelUtils.GetLabelFor(parameterType)} could not be created because no category bindings were provided.");
                 return null;
             }
 
@@ -58,7 +58,7 @@ namespace BH.Revit.Engine.Core
             // if the file does not exist, throw an error
             if (string.IsNullOrWhiteSpace(sharedParameterFile) || !System.IO.File.Exists(sharedParameterFile))
             {
-                BH.Engine.Reflection.Compute.RecordError("The shared parameters file specified in the document does not exist.");
+                BH.Engine.Base.Compute.RecordError("The shared parameters file specified in the document does not exist.");
                 return null;
             }
 
@@ -73,7 +73,7 @@ namespace BH.Revit.Engine.Core
                 }
                 catch
                 {
-                    BH.Engine.Reflection.Compute.RecordError("New group could not be created in the active document's shared parameter file. Please try using an existing group or unlocking the shared parameter file.");
+                    BH.Engine.Base.Compute.RecordError("New group could not be created in the active document's shared parameter file. Please try using an existing group or unlocking the shared parameter file.");
                     return null;
                 }
             }
@@ -85,11 +85,11 @@ namespace BH.Revit.Engine.Core
             {
                 if (document.ParameterBindings.Contains(def))
                 {
-                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} already exists in group {parameterGroup}. It already has category bindings, they were not updated - please make sure they are correct.");
+                    BH.Engine.Base.Compute.RecordWarning($"Parameter {parameterName} already exists in group {parameterGroup}. It already has category bindings, they were not updated - please make sure they are correct.");
                     bindings = true;
                 }
                 else
-                    BH.Engine.Reflection.Compute.RecordWarning($"Parameter {parameterName} already exists in group {parameterGroup}. It did not have any category bindings, so input bindings were applied.");
+                    BH.Engine.Base.Compute.RecordWarning($"Parameter {parameterName} already exists in group {parameterGroup}. It did not have any category bindings, so input bindings were applied.");
             }
             else
                 def = groupDef.Definitions.Create(new ExternalDefinitionCreationOptions(parameterName, parameterType)) as ExternalDefinition;

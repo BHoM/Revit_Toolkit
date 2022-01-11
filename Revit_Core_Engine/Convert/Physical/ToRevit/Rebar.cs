@@ -25,7 +25,7 @@ using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Physical.Reinforcement;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -101,13 +101,13 @@ namespace BH.Revit.Engine.Core
                 host = document.GetElement(new ElementId((int)bar.CustomData["HostId"]));
             else
             {
-                BH.Engine.Reflection.Compute.RecordError("One or more rebars does not contain information about the host.");
+                BH.Engine.Base.Compute.RecordError("One or more rebars does not contain information about the host.");
                 return null;
             }
 
             if (host == null)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Rebar host with ID: {bar.CustomData["host"]} does not exist in the Revit project.");
+                BH.Engine.Base.Compute.RecordError($"Rebar host with ID: {bar.CustomData["host"]} does not exist in the Revit project.");
                 return null;
             }
 
@@ -115,7 +115,7 @@ namespace BH.Revit.Engine.Core
             RebarBarType barType = bar.ElementType(document, settings);
             if (barType == null)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Revit project does not contain rebar family containing type with matching diameter for one or more rebars.\nMissing Family: \"Rebar Bar : {(int)(bar.Diameter * 1000)}\"");
+                BH.Engine.Base.Compute.RecordError($"Revit project does not contain rebar family containing type with matching diameter for one or more rebars.\nMissing Family: \"Rebar Bar : {(int)(bar.Diameter * 1000)}\"");
                 return null;
             }
 

@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Physical.Constructions;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -70,7 +70,7 @@ namespace BH.Revit.Engine.Core
             Location location = originalElement.Location;
             if (!(location is LocationPoint))
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Original element to search for closest element is not point XYZ based. Location of type {0} is not implemented in this search.",location.GetType()));
+                BH.Engine.Base.Compute.RecordError(String.Format("Original element to search for closest element is not point XYZ based. Location of type {0} is not implemented in this search.",location.GetType()));
                 return null;
             }
             XYZ point = (location as LocationPoint).Point;

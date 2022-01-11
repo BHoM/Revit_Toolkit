@@ -20,7 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
@@ -61,7 +61,7 @@ namespace BH.Engine.Adapters.Revit
                 return element.Location;
             else
             {
-                Engine.Reflection.Compute.RecordError("Error extracting z Justification Revit parameter, location curve of the BHoM object has been returned.");
+                Engine.Base.Compute.RecordError("Error extracting z Justification Revit parameter, location curve of the BHoM object has been returned.");
                 return element.Location;
             }
         }

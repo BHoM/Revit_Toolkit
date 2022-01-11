@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
             // Skip non-workshared documents and null/empty workset names
             if (!document.IsWorkshared || string.IsNullOrWhiteSpace(worksetName))
             {
-                BH.Engine.Reflection.Compute.RecordError("Document must be work shared to contain worksets, and workset name cannot be null or empty.");
+                BH.Engine.Base.Compute.RecordError("Document must be work shared to contain worksets, and workset name cannot be null or empty.");
                 return null;
             }
             

@@ -22,7 +22,7 @@
  
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection;
+using BH.oM.Base;
 using System;
 
 namespace BH.Revit.Engine.Core
@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
                 int attachedTop = familyInstance.LookupParameterInteger(BuiltInParameter.COLUMN_TOP_ATTACHED_PARAM);
 
                 if (attachedBase == 1 || attachedTop == 1)
-                    BH.Engine.Reflection.Compute.RecordWarning(string.Format("A slanted column is attached at base or top, this may cause wrong length on pull to BHoM. Element Id: {0}", familyInstance.Id.IntegerValue));
+                    BH.Engine.Base.Compute.RecordWarning(string.Format("A slanted column is attached at base or top, this may cause wrong length on pull to BHoM. Element Id: {0}", familyInstance.Id.IntegerValue));
 
                 XYZ direction = ((Autodesk.Revit.DB.Line)((LocationCurve)familyInstance.Location).Curve).Direction;
                 double angle = direction.AngleTo(XYZ.BasisZ);
