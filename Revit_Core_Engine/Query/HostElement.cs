@@ -26,8 +26,7 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Base;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Reflection;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Revit;
 using System.ComponentModel;
 
@@ -49,13 +48,13 @@ namespace BH.Revit.Engine.Core
         {
             if (bHoMObject == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Host element could not be found for a null BHoM object.");
+                BH.Engine.Base.Compute.RecordError("Host element could not be found for a null BHoM object.");
                 return null;
             }
 
             if (document == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Host element could not be found in a null Revit document.");
+                BH.Engine.Base.Compute.RecordError("Host element could not be found in a null Revit document.");
                 return null;
             }
 
@@ -72,7 +71,7 @@ namespace BH.Revit.Engine.Core
                     hostDoc = linkInstance?.GetLinkDocument();
                     if (hostDoc == null)
                     {
-                        BH.Engine.Reflection.Compute.RecordError("The link document declared in the host information of the input BHoM object does not exist.");
+                        BH.Engine.Base.Compute.RecordError("The link document declared in the host information of the input BHoM object does not exist.");
                         return null;
                     }
                 }

@@ -25,7 +25,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 
 namespace BH.Revit.Engine.Core
 {
@@ -51,7 +51,7 @@ namespace BH.Revit.Engine.Core
             ElementType elementType = document.GetElement(new ElementId(elementTypeId)) as ElementType;
             if (elementType == null)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Active Revit model does not contain a family type under ElementId {0}.", elementTypeId));
+                BH.Engine.Base.Compute.RecordError(String.Format("Active Revit model does not contain a family type under ElementId {0}.", elementTypeId));
                 return new List<ElementId>();
             }
 

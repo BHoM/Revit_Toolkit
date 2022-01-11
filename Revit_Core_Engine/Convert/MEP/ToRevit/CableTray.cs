@@ -24,7 +24,7 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.MEP.System.SectionProperties;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Spatial.ShapeProfiles;
 using System;
 using System.Collections.Generic;
@@ -65,7 +65,7 @@ namespace BH.Revit.Engine.Core
             Autodesk.Revit.DB.Electrical.CableTrayType trayType = cableTray.SectionProperty.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_CableTrayRun }, settings, refObjects) as Autodesk.Revit.DB.Electrical.CableTrayType;
             if (trayType == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("No valid family has been found in the Revit model. CableTray creation requires the presence of the default CableTray Family Type.");
+                BH.Engine.Base.Compute.RecordError("No valid family has been found in the Revit model. CableTray creation requires the presence of the default CableTray Family Type.");
                 return null;
             }
 
@@ -87,7 +87,7 @@ namespace BH.Revit.Engine.Core
             revitTray = Autodesk.Revit.DB.Electrical.CableTray.Create(document, trayType.Id, start, end, level.Id);
             if (revitTray == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("No Revit CableTray has been created. Please check inputs prior to push attempt.");
+                BH.Engine.Base.Compute.RecordError("No Revit CableTray has been created. Please check inputs prior to push attempt.");
                 return null;
             }
 

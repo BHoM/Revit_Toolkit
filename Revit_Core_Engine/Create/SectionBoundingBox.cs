@@ -24,7 +24,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Autodesk.Revit.DB;
 using BH.oM.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using Line = BH.oM.Geometry.Line;
 using Point = BH.oM.Geometry.Point;
 

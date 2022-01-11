@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using BH.oM.Adapters.Revit.Parameters;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Revit;
 using System;
 using System.ComponentModel;
@@ -72,7 +72,7 @@ namespace BH.Revit.Engine.Core
                 if (faceReference != null)
                     hostId = faceReference.ElementId.IntegerValue;
                 else
-                    BH.Engine.Reflection.Compute.RecordWarning("The Revit element has been identified as hosted on a linked element, but the host could not be identified.");
+                    BH.Engine.Base.Compute.RecordWarning("The Revit element has been identified as hosted on a linked element, but the host could not be identified.");
             }
             else
             {
@@ -83,7 +83,7 @@ namespace BH.Revit.Engine.Core
                     if (linkInstance != null)
                         hostLink = (familyInstance.Document.GetElement(linkInstance.GetTypeId()) as RevitLinkType)?.Name;
                     else
-                        BH.Engine.Reflection.Compute.RecordWarning("The Revit element has been identified as hosted on a linked element, but the link document could not be identified.");
+                        BH.Engine.Base.Compute.RecordWarning("The Revit element has been identified as hosted on a linked element, but the link document could not be identified.");
                 }
             }
 

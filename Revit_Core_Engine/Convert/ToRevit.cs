@@ -27,7 +27,7 @@ using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -406,7 +406,7 @@ namespace BH.Revit.Engine.Core
         {
             if (obj == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning("Revit Element could not be created because BHoM object does not exist.");
+                BH.Engine.Base.Compute.RecordWarning("Revit Element could not be created because BHoM object does not exist.");
                 return null;
             }
 

@@ -30,7 +30,7 @@ using BH.oM.Base;
 using BH.oM.Physical.Elements;
 using BH.oM.Physical.FramingProperties;
 using BH.oM.Physical.Materials;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -60,19 +60,19 @@ namespace BH.Revit.Engine.Core
             HashSet<ElementId> elementIds = new HashSet<ElementId>();
             if (!typeof(IBHoMObject).IsAssignableFrom(type))
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Input type {0} is not a BHoM type.", type));
+                BH.Engine.Base.Compute.RecordError(String.Format("Input type {0} is not a BHoM type.", type));
                 return elementIds;
             }
 
             if (type == typeof(ModelInstance) || type == typeof(IInstance) || type == typeof(InstanceProperties) || type == typeof(IBHoMObject) || type == typeof(BHoMObject) || type == typeof(IMaterialProperties))
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("It is not allowed to pull elements of type {0} because it is too general, please try to narrow the filter down.", type));
+                BH.Engine.Base.Compute.RecordError(String.Format("It is not allowed to pull elements of type {0} because it is too general, please try to narrow the filter down.", type));
                 return elementIds;
             }
 
             if (typeof(IFramingElementProperty).IsAssignableFrom(type))
             {
-                BH.Engine.Reflection.Compute.RecordError("It is impossible to pull objects of types that inherit from IFramingElementProperty because they do not have equivalents in Revit. To pull Revit framing types, try pulling IProfiles instead.");
+                BH.Engine.Base.Compute.RecordError("It is impossible to pull objects of types that inherit from IFramingElementProperty because they do not have equivalents in Revit. To pull Revit framing types, try pulling IProfiles instead.");
                 return elementIds;
             }
 
@@ -92,7 +92,7 @@ namespace BH.Revit.Engine.Core
             IEnumerable<Type> types = type.RevitTypes();
             if (types == null || types.Count() == 0)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Type {0} is not coupled with any Revit type that could be converted.", type));
+                BH.Engine.Base.Compute.RecordError(String.Format("Type {0} is not coupled with any Revit type that could be converted.", type));
                 return elementIds;
             }
 

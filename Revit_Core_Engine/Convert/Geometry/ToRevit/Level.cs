@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -54,14 +54,14 @@ namespace BH.Revit.Engine.Core
             List<Level> existingLevels = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
             if (existingLevels.Any(x => x.Name == level.Name))
             {
-                BH.Engine.Reflection.Compute.RecordError($"Level named {level.Name} could not be created because a level with the same name already exists in the model. BHoM_Guid: {level.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordError($"Level named {level.Name} could not be created because a level with the same name already exists in the model. BHoM_Guid: {level.BHoM_Guid}");
                 return null;
             }
 
             double elevation = level.Elevation.FromSI(SpecTypeId.Length);
             if (existingLevels.Any(x => Math.Abs(x.ProjectElevation - elevation) < settings.DistanceTolerance))
             {
-                BH.Engine.Reflection.Compute.RecordError($"Level with elevation {level.Elevation} could not be created because a level with the same elevation already exists in the model. BHoM_Guid: {level.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordError($"Level with elevation {level.Elevation} could not be created because a level with the same elevation already exists in the model. BHoM_Guid: {level.BHoM_Guid}");
                 return null;
             }
 

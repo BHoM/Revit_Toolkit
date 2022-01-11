@@ -26,7 +26,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Facade.Elements;
 using BH.oM.Facade.SectionProperties;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -59,7 +59,7 @@ namespace BH.Revit.Engine.Core
             BH.oM.Geometry.ICurve location = mullion.LocationCurve?.IFromRevit();
             if (location == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Location of the frame edge could not be retrieved from the model. A frame edge without location has been returned. Revit ElementId: {0}", mullion.Id.IntegerValue));
+                BH.Engine.Base.Compute.RecordWarning(String.Format("Location of the frame edge could not be retrieved from the model. A frame edge without location has been returned. Revit ElementId: {0}", mullion.Id.IntegerValue));
             }
 
             FrameEdgeProperty prop = mullion.MullionElementProperty(settings, refObjects);

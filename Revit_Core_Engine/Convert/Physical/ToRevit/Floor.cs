@@ -25,7 +25,7 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -121,14 +121,14 @@ namespace BH.Revit.Engine.Core
                 PlanarSurface openingLocation = opening.Location as PlanarSurface;
                 if (openingLocation == null)
                 {
-                    BH.Engine.Reflection.Compute.RecordWarning(String.Format("Conversion of a floor opening to Revit failed because its location is not a planar surface. Floor BHoM_Guid: {0}, Opening BHoM_Guid: {1}", floor.BHoM_Guid, opening.BHoM_Guid));
+                    BH.Engine.Base.Compute.RecordWarning(String.Format("Conversion of a floor opening to Revit failed because its location is not a planar surface. Floor BHoM_Guid: {0}, Opening BHoM_Guid: {1}", floor.BHoM_Guid, opening.BHoM_Guid));
                     continue;
                 }
 
                 document.Create.NewOpening(revitFloor, Create.CurveArray(openingLocation.ExternalBoundary.IToRevitCurves()), true);
 
                 if (!(opening is BH.oM.Physical.Elements.Void))
-                    BH.Engine.Reflection.Compute.RecordWarning(String.Format("Revit allows only void openings in floors, therefore the BHoM opening of type {0} has been converted to a void opening. Floor BHoM_Guid: {1}, Opening BHoM_Guid: {2}", opening.GetType().Name, floor.BHoM_Guid, opening.BHoM_Guid));
+                    BH.Engine.Base.Compute.RecordWarning(String.Format("Revit allows only void openings in floors, therefore the BHoM opening of type {0} has been converted to a void opening. Floor BHoM_Guid: {1}, Opening BHoM_Guid: {2}", opening.GetType().Name, floor.BHoM_Guid, opening.BHoM_Guid));
             }
 
             double offset = revitFloor.LookupParameterDouble(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM);

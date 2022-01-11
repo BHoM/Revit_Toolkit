@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -65,7 +65,7 @@ namespace BH.Revit.Engine.Core
             ParameterType parameterType = ParameterType.Invalid;
             if (parameterTypes.Count == 0)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Parameter type named {typeName} does not exist.");
+                BH.Engine.Base.Compute.RecordError($"Parameter type named {typeName} does not exist.");
                 return null;
             }
             else if (parameterTypes.Count == 1)
@@ -82,7 +82,7 @@ namespace BH.Revit.Engine.Core
 
                 if (parameterType == ParameterType.Invalid)
                 {
-                    BH.Engine.Reflection.Compute.RecordError("The parameter type with given name exists in more than one discipline, therefore the parameter could not be created. To successfully create the parameter, please specify it using one of the following: HVAC, Piping, Electrical, Structural.");
+                    BH.Engine.Base.Compute.RecordError("The parameter type with given name exists in more than one discipline, therefore the parameter could not be created. To successfully create the parameter, please specify it using one of the following: HVAC, Piping, Electrical, Structural.");
                     return null;
                 }
             }
@@ -97,7 +97,7 @@ namespace BH.Revit.Engine.Core
 
             if (distinctCategoryNames.Count != categories.Count)
             {
-                BH.Engine.Reflection.Compute.RecordError("Parameter could not be created due to the following categories do not exist in the active document: " +
+                BH.Engine.Base.Compute.RecordError("Parameter could not be created due to the following categories do not exist in the active document: " +
                                                           string.Join(", ", distinctCategoryNames.Except(categories.Select(x => x.Name))) + ".");
                 return null;
             }
@@ -118,7 +118,7 @@ namespace BH.Revit.Engine.Core
 
                 if (parameterGroup == BuiltInParameterGroup.INVALID)
                 {
-                    BH.Engine.Reflection.Compute.RecordError($"Parameter group named {groupName} does not exist.");
+                    BH.Engine.Base.Compute.RecordError($"Parameter group named {groupName} does not exist.");
                     return null;
                 }
 

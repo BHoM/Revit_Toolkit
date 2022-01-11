@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 using BH.Engine.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -87,7 +87,7 @@ namespace BH.Revit.Engine.Core
                 return new oM.Geometry.Ellipse { Centre = curve.Center.PointFromRevit(), Axis1 = curve.XDirection.VectorFromRevit().Normalise(), Radius1 = curve.RadiusX.ToSI(SpecTypeId.Length), Axis2 = curve.YDirection.VectorFromRevit().Normalise(), Radius2 = curve.RadiusY.ToSI(SpecTypeId.Length) };
             else
             {
-                BH.Engine.Reflection.Compute.RecordWarning("Conversion of open ellipses is currently not supported because of lack of support for such type in BHoM.");
+                BH.Engine.Base.Compute.RecordWarning("Conversion of open ellipses is currently not supported because of lack of support for such type in BHoM.");
                 return null;
             }
         }
@@ -227,7 +227,7 @@ namespace BH.Revit.Engine.Core
 
             if (result == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning("Curve types without conversion support have been tessellated and converted into Polylines.");
+                BH.Engine.Base.Compute.RecordWarning("Curve types without conversion support have been tessellated and converted into Polylines.");
 
                 IList<XYZ> xyzList = curve.Tessellate();
                 if (xyzList == null || xyzList.Count < 2)

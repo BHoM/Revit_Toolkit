@@ -40,7 +40,7 @@ namespace BH.Revit.Engine.Core
             if (material != null)
                 message = string.Format("{0} Material Id: {1}", message, material.Id.IntegerValue);
 
-            BH.Engine.Reflection.Compute.RecordNote(message);
+            BH.Engine.Base.Compute.RecordNote(message);
         }
 
         /***************************************************/

@@ -25,7 +25,7 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Spatial.ShapeProfiles;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using BH.oM.Geometry;
@@ -72,7 +72,7 @@ namespace BH.Revit.Engine.Core
                 case Autodesk.Revit.DB.ConnectorProfileType.Oval:
                     // Create an oval profile
                     // There is currently no section profile for an oval duct in BHoM_Engine. This part will be implemented once the relevant section profile becomes available.
-                    BH.Engine.Reflection.Compute.RecordError("Unable to create a profile for an oval duct at this time because there is currently no section profile for an oval duct. Element ID: " + duct.Id);
+                    BH.Engine.Base.Compute.RecordError("Unable to create a profile for an oval duct at this time because there is currently no section profile for an oval duct. Element ID: " + duct.Id);
                     return null;
                 default:
                     return null;

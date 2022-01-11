@@ -22,7 +22,7 @@
 
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -68,7 +68,7 @@ namespace BH.Engine.Adapters.Revit
                 }
 
                 if (mixed)
-                    BH.Engine.Reflection.Compute.RecordNote("Some of the parameters were retrieved from collection of pulled ones, some from the ones meant to be pushed.");
+                    BH.Engine.Base.Compute.RecordNote("Some of the parameters were retrieved from collection of pulled ones, some from the ones meant to be pushed.");
             }
 
             return result;

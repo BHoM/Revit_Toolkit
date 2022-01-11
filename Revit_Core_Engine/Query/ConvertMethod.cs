@@ -22,7 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -44,13 +44,13 @@ namespace BH.Revit.Engine.Core
         {
             if (from == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Unable to extract convert method for a null Revit element.");
+                BH.Engine.Base.Compute.RecordError("Unable to extract convert method for a null Revit element.");
                 return null;
             }
 
             if (targetBHoMType == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Unable to extract convert method for a null target BHoM type.");
+                BH.Engine.Base.Compute.RecordError("Unable to extract convert method for a null target BHoM type.");
                 return null;
             }
 

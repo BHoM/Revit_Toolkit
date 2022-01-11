@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Geometry;
 using BH.oM.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -117,7 +117,7 @@ namespace BH.Revit.Engine.Core
             }
             catch
             {
-                BH.Engine.Reflection.Compute.RecordError("An attempt to create a planar surface failed.");
+                BH.Engine.Base.Compute.RecordError("An attempt to create a planar surface failed.");
                 return false;
             }
 
@@ -130,7 +130,7 @@ namespace BH.Revit.Engine.Core
         {
             if (ns.IsClosed())
             {
-                BH.Engine.Reflection.Compute.RecordError("Revit does not support closed or periodic nurbs surfaces, convert failed.");
+                BH.Engine.Base.Compute.RecordError("Revit does not support closed or periodic nurbs surfaces, convert failed.");
                 return false;
             }
             
@@ -209,7 +209,7 @@ namespace BH.Revit.Engine.Core
             }
             catch
             {
-                BH.Engine.Reflection.Compute.RecordError("An attempt to create a nurbs surface failed.");
+                BH.Engine.Base.Compute.RecordError("An attempt to create a nurbs surface failed.");
                 return false;
             }
 

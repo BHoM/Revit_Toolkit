@@ -22,7 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Environment.MaterialFragments;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Structure.MaterialFragments;
 using System;
 using System.ComponentModel;
@@ -125,14 +125,14 @@ namespace BH.Revit.Engine.Core
 
         private static void CopyCharacteristics(this BH.oM.Physical.Materials.IMaterialProperties toMaterial, Material fromMaterial)
         {
-            BH.Engine.Reflection.Compute.RecordWarning(String.Format("Copying characteristics to BHoM material fragment of type {0} is currently not supported. Revit ElementId: {1}", toMaterial.GetType().Name, fromMaterial.Id.IntegerValue));
+            BH.Engine.Base.Compute.RecordWarning(String.Format("Copying characteristics to BHoM material fragment of type {0} is currently not supported. Revit ElementId: {1}", toMaterial.GetType().Name, fromMaterial.Id.IntegerValue));
         }
 
         /***************************************************/
 
         private static void CopyCharacteristics(this Material toMaterial, BH.oM.Physical.Materials.IMaterialProperties fromMaterial)
         {
-            BH.Engine.Reflection.Compute.RecordWarning(String.Format("Copying characteristics from BHoM material fragment of type {0} is currently not supported. BHoM_Guid: {1}", toMaterial.GetType().Name, fromMaterial.BHoM_Guid));
+            BH.Engine.Base.Compute.RecordWarning(String.Format("Copying characteristics from BHoM material fragment of type {0} is currently not supported. BHoM_Guid: {1}", toMaterial.GetType().Name, fromMaterial.BHoM_Guid));
         }
 
 

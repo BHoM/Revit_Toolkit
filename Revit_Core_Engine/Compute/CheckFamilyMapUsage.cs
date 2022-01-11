@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -45,13 +45,13 @@ namespace BH.Revit.Engine.Core
         {
             if (bHoMType == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("A null BHoM type cannot be checked against unused family maps.");
+                BH.Engine.Base.Compute.RecordError("A null BHoM type cannot be checked against unused family maps.");
                 return;
             }
 
             if (document == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("A null Revit document cannot be checked against unused family maps.");
+                BH.Engine.Base.Compute.RecordError("A null Revit document cannot be checked against unused family maps.");
                 return;
             }
 
@@ -70,7 +70,7 @@ namespace BH.Revit.Engine.Core
             if (unusedMaps.Count != 0)
             {
                 string warning = $"Some of the family names declared in the RevitSettings.MappingSettings.FamilyMaps are not present in the Revit document.\nMissing names: {string.Join(", ", unusedMaps)}.";
-                BH.Engine.Reflection.Compute.RecordWarning(warning);
+                BH.Engine.Base.Compute.RecordWarning(warning);
             }
         }
 

@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Spatial.ShapeProfiles;
 using System;
 using System.Collections.Generic;
@@ -56,7 +56,7 @@ namespace BH.Revit.Engine.Core
 
             if (opening.CoordinateSystem == null)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Revit element could not be created because the coordinate system of the opening is null. BHoM_Guid: {opening.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordError($"Revit element could not be created because the coordinate system of the opening is null. BHoM_Guid: {opening.BHoM_Guid}");
                 return null;
             }
 
@@ -69,7 +69,7 @@ namespace BH.Revit.Engine.Core
 
             Element host = opening.HostElement(document, settings, true);
             if (host == null)
-                BH.Engine.Reflection.Compute.RecordWarning("Host could not be found for the opening.");
+                BH.Engine.Base.Compute.RecordWarning("Host could not be found for the opening.");
 
             BH.oM.Geometry.CoordinateSystem.Cartesian cs = opening.CoordinateSystem;
             XYZ basisX = new XYZ(cs.X.X, cs.X.Y, cs.X.Z);

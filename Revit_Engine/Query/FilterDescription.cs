@@ -23,7 +23,7 @@
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
@@ -41,7 +41,7 @@ namespace BH.Engine.Adapters.Revit
         {
             if (request == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Cannot extract the filter description of a null request.");
+                BH.Engine.Base.Compute.RecordError("Cannot extract the filter description of a null request.");
                 return "";
             }
 
@@ -57,7 +57,7 @@ namespace BH.Engine.Adapters.Revit
         {
             if (request == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Cannot extract the filter description of a null request.");
+                BH.Engine.Base.Compute.RecordError("Cannot extract the filter description of a null request.");
                 return "";
             }
 
@@ -73,7 +73,7 @@ namespace BH.Engine.Adapters.Revit
         {
             if (request == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Cannot extract the filter description of a null request.");
+                BH.Engine.Base.Compute.RecordError("Cannot extract the filter description of a null request.");
                 return "";
             }
 
@@ -89,7 +89,7 @@ namespace BH.Engine.Adapters.Revit
         {
             if (request == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Cannot extract the filter description of a null request.");
+                BH.Engine.Base.Compute.RecordError("Cannot extract the filter description of a null request.");
                 return "";
             }
 
@@ -105,7 +105,7 @@ namespace BH.Engine.Adapters.Revit
         {
             if (request == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Cannot extract the filter description of a null request.");
+                BH.Engine.Base.Compute.RecordError("Cannot extract the filter description of a null request.");
                 return "";
             }
 
@@ -121,7 +121,7 @@ namespace BH.Engine.Adapters.Revit
         {
             if (request == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Cannot extract the filter description of a null request.");
+                BH.Engine.Base.Compute.RecordError("Cannot extract the filter description of a null request.");
                 return "";
             }
 
@@ -137,7 +137,7 @@ namespace BH.Engine.Adapters.Revit
         {
             if (request == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Cannot extract the filter description of a null request.");
+                BH.Engine.Base.Compute.RecordError("Cannot extract the filter description of a null request.");
                 return "";
             }
 
@@ -153,7 +153,7 @@ namespace BH.Engine.Adapters.Revit
         {
             if (request == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Cannot extract the filter description of a null request.");
+                BH.Engine.Base.Compute.RecordError("Cannot extract the filter description of a null request.");
                 return "";
             }
 
@@ -169,7 +169,7 @@ namespace BH.Engine.Adapters.Revit
         {
             if (request == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Cannot extract the filter description of a null request.");
+                BH.Engine.Base.Compute.RecordError("Cannot extract the filter description of a null request.");
                 return "";
             }
 

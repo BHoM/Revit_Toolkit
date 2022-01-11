@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
                 return hostObject.PanelSurfaces_HostDocument(insertsToIgnore, settings);
             else
             {
-                BH.Engine.Reflection.Compute.RecordWarning("Pulling panels and openings from Revit link documents is simplified compared to pulling directly from the host document, therefore it may result in degraded output.\n" +
+                BH.Engine.Base.Compute.RecordWarning("Pulling panels and openings from Revit link documents is simplified compared to pulling directly from the host document, therefore it may result in degraded output.\n" +
                                                            "In case of requirement for best possible outcome, it is recommended to open the link document in Revit and pull the elements directly from there.");
 
                 return hostObject.PanelSurfaces_LinkDocument(insertsToIgnore, settings);
@@ -174,7 +174,7 @@ namespace BH.Revit.Engine.Core
             }
             catch
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Geometrical processing of a Revit element failed due to an internal Revit error. Converted panel might be missing one or more of its surfaces. Revit ElementId: {0}", hostObject.Id));
+                BH.Engine.Base.Compute.RecordError(String.Format("Geometrical processing of a Revit element failed due to an internal Revit error. Converted panel might be missing one or more of its surfaces. Revit ElementId: {0}", hostObject.Id));
             }
 
             t.RollBack(failureHandlingOptions);
@@ -189,7 +189,7 @@ namespace BH.Revit.Engine.Core
             List<Autodesk.Revit.DB.Face> faces = hostObject.ILinkPanelFaces(settings);
             List<PlanarFace> planarFaces = faces.Where(x => x is PlanarFace).Cast<PlanarFace>().ToList();
             if (faces.Count != planarFaces.Count)
-                BH.Engine.Reflection.Compute.RecordWarning($"Some faces of the link element were not planar and could not be retrieved.\n ElementId: {hostObject.Id} Document: {hostObject.Document.PathName}");
+                BH.Engine.Base.Compute.RecordWarning($"Some faces of the link element were not planar and could not be retrieved.\n ElementId: {hostObject.Id} Document: {hostObject.Document.PathName}");
 
             Dictionary<PlanarSurface, List<PlanarSurface>> result = new Dictionary<PlanarSurface, List<PlanarSurface>>();
             List<Autodesk.Revit.DB.Face> edgeFaces = null;

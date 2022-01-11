@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -67,12 +67,12 @@ namespace BH.Revit.Engine.Core
             if (acceptable.Count != 0)
             {
                 DisplayUnitType dut = acceptable.First();
-                BH.Engine.Reflection.Compute.RecordWarning($"Unit type {LabelUtils.GetLabelFor(quantity)} does not have a predefined SI equivalent in BHoM - the unit type used on the BHoM side of convert is {LabelUtils.GetLabelFor(dut)}. Please make sure the converted values are correct.");
+                BH.Engine.Base.Compute.RecordWarning($"Unit type {LabelUtils.GetLabelFor(quantity)} does not have a predefined SI equivalent in BHoM - the unit type used on the BHoM side of convert is {LabelUtils.GetLabelFor(dut)}. Please make sure the converted values are correct.");
                 return dut;
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordError($"Unit type {LabelUtils.GetLabelFor(quantity)} has not been recognized and has not been converted - as a result, the output value can be wrong.");
+                BH.Engine.Base.Compute.RecordError($"Unit type {LabelUtils.GetLabelFor(quantity)} has not been recognized and has not been converted - as a result, the output value can be wrong.");
                 return DisplayUnitType.DUT_GENERAL;
             }
         }
@@ -181,12 +181,12 @@ namespace BH.Revit.Engine.Core
             if (acceptable.Count != 0)
             {
                 ForgeTypeId dut = acceptable.First();
-                BH.Engine.Reflection.Compute.RecordWarning($"Unit type {LabelUtils.GetLabelForSpec(quantity)} does not have a predefined SI equivalent in BHoM - the unit type used on the BHoM side of convert is {LabelUtils.GetLabelForUnit(dut)}. Please make sure the converted values are correct.");
+                BH.Engine.Base.Compute.RecordWarning($"Unit type {LabelUtils.GetLabelForSpec(quantity)} does not have a predefined SI equivalent in BHoM - the unit type used on the BHoM side of convert is {LabelUtils.GetLabelForUnit(dut)}. Please make sure the converted values are correct.");
                 return dut;
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordError($"Unit type {LabelUtils.GetLabelForSpec(quantity)} has not been recognized and has not been converted - as a result, the output value can be wrong.");
+                BH.Engine.Base.Compute.RecordError($"Unit type {LabelUtils.GetLabelForSpec(quantity)} has not been recognized and has not been converted - as a result, the output value can be wrong.");
                 return UnitTypeId.General;
             }
         }

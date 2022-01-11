@@ -25,7 +25,7 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -77,7 +77,7 @@ namespace BH.Revit.Engine.Core
                 surfaces = familyInstance.OpeningSurfaces_HostDocument(hosts, parentElem, settings);
             else
             {
-                BH.Engine.Reflection.Compute.RecordWarning("Pulling panels and openings from Revit link documents is simplified compared to pulling directly from the host document, therefore it may result in degraded output.\n" +
+                BH.Engine.Base.Compute.RecordWarning("Pulling panels and openings from Revit link documents is simplified compared to pulling directly from the host document, therefore it may result in degraded output.\n" +
                                                            "In case of requirement for best possible outcome, it is recommended to open the link document in Revit and pull the elements directly from there.");
 
                 surfaces = familyInstance.OpeningSurfaces_LinkDocument(hosts, parentElem, settings);
@@ -159,7 +159,7 @@ namespace BH.Revit.Engine.Core
         {
             if (parentElement != null)
             {
-                BH.Engine.Reflection.Compute.RecordError($"Pull of nested families from link documents is currently not implemented. Please consider opening the document {familyInstance.Document.PathName} and pulling directly from it.");
+                BH.Engine.Base.Compute.RecordError($"Pull of nested families from link documents is currently not implemented. Please consider opening the document {familyInstance.Document.PathName} and pulling directly from it.");
                 return new List<ISurface>();
             }
             else if (hosts.Count != 0)
@@ -241,7 +241,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         private static List<ISurface> GetUnhostedOpeningGeometry(this FamilyInstance familyInstance, Document doc, RevitSettings settings = null)
         {
-            BH.Engine.Reflection.Compute.RecordWarning(String.Format("Geometry extraction of unhosted Windows is not currently supported. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
+            BH.Engine.Base.Compute.RecordWarning(String.Format("Geometry extraction of unhosted Windows is not currently supported. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
             List<ISurface> surfaces = new List<ISurface>();
             return surfaces;
         }
@@ -312,7 +312,7 @@ namespace BH.Revit.Engine.Core
             if (loops != null)
                 surfaces.AddRange(loops.Select(x => new PlanarSurface(x.FromRevit(), null)));
             else if (surfaces.Count != 0)
-                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Geometrical processing of a Revit element failed due to an internal Revit error. Converted opening might be missing one or more of its surfaces. Revit ElementId: {0}", familyInstance.Id));
+                BH.Engine.Base.Compute.RecordWarning(String.Format("Geometrical processing of a Revit element failed due to an internal Revit error. Converted opening might be missing one or more of its surfaces. Revit ElementId: {0}", familyInstance.Id));
 
             return surfaces;
         }

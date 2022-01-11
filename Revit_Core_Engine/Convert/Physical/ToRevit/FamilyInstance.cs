@@ -26,7 +26,7 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Physical.Elements;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -74,19 +74,19 @@ namespace BH.Revit.Engine.Core
 
             if (framingElement.Location == null)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Revit element could not be created because the driving curve of a BHoM object is null. BHoM_Guid: {0}", framingElement.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError(String.Format("Revit element could not be created because the driving curve of a BHoM object is null. BHoM_Guid: {0}", framingElement.BHoM_Guid));
                 return null;
             }
 
             if (framingElement.Location as BH.oM.Geometry.Line == null)
             {
-                BH.Engine.Reflection.Compute.RecordError(string.Format("Revit does only support line-based columns. Try pushing your element as a beam instead. BHoM_Guid: {0}", framingElement.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError(string.Format("Revit does only support line-based columns. Try pushing your element as a beam instead. BHoM_Guid: {0}", framingElement.BHoM_Guid));
                 return null;
             }
 
             if (((BH.oM.Geometry.Line)framingElement.Location).Start.Z >= ((BH.oM.Geometry.Line)framingElement.Location).End.Z)
             {
-                BH.Engine.Reflection.Compute.RecordError(string.Format("Start point of Revit columns need to have lower elevation than the end point. Have a look at flipping your location curves. BHoM_Guid: {0}", framingElement.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError(string.Format("Start point of Revit columns need to have lower elevation than the end point. Have a look at flipping your location curves. BHoM_Guid: {0}", framingElement.BHoM_Guid));
                 return null;
             }
 
@@ -133,7 +133,7 @@ namespace BH.Revit.Engine.Core
                         if (param != null && param.HasValue && !param.IsReadOnly)
                             familyInstance.StructuralMaterialId = material.Id;
                         else
-                            BH.Engine.Reflection.Compute.RecordWarning(string.Format("The BHoM material has been correctly converted, but the property could not be assigned to the Revit element. ElementId: {0}", familyInstance.Id));
+                            BH.Engine.Base.Compute.RecordWarning(string.Format("The BHoM material has been correctly converted, but the property could not be assigned to the Revit element. ElementId: {0}", familyInstance.Id));
                     }
                 }
             }
@@ -159,7 +159,7 @@ namespace BH.Revit.Engine.Core
         [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.Pile.")]
         public static FamilyInstance ToRevitFamilyInstance(this Pile framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            BH.Engine.Reflection.Compute.RecordError(string.Format("Push of pile foundations is not supported in current version of BHoM. BHoM element Guid: {0}", framingElement.BHoM_Guid));
+            BH.Engine.Base.Compute.RecordError(string.Format("Push of pile foundations is not supported in current version of BHoM. BHoM element Guid: {0}", framingElement.BHoM_Guid));
             return null;
         }
 
@@ -184,20 +184,20 @@ namespace BH.Revit.Engine.Core
 
             if (framingElement.Location == null)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Revit element could not be created because the driving curve of a BHoM object is null. BHoM_Guid: {0}", framingElement.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError(String.Format("Revit element could not be created because the driving curve of a BHoM object is null. BHoM_Guid: {0}", framingElement.BHoM_Guid));
                 return null;
             }
 
             if (!framingElement.Location.IIsPlanar())
             {
-                BH.Engine.Reflection.Compute.RecordError(string.Format("Revit framing does only support planar curves, element could not be created. BHoM_Guid: {0}", framingElement.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError(string.Format("Revit framing does only support planar curves, element could not be created. BHoM_Guid: {0}", framingElement.BHoM_Guid));
                 return null;
             }
 
             Curve revitCurve = framingElement.Location.IToRevit();
             if (revitCurve == null)
             {
-                BH.Engine.Reflection.Compute.RecordError(string.Format("Revit element could not be created because of curve conversion issues. BHoM_Guid: {0}", framingElement.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError(string.Format("Revit element could not be created because of curve conversion issues. BHoM_Guid: {0}", framingElement.BHoM_Guid));
                 return null;
             }
 
@@ -230,18 +230,18 @@ namespace BH.Revit.Engine.Core
                 Line revitLine = revitCurve as Line;
                 if (revitLine == null)
                 {
-                    BH.Engine.Reflection.Compute.RecordError($"Nonlinear bracing is not allowed, please consider using beam type instead. BHoM_Guid: {framingElement.BHoM_Guid}");
+                    BH.Engine.Base.Compute.RecordError($"Nonlinear bracing is not allowed, please consider using beam type instead. BHoM_Guid: {framingElement.BHoM_Guid}");
                     return null;
                 }
 
                 familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, StructuralType.Brace);
                 if (framingElement is Cable)
-                    BH.Engine.Reflection.Compute.RecordWarning($"Revit does not support Cable type, the BHoM cable has been converted to a Revit bracing. BHoM_Guid: {framingElement.BHoM_Guid}, ElementId: {familyInstance.Id}");
+                    BH.Engine.Base.Compute.RecordWarning($"Revit does not support Cable type, the BHoM cable has been converted to a Revit bracing. BHoM_Guid: {framingElement.BHoM_Guid}, ElementId: {familyInstance.Id}");
 
                 if (Math.Abs(revitLine.Direction.DotProduct(XYZ.BasisZ)) < settings.AngleTolerance)
                 {
                     familyInstance.StructuralUsage = StructuralInstanceUsage.Other;
-                    BH.Engine.Reflection.Compute.RecordWarning($"The driving curve of a bracing element is horizontal, structural usage of the Revit element has been set to 'Other'. BHoM_Guid: {framingElement.BHoM_Guid}, ElementId: {familyInstance.Id}");
+                    BH.Engine.Base.Compute.RecordWarning($"The driving curve of a bracing element is horizontal, structural usage of the Revit element has been set to 'Other'. BHoM_Guid: {framingElement.BHoM_Guid}, ElementId: {familyInstance.Id}");
                 }
             }
             else
@@ -266,7 +266,7 @@ namespace BH.Revit.Engine.Core
                         if (param != null && param.HasValue && !param.IsReadOnly)
                             familyInstance.StructuralMaterialId = material.Id;
                         else
-                            BH.Engine.Reflection.Compute.RecordWarning(string.Format("The BHoM material has been correctly converted, but the property could not be assigned to the Revit element. ElementId: {0}", familyInstance.Id));
+                            BH.Engine.Base.Compute.RecordWarning(string.Format("The BHoM material has been correctly converted, but the property could not be assigned to the Revit element. ElementId: {0}", familyInstance.Id));
                     }
                 }
             }

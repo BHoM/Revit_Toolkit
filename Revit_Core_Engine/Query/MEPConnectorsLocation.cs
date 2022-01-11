@@ -26,7 +26,7 @@ using System.Linq;
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 
 namespace BH.Revit.Engine.Core
 {
@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
 
             if (mepInstance == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Input mepInstance is null or empty.");
+                BH.Engine.Base.Compute.RecordError("Input mepInstance is null or empty.");
                 return null;
             }
             
@@ -54,14 +54,14 @@ namespace BH.Revit.Engine.Core
 
             if (mepModel == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("The input fitting does not have any connectors.");
+                BH.Engine.Base.Compute.RecordError("The input fitting does not have any connectors.");
                 return null;
             }
 
             ConnectorManager connectorManager = mepModel.ConnectorManager;
             if (connectorManager == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("The input fitting does not have any connectors.");
+                BH.Engine.Base.Compute.RecordError("The input fitting does not have any connectors.");
                 return null;
             }
                     

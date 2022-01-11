@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -58,7 +58,7 @@ namespace BH.Revit.Engine.Core
 
             if (selectionFilterElement == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Couldn't find a Selection Set named " + selectionSetName + ".");
+                BH.Engine.Base.Compute.RecordError("Couldn't find a Selection Set named " + selectionSetName + ".");
                 return new HashSet<ElementId>();
             }
 

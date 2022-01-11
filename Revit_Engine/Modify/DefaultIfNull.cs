@@ -22,7 +22,7 @@
 
 using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
@@ -40,7 +40,7 @@ namespace BH.Engine.Adapters.Revit
         {
             if (settings == null)
             {
-                BH.Engine.Reflection.Compute.RecordNote("Revit settings are not set. Default settings are used.");
+                BH.Engine.Base.Compute.RecordNote("Revit settings are not set. Default settings are used.");
                 settings = new RevitSettings();
                 settings.MappingSettings = Query.DefaultMappingSettings();
             }
@@ -57,7 +57,7 @@ namespace BH.Engine.Adapters.Revit
         {
             if (pullConfig == null)
             {
-                BH.Engine.Reflection.Compute.RecordNote("Revit pull config has not been specified. Default Revit pull config is used.");
+                BH.Engine.Base.Compute.RecordNote("Revit pull config has not been specified. Default Revit pull config is used.");
                 pullConfig = new RevitPullConfig();
             }
 

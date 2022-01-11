@@ -26,7 +26,7 @@ using Autodesk.Revit.DB;
 using BH.Engine.Geometry;
 using BH.Engine.Spatial;
 using BH.oM.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using Line = BH.oM.Geometry.Line;
 using Point = BH.oM.Geometry.Point;
 

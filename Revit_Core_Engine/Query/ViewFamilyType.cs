@@ -24,7 +24,7 @@ using Autodesk.Revit.DB;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 
 
 namespace BH.Revit.Engine.Core

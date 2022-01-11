@@ -24,7 +24,7 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.MEP.System.SectionProperties;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Spatial.ShapeProfiles;
 using System;
 using System.Collections.Generic;
@@ -66,7 +66,7 @@ namespace BH.Revit.Engine.Core
             Autodesk.Revit.DB.Plumbing.PipeType pipeType = pipe.SectionProperty.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_PipingSystem }, settings, refObjects) as Autodesk.Revit.DB.Plumbing.PipeType;
             if(pipeType == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("No valid family has been found in the Revit model. Pipe creation requires the presence of the default Pipe Family Type.");
+                BH.Engine.Base.Compute.RecordError("No valid family has been found in the Revit model. Pipe creation requires the presence of the default Pipe Family Type.");
                 return null;
             }
 
@@ -88,16 +88,16 @@ namespace BH.Revit.Engine.Core
 
             if (pst == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("No valid PipingSystemType can be found in the Revit model. Creating a revit Pipe requires a PipingSystemType.");
+                BH.Engine.Base.Compute.RecordError("No valid PipingSystemType can be found in the Revit model. Creating a revit Pipe requires a PipingSystemType.");
                 return null;
             }
 
-            BH.Engine.Reflection.Compute.RecordWarning("Pipe creation will utilise the first available PipingSystemType from the Revit model.");
+            BH.Engine.Base.Compute.RecordWarning("Pipe creation will utilise the first available PipingSystemType from the Revit model.");
 
             SectionProfile sectionProfile = pipe.SectionProperty.SectionProfile;
             if (sectionProfile == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Pipe creation requires a SectionProfile. \n No elements created.");
+                BH.Engine.Base.Compute.RecordError("Pipe creation requires a SectionProfile. \n No elements created.");
                 return null;
             }
 
@@ -107,7 +107,7 @@ namespace BH.Revit.Engine.Core
             revitPipe = Autodesk.Revit.DB.Plumbing.Pipe.Create(document, pst.Id, pipeType.Id, level.Id, start, end);
             if (revitPipe == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("No Revit Pipe has been created. Please check inputs prior to push attempt.");
+                BH.Engine.Base.Compute.RecordError("No Revit Pipe has been created. Please check inputs prior to push attempt.");
                 return null;
             }
 
@@ -124,7 +124,7 @@ namespace BH.Revit.Engine.Core
                 pit = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Plumbing.PipeInsulationType)).FirstOrDefault() as Autodesk.Revit.DB.Plumbing.PipeInsulationType;
                 if (pit == null)
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Any pipe insulation type needs to be present in the Revit model in order to push pipes with insulation.\n" +
+                    BH.Engine.Base.Compute.RecordError("Any pipe insulation type needs to be present in the Revit model in order to push pipes with insulation.\n" +
                         "Pipe has been created but no insulation has been applied.");
                 }
             }

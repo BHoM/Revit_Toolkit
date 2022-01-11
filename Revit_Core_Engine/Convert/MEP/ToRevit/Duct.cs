@@ -25,7 +25,7 @@ using Autodesk.Revit.DB.Mechanical;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.MEP.System.SectionProperties;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Spatial.ShapeProfiles;
 using System;
 using System.Collections.Generic;
@@ -67,7 +67,7 @@ namespace BH.Revit.Engine.Core
             DuctType ductType = duct.SectionProperty.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_DuctSystem }, settings, refObjects) as DuctType;
             if (ductType == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("No valid family has been found in the Revit model. Duct creation requires the presence of the default Duct Family Type.");
+                BH.Engine.Base.Compute.RecordError("No valid family has been found in the Revit model. Duct creation requires the presence of the default Duct Family Type.");
                 return null;
             }
 
@@ -89,16 +89,16 @@ namespace BH.Revit.Engine.Core
 
             if(mst == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("No valid MechanicalSystemType can be found in the Revit model. Creating a revit Duct requires a MechanicalSystemType.");
+                BH.Engine.Base.Compute.RecordError("No valid MechanicalSystemType can be found in the Revit model. Creating a revit Duct requires a MechanicalSystemType.");
                 return null;
             }
 
-            BH.Engine.Reflection.Compute.RecordWarning("Duct creation will utilise the first available MechanicalSystemType from the Revit model.");
+            BH.Engine.Base.Compute.RecordWarning("Duct creation will utilise the first available MechanicalSystemType from the Revit model.");
 
             SectionProfile sectionProfile = duct.SectionProperty?.SectionProfile;
             if (sectionProfile == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Duct creation requires a valid SectionProfile.");
+                BH.Engine.Base.Compute.RecordError("Duct creation requires a valid SectionProfile.");
                 return null;
             }
 
@@ -108,7 +108,7 @@ namespace BH.Revit.Engine.Core
             revitDuct = Duct.Create(document, mst.Id, ductType.Id, level.Id, start, end);
             if (revitDuct == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("No Revit Duct has been created. Please check inputs prior to push attempt.");
+                BH.Engine.Base.Compute.RecordError("No Revit Duct has been created. Please check inputs prior to push attempt.");
                 return null;
             }
 
@@ -134,7 +134,7 @@ namespace BH.Revit.Engine.Core
                 dlt = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Mechanical.DuctLiningType)).FirstOrDefault() as Autodesk.Revit.DB.Mechanical.DuctLiningType;
                 if (dlt == null)
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Any duct lining type needs to be present in the Revit model in order to push ducts with lining.\n" +
+                    BH.Engine.Base.Compute.RecordError("Any duct lining type needs to be present in the Revit model in order to push ducts with lining.\n" +
                         "Duct has been created but no lining has been applied.");
                 }
             }
@@ -145,7 +145,7 @@ namespace BH.Revit.Engine.Core
                 dit = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Mechanical.DuctInsulationType)).FirstOrDefault() as Autodesk.Revit.DB.Mechanical.DuctInsulationType;
                 if (dit == null)
                 {
-                    BH.Engine.Reflection.Compute.RecordError("Any duct insulation type needs to be present in the Revit model in order to push ducts with lining.\n" +
+                    BH.Engine.Base.Compute.RecordError("Any duct insulation type needs to be present in the Revit model in order to push ducts with lining.\n" +
                         "Duct has been created but no insulation has been applied.");
                 }
             }

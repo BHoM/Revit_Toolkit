@@ -35,7 +35,7 @@ namespace BH.Revit.Engine.Core
         {
             if (!linkDocument.IsLinked)
             {
-                BH.Engine.Reflection.Compute.RecordWarning("The document is not a link document, therefore it cannot have a host document. The document itself is returned.");
+                BH.Engine.Base.Compute.RecordWarning("The document is not a link document, therefore it cannot have a host document. The document itself is returned.");
                 return linkDocument;
             }
 

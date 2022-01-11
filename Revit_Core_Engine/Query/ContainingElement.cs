@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -46,13 +46,13 @@ namespace BH.Revit.Engine.Core
         {
             if (point == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Host element could not be found for a null point.");
+                BH.Engine.Base.Compute.RecordError("Host element could not be found for a null point.");
                 return null;
             }
 
             if (document == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("Host element could not be found in a null Revit document.");
+                BH.Engine.Base.Compute.RecordError("Host element could not be found in a null Revit document.");
                 return null;
             }
 

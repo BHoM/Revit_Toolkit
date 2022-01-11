@@ -24,7 +24,7 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.SurfaceProperties;
 using System;
@@ -97,26 +97,26 @@ namespace BH.Revit.Engine.Core
                         materialFragment = revitMaterial.MaterialFragmentFromRevit(materialGrade, settings, refObjects);
                         if (materialFragment == null)
                         {
-                            BH.Engine.Reflection.Compute.RecordWarning("There is a structural layer in wall/floor type without material assigned. A default empty material is returned. ElementId: " + hostObjAttributes.Id.IntegerValue.ToString());
+                            BH.Engine.Base.Compute.RecordWarning("There is a structural layer in wall/floor type without material assigned. A default empty material is returned. ElementId: " + hostObjAttributes.Id.IntegerValue.ToString());
                             materialFragment = Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined.EmptyMaterialFragment(materialGrade);
                         }
                     }
                     else if (csl.Function == MaterialFunctionAssignment.StructuralDeck)
-                        BH.Engine.Reflection.Compute.RecordWarning(String.Format("A structural deck layer has been found in the Revit compound structure, but was ignored on convert. Revit ElementId: {0}", hostObjAttributes.Id));
+                        BH.Engine.Base.Compute.RecordWarning(String.Format("A structural deck layer has been found in the Revit compound structure, but was ignored on convert. Revit ElementId: {0}", hostObjAttributes.Id));
                     else
                         nonStructuralLayers = true;
                 }
 
                 if (nonStructuralLayers)
-                    BH.Engine.Reflection.Compute.RecordWarning(String.Format("Layers marked as nonstructural have been found in the Revit compound structure and were ignored on convert. Revit ElementId: {0}", hostObjAttributes.Id));
+                    BH.Engine.Base.Compute.RecordWarning(String.Format("Layers marked as nonstructural have been found in the Revit compound structure and were ignored on convert. Revit ElementId: {0}", hostObjAttributes.Id));
 
                 if (composite)
                     hostObjAttributes.CompositePanelWarning();
                 else if (thickness == 0)
-                    BH.Engine.Reflection.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", hostObjAttributes.Id.IntegerValue));
+                    BH.Engine.Base.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", hostObjAttributes.Id.IntegerValue));
             }
             else
-                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Revit panel type does not contain any layers (possibly it is a curtain panel). A BHoM panel type with zero thickness and no material is returned. Revit ElementId: {0}", hostObjAttributes.Id));
+                BH.Engine.Base.Compute.RecordWarning(String.Format("Revit panel type does not contain any layers (possibly it is a curtain panel). A BHoM panel type with zero thickness and no material is returned. Revit ElementId: {0}", hostObjAttributes.Id));
 
             oM.Structure.SurfaceProperties.PanelType panelType = oM.Structure.SurfaceProperties.PanelType.Undefined;
             if (hostObjAttributes is WallType)

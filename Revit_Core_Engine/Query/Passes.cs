@@ -27,7 +27,7 @@ using BH.oM.Adapters.Revit.Mapping;
 using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -131,7 +131,7 @@ namespace BH.Revit.Engine.Core
             Type bHoMType = element.BHoMType(discipline, settings);
             oM.Adapters.Revit.Mapping.ParameterMap parameterMap = settings?.MappingSettings?.ParameterMap(bHoMType);
             if (parameterMap != null)
-                BH.Engine.Reflection.Compute.RecordWarning($"A parameter map has been found for the BHoM type {bHoMType.Name} and discipline {discipline} - FilterByParameterExistence request does not support parameter mapping so it was neglected.");
+                BH.Engine.Base.Compute.RecordWarning($"A parameter map has been found for the BHoM type {bHoMType.Name} and discipline {discipline} - FilterByParameterExistence request does not support parameter mapping so it was neglected.");
 
             return (element.LookupParameter(request.ParameterName) != null) == request.ParameterExists;
         }
@@ -368,13 +368,13 @@ namespace BH.Revit.Engine.Core
         {
             if (element == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("The element cannot be checked against the request because it is null.");
+                BH.Engine.Base.Compute.RecordError("The element cannot be checked against the request because it is null.");
                 return false;
             }
 
             if (request == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("The element cannot be checked against the request because the request is null.");
+                BH.Engine.Base.Compute.RecordError("The element cannot be checked against the request because the request is null.");
                 return false;
             }
 
@@ -391,13 +391,13 @@ namespace BH.Revit.Engine.Core
         {
             if (parameter == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("The parameter cannot be checked against the request because it is null.");
+                BH.Engine.Base.Compute.RecordError("The parameter cannot be checked against the request because it is null.");
                 return false;
             }
 
             if (request == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("The element cannot be checked against the request because the request is null.");
+                BH.Engine.Base.Compute.RecordError("The element cannot be checked against the request because the request is null.");
                 return false;
             }
 

@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
 
             if (document.IsLinked)
             {
-                BH.Engine.Reflection.Compute.RecordError("It is not allowed to combine active view requests with link requests.");
+                BH.Engine.Base.Compute.RecordError("It is not allowed to combine active view requests with link requests.");
                 return null;
             }
 

@@ -103,7 +103,7 @@ namespace BH.Revit.Engine.Core
 
         private static List<Plane> PanelPlanes(this HostObject hostObject)
         {
-            BH.Engine.Reflection.Compute.RecordError(String.Format("Querying panel locations for Revit elements of type {0} is currently not supported.", hostObject.GetType().Name));
+            BH.Engine.Base.Compute.RecordError(String.Format("Querying panel locations for Revit elements of type {0} is currently not supported.", hostObject.GetType().Name));
             return new List<Plane>();
         }
 

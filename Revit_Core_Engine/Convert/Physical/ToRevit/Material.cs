@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -60,7 +60,7 @@ namespace BH.Revit.Engine.Core
             }
             catch
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Revit material could not be created because a material with the same name already exists in the model or the name is incorrect. BHoM_Guid: {0}", material.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError(String.Format("Revit material could not be created because a material with the same name already exists in the model or the name is incorrect. BHoM_Guid: {0}", material.BHoM_Guid));
                 return null;
             }
 

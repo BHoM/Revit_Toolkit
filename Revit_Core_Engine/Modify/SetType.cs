@@ -26,7 +26,7 @@ using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Physical.Elements;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -138,7 +138,7 @@ namespace BH.Revit.Engine.Core
 
             if (elementType == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning(String.Format("Element type has not been updated based on the BHoM object because no matching types were found. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, bHoMObject.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordWarning(String.Format("Element type has not been updated based on the BHoM object because no matching types were found. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, bHoMObject.BHoM_Guid));
                 return false;
             }
 
@@ -184,7 +184,7 @@ namespace BH.Revit.Engine.Core
                         return true;
                     }
                     else
-                        BH.Engine.Reflection.Compute.RecordWarning($"Element type not updated: type named {param.Value} of category {element.Category.Name} could not be found in the model. ElementId: {element.Id.IntegerValue}");
+                        BH.Engine.Base.Compute.RecordWarning($"Element type not updated: type named {param.Value} of category {element.Category.Name} could not be found in the model. ElementId: {element.Id.IntegerValue}");
                 }
             }
 

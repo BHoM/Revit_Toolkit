@@ -25,7 +25,7 @@ using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Structure.MaterialFragments;
 using System;
 using System.Collections.Generic;
@@ -92,7 +92,7 @@ namespace BH.Revit.Engine.Core
                     materialFragment = new Timber();
                     break;
                 default:
-                    BH.Engine.Reflection.Compute.RecordWarning(String.Format("Revit material of structural type {0} is currently not supported, the material was converted to a generic isotropic BHoM material. Revit ElementId: {1}", structuralMaterialType, material.Id.IntegerValue));
+                    BH.Engine.Base.Compute.RecordWarning(String.Format("Revit material of structural type {0} is currently not supported, the material was converted to a generic isotropic BHoM material. Revit ElementId: {1}", structuralMaterialType, material.Id.IntegerValue));
                     materialFragment = new GenericIsotropicMaterial();
                     break;
             }

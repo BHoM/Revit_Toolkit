@@ -39,7 +39,7 @@ namespace BH.Revit.Adapter.Core
                 try
                 {
                     //Clear the event log
-                    BH.Engine.Reflection.Compute.ClearCurrentEvents();
+                    BH.Engine.Base.Compute.ClearCurrentEvents();
 
                     //Get instance of listener
                     RevitListener listener = RevitListener.Listener;
@@ -49,7 +49,7 @@ namespace BH.Revit.Adapter.Core
                     // Do not attempt to pull if no document is open.
                     if (app.ActiveUIDocument == null || app.ActiveUIDocument.Document == null)
                     {
-                        BH.Engine.Reflection.Compute.RecordError("The adaper has successfully connected to Revit, but open document could not be found. Pull aborted.");
+                        BH.Engine.Base.Compute.RecordError("The adaper has successfully connected to Revit, but open document could not be found. Pull aborted.");
                         objs = new List<object>();
                     }
                     else

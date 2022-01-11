@@ -41,19 +41,19 @@ namespace BH.Revit.Adapter.Core
             Document document = this.Document;
             if (document == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because Revit Document is null (possibly there is no open documents in Revit).");
+                BH.Engine.Base.Compute.RecordError("BHoM objects could not be removed because Revit Document is null (possibly there is no open documents in Revit).");
                 return 0;
             }
 
             if (document.IsReadOnly)
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because Revit Document is read only.");
+                BH.Engine.Base.Compute.RecordError("BHoM objects could not be removed because Revit Document is read only.");
                 return 0;
             }
 
             if (document.IsModifiable)
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because another transaction is open in Revit.");
+                BH.Engine.Base.Compute.RecordError("BHoM objects could not be removed because another transaction is open in Revit.");
                 return 0;
             }
 
@@ -61,7 +61,7 @@ namespace BH.Revit.Adapter.Core
             RevitRemoveConfig removeConfig = actionConfig as RevitRemoveConfig;
             if (removeConfig == null)
             {
-                BH.Engine.Reflection.Compute.RecordNote("Revit Remove Config has not been specified. Default Revit Remove Config is used.");
+                BH.Engine.Base.Compute.RecordNote("Revit Remove Config has not been specified. Default Revit Remove Config is used.");
                 removeConfig = new RevitRemoveConfig();
             }
 

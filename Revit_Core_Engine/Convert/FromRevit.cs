@@ -26,7 +26,7 @@ using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Geometry;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -82,7 +82,7 @@ namespace BH.Revit.Engine.Core
         {
             if (energyAnalysisModel == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning("BHoM object could not be read because Revit energy analysis model is null.");
+                BH.Engine.Base.Compute.RecordWarning("BHoM object could not be read because Revit energy analysis model is null.");
                 return null;
             }
 
@@ -108,7 +108,7 @@ namespace BH.Revit.Engine.Core
         {
             if (element == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning("BHoM object could not be read because Revit element is null.");
+                BH.Engine.Base.Compute.RecordWarning("BHoM object could not be read because Revit element is null.");
                 return null;
             }
 
@@ -117,7 +117,7 @@ namespace BH.Revit.Engine.Core
             Type targetBHoMType = element.IBHoMType(discipline, settings);
             if (targetBHoMType == null)
             {
-                BH.Engine.Reflection.Compute.RecordWarning($"Given Revit element of type {element.GetType().Name} does not have a correspondent BHoM type for discipline {discipline}. It has been converted to a generic ModelInstance or DraftingInstance. ElementId: {element.Id}");
+                BH.Engine.Base.Compute.RecordWarning($"Given Revit element of type {element.GetType().Name} does not have a correspondent BHoM type for discipline {discipline}. It has been converted to a generic ModelInstance or DraftingInstance. ElementId: {element.Id}");
                 converted = element.ObjectFromRevit(settings, refObjects);
             }
             else

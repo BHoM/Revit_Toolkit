@@ -24,7 +24,7 @@ using Autodesk.Revit.DB;
 using BH.oM.Base;
 using System;
 using System.ComponentModel;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 
 namespace BH.Revit.Engine.Core
 {
@@ -47,7 +47,7 @@ namespace BH.Revit.Engine.Core
                 if(detailLevelParameter.UserModifiable)
                     view.DetailLevel = viewDetailLevel;
                 else
-                    BH.Engine.Reflection.Compute.RecordWarning("Could not change the view detail level because it's being controlled by the view template.");
+                    BH.Engine.Base.Compute.RecordWarning("Could not change the view detail level because it's being controlled by the view template.");
             }
             else
             {

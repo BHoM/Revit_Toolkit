@@ -44,19 +44,19 @@ namespace BH.Revit.Adapter.Core
             Document document = this.Document;
             if (document == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because Revit Document is null (possibly there is no open documents in Revit).");
+                BH.Engine.Base.Compute.RecordError("BHoM objects could not be removed because Revit Document is null (possibly there is no open documents in Revit).");
                 return new List<object>();
             }
 
             if (document.IsReadOnly)
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because Revit Document is read only.");
+                BH.Engine.Base.Compute.RecordError("BHoM objects could not be removed because Revit Document is read only.");
                 return new List<object>();
             }
 
             if (document.IsModifiable)
             {
-                BH.Engine.Reflection.Compute.RecordError("BHoM objects could not be removed because another transaction is open in Revit.");
+                BH.Engine.Base.Compute.RecordError("BHoM objects could not be removed because another transaction is open in Revit.");
                 return new List<object>();
             }
             
@@ -65,7 +65,7 @@ namespace BH.Revit.Adapter.Core
                 pushType = PushType.DeleteThenCreate;
             else if (pushType == PushType.FullPush)
             {
-                BH.Engine.Reflection.Compute.RecordError("Full Push is currently not supported by Revit_Toolkit, please use Create, UpdateOnly or DeleteThenCreate instead.");
+                BH.Engine.Base.Compute.RecordError("Full Push is currently not supported by Revit_Toolkit, please use Create, UpdateOnly or DeleteThenCreate instead.");
                 return new List<object>();
             }
             
@@ -73,7 +73,7 @@ namespace BH.Revit.Adapter.Core
             RevitPushConfig pushConfig = actionConfig as RevitPushConfig;
             if (pushConfig == null)
             {
-                BH.Engine.Reflection.Compute.RecordNote("Revit Push Config has not been specified. Default Revit Push Config is used.");
+                BH.Engine.Base.Compute.RecordNote("Revit Push Config has not been specified. Default Revit Push Config is used.");
                 pushConfig = new RevitPushConfig();
             }
 
@@ -86,7 +86,7 @@ namespace BH.Revit.Adapter.Core
 
             if (objectsToPush.Count() == 0)
             {
-                BH.Engine.Reflection.Compute.RecordError("Input objects were invalid.");
+                BH.Engine.Base.Compute.RecordError("Input objects were invalid.");
                 return new List<object>();
             }
 

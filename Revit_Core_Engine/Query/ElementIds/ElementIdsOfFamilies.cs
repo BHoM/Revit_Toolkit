@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -59,9 +59,9 @@ namespace BH.Revit.Engine.Core
                     result = collector.OfClass(typeof(Family)).Where(x => x.Name.ToUpper() == familyName.ToUpper()).Select(x => x.Id);
 
                 if (result.Count() == 0)
-                    BH.Engine.Reflection.Compute.RecordWarning("Couldn't find any Family named " + familyName + ".");
+                    BH.Engine.Base.Compute.RecordWarning("Couldn't find any Family named " + familyName + ".");
                 else if (result.Count() != 1)
-                    BH.Engine.Reflection.Compute.RecordWarning("More than one Family named " + familyName + " has been found.");
+                    BH.Engine.Base.Compute.RecordWarning("More than one Family named " + familyName + " has been found.");
 
                 return result;
             }

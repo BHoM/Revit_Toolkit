@@ -26,7 +26,7 @@ using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
-using BH.oM.Reflection;
+using BH.oM.Base;
 using System;
 
 namespace BH.Revit.Engine.Core
@@ -65,7 +65,7 @@ namespace BH.Revit.Engine.Core
             {
                 if ((startOffset - endOffset).Length() > settings.DistanceTolerance)
                 {
-                    BH.Engine.Reflection.Compute.RecordError(String.Format("Adjusted location curve of a Revit framing element could not be found because it has non-uniform offsets at ends. Revit ElementId: {0}", familyInstance.Id));
+                    BH.Engine.Base.Compute.RecordError(String.Format("Adjusted location curve of a Revit framing element could not be found because it has non-uniform offsets at ends. Revit ElementId: {0}", familyInstance.Id));
                     return null;
                 }
 

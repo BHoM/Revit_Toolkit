@@ -24,7 +24,7 @@ using BH.Engine.Base;
 using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
@@ -44,14 +44,14 @@ namespace BH.Engine.Adapters.Revit
         {
             if (sourceRevitObject == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("It is impossible to clone a null Revit object.");
+                BH.Engine.Base.Compute.RecordError("It is impossible to clone a null Revit object.");
                 return null;
             }
 
             RevitIdentifiers identifiers = sourceRevitObject.FindFragment<RevitIdentifiers>();
             if (identifiers == null)
             {
-                BH.Engine.Reflection.Compute.RecordError("The input object is not a valid pulled Revit element.");
+                BH.Engine.Base.Compute.RecordError("The input object is not a valid pulled Revit element.");
                 return null;
             }
 
@@ -61,12 +61,12 @@ namespace BH.Engine.Adapters.Revit
                 RevitParametersToPush parametersToPush = sourceRevitObject.FindFragment<RevitParametersToPush>();
                 if (parametersToPush != null)
                 {
-                    BH.Engine.Reflection.Compute.RecordWarning("Parameters to push have been cloned from the source Revit type object.");
+                    BH.Engine.Base.Compute.RecordWarning("Parameters to push have been cloned from the source Revit type object.");
                     result.AddFragment(parametersToPush.DeepClone());
                 }
             }
             else
-                BH.Engine.Reflection.Compute.RecordWarning("The input object is a pulled Revit element, its type has been cloned.");
+                BH.Engine.Base.Compute.RecordWarning("The input object is a pulled Revit element, its type has been cloned.");
 
             return result;
         }

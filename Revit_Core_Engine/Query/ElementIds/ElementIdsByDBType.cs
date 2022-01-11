@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -50,7 +50,7 @@ namespace BH.Revit.Engine.Core
             Assembly assembly = BH.Engine.Adapters.Revit.Query.CurrentDomainAssembly(currentDomainAssembly);
             if (assembly == null)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Assembly {0} could not be found.", currentDomainAssembly));
+                BH.Engine.Base.Compute.RecordError(String.Format("Assembly {0} could not be found.", currentDomainAssembly));
                 return null;
             }
 
@@ -89,7 +89,7 @@ namespace BH.Revit.Engine.Core
 
             if (type == null)
             {
-                BH.Engine.Reflection.Compute.RecordError(String.Format("Type {0} could not be found in the assembly.", typeName));
+                BH.Engine.Base.Compute.RecordError(String.Format("Type {0} could not be found in the assembly.", typeName));
                 return new List<ElementId>();
             }
 
