@@ -303,7 +303,7 @@ namespace BH.Revit.Engine.Core
         [Input("bHoMLevel", "BHoM Level acting as a source of information about the new location.")]
         [Input("settings", "Revit adapter settings to be used while performing the operation.")]
         [Output("success", "True if location of the input Revit Level has been successfully set.")]
-        public static bool SetLocation(this Level level, BH.oM.Geometry.SettingOut.Level bHoMLevel, RevitSettings settings)
+        public static bool SetLocation(this Level level, BH.oM.Spatial.SettingOut.Level bHoMLevel, RevitSettings settings)
         {
             return level.SetParameter(BuiltInParameter.LEVEL_ELEV, bHoMLevel.Elevation);
         }
@@ -315,7 +315,7 @@ namespace BH.Revit.Engine.Core
         [Input("bHoMGrid", "BHoM Grid acting as a source of information about the new location.")]
         [Input("settings", "Revit adapter settings to be used while performing the operation.")]
         [Output("success", "True if location of the input Revit Grid has been successfully set.")]
-        public static bool SetLocation(this Grid grid, BH.oM.Geometry.SettingOut.Grid bHoMGrid, RevitSettings settings)
+        public static bool SetLocation(this Grid grid, BH.oM.Spatial.SettingOut.Grid bHoMGrid, RevitSettings settings)
         {
             if (!bHoMGrid.Curve.IToRevit().IsSimilar(grid.Curve, settings))
                 BH.Engine.Base.Compute.RecordError(String.Format("Revit does not allow changing the geometry of an existing grid programatically. Try using DeleteThenCreate PushType instead. Revit ElementId: {0} BHoM_Guid: {1}", grid.Id, bHoMGrid.BHoM_Guid));

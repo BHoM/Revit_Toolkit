@@ -33,7 +33,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
         
-        public static oM.Geometry.SettingOut.Level Level(this Element element, RevitSettings settings = null)
+        public static oM.Spatial.SettingOut.Level Level(this Element element, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
 
@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
             if (level == null)
                 return null;
 
-            return level.LevelFromRevit(settings) as oM.Geometry.SettingOut.Level;
+            return level.LevelFromRevit(settings) as oM.Spatial.SettingOut.Level;
         }
 
         /***************************************************/

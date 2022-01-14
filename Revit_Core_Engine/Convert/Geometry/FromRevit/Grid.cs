@@ -38,20 +38,20 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Converts a Revit Grid to BH.oM.Geometry.SettingOut.Grid.")]
+        [Description("Converts a Revit Grid to BH.oM.Spatial.SettingOut.Grid.")]
         [Input("revitGrid", "Revit Grid to be converted.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("grid", "BH.oM.Geometry.SettingOut.Grid resulting from converting the input Revit Grid.")]
-        public static BH.oM.Geometry.SettingOut.Grid GridFromRevit(this Grid revitGrid, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("grid", "BH.oM.Spatial.SettingOut.Grid resulting from converting the input Revit Grid.")]
+        public static BH.oM.Spatial.SettingOut.Grid GridFromRevit(this Grid revitGrid, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
-            oM.Geometry.SettingOut.Grid grid = refObjects.GetValue<oM.Geometry.SettingOut.Grid>(revitGrid.Id);
+            oM.Spatial.SettingOut.Grid grid = refObjects.GetValue<oM.Spatial.SettingOut.Grid>(revitGrid.Id);
             if (grid != null)
                 return grid;
 
-            grid = BH.Engine.Geometry.SettingOut.Create.Grid(revitGrid.Curve.IFromRevit());
+            grid = BH.Engine.Spatial.Create.Grid(revitGrid.Curve.IFromRevit());
             grid.Name = revitGrid.Name;
 
             //Set identifiers, parameters & custom data
@@ -65,16 +65,16 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit MultiSegmentGrid to BH.oM.Geometry.SettingOut.Grid.")]
+        [Description("Converts a Revit MultiSegmentGrid to BH.oM.Spatial.SettingOut.Grid.")]
         [Input("revitGrid", "Revit MultiSegmentGrid to be converted.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("grid", "BH.oM.Geometry.SettingOut.Grid resulting from converting the input Revit MultiSegmentGrid.")]
-        public static BH.oM.Geometry.SettingOut.Grid GridFromRevit(this MultiSegmentGrid revitGrid, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("grid", "BH.oM.Spatial.SettingOut.Grid resulting from converting the input Revit MultiSegmentGrid.")]
+        public static BH.oM.Spatial.SettingOut.Grid GridFromRevit(this MultiSegmentGrid revitGrid, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
-            oM.Geometry.SettingOut.Grid grid = refObjects.GetValue<oM.Geometry.SettingOut.Grid>(revitGrid.Id);
+            oM.Spatial.SettingOut.Grid grid = refObjects.GetValue<oM.Spatial.SettingOut.Grid>(revitGrid.Id);
             if (grid != null)
                 return grid;
 
@@ -92,7 +92,7 @@ namespace BH.Revit.Engine.Core
                     return null;
                 }
 
-                grid = BH.Engine.Geometry.SettingOut.Create.Grid(joinedGridCurves[0]);
+                grid = BH.Engine.Spatial.Create.Grid(joinedGridCurves[0]);
                 grid.Name = revitGrid.Name;
             }
 

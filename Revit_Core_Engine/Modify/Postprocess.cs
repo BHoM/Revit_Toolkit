@@ -106,7 +106,7 @@ namespace BH.Revit.Engine.Core
         [Input("transform", "Optional, transformation to be applied to the BHoM Level.")]
         [Input("settings", "Revit adapter settings to be used while performing the postprocessing.")]
         [Output("level", "Postprocessed BHoM Level.")]
-        public static BH.oM.Geometry.SettingOut.Level Postprocess(this BH.oM.Geometry.SettingOut.Level level, Transform transform, RevitSettings settings)
+        public static BH.oM.Spatial.SettingOut.Level Postprocess(this BH.oM.Spatial.SettingOut.Level level, Transform transform, RevitSettings settings)
         {
             if (level == null)
             {

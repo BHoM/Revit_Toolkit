@@ -363,7 +363,7 @@ namespace BH.Revit.Engine.Core
             switch (discipline)
             {
                 default:
-                    return typeof(BH.oM.Geometry.SettingOut.Level);
+                    return typeof(BH.oM.Spatial.SettingOut.Level);
             }
 
             return null;
@@ -381,7 +381,7 @@ namespace BH.Revit.Engine.Core
             switch (discipline)
             {
                 default:
-                    return typeof(BH.oM.Geometry.SettingOut.Grid);
+                    return typeof(BH.oM.Spatial.SettingOut.Grid);
             }
 
             return null;
@@ -399,7 +399,7 @@ namespace BH.Revit.Engine.Core
             switch (discipline)
             {
                 default:
-                    return typeof(BH.oM.Geometry.SettingOut.Grid);
+                    return typeof(BH.oM.Spatial.SettingOut.Grid);
             }
 
             return null;
