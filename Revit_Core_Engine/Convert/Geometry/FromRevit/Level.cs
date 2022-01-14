@@ -36,20 +36,20 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Converts a Revit Level to BH.oM.Geometry.SettingOut.Level.")]
+        [Description("Converts a Revit Level to BH.oM.Spatial.SettingOut.Level.")]
         [Input("revitLevel", "Revit Level to be converted.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("level", "BH.oM.Geometry.SettingOut.Level resulting from converting the input Revit Level.")]
-        public static BH.oM.Geometry.SettingOut.Level LevelFromRevit(this Level revitLevel, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("level", "BH.oM.Spatial.SettingOut.Level resulting from converting the input Revit Level.")]
+        public static BH.oM.Spatial.SettingOut.Level LevelFromRevit(this Level revitLevel, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
-            oM.Geometry.SettingOut.Level level = refObjects.GetValue<oM.Geometry.SettingOut.Level>(revitLevel.Id);
+            oM.Spatial.SettingOut.Level level = refObjects.GetValue<oM.Spatial.SettingOut.Level>(revitLevel.Id);
             if (level != null)
                 return level;
 
-            level = BH.Engine.Geometry.Create.Level(revitLevel.ProjectElevation.ToSI(SpecTypeId.Length));
+            level = BH.Engine.Spatial.Create.Level(revitLevel.ProjectElevation.ToSI(SpecTypeId.Length));
             level.Name = revitLevel.Name;
 
             //Set identifiers, parameters & custom data

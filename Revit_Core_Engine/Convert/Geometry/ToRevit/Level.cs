@@ -37,13 +37,13 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Converts BH.oM.Geometry.SettingOut.Level to a Revit Level.")]
-        [Input("level", "BH.oM.Geometry.SettingOut.Level to be converted.")]
+        [Description("Converts BH.oM.Spatial.SettingOut.Level to a Revit Level.")]
+        [Input("level", "BH.oM.Spatial.SettingOut.Level to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("level", "Revit Level resulting from converting the input BH.oM.Geometry.SettingOut.Level.")]
-        public static Level ToRevitLevel(this oM.Geometry.SettingOut.Level level, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        [Output("level", "Revit Level resulting from converting the input BH.oM.Spatial.SettingOut.Level.")]
+        public static Level ToRevitLevel(this oM.Spatial.SettingOut.Level level, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             Level revitLevel = refObjects.GetValue<Level>(document, level.BHoM_Guid);
             if (revitLevel != null)
