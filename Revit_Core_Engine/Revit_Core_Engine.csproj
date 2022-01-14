@@ -238,7 +238,9 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Matter_Engine">
-      <HintPath>..\..\..\..\..\..\..\ProgramData\BHoM\Assemblies\Matter_Engine.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Matter_Engine.dll</HintPath>
+	  <Private>False</Private>
+	  <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="MEP_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\MEP_Engine.dll</HintPath>
