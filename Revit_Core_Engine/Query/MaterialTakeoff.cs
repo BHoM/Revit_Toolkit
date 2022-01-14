@@ -67,7 +67,7 @@ namespace BH.Revit.Engine.Core
             }
 
             if (takeoff.Count != 0)
-                return new RevitMaterialTakeOff(totalVolume, new oM.Physical.Materials.MaterialComposition(takeoff.Keys, takeoff.Values.Select(x => x / totalVolume)));
+                return new RevitMaterialTakeOff(totalVolume, BH.Engine.Matter.Create.MaterialComposition(takeoff.Keys, takeoff.Values.Select(x => x / totalVolume)));
             else
                 return null;
         }
