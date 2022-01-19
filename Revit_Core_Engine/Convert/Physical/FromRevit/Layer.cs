@@ -62,13 +62,13 @@ namespace BH.Revit.Engine.Core
                 layer.Material = revitMaterial.MaterialFromRevit(materialGrade, settings, refObjects);
 
                 if (compoundStructureLayer.DeckProfileId.IntegerValue != -1)
-                    BH.Engine.Reflection.Compute.RecordWarning("Conversion of Revit composite deck layers is not supported - it has been converted into a zero thickness BHoM layer instead.");
+                    BH.Engine.Base.Compute.RecordWarning("Conversion of Revit composite deck layers is not supported - it has been converted into a zero thickness BHoM layer instead.");
 
                 if (compoundStructureLayer.LayerId == owner.GetCompoundStructure().VariableLayerIndex)
-                    BH.Engine.Reflection.Compute.RecordWarning("Conversion of Revit layers with variable thickness is not supported - it has been converted into a constant thickness BHoM layer instead.");
+                    BH.Engine.Base.Compute.RecordWarning("Conversion of Revit layers with variable thickness is not supported - it has been converted into a constant thickness BHoM layer instead.");
             }
             else
-                BH.Engine.Reflection.Compute.RecordError("Material and variable thickness information could not be determined for the layer due to lack of owner construction information.");
+                BH.Engine.Base.Compute.RecordError("Material and variable thickness information could not be determined for the layer due to lack of owner construction information.");
 
             return layer;
         }
