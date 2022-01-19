@@ -22,7 +22,7 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
 namespace BH.Revit.Adapter.Core
