@@ -280,10 +280,10 @@ namespace BH.Revit.Engine.Core
             {
                 elementType = surface.ElementType<T>(document);
                 if (elementType != null && differentNames)
-                    BH.Engine.Reflection.Compute.RecordWarning($"BHoM {bhomType.Name}'s name and its {nameof(BH.oM.Physical.Elements.ISurface.Construction)} name are different. Revit element type has been set based on the former because no type has been found for the latter. BHoM_Guid: {surface.BHoM_Guid}");
+                    BH.Engine.Base.Compute.RecordWarning($"BHoM {bhomType.Name}'s name and its {nameof(BH.oM.Physical.Elements.ISurface.Construction)} name are different. Revit element type has been set based on the former because no type has been found for the latter. BHoM_Guid: {surface.BHoM_Guid}");
             }
             else if (differentNames)
-                BH.Engine.Reflection.Compute.RecordWarning($"BHoM {bhomType.Name}'s name and its {nameof(BH.oM.Physical.Elements.ISurface.Construction)} name are different. Revit element type has been set based on the latter as it is meant to take precedence. BHoM_Guid: {surface.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordWarning($"BHoM {bhomType.Name}'s name and its {nameof(BH.oM.Physical.Elements.ISurface.Construction)} name are different. Revit element type has been set based on the latter as it is meant to take precedence. BHoM_Guid: {surface.BHoM_Guid}");
 
             return elementType;
         }
@@ -302,10 +302,10 @@ namespace BH.Revit.Engine.Core
             {
                 elementType = bhomObject.ElementType(document, categories, settings);
                 if (elementType != null && differentNames)
-                    BH.Engine.Reflection.Compute.RecordWarning($"BHoM {bhomType.Name}'s name and its {nameof(BH.oM.Physical.Elements.ISurface.Construction)} name are different. Revit element type has been set based on the former because no type has been found for the latter. BHoM_Guid: {bhomObject.BHoM_Guid}");
+                    BH.Engine.Base.Compute.RecordWarning($"BHoM {bhomType.Name}'s name and its {nameof(BH.oM.Physical.Elements.ISurface.Construction)} name are different. Revit element type has been set based on the former because no type has been found for the latter. BHoM_Guid: {bhomObject.BHoM_Guid}");
             }
             else if (differentNames)
-                BH.Engine.Reflection.Compute.RecordWarning($"BHoM {bhomType.Name}'s name and its {nameof(BH.oM.Physical.Elements.ISurface.Construction)} name are different. Revit element type has been set based on the latter as it is meant to take precedence. BHoM_Guid: {bhomObject.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordWarning($"BHoM {bhomType.Name}'s name and its {nameof(BH.oM.Physical.Elements.ISurface.Construction)} name are different. Revit element type has been set based on the latter as it is meant to take precedence. BHoM_Guid: {bhomObject.BHoM_Guid}");
 
             return elementType;
         }
