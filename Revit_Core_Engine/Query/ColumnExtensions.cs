@@ -23,6 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Base.Attributes;
 using System;
 using System.ComponentModel;
 

@@ -24,7 +24,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core

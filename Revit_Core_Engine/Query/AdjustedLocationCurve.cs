@@ -29,6 +29,7 @@ using BH.oM.Physical.Elements;
 using BH.oM.Base;
 using System;
 using System.ComponentModel;
+using BH.oM.Base.Attributes;
 
 namespace BH.Revit.Engine.Core
 {

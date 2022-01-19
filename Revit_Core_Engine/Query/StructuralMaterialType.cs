@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB.Structure;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.ComponentModel;
 

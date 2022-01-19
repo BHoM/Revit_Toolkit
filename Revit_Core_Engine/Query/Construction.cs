@@ -24,7 +24,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Environment.MaterialFragments;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
