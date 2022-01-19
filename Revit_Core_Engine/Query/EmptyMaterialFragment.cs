@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB.Structure;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.Structure.MaterialFragments;
 using System;
 using System.ComponentModel;
