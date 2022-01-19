@@ -168,6 +168,7 @@
     <Reference Include="Data_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Data_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Data_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Data_oM.dll</HintPath>
