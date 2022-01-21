@@ -239,8 +239,8 @@
     </Reference>
     <Reference Include="Matter_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Matter_Engine.dll</HintPath>
-	  <Private>False</Private>
-	  <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="MEP_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\MEP_Engine.dll</HintPath>
@@ -354,6 +354,7 @@
     <Compile Include="Convert\MEP\ToRevit\Pipe.cs" />
     <Compile Include="Convert\MEP\ToRevit\Duct.cs" />
     <Compile Include="Convert\MEP\ToRevit\ElementType.cs" />
+    <Compile Include="Convert\Physical\FromRevit\Layer.cs" />
     <Compile Include="Convert\Physical\ToRevit\ElementType.cs" />
     <Compile Include="Convert\Revit\Internal\ToSolid.cs" />
     <Compile Include="Convert\Physical\ToRevit\Rebar.cs" />
@@ -583,7 +584,6 @@
     <Compile Include="Query\ViewDetailLevel.cs" />
     <Compile Include="Query\ViewType.cs" />
     <Compile Include="Query\Name.cs" />
-    <Compile Include="Query\Layer.cs" />
     <Compile Include="Query\FamilyTypeFullName.cs" />
     <Compile Include="Query\Construction.cs" />
     <Compile Include="Query\StructuralMaterialType.cs" />
