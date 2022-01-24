@@ -139,7 +139,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
             else
-                bars.Add(BH.Engine.Structure.Create.Bar(null, null, property, 0));
+                bars.Add(new Bar { SectionProperty = property, OrientationAngle = 0 });
 
             for (int i = 0; i < bars.Count; i++)
             {
