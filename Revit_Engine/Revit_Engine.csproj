@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -95,6 +95,9 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Environment_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Facade_oM">
+      <HintPath>..\..\..\..\..\..\..\ProgramData\BHoM\Assemblies\Facade_oM.dll</HintPath>
+    </Reference>
     <Reference Include="Geometry_Engine">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_Engine.dll</HintPath>
@@ -115,6 +118,9 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Library_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="MEP_oM">
+      <HintPath>..\..\..\..\..\..\..\ProgramData\BHoM\Assemblies\MEP_oM.dll</HintPath>
+    </Reference>
     <Reference Include="Physical_Engine">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_Engine.dll</HintPath>
@@ -129,6 +135,10 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Reflection_Engine.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Spatial_oM, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\ProgramData\BHoM\Assemblies\Spatial_oM.dll</HintPath>
     </Reference>
     <Reference Include="Structure_oM">
       <SpecificVersion>False</SpecificVersion>
@@ -189,6 +199,8 @@
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
     <Compile Include="Modify\Transform.cs" />
+    <Compile Include="Query\GetRevitElementType.cs" />
+    <Compile Include="Query\GetRevitTypeParameterValue.cs" />
     <Compile Include="Query\HashString.cs" />
     <Compile Include="Query\ComparisonInclusion.cs" />
     <Compile Include="Query\FilterDescription.cs" />
