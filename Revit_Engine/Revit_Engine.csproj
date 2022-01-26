@@ -96,7 +96,9 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Facade_oM">
-      <HintPath>..\..\..\..\..\..\..\ProgramData\BHoM\Assemblies\Facade_oM.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Facade_oM.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Geometry_Engine">
       <SpecificVersion>False</SpecificVersion>
@@ -119,7 +121,9 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="MEP_oM">
-      <HintPath>..\..\..\..\..\..\..\ProgramData\BHoM\Assemblies\MEP_oM.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\MEP_oM.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Physical_Engine">
       <SpecificVersion>False</SpecificVersion>
@@ -136,9 +140,10 @@
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Spatial_oM, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Spatial_oM">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\ProgramData\BHoM\Assemblies\Spatial_oM.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Spatial_oM.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Structure_oM">
       <SpecificVersion>False</SpecificVersion>
