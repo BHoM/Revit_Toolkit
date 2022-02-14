@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
@@ -96,6 +97,16 @@ namespace BH.Revit.Engine.Core
             else
                 BH.Engine.Base.Compute.RecordWarning($"The depth of the opening could not be extracted from the Revit element because the correspondent parameter could not be found. Revit ElementId: {instance.Id}"
                     + "\nTo link the specific parameter values with opening depth, add relevant ParameterMap to RevitSettings.MappingSettings.");
+
+            // Revit element type proxy
+            RevitTypeFragment typeFragment = null;
+            ElementType type = instance.Document.GetElement(instance.GetTypeId()) as ElementType;
+            if (type != null)
+                typeFragment = type.TypeFragmentFromRevit(settings, refObjects);
+
+            // Set the type fragment
+            if (typeFragment != null)
+                opening.Fragments.Add(typeFragment);
 
             //Set identifiers, parameters & custom data
             opening.SetIdentifiers(instance);
