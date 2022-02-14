@@ -96,29 +96,6 @@ namespace BH.Engine.Adapters.Revit
             return bHoMObject.Construction;
         }
 
-        /***************************************************/
-
-        private static IBHoMObject GetRevitElementType(this BH.oM.MEP.System.CableTray bHoMObject)
-        {
-            return bHoMObject.SectionProperty;
-        }
-
-        /***************************************************/
-
-        private static IBHoMObject GetRevitElementType(this BH.oM.MEP.System.Duct bHoMObject)
-        {
-            return bHoMObject.SectionProperty;
-        }
-
-        /***************************************************/
-
-        private static IBHoMObject GetRevitElementType(this BH.oM.MEP.System.Pipe bHoMObject)
-        {
-            return bHoMObject.SectionProperty;
-        }
-
-        /***************************************************/
-
         private static IBHoMObject GetRevitElementType(this IFramingElement bHoMObject)
         {
             return bHoMObject.Property;
