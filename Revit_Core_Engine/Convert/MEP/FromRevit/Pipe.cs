@@ -22,13 +22,14 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Geometry;
+using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
+using BH.oM.MEP.System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using BH.Engine.Geometry;
-using BH.oM.MEP.System;
 
 namespace BH.Revit.Engine.Core
 {
@@ -63,6 +64,12 @@ namespace BH.Revit.Engine.Core
             double flowRate = revitPipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_FLOW_PARAM); // Flow rate 
             // Pipe section property
             BH.oM.MEP.System.SectionProperties.PipeSectionProperty sectionProperty = revitPipe.PipeSectionProperty(settings);
+            
+            // Revit element type proxy
+            RevitTypeFragment typeFragment = null;
+            ElementType type = revitPipe.Document.GetElement(revitPipe.GetTypeId()) as ElementType;
+            if (type != null)
+                typeFragment = type.TypeFragmentFromRevit(settings, refObjects);
 
             for (int i = 0; i < queried.Count; i++)
             {
@@ -74,6 +81,11 @@ namespace BH.Revit.Engine.Core
                     FlowRate = flowRate,
                     SectionProperty = sectionProperty
                 };
+
+                // Set the type fragment
+                if (typeFragment != null)
+                    thisSegment.Fragments.Add(typeFragment);
+
                 //Set identifiers, parameters & custom data
                 thisSegment.SetIdentifiers(revitPipe);
                 thisSegment.CopyParameters(revitPipe, settings.MappingSettings);

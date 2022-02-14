@@ -22,10 +22,11 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.MEP.System;
 using BH.oM.Base.Attributes;
+using BH.oM.MEP.System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -57,8 +58,18 @@ namespace BH.Revit.Engine.Core
             BH.oM.Geometry.Point endPoint = curve.GetEndPoint(1).PointFromRevit();
             BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(startPoint, endPoint); // BHoM line
 
+            // Revit element type proxy
+            RevitTypeFragment typeFragment = null;
+            ElementType type = revitWire.Document.GetElement(revitWire.GetTypeId()) as ElementType;
+            if (type != null)
+                typeFragment = type.TypeFragmentFromRevit(settings, refObjects);
+
             // Wire
             bhomWire = new BH.oM.MEP.System.Wire { WireSegments = new List<WireSegment> { BH.Engine.MEP.Create.WireSegment(line) } };
+
+            // Set the type fragment
+            if (typeFragment != null)
+                bhomWire.Fragments.Add(typeFragment);
 
             //Set identifiers, parameters & custom data
             bhomWire.SetIdentifiers(revitWire);

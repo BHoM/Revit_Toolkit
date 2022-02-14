@@ -22,13 +22,14 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Geometry;
+using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
+using BH.oM.MEP.System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using BH.Engine.Geometry;
-using BH.oM.MEP.System;
 
 namespace BH.Revit.Engine.Core
 {
@@ -66,6 +67,12 @@ namespace BH.Revit.Engine.Core
             // Orientation angle
             double orientationAngle = revitDuct.OrientationAngle(settings); //ToDo - resolve in next issue, specific issue being raised
 
+            // Revit element type proxy
+            RevitTypeFragment typeFragment = null;
+            ElementType type = revitDuct.Document.GetElement(revitDuct.GetTypeId()) as ElementType;
+            if (type != null)
+                typeFragment = type.TypeFragmentFromRevit(settings, refObjects);
+
             for (int i = 0; i < queried.Count; i++)
             {
                 BH.oM.Geometry.Line segment = queried[i];
@@ -77,6 +84,11 @@ namespace BH.Revit.Engine.Core
                     SectionProperty = sectionProperty,
                     OrientationAngle = orientationAngle
                 };
+
+                // Set the type fragment
+                if (typeFragment != null)
+                    thisSegment.Fragments.Add(typeFragment);
+
                 //Set identifiers, parameters & custom data
                 thisSegment.SetIdentifiers(revitDuct);
                 thisSegment.CopyParameters(revitDuct, settings.MappingSettings);
