@@ -48,7 +48,12 @@ namespace BH.Revit.Engine.Core
             if (element == null)
                 return null;
 
-            return Query.Construction(element.FamilyTypeFullName(), energyAnalysisOpening.OpeningType.ToString());
+            oM.Physical.Constructions.Construction construction = Query.Construction(element.FamilyTypeFullName(), energyAnalysisOpening.OpeningType.ToString());
+            if (construction == null)
+                return null;
+
+            element.CopyTypeToFragment(construction);
+            return construction;
         }
 
 
