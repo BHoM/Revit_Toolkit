@@ -81,7 +81,9 @@ namespace BH.Revit.Engine.Core
             }
 
             door = new Door { Location = location, Name = familyInstance.FamilyTypeFullName() };
-            
+            FamilySymbol familySymbol = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as FamilySymbol;
+            door.Construction = familySymbol?.ConstructionFromRevit(settings, refObjects);
+
             //Set identifiers, parameters & custom data
             door.SetIdentifiers(familyInstance);
             door.CopyParameters(familyInstance, settings.MappingSettings);

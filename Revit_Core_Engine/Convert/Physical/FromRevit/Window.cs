@@ -81,7 +81,9 @@ namespace BH.Revit.Engine.Core
             }
 
             window = new Window { Location = location, Name = familyInstance.FamilyTypeFullName() };
-            
+            FamilySymbol familySymbol = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as FamilySymbol;
+            window.Construction = familySymbol?.ConstructionFromRevit(settings, refObjects);
+
             //Set identifiers, parameters & custom data
             window.SetIdentifiers(familyInstance);
             window.CopyParameters(familyInstance, settings.MappingSettings);
