@@ -65,7 +65,7 @@ namespace BH.Revit.Engine.Core
         /****               Private Methods             ****/
         /***************************************************/
 
-        public static RevitTypeFragment TypeFragmentFromRevit(this Element element, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        private static RevitTypeFragment TypeFragmentFromRevit(this Element element, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (element == null)
                 return null;
