@@ -125,6 +125,9 @@ namespace BH.Revit.Engine.Core
             //TODO: Implement ConnectedElements
             space.AddFragment(spaceContext);
 
+            //Set type
+            spatialElement.CopySpatialElementTypeToFragment(space, settings, refObjects);
+
             //Set identifiers, parameters & custom data
             space.SetIdentifiers(spatialElement);
             space.CopyParameters(spatialElement, settings.MappingSettings);
@@ -190,6 +193,9 @@ namespace BH.Revit.Engine.Core
             spaceContext.SetProperties(energyAnalysisSpace, settings.MappingSettings);
             spaceContext.SetProperties(spatialElement, settings.MappingSettings);
             space.AddFragment(spaceContext);
+
+            //Set type
+            spatialElement.CopyTypeToFragment(space, settings, refObjects);
 
             //Set identifiers, parameters & custom data
             space.SetIdentifiers(spatialElement);

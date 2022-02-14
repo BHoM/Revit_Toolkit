@@ -59,7 +59,10 @@ namespace BH.Revit.Engine.Core
             //Set location
             if (spatialElement.Location != null && spatialElement.Location is LocationPoint)
                 room.Location = ((LocationPoint)spatialElement.Location).FromRevit();
-            
+
+            //Set type
+            spatialElement.CopySpatialElementTypeToFragment(room, settings, refObjects);
+
             //Set identifiers, parameters & custom data
             room.SetIdentifiers(spatialElement);
             room.CopyParameters(spatialElement, settings.MappingSettings);
