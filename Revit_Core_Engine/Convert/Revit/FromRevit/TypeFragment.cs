@@ -38,11 +38,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        //[Description("Converts a Revit Element to a generic BHoM object, either ModelInstance or DraftingInstance (if the element has location in space) or a BHoMObject otherwise.")]
-        //[Input("element", "Revit Element to be converted.")]
-        //[Input("settings", "Revit adapter settings to be used while performing the convert.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("object", "BHoM object resulting from converting the given Revit Element.")]
+        [Description("Converts a given Revit element type to a BHoM RevitTypeFragment.")]
+        [Input("elementType", "Revit element type to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("fragment", "BHoM RevitTypeFragment converted from the input Revit element type.")]
         public static RevitTypeFragment TypeFragmentFromRevit(this ElementType elementType, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             return TypeFragmentFromRevit(elementType as Element);
@@ -50,11 +50,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit Element to a generic BHoM object, either ModelInstance or DraftingInstance (if the element has location in space) or a BHoMObject otherwise.")]
-        //[Input("element", "Revit Element to be converted.")]
-        //[Input("settings", "Revit adapter settings to be used while performing the convert.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("object", "BHoM object resulting from converting the given Revit Element.")]
+        [Description("Converts a given Revit HVAC load type to a BHoM RevitTypeFragment.")]
+        [Input("elementType", "Revit HVAC load type to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("fragment", "BHoM RevitTypeFragment converted from the input Revit HVAC load type.")]
         public static RevitTypeFragment TypeFragmentFromRevit(this HVACLoadType elementType, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             return TypeFragmentFromRevit(elementType as Element);
@@ -88,6 +88,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

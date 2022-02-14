@@ -39,10 +39,12 @@ namespace BH.Revit.Engine.Core
         /****              Public Methods               ****/
         /***************************************************/
 
-        //[Description("Adds or replaces the collection of BHoM objects stored under the given key in the refObjects dictionary.")]
-        //[Input("refObjects", "Dictionary of objects already processed in the current adapter action, to be updated.")]
-        //[Input("key", "Key of the refObjects dictionary to be updated.")]
-        //[Input("values", "Collection of BHoM objects to be assigned to the input key of refObjects.")]
+        [Description("Converts the element type of the source Revit spatial element to RevitTypeFragment and attaches it to the target BHoM object." +
+                     "\nPrimary source of the type information is Space Type parameter of the source Revit element.")]
+        [Input("source", "Revit spatial element to get the element type from.")]
+        [Input("target", "Target BHoM to set the Revit type fragment to.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         public static void CopySpatialElementTypeToFragment(this SpatialElement source, BHoMObject target, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
