@@ -88,11 +88,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Converts a Revit HostObjAttributes to BH.oM.Physical.Constructions.Construction.")]
-        //[Input("hostObjAttributes", "Revit HostObjAttributes to be converted.")]
-        //[Input("settings", "Revit adapter settings to be used while performing the convert.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("construction", "BH.oM.Physical.Constructions.Construction resulting from converting the input Revit HostObjAttributes.")]
+        [Description("Converts a Revit FamilySymbol to BH.oM.Physical.Constructions.Construction.")]
+        [Input("familySymbol", "Revit FamilySymbol to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("construction", "BH.oM.Physical.Constructions.Construction resulting from converting the input Revit FamilySymbol.")]
         public static oM.Physical.Constructions.Construction ConstructionFromRevit(this FamilySymbol familySymbol, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -115,5 +115,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

@@ -25,7 +25,7 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit
 {
-    //[Description("An object representing a cloned Revit type, to be pushed in order to create a new type.")]
+    [Description("Fragment containing information about element type of the Revit element correspondent to the object that owns it.")]
     public class RevitTypeFragment : BHoMObject, IFragment
     {
         /***************************************************/
