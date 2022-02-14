@@ -20,17 +20,16 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-using System.ComponentModel;
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
+using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.MEP.System;
 using BH.oM.Base.Attributes;
-using BH.oM.Geometry;
+using BH.oM.MEP.System;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -66,6 +65,12 @@ namespace BH.Revit.Engine.Core
             // Orientation angle
             double orientationAngle = revitCableTray.OrientationAngle(settings);
 
+            // Revit element type proxy
+            RevitTypeFragment typeFragment = null;
+            ElementType type = revitCableTray.Document.GetElement(revitCableTray.GetTypeId()) as ElementType;
+            if (type != null)
+                typeFragment = type.TypeFragmentFromRevit(settings, refObjects);
+
             List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitCableTray, settings);
 
             for (int i = 0; i < queried.Count; i++)
@@ -78,6 +83,10 @@ namespace BH.Revit.Engine.Core
                     SectionProperty = sectionProperty,
                     OrientationAngle = orientationAngle
                 };
+
+                // Set the type fragment
+                if (typeFragment != null)
+                    thisSegment.Fragments.Add(typeFragment);
 
                 //Set identifiers, parameters & custom data
                 thisSegment.SetIdentifiers(revitCableTray);
