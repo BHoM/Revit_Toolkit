@@ -20,6 +20,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Base;
+using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Architecture.Elements;
 using BH.oM.Base;
@@ -61,16 +63,16 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        private static IBHoMObject GetRevitElementType(this BH.oM.Architecture.BuildersWork.Opening bHoMObject)
+        private static IBHoMObject GetRevitElementType(this BH.oM.Environment.Elements.Panel bHoMObject)
         {
-            return bHoMObject.Profile;
+            return bHoMObject.Construction;
         }
 
         /***************************************************/
 
-        private static IBHoMObject GetRevitElementType(this BH.oM.Environment.Elements.Panel bHoMObject)
+        private static IBHoMObject GetRevitElementType(this BH.oM.Environment.Elements.Opening bHoMObject)
         {
-            return bHoMObject.Construction;
+            return bHoMObject.OpeningConstruction;
         }
 
         /***************************************************/
@@ -192,8 +194,11 @@ namespace BH.Engine.Adapters.Revit
 
         private static IBHoMObject GetRevitElementType(this IBHoMObject bHoMObject)
         {
-            BH.Engine.Base.Compute.RecordError($"BHoM object of type {bHoMObject.GetType().FullName} does not store the information about correspondent Revit element type.");
-            return null;
+            RevitTypeFragment fragment = bHoMObject.FindFragment<RevitTypeFragment>();
+            if (fragment == null)
+                BH.Engine.Base.Compute.RecordError($"BHoM object of type {bHoMObject.GetType().FullName} does not store the information about correspondent Revit element type.");
+
+            return fragment;
         }
 
         /***************************************************/
