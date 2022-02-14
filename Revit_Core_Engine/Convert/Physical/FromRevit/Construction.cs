@@ -57,7 +57,7 @@ namespace BH.Revit.Engine.Core
         public static oM.Physical.Constructions.Construction ConstructionFromRevit(this HostObjAttributes hostObjAttributes, string materialGrade = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
-            
+
             string refId = hostObjAttributes.Id.ReferenceIdentifier(materialGrade);
             oM.Physical.Constructions.Construction construction = refObjects.GetValue<oM.Physical.Constructions.Construction>(refId);
             if (construction != null)
@@ -83,6 +83,32 @@ namespace BH.Revit.Engine.Core
             construction.SetProperties(hostObjAttributes, settings.MappingSettings);
 
             refObjects.AddOrReplace(refId, construction);
+            return construction;
+        }
+
+        /***************************************************/
+
+        //[Description("Converts a Revit HostObjAttributes to BH.oM.Physical.Constructions.Construction.")]
+        //[Input("hostObjAttributes", "Revit HostObjAttributes to be converted.")]
+        //[Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        //[Output("construction", "BH.oM.Physical.Constructions.Construction resulting from converting the input Revit HostObjAttributes.")]
+        public static oM.Physical.Constructions.Construction ConstructionFromRevit(this FamilySymbol familySymbol, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            settings = settings.DefaultIfNull();
+
+            oM.Physical.Constructions.Construction construction = refObjects.GetValue<oM.Physical.Constructions.Construction>(familySymbol.Id);
+            if (construction != null)
+                return construction;
+
+            construction = BH.Engine.Physical.Create.Construction(familySymbol.FamilyTypeFullName());
+
+            //Set identifiers, parameters & custom data
+            construction.SetIdentifiers(familySymbol);
+            construction.CopyParameters(familySymbol, settings.MappingSettings);
+            construction.SetProperties(familySymbol, settings.MappingSettings);
+
+            refObjects.AddOrReplace(familySymbol.Id, construction);
             return construction;
         }
 
