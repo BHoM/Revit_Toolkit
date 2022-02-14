@@ -56,6 +56,9 @@ namespace BH.Revit.Engine.Core
                 ConnectionsLocation = revitMepFitting.MEPConnectorsLocation()
             };
 
+            //Set type
+            revitMepFitting.CopyTypeToFragment(bhomFitting, settings, refObjects);
+
             //Set identifiers, parameters & custom data
             bhomFitting.SetIdentifiers(revitMepFitting);
             bhomFitting.CopyParameters(revitMepFitting, settings.MappingSettings);
