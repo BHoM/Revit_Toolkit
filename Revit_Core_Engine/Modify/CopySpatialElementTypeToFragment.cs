@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Analysis;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
@@ -46,9 +47,9 @@ namespace BH.Revit.Engine.Core
         {
             settings = settings.DefaultIfNull();
             ElementId spaceTypeId = source.get_Parameter(BuiltInParameter.ROOM_SPACE_TYPE_PARAM)?.AsElementId();
-            if (spaceTypeId != null)
+            if (spaceTypeId != ElementId.InvalidElementId)
             {
-                ElementType type = source.Document.GetElement(spaceTypeId) as ElementType;
+                HVACLoadType type = source.Document.GetElement(spaceTypeId) as HVACLoadType;
                 target.Fragments.Add(type.TypeFragmentFromRevit(settings, refObjects));
             }
             else

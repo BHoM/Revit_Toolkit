@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Analysis;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
@@ -44,20 +45,42 @@ namespace BH.Revit.Engine.Core
         //[Output("object", "BHoM object resulting from converting the given Revit Element.")]
         public static RevitTypeFragment TypeFragmentFromRevit(this ElementType elementType, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (elementType == null)
+            return TypeFragmentFromRevit(elementType as Element);
+        }
+
+        /***************************************************/
+
+        //[Description("Converts a Revit Element to a generic BHoM object, either ModelInstance or DraftingInstance (if the element has location in space) or a BHoMObject otherwise.")]
+        //[Input("element", "Revit Element to be converted.")]
+        //[Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        //[Output("object", "BHoM object resulting from converting the given Revit Element.")]
+        public static RevitTypeFragment TypeFragmentFromRevit(this HVACLoadType elementType, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            return TypeFragmentFromRevit(elementType as Element);
+        }
+
+
+        /***************************************************/
+        /****               Private Methods             ****/
+        /***************************************************/
+
+        public static RevitTypeFragment TypeFragmentFromRevit(this Element element, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            if (element == null)
                 return null;
 
             settings = settings.DefaultIfNull();
 
-            RevitTypeFragment typeFragment = refObjects.GetValue<RevitTypeFragment>(elementType.Id);
+            RevitTypeFragment typeFragment = refObjects.GetValue<RevitTypeFragment>(element.Id);
             if (typeFragment != null)
                 return typeFragment;
 
             typeFragment = new RevitTypeFragment();
-            typeFragment.Name = elementType.Name;
-            typeFragment.SetIdentifiers(elementType);
-            typeFragment.CopyParameters(elementType, settings.MappingSettings);
-            refObjects.AddOrReplace(elementType.Id, typeFragment);
+            typeFragment.Name = element.Name;
+            typeFragment.SetIdentifiers(element);
+            typeFragment.CopyParameters(element, settings.MappingSettings);
+            refObjects.AddOrReplace(element.Id, typeFragment);
 
             return typeFragment;
         }
