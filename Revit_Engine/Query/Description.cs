@@ -37,6 +37,9 @@ namespace BH.Engine.Adapters.Revit
         [Output("description", "Human-readable description of the input property difference resulting from a Revit diffing workflow.")]
         public static string Description(this PropertyDifference difference)
         {
+            if (difference == null)
+                return null;
+
             string propertyLabel;
             if (difference.DisplayName.EndsWith("(RevitParameter)"))
                 propertyLabel = difference.DisplayName.Replace("(RevitParameter)", "(Revit Parameter)");
