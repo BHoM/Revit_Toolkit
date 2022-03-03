@@ -214,6 +214,8 @@
     <Compile Include="Query\LinkDocument.cs" />
     <Compile Include="Query\MappedFamilyNames.cs" />
     <Compile Include="Query\RenderMeshes.cs" />
+    <Compile Include="Query\RevitParametersToPushDifferences.cs" />
+    <Compile Include="Query\RevitPulledParametersDifferences.cs" />
     <Compile Include="Query\Workset.cs" />
     <Compile Include="Query\ZJustifiedCurve.cs" />
     <Compile Include="Query\DefaultMappingSettings.cs" />

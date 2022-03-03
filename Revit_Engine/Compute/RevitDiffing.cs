@@ -54,7 +54,7 @@ namespace BH.Engine.Adapters.Revit
                 PropertiesToConsider = onlyParameters ? new List<string>() { "Considering only Revit Parameter Differnces" } : new List<string>() // using a very improbable PropertyToConsider name to exclude all differences that are not Revit Parameter differences.
             };
 
-            return Diffing(pastObjects, followingObjects, null, new DiffingConfig() { ComparisonConfig = rcc });
+            return Diffing(pastObjects, followingObjects, null, GetRevitDiffingConfig(rcc));
         }
 
         /***************************************************/
@@ -73,7 +73,7 @@ namespace BH.Engine.Adapters.Revit
                 ParametersToConsider = parametersToConsider?.ToList()
             };
 
-            return Diffing(pastObjects, followingObjects, null, new DiffingConfig() { ComparisonConfig = rcc });
+            return Diffing(pastObjects, followingObjects, null, GetRevitDiffingConfig(rcc));
         }
 
         /***************************************************/
@@ -86,7 +86,9 @@ namespace BH.Engine.Adapters.Revit
         [Output("Diff", "Holds the differences between the two sets of objects. Explode it to see all differences.")]
         public static Diff RevitDiffing(IEnumerable<object> pastObjects, IEnumerable<object> followingObjects, string revitIdName = "UniqueId", RevitComparisonConfig revitComparisonConfig = null)
         {
-            return Diffing(pastObjects, followingObjects, revitIdName, new DiffingConfig() { ComparisonConfig = revitComparisonConfig });
+            RevitComparisonConfig rcc = revitComparisonConfig != null ? revitComparisonConfig.DeepClone() : new RevitComparisonConfig();
+
+            return Diffing(pastObjects, followingObjects, revitIdName, GetRevitDiffingConfig(revitComparisonConfig));
         }
 
         /***************************************************/
@@ -159,6 +161,23 @@ namespace BH.Engine.Adapters.Revit
             Diff revitDiff = BH.Engine.Diffing.Compute.DiffWithFragmentId(revitBHoMObjects_past, revitBHoMObjects_following, typeof(RevitIdentifiers), revitIdName, diffConfigClone);
 
             return revitDiff;
+        }
+
+        private static DiffingConfig GetRevitDiffingConfig(RevitComparisonConfig rcc)
+        {
+            rcc.TypeExceptions.Add(typeof(RevitParameter));
+            rcc.TypeExceptions.Add(typeof(RevitPulledParameters));
+            rcc.TypeExceptions.Add(typeof(RevitParametersToPush));
+
+            return new DiffingConfig()
+            {
+                ComparisonConfig = rcc,
+                CustomObjectDifferencesComparers = new List<Func<object, object, BaseComparisonConfig, List<PropertyDifference>>>()
+                {
+                    (obj1, obj2, baseComparisonConfig) => { return Query.RevitPulledParametersDifferences(obj1, obj2, baseComparisonConfig); },
+                    (obj1, obj2, baseComparisonConfig) => { return Query.RevitParametersToPushDifferences(obj1, obj2, baseComparisonConfig); },
+                }
+            };
         }
     }
 }
