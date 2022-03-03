@@ -36,6 +36,12 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Query
     {
+        [Description("Returns Property differences between RevitParametersToPush owned by the two input objects." +
+            "This method can be added as Func delegate to the DiffingConfig; if so, it is automatically triggered when Diffing the two objects.")]
+        [Input("obj1", "Past object being compared.")]
+        [Input("obj2", "Following object being compared.")]
+        [Input("comparisonConfig", "Comparison Config to be used during comparison.")]
+        [Output("parametersDifferences", "Differences in terms of RevitParametersToPush found on the two input objects.")]
         public static List<PropertyDifference> RevitParametersToPushDifferences(this object obj1, object obj2, BaseComparisonConfig comparisonConfig)
         {
             List<PropertyDifference> result = new List<PropertyDifference>();
