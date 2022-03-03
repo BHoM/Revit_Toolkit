@@ -132,14 +132,15 @@ namespace BH.Engine.Adapters.Revit
             }
 
             // Checks and setup of DiffingConfig/ComparisonConfig.
-            DiffingConfig diffConfigClone = diffConfig == null ? new DiffingConfig() { IncludeUnchangedObjects = true } : diffConfig.DeepClone();
-            RevitComparisonConfig rcc = diffConfigClone.ComparisonConfig as RevitComparisonConfig;
+            RevitComparisonConfig rcc = diffConfig?.ComparisonConfig as RevitComparisonConfig;
             if (rcc == null)
             {
                 rcc = new RevitComparisonConfig();
-                BH.Engine.Reflection.Modify.CopyPropertiesFromParent(rcc, diffConfigClone.ComparisonConfig);
+                
+                if (diffConfig != null)
+                    BH.Engine.Reflection.Modify.CopyPropertiesFromParent(rcc, diffConfig?.ComparisonConfig);
             }
-            diffConfigClone.ComparisonConfig = rcc;
+            DiffingConfig diffConfigClone = GetRevitDiffingConfig(rcc);
 
             // Check if input objects all have RevitIdentifiers assigned.
             IEnumerable<IBHoMObject> revitBHoMObjects_past = pastObjects.OfType<IBHoMObject>().Where(obj => obj.GetRevitIdentifiers() != null);
