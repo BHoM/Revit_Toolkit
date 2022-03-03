@@ -166,6 +166,8 @@ namespace BH.Engine.Adapters.Revit
 
         private static DiffingConfig GetRevitDiffingConfig(RevitComparisonConfig rcc)
         {
+            rcc = rcc ?? new RevitComparisonConfig();
+
             rcc.TypeExceptions.Add(typeof(RevitParameter));
             rcc.TypeExceptions.Add(typeof(RevitPulledParameters));
             rcc.TypeExceptions.Add(typeof(RevitParametersToPush));
