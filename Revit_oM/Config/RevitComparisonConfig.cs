@@ -64,6 +64,11 @@ namespace BH.oM.Adapters.Revit
             "Defaults to true.")]
         public virtual bool ConsiderDeletedParameters { get; set; } = true;
 
+        [Description("If true, considers all differences including parameters that are null (Unassigned). Defaults to true. If false:\n" +
+            "- a RevitParameter that was null in the past object and is deleted in the following object is not considered as a difference.\n" +
+            "- a RevitParameter that is null in the following object and was not present in the pastobject is not considered as a difference.")]
+        public virtual bool ConsiderUnassignedParameters { get; set; } = true;
+
         /***************************************************/
     }
 }
