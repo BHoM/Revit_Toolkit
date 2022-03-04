@@ -40,6 +40,11 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Returns Property differences between RevitParameters owned by the two input objects.")]
+        [Input("obj1", "Past object being compared.")]
+        [Input("obj2", "Following object being compared.")]
+        [Input("comparisonConfig", "Comparison Config to be used during comparison.")]
+        [Output("parametersDifferences", "Differences in terms of RevitParameters found on the two input objects.")]
         public static List<PropertyDifference> RevitParametersDifferences(this object obj1, object obj2, BaseComparisonConfig comparisonConfig)
         {
             return RevitParametersDifferences<RevitPulledParameters>(obj1, obj2, comparisonConfig)
