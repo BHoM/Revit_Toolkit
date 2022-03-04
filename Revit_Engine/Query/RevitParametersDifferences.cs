@@ -36,22 +36,71 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Query
     {
-        [Description("Returns Property differences between RevitParametersToPush owned by the two input objects." +
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+
+        [Description("Returns Property differences between RevitParameters (RevitPulledParameters/RevitParametersToPush) owned by the two input objects." +
             "This method can be added as Func delegate to the DiffingConfig; if so, it is automatically triggered when Diffing the two objects.")]
         [Input("obj1", "Past object being compared.")]
         [Input("obj2", "Following object being compared.")]
         [Input("comparisonConfig", "Comparison Config to be used during comparison.")]
         [Output("parametersDifferences", "Differences in terms of RevitParametersToPush found on the two input objects.")]
-        public static List<PropertyDifference> RevitParametersToPushDifferences(this object obj1, object obj2, BaseComparisonConfig comparisonConfig)
+        public static List<PropertyDifference> RevitParametersDifferences<T>(this object obj1, object obj2, BaseComparisonConfig comparisonConfig) where T : class, IRevitParameterFragment
         {
             List<PropertyDifference> result = new List<PropertyDifference>();
 
-            Dictionary<string, RevitParameter> allParamsDict_obj1 = (obj1 as IBHoMObject)?.GetParametersToPush();
-            Dictionary<string, RevitParameter> allParamsDict_obj2 = (obj2 as IBHoMObject)?.GetParametersToPush();
+            Dictionary<string, RevitParameter> allParamsDict_obj1 = (obj1 as IBHoMObject)?.ParametersDictionary<T>();
+            Dictionary<string, RevitParameter> allParamsDict_obj2 = (obj2 as IBHoMObject)?.ParametersDictionary<T>();
 
             if ((!allParamsDict_obj1?.Any() ?? true) || (!allParamsDict_obj2?.Any() ?? true))
                 return result; // no pulled parameters found.
-         
+
+            result = ParameterDifferences(allParamsDict_obj1, allParamsDict_obj2, comparisonConfig);
+
+            return result;
+        }
+
+
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        [Description("Returns a Dictionary whose Key is the full property path of the parameter (the FullName of the property holding the parameter), " +
+            "and whose Value is the RevitParameter.")]
+        private static Dictionary<string, RevitParameter> ParametersDictionary<T>(this IBHoMObject obj) where T : class, IRevitParameterFragment
+        {
+            Dictionary<string, RevitParameter> result = new Dictionary<string, RevitParameter>();
+
+            if (!obj?.Fragments?.Any() ?? true)
+                return result;
+
+            string objFullName = obj.GetType().FullName;
+
+            for (int i = 0; i < obj.Fragments.Count(); i++)
+            {
+                T revitParams = obj.Fragments[i] as T;
+                if (revitParams != null)
+                {
+                    for (int j = 0; j < revitParams.Parameters.Count; j++)
+                    {
+                        // The key is the full property path of the parameter (the FullName of the property holding the parameter).
+                        string parameterFullPath = $"{objFullName}.Fragments[{i}].Parameters[{j}]";
+                        result[parameterFullPath] = revitParams.Parameters[j];
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        /***************************************************/
+
+        [Description("Given two input sets of parameters, finds those with the same Name between the two sets, and returns a List of PropertyDifferences containing any difference found.")]
+        private static List<PropertyDifference> ParameterDifferences(Dictionary<string, RevitParameter> allParamsDict_obj1, Dictionary<string, RevitParameter> allParamsDict_obj2, BaseComparisonConfig comparisonConfig)
+        {
+            List<PropertyDifference> result = new List<PropertyDifference>();
+
             List<string> overlappingParams = allParamsDict_obj1.Values.Select(p => p.Name).Intersect(allParamsDict_obj2.Values.Select(p => p.Name)).ToList();
 
             foreach (string paramName in overlappingParams)
@@ -75,35 +124,12 @@ namespace BH.Engine.Adapters.Revit
 
                 // If we got here, the two parameters are different, and we want to record this difference.
                 PropertyDifference parameterDiff = new PropertyDifference();
-                parameterDiff.DisplayName = paramName + " (RevitParametersToPush)";
-                parameterDiff.FullName = differenceFullName;
+                parameterDiff.DisplayName = paramName + " (RevitParameter)";
+                parameterDiff.FullName = differenceFullName; // The FullName is important to track where exactly is the RevitParameter coming from in the Fragments list.
                 parameterDiff.PastValue = parameter1.Value;
                 parameterDiff.FollowingValue = parameter2.Value;
 
                 result.Add(parameterDiff);
-            }
-
-            return result;
-        }
-
-        private static Dictionary<string, RevitParameter> GetParametersToPush(this IBHoMObject obj)
-        {
-            Dictionary<string, RevitParameter> result = new Dictionary<string, RevitParameter>();
-
-            if (!obj?.Fragments?.Any() ?? true)
-                return result;
-
-            for (int i = 0; i < obj.Fragments.Count(); i++)
-            {
-                RevitParametersToPush pulledParams = obj.Fragments[i] as RevitParametersToPush;
-                if (pulledParams != null)
-                {
-                    for (int j = 0; j < pulledParams.Parameters.Count; j++)
-                    {
-                        string parameterFullPath = $"{obj.GetType().FullName}.Fragments[{i}].Parameters[{j}]";
-                        result[parameterFullPath] = pulledParams.Parameters[j];
-                    }
-                }
             }
 
             return result;
