@@ -56,6 +56,14 @@ namespace BH.oM.Adapters.Revit
              "\nIf conflicting values/multiple matches are found among the Configurations on numerical precision, the largest approximation among all (least precise number) is registered.")]
         public virtual HashSet<NamedSignificantFigures> ParameterSignificantFigures { get; set; } = new HashSet<NamedSignificantFigures>();
 
+        [Description("If true, if an object gets a new RevitParameter added to it, it will be considered 'Modified' and the Comparison will return this difference. " +
+            "Defaults to true.")]
+        public virtual bool ConsiderAddedParameters { get; set; } = true;
+
+        [Description("If true, if an object has a RevitParameter deleted from it, it will be considered 'Modified' and the Comparison will return this difference. " +
+            "Defaults to true.")]
+        public virtual bool ConsiderDeletedParameters { get; set; } = true;
+
         /***************************************************/
     }
 }

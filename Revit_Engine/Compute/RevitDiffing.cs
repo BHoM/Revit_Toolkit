@@ -177,8 +177,8 @@ namespace BH.Engine.Adapters.Revit
                 ComparisonConfig = rcc,
                 CustomObjectDifferencesComparers = new List<Func<object, object, BaseComparisonConfig, List<PropertyDifference>>>()
                 {
-                    (obj1, obj2, baseComparisonConfig) => { return Query.RevitParametersDifferences<RevitPulledParameters>(obj1, obj2, baseComparisonConfig); },
-                    (obj1, obj2, baseComparisonConfig) => { return Query.RevitParametersDifferences<RevitParametersToPush>(obj1, obj2, baseComparisonConfig); },
+                    (obj1, obj2, baseComparisonConfig) => { return Query.RevitPulledParametersDifferences(obj1, obj2, baseComparisonConfig); },
+                    (obj1, obj2, baseComparisonConfig) => { return Query.RevitRevitParametersToPushDifferences(obj1, obj2, baseComparisonConfig); },
                 }
             };
         }
