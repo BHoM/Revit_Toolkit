@@ -40,13 +40,28 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Returns Property differences between RevitParameters (RevitPulledParameters) owned by the two input objects." +
+            "This method can be added as Func delegate to the DiffingConfig; if so, it is automatically triggered when Diffing the two objects.")]
+        [Input("obj1", "Past object being compared.")]
+        [Input("obj2", "Following object being compared.")]
+        [Input("comparisonConfig", "Comparison Config to be used during comparison.")]
+        [Output("parametersDifferences", "Differences in terms of RevitPulledParameters found on the two input objects.")]
+        public static List<PropertyDifference> RevitPulledParametersDifferences(this object obj1, object obj2, BaseComparisonConfig comparisonConfig)
+        {
+            return RevitParametersDifferences<RevitPulledParameters>(obj1, obj2, comparisonConfig);
+        }
+
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
         [Description("Returns Property differences between RevitParameters (RevitPulledParameters/RevitParametersToPush) owned by the two input objects." +
             "This method can be added as Func delegate to the DiffingConfig; if so, it is automatically triggered when Diffing the two objects.")]
         [Input("obj1", "Past object being compared.")]
         [Input("obj2", "Following object being compared.")]
         [Input("comparisonConfig", "Comparison Config to be used during comparison.")]
-        [Output("parametersDifferences", "Differences in terms of RevitParametersToPush found on the two input objects.")]
-        public static List<PropertyDifference> RevitParametersDifferences<T>(this object obj1, object obj2, BaseComparisonConfig comparisonConfig) where T : class, IRevitParameterFragment
+        [Output("parametersDifferences", "Differences in terms of RevitParameters (RevitPulledParameters/RevitParametersToPush) found on the two input objects.")]
+        private static List<PropertyDifference> RevitParametersDifferences<T>(this object obj1, object obj2, BaseComparisonConfig comparisonConfig) where T : class, IRevitParameterFragment
         {
             List<PropertyDifference> result = new List<PropertyDifference>();
 
@@ -61,9 +76,6 @@ namespace BH.Engine.Adapters.Revit
             return result;
         }
 
-
-        /***************************************************/
-        /****              Private methods              ****/
         /***************************************************/
 
         [Description("Returns a Dictionary whose Key is the full property path of the parameter (the FullName of the property holding the parameter), " +
@@ -99,10 +111,14 @@ namespace BH.Engine.Adapters.Revit
         [Description("Given two input sets of parameters, finds those with the same Name between the two sets, and returns a List of PropertyDifferences containing any difference found.")]
         private static List<PropertyDifference> ParameterDifferences(Dictionary<string, RevitParameter> allParamsDict_obj1, Dictionary<string, RevitParameter> allParamsDict_obj2, BaseComparisonConfig comparisonConfig)
         {
-            List<PropertyDifference> result = new List<PropertyDifference>();
+            HashSet<PropertyDifference> result = new HashSet<PropertyDifference>();
 
             List<string> overlappingParams = allParamsDict_obj1.Values.Select(p => p.Name).Intersect(allParamsDict_obj2.Values.Select(p => p.Name)).ToList();
 
+            // Check if we have a RevitComparisonConfig input.
+            RevitComparisonConfig rcc = comparisonConfig as RevitComparisonConfig;
+
+            // Check if parameters with the same name have different values between obj1 and obj2.
             foreach (string paramName in overlappingParams)
             {
                 KeyValuePair<string, RevitParameter> overlappingParamTuple_1 = allParamsDict_obj1.First(p => p.Value.Name == paramName);
@@ -115,24 +131,73 @@ namespace BH.Engine.Adapters.Revit
                 if (parameter1.Value?.Equals(parameter2?.Value) ?? false)
                     continue; // parameters are equal in value. Continue.
 
-                // Check if we have a RevitComparisonConfig input.
-                RevitComparisonConfig rcc = comparisonConfig as RevitComparisonConfig;
-
                 // Check if effectively the parameter difference is to be considered.
-                if (!Query.ComparisonInclusion(parameter1, parameter2, differenceFullName, rcc).Include)
+                if (rcc != null && !Query.ComparisonInclusion(parameter1, parameter2, differenceFullName, rcc).Include)
                     continue;
 
                 // If we got here, the two parameters are different, and we want to record this difference.
-                PropertyDifference parameterDiff = new PropertyDifference();
-                parameterDiff.DisplayName = paramName + " (RevitParameter)";
-                parameterDiff.FullName = differenceFullName; // The FullName is important to track where exactly is the RevitParameter coming from in the Fragments list.
-                parameterDiff.PastValue = parameter1.Value;
-                parameterDiff.FollowingValue = parameter2.Value;
-
+                PropertyDifference parameterDiff = ParameterDifference(paramName, differenceFullName, parameter1.Value, parameter2.Value);
                 result.Add(parameterDiff);
             }
 
-            return result;
+            // By default, check if there is any deleted parameter (parameters that obj1 has and obj2 has not).
+            if (rcc == null || rcc.ConsiderDeletedParameters)
+            {
+                // Find deleted parameters
+                List<string> deletedParameters = allParamsDict_obj1.Values.Select(p => p.Name).Except(allParamsDict_obj2.Values.Select(p => p.Name)).ToList();
+
+                foreach (string deletedParamName in deletedParameters)
+                {
+                    KeyValuePair<string, RevitParameter> deletedParamTuple = allParamsDict_obj1.First(p => p.Value.Name == deletedParamName);
+                    string differenceFullName = deletedParamTuple.Key;
+                    RevitParameter deletedParameter = deletedParamTuple.Value;
+
+                    // Check if effectively the parameter difference is to be considered.
+                    if (rcc != null && !Query.ComparisonInclusion(deletedParameter, null, differenceFullName, rcc).Include)
+                        continue;
+
+                    // If we got here, the two parameters are different, and we want to record this difference.
+                    PropertyDifference parameterDiff = ParameterDifference(deletedParamName, differenceFullName, deletedParameter.Value, null);
+                    result.Add(parameterDiff);
+                }
+            }
+
+            // By default, check if there is any added parameter (parameters that obj2 has and obj1 has not).
+            if (rcc == null || rcc.ConsiderAddedParameters)
+            {
+                // Find added parameters
+                List<string> addedParameters = allParamsDict_obj2.Values.Select(p => p.Name).Except(allParamsDict_obj1.Values.Select(p => p.Name)).ToList();
+
+                foreach (string addedParamName in addedParameters)
+                {
+                    KeyValuePair<string, RevitParameter> addedParamTuple = allParamsDict_obj2.First(p => p.Value.Name == addedParamName);
+                    string differenceFullName = addedParamTuple.Key;
+                    RevitParameter addedParameter = addedParamTuple.Value;
+
+                    // Check if effectively the parameter difference is to be considered.
+                    if (rcc != null && !Query.ComparisonInclusion(null, addedParameter, differenceFullName, rcc).Include)
+                        continue;
+
+                    // If we got here, the two parameters are different, and we want to record this difference.
+                    PropertyDifference parameterDiff = ParameterDifference(addedParamName, differenceFullName, addedParameter.Value, null);
+                    result.Add(parameterDiff);
+                }
+            }
+
+            return result.ToList();
+        }
+
+        /***************************************************/
+
+        private static PropertyDifference ParameterDifference(string paramName, string propertyFullName, object pastValue, object followingValue)
+        {                
+            PropertyDifference parameterDiff = new PropertyDifference();
+            parameterDiff.DisplayName = paramName + " (RevitParameter)";
+            parameterDiff.FullName = propertyFullName; // The FullName is important to track where exactly is the RevitParameter coming from in the Fragments list.
+            parameterDiff.PastValue = pastValue;
+            parameterDiff.FollowingValue = followingValue;
+            
+            return parameterDiff;
         }
     }
 }

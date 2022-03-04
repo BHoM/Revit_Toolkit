@@ -44,33 +44,36 @@ namespace BH.Engine.Adapters.Revit
         public static ComparisonInclusion ComparisonInclusion(this RevitParameter parameter1, RevitParameter parameter2, string propertyFullName, BaseComparisonConfig comparisonConfig)
         {
             ComparisonInclusion result = new ComparisonInclusion();
-            result.DisplayName = parameter1.Name + " (RevitParameter)"; // differences in any property of RevitParameters will be displayed like this.
+            result.Include = true; // by default, we consider any parameter difference.
 
-            // Check if we have a RevitComparisonConfig input.
+            string parameterName = parameter1?.Name ?? parameter2?.Name;
+            result.DisplayName = parameterName + " (RevitParameter)"; // differences in any property of RevitParameters will be displayed like this.
+
+            // Check if we have a RevitComparisonConfig input and a valid parameterName.
             RevitComparisonConfig rcc = comparisonConfig as RevitComparisonConfig;
-            if (rcc != null)
+            if (rcc == null || string.IsNullOrWhiteSpace(parameterName))
+                return result;
+
+            // Check the ParametersToConsider: if there is at least one name in the list, make sure that the current revitParameter's Name is contained in the list.
+            if ((rcc.ParametersToConsider?.Any() ?? false) && !rcc.ParametersToConsider.Any(ptc => parameterName == ptc || parameterName.WildcardMatch(ptc)))
             {
-                // Check the ParametersToConsider: if there is at least one name in the list, make sure that the current revitParameter's Name is contained in the list.
-                if ((rcc.ParametersToConsider?.Any() ?? false) && !rcc.ParametersToConsider.Any(ptc => parameter1.Name == ptc || parameter1.Name.WildcardMatch(ptc)))
-                {
-                    // The parameter is not within the ParametersToConsider.
-                    result.Include = false; // RevitParameter must be skipped
-                    return result;
-                }
+                // The parameter is not within the ParametersToConsider.
+                result.Include = false; // RevitParameter must be skipped
+                return result;
+            }
 
-                // Check if the current revitParameter is within the ParametersExceptions.
-                if ((rcc.ParametersExceptions?.Any() ?? false) && rcc.ParametersExceptions.Any(ptc => parameter1.Name == ptc || parameter1.Name.WildcardMatch(ptc))) 
-                {
-                    result.Include = false; // RevitParameter must be skipped
-                    return result;
-                }
+            // Check if the current revitParameter is within the ParametersExceptions.
+            if ((rcc.ParametersExceptions?.Any() ?? false) && rcc.ParametersExceptions.Any(ptc => parameterName == ptc || parameterName.WildcardMatch(ptc)))
+            {
+                result.Include = false; // RevitParameter must be skipped
+                return result;
+            }
 
-                // Check the difference in the RevitParameters is a numerical difference, and if so whether it should be included given the input tolerances/significantFigures.
-                if (!BH.Engine.Diffing.Query.NumericalDifferenceInclusion(parameter1.Value, parameter2.Value, parameter1.Name, rcc.ParameterNumericTolerances, rcc.NumericTolerance, rcc.ParameterSignificantFigures, rcc.SignificantFigures))
-                {
-                    result.Include = false; // RevitParameter must be skipped
-                    return result;
-                }
+            // Check the difference in the RevitParameters is a numerical difference, and if so whether it should be included given the input tolerances/significantFigures.
+            if (!BH.Engine.Diffing.Query.NumericalDifferenceInclusion(parameter1?.Value, parameter2?.Value, parameterName, rcc.ParameterNumericTolerances, rcc.NumericTolerance, rcc.ParameterSignificantFigures, rcc.SignificantFigures))
+            {
+                result.Include = false; // RevitParameter must be skipped
+                return result;
             }
 
             return result; // pass the RevitParameter (do not skip it)
