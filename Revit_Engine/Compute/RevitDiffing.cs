@@ -46,6 +46,19 @@ namespace BH.Engine.Adapters.Revit
         [Input("parametersToConsider", "Revit parameters to be considered when comparing two objects for differences. If null or empty, all Revit Parameters will be considered.")]
         [Input("onlyParameters", "Whether to return only Differences in terms of RevitParameters.")]
         [Output("Diff", "Holds the differences between the two sets of objects. Explode it to see all differences.")]
+        public static Diff RevitDiffing(IEnumerable<object> pastObjects, IEnumerable<object> followingObjects, RevitComparisonConfig rcc)
+        {
+            return Diffing(pastObjects, followingObjects, null, GetRevitDiffingConfig(rcc));
+        }
+
+        /***************************************************/
+
+        [Description("Performs a Revit-specialized Diffing to find the differences between two sets of objects.\nThis relies on Revit's `UniqueId`: the objects must have been pulled from a Revit_Adapter (they must own a `RevitIdentifiers` fragment).")]
+        [Input("pastObjects", "Past objects. Objects whose creation precedes 'followingObjects'.")]
+        [Input("followingObjects", "Following objects. Objects that were created after 'pastObjects'.")]
+        [Input("parametersToConsider", "Revit parameters to be considered when comparing two objects for differences. If null or empty, all Revit Parameters will be considered.")]
+        [Input("onlyParameters", "Whether to return only Differences in terms of RevitParameters.")]
+        [Output("Diff", "Holds the differences between the two sets of objects. Explode it to see all differences.")]
         public static Diff RevitDiffing(IEnumerable<object> pastObjects, IEnumerable<object> followingObjects, IEnumerable<string> parametersToConsider = null, bool onlyParameters = true)
         {
             RevitComparisonConfig rcc = new RevitComparisonConfig()
@@ -136,7 +149,7 @@ namespace BH.Engine.Adapters.Revit
             if (rcc == null)
             {
                 rcc = new RevitComparisonConfig();
-                
+
                 if (diffConfig != null)
                     BH.Engine.Reflection.Modify.CopyPropertiesFromParent(rcc, diffConfig?.ComparisonConfig);
             }
