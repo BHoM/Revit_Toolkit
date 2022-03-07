@@ -46,7 +46,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("obj2", "Following object being compared.")]
         [Input("comparisonConfig", "Comparison Config to be used during comparison.")]
         [Output("parametersDifferences", "Differences in terms of RevitParametersToPush found on the two input objects.")]
-        public static List<PropertyDifference> RevitRevitParametersToPushDifferences(this object obj1, object obj2, BaseComparisonConfig comparisonConfig)
+        public static List<IPropertyDifference> RevitRevitParametersToPushDifferences(this object obj1, object obj2, BaseComparisonConfig comparisonConfig)
         {
             return RevitParametersDifferences<RevitPulledParameters>(obj1, obj2, comparisonConfig);
         }
