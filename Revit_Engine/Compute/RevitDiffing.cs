@@ -175,7 +175,7 @@ namespace BH.Engine.Adapters.Revit
             return new DiffingConfig()
             {
                 ComparisonConfig = rcc,
-                CustomObjectDifferencesComparers = new List<Func<object, object, BaseComparisonConfig, List<PropertyDifference>>>()
+                CustomObjectDifferencesComparers = new List<Func<object, object, BaseComparisonConfig, List<IPropertyDifference>>>()
                 {
                     (obj1, obj2, baseComparisonConfig) => { return Query.RevitPulledParametersDifferences(obj1, obj2, baseComparisonConfig); },
                     (obj1, obj2, baseComparisonConfig) => { return Query.RevitRevitParametersToPushDifferences(obj1, obj2, baseComparisonConfig); },
