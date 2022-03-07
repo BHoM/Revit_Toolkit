@@ -155,12 +155,12 @@ namespace BH.Engine.Adapters.Revit
 
                     // If we got here, the two parameters are different, and we want to record this difference.
                     string description = $"A Revit Parameter with name `{paramName}` was modified on the object. It had value: `{parameter1.Value}` and was updated to value: `{parameter2.Value}`";
-                    result.AddParameterDifference($"{paramName} (RevitParameter)", differenceFullName, parameter1.Value, parameter2.Value, description);
+                    result.AddParameterDifference($"{paramName} (RevitParameter)", differenceFullName, parameter1.Value, parameter2.Value, DifferenceType.Modified, description);
                 }
 
 
                 // By default, check if there is any deleted parameter (parameters that obj1 has and obj2 has not).
-                if (rcc == null || rcc.ConsiderDeletedParameters)
+                if (rcc == null || rcc.ConsiderRemovedParameters)
                 {
                     // Find deleted parameters
                     List<string> deletedParameters = allParamsDict_obj1[overlappingNestingLevel].Values.Select(p => p.Name)
@@ -182,7 +182,7 @@ namespace BH.Engine.Adapters.Revit
 
                         // If we got here, the two parameters are different, and we want to record this difference.
                         string description = $"A Revit Parameter with name `{deletedParamName}` was removed from the object. It had value: {deletedParameter.Value}";
-                        result.AddParameterDifference($"{deletedParamName} (removed RevitParameter)", differenceFullName, deletedParameter.Value, null, description);
+                        result.AddParameterDifference($"{deletedParamName} (RevitParameter)", differenceFullName, deletedParameter.Value, null, DifferenceType.Removed, description);
                     }
                 }
 
@@ -209,7 +209,7 @@ namespace BH.Engine.Adapters.Revit
 
                         // If we got here, the two parameters are different, and we want to record this difference.
                         string description = $"A Revit Parameter `{addedParamName}` with value `{addedParameter.Value}` was added to the object.";
-                        result.AddParameterDifference($"{addedParamName} (added RevitParameter)", differenceFullName, null, addedParameter.Value, description);
+                        result.AddParameterDifference($"{addedParamName} (RevitParameter)", differenceFullName, null, addedParameter.Value, DifferenceType.Added, description);
                     }
                 }
             }
@@ -219,14 +219,15 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        private static void AddParameterDifference(this List<IPropertyDifference> objectDiff, string displayName, string propertyFullName, object pastValue, object followingValue, string description = null)
-        {             
-            PropertyDifference parameterDiff = new PropertyDifference();
-            parameterDiff.DisplayName = displayName;
+        private static void AddParameterDifference(this List<IPropertyDifference> objectDiff, string displayName, string propertyFullName, object pastValue, object followingValue, DifferenceType diffType, string description = null)
+        {
+            RevitParameterDifference parameterDiff = new RevitParameterDifference();
+            parameterDiff.Name = displayName;
             parameterDiff.Description = description;
             parameterDiff.FullName = propertyFullName; // The FullName is important to track where exactly is the RevitParameter coming from in the Fragments list.
             parameterDiff.PastValue = pastValue;
             parameterDiff.FollowingValue = followingValue;
+            parameterDiff.DifferenceType = diffType;
 
             objectDiff.Add(parameterDiff);
         }
