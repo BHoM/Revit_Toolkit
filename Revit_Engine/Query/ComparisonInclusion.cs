@@ -42,7 +42,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("parameter2", "Second RevitParameter that is being compared.")]
         [Input("propertyFullName", "The Full Name of the RevitParameter stored on the object whose Comparison is being computed.")]
         [Input("comparisonConfig", "Additional comparison configurations. You can specify a `ComparisonConfig` or a `RevitComparisonConfig`.")]
-        [Input("ci", "Object describing if the comparison between the two input RevitParameters should be done, based on the input ComparisonConfig, and how this possible comparison should be represented.")]
+        [Output("ci", "Object describing if the comparison between the two input RevitParameters should be done, based on the input ComparisonConfig, and how this possible comparison should be represented.")]
         public static ComparisonInclusion ComparisonInclusion(this RevitParameter parameter1, RevitParameter parameter2, string propertyFullName, BaseComparisonConfig comparisonConfig)
         {
             ComparisonInclusion result = new ComparisonInclusion();
