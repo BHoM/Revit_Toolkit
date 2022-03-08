@@ -56,18 +56,16 @@ namespace BH.oM.Adapters.Revit
              "\nIf conflicting values/multiple matches are found among the Configurations on numerical precision, the largest approximation among all (least precise number) is registered.")]
         public virtual HashSet<NamedSignificantFigures> ParameterSignificantFigures { get; set; } = new HashSet<NamedSignificantFigures>();
 
-        [Description("If true, if an object gets a new RevitParameter added to it, then the object is considered 'Modified' and the Comparison will return this difference. " +
-            "Defaults to true.")]
+        [Description("(Defaults to `true`) If false, if an object gets a new RevitParameter added to it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
         public virtual bool ConsiderAddedParameters { get; set; } = true;
 
-        [Description("If true, if an object has a RevitParameter deleted from it, then the object is considered 'Modified' and the Comparison will return this difference. " +
-            "Defaults to true.")]
+        [Description("(Defaults to `true`) If false, if an object has a RevitParameter deleted from it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
         public virtual bool ConsiderRemovedParameters { get; set; } = true;
 
-        [Description("If true, considers all differences including parameters that are null (Unassigned). Defaults to true. " +
-            "\nIf false:\n" +
-            "- a RevitParameter that was null in the past object and is deleted in the following object is not considered as a difference.\n" +
-            "- a RevitParameter that is null in the following object and was not present in the pastobject is not considered as a difference.")]
+        [Description("(Defaults to `true`) If true, considers all differences including parameters that are null (unassigned)." +
+             "\nIf false:\n" +
+             "- a RevitParameter that was null in the past object and is deleted in the following object is NOT considered as a difference, and it does not count in considering the owner object as 'Modified'.\n" +
+             "- a RevitParameter that is null in the following object and was not present in the pastobject is NOT considered as a difference, and it does not count in considering the owner object as 'Modified'.")]
         public virtual bool ConsiderUnassignedParameters { get; set; } = true;
 
         /***************************************************/

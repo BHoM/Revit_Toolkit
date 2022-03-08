@@ -36,7 +36,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Creates a RevitComparisonConfig with specific inputs assigned.")]
         [Input("parametersToConsider", "Names of the Revit Parameters that will be considered for the comparison." +
             "By default, this list is empty, so all parameters are considered (except possibly those included in the other property `ParametersExceptions`).")]
-        [Input("propertiesToConsider", "If one or more entries are specified here, only objects/properties that match them will be considered." +
+        [Input("propertiesToConsider", "(Optional) If one or more entries are specified here, only objects/properties that match them will be considered." +
            "\nE.g. Given input objects BH.oM.Structure.Elements.Bar, specifying `StartNode` will only check that property of the Bar." +
            "\nSupports * wildcard." +
            "\nNote that using this will incur in a general slowdown because it is computationally heavy. See the wiki for more details.")]
@@ -56,13 +56,49 @@ namespace BH.Engine.Adapters.Revit
         [Description("Creates a RevitComparisonConfig with specific inputs assigned.")]
         [Input("parametersToConsider", "Names of the Revit Parameters that will be considered for the comparison." +
             "By default, this list is empty, so all parameters are considered (except possibly those included in the other property `ParametersExceptions`).")]
-        [Input("considerOnlyParameterDifferences", "If `true`, objects will be considered 'Modified' only if their RevitParameter changed, and only RevitParameterDifferences will be returned.'")]
+        [Input("considerOnlyParameterDifferences", "(Optional, defaults to `false`) If `true`, objects will be considered 'Modified' only if their RevitParameter changed, and only RevitParameterDifferences will be returned.'")]
         public static RevitComparisonConfig RevitComparisonConfig(List<string> parametersToConsider, bool considerOnlyParameterDifferences = false)
         {
             RevitComparisonConfig rcc = new RevitComparisonConfig()
             {
                 ParametersToConsider = parametersToConsider,
                 PropertiesToConsider = considerOnlyParameterDifferences ? new List<string>() { "Considering only Revit Parameter Differences" } : new List<string>() // using a very improbable PropertyToConsider name to exclude all differences that are not Revit Parameter differences.
+            };
+
+            return rcc;
+        }
+
+        /***************************************************/
+
+        [Description("Creates a RevitComparisonConfig with specific inputs assigned.")]
+        [Input("parametersToConsider", "Names of the Revit Parameters that will be considered for the comparison." +
+            "By default, this list is empty, so all parameters are considered (except possibly those included in the other property `ParametersExceptions`).")]
+        [Input("propertiesToConsider", "If one or more entries are specified here, only objects/properties that match them will be considered." +
+           "\nE.g. Given input objects BH.oM.Structure.Elements.Bar, specifying `StartNode` will only check that property of the Bar." +
+           "\nSupports * wildcard." +
+           "\nNote that using this will incur in a general slowdown because it is computationally heavy. See the wiki for more details.")]
+        [Input("considerOnlyParameterDifferences", "(Optional, defaults to `false`) If `true`, objects will be considered 'Modified' only if their RevitParameter changed, and only RevitParameterDifferences will be returned.'")]
+        [Input("considerAddedParameters", "(Optional, defaults to `true`) If false, if an object gets a new RevitParameter added to it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
+        [Input("considerRemovedParameters", "(Optional, defaults to `true`) If false, if an object has a RevitParameter deleted from it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
+        [Input("considerUnassignedParameters", "(Optional, defaults to `true`) If true, considers all differences including parameters that are null (unassigned)." +
+            "\nIf false:\n" +
+            "- a RevitParameter that was null in the past object and is deleted in the following object is NOT considered as a difference, and it does not count in considering the owner object as 'Modified'.\n" +
+            "- a RevitParameter that is null in the following object and was not present in the pastobject is NOT considered as a difference, and it does not count in considering the owner object as 'Modified'.")]
+        public static RevitComparisonConfig RevitComparisonConfig(
+            List<string> parametersToConsider,
+            List<string> propertiesToConsider,
+            bool considerOnlyParameterDifferences = false, 
+            bool considerAddedParameters = true, 
+            bool considerRemovedParameters = true, 
+            bool considerUnassignedParameters = true)
+        {
+            RevitComparisonConfig rcc = new RevitComparisonConfig()
+            {
+                ConsiderAddedParameters = considerAddedParameters,
+                ConsiderRemovedParameters = considerRemovedParameters,
+                ConsiderUnassignedParameters = considerUnassignedParameters,
+                ParametersToConsider = parametersToConsider,
+                PropertiesToConsider = considerOnlyParameterDifferences ? new List<string>() { "Considering only Revit Parameter Differences" } : propertiesToConsider // using a very improbable PropertyToConsider name to exclude all differences that are not Revit Parameter differences.
             };
 
             return rcc;
