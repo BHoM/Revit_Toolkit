@@ -41,10 +41,10 @@ namespace BH.Engine.Adapters.Revit
                 return null;
 
             string propertyLabel;
-            if (difference.DisplayName.EndsWith("(RevitParameter)"))
-                propertyLabel = difference.DisplayName.Replace("(RevitParameter)", "(Revit Parameter)");
+            if (difference.Name.EndsWith("(RevitParameter)"))
+                propertyLabel = difference.Name.Replace("(RevitParameter)", "(Revit Parameter)");
             else
-                propertyLabel = difference.DisplayName + " (BHoM Property)";
+                propertyLabel = difference.Name + " (BHoM Property)";
 
             return $"{propertyLabel}: from " + (string.IsNullOrWhiteSpace(difference?.PastValue?.ToString()) ? "<empty>" : difference.PastValue) + " to " + (string.IsNullOrWhiteSpace(difference?.FollowingValue?.ToString()) ? "<empty>" : difference.FollowingValue);
         }
