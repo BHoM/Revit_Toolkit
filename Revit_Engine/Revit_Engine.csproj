@@ -205,7 +205,6 @@
     <Compile Include="Modify\SetTag.cs" />
     <Compile Include="Modify\Move.cs" />
     <Compile Include="Modify\Transform.cs" />
-    <Compile Include="Query\Description.cs" />
     <Compile Include="Query\GetRevitElementType.cs" />
     <Compile Include="Query\GetRevitTypeParameterValue.cs" />
     <Compile Include="Query\HashString.cs" />
@@ -261,6 +260,7 @@
     <Folder Include="Convert\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Versioning_51.json" />
     <None Include="Versioning_50.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
