@@ -36,11 +36,13 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Query
     {
-        [Description("When Diffing (Comparing objects), determine if and how RevitParameters should be considered.")]
+        [Description("When Diffing (Comparing objects), determine if and how RevitParameters should be considered." +
+            "Returns a `ComparisonInclusion` object describing if the comparison between the two input RevitParameters should be done, based on the input ComparisonConfig, and how this possible comparison should be represented.")]
         [Input("parameter1", "First RevitParameter that is being compared.")]
         [Input("parameter2", "Second RevitParameter that is being compared.")]
         [Input("propertyFullName", "The Full Name of the RevitParameter stored on the object whose Comparison is being computed.")]
         [Input("comparisonConfig", "Additional comparison configurations. You can specify a `ComparisonConfig` or a `RevitComparisonConfig`.")]
+        [Input("ci", "Object describing if the comparison between the two input RevitParameters should be done, based on the input ComparisonConfig, and how this possible comparison should be represented.")]
         public static ComparisonInclusion ComparisonInclusion(this RevitParameter parameter1, RevitParameter parameter2, string propertyFullName, BaseComparisonConfig comparisonConfig)
         {
             ComparisonInclusion result = new ComparisonInclusion();
