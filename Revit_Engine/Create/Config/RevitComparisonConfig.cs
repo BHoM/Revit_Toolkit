@@ -40,6 +40,7 @@ namespace BH.Engine.Adapters.Revit
            "\nE.g. Given input objects BH.oM.Structure.Elements.Bar, specifying `StartNode` will only check that property of the Bar." +
            "\nSupports * wildcard." +
            "\nNote that using this will incur in a general slowdown because it is computationally heavy. See the wiki for more details.")]
+        [Output("rcc", "RevitComparisonConfig that can be used to configure the Comparison/Diffing process.")]
         public static RevitComparisonConfig RevitComparisonConfig(List<string> parametersToConsider, List<string> propertiesToConsider = null)
         {
             RevitComparisonConfig rcc = new RevitComparisonConfig()
@@ -56,7 +57,8 @@ namespace BH.Engine.Adapters.Revit
         [Description("Creates a RevitComparisonConfig with specific inputs assigned.")]
         [Input("parametersToConsider", "Names of the Revit Parameters that will be considered for the comparison." +
             "By default, this list is empty, so all parameters are considered (except possibly those included in the other property `ParametersExceptions`).")]
-        [Input("considerOnlyParameterDifferences", "(Optional, defaults to `false`) If `true`, objects will be considered 'Modified' only if their RevitParameter changed, and only RevitParameterDifferences will be returned.'")]
+        [Input("considerOnlyParameterDifferences", "(Optional, defaults to `false`) If `true`, objects will be considered 'Modified' only if their RevitParameter changed, and only RevitParameterDifferences will be returned.")]
+        [Output("rcc", "RevitComparisonConfig that can be used to configure the Comparison/Diffing process.")]
         public static RevitComparisonConfig RevitComparisonConfig(List<string> parametersToConsider, bool considerOnlyParameterDifferences = false)
         {
             RevitComparisonConfig rcc = new RevitComparisonConfig()
@@ -84,6 +86,7 @@ namespace BH.Engine.Adapters.Revit
             "\nIf false:\n" +
             "- a RevitParameter that was null in the past object and is deleted in the following object is NOT considered as a difference, and it does not count in considering the owner object as 'Modified'.\n" +
             "- a RevitParameter that is null in the following object and was not present in the pastobject is NOT considered as a difference, and it does not count in considering the owner object as 'Modified'.")]
+        [Output("rcc", "RevitComparisonConfig that can be used to configure the Comparison/Diffing process.")]
         public static RevitComparisonConfig RevitComparisonConfig(
             List<string> parametersToConsider,
             List<string> propertiesToConsider,
