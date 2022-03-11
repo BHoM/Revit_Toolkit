@@ -99,6 +99,7 @@
     <Compile Include="Enums\Discipline.cs" />
     <Compile Include="Enums\NumberComparisonType.cs" />
     <Compile Include="Enums\RevitViewType.cs" />
+    <Compile Include="Enums\RevitParameterDifferenceType.cs" />
     <Compile Include="Enums\TextComparisonType.cs" />
     <Compile Include="Mapping\FamilyMap.cs" />
     <Compile Include="Misc\ClonedType.cs" />

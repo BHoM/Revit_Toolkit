@@ -41,15 +41,13 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns Property differences between RevitParameters owned by the two input objects.")]
-        [Input("obj1", "Past object being compared.")]
-        [Input("obj2", "Following object being compared.")]
-        [Input("comparisonConfig", "Comparison Config to be used during comparison.")]
-        [Output("parametersDifferences", "Differences in terms of RevitParameters found on the two input objects.")]
-        public static List<IPropertyDifference> RevitParametersDifferences(this object obj1, object obj2, BaseComparisonConfig comparisonConfig)
+        [Description("Returns Property differences between RevitParameters that are of a specific type.")]
+        [Input("revitParamDifferences", "Revit parameter differences that we want to obtain a subset of.")]
+        [Input("revitParameterDifferenceType", "Type of RevitParameterDifference we want to get.")]
+        [Output("parametersDifferences", "RevitParamDifferences that are of the input type.")]
+        public static List<RevitParameterDifference> OfType(this IEnumerable<RevitParameterDifference> revitParamDifferences, RevitParameterDifferenceType revitParameterDifferenceType)
         {
-            return RevitParametersDifferences<RevitPulledParameters>(obj1, obj2, comparisonConfig)
-                .Union(RevitParametersDifferences<RevitParametersToPush>(obj1, obj2, comparisonConfig)).ToList();
+            return revitParamDifferences.Where(rpd => rpd.DifferenceType == revitParameterDifferenceType).ToList();
         }
     }
 }

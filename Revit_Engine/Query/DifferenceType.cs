@@ -20,18 +20,16 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Base;
 using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
-using BH.oM.Adapters.Revit.Parameters;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base;
-using BH.oM.Diffing;
 using BH.oM.Base.Attributes;
+using BH.oM.Diffing;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Xml.Linq;
-using BH.oM.Adapters.Revit.Enums;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -41,16 +39,21 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns Property differences between RevitParameters owned by the two input objects.")]
-        [Input("obj1", "Past object being compared.")]
-        [Input("obj2", "Following object being compared.")]
-        [Input("comparisonConfig", "Comparison Config to be used during comparison.")]
-        [Output("parametersDifferences", "Differences in terms of RevitParameters found on the two input objects.")]
-        public static List<IPropertyDifference> RevitParametersDifferences(this object obj1, object obj2, BaseComparisonConfig comparisonConfig)
+        [Description("Gets a general representation of a revitParameterDifferenceType: only in terms of `added`, `modified` or `removed`.")]
+        [Input("revitParameterDifferenceType", "A type of revitParameterDifference.")]
+        [Output("differenceType", "General difference type: added, removed or modified.")]
+        public static DifferenceType DifferenceType(this RevitParameterDifferenceType revitParameterDifferenceType)
         {
-            return RevitParametersDifferences<RevitPulledParameters>(obj1, obj2, comparisonConfig)
-                .Union(RevitParametersDifferences<RevitParametersToPush>(obj1, obj2, comparisonConfig)).ToList();
+            if (revitParameterDifferenceType == RevitParameterDifferenceType.AddedAssigned || revitParameterDifferenceType == RevitParameterDifferenceType.AddedUnassigned)
+                return oM.Diffing.DifferenceType.Added;
+
+            if (revitParameterDifferenceType == RevitParameterDifferenceType.RemovedAssigned || revitParameterDifferenceType == RevitParameterDifferenceType.RemovedUnassigned)
+                return oM.Diffing.DifferenceType.Removed;
+
+            return oM.Diffing.DifferenceType.Modified; 
         }
+
+        /***************************************************/
     }
 }
 
