@@ -91,15 +91,19 @@ namespace BH.Engine.Adapters.Revit
             List<string> parametersToConsider,
             List<string> propertiesToConsider,
             bool considerOnlyParameterDifferences = false, 
-            bool considerAddedParameters = true, 
-            bool considerRemovedParameters = true, 
+            bool revitParams_ConsiderAddedAssigned = true,
+            bool revitParams_ConsiderAddedUnassigned = true,
+            bool revitParams_ConsiderRemovedAssigned = true,
+            bool revitParams_ConsiderRemovedUnassigned = true,
             bool considerUnassignedParameters = true)
         {
             RevitComparisonConfig rcc = new RevitComparisonConfig()
             {
-                ConsiderAddedParameters = considerAddedParameters,
-                ConsiderRemovedParameters = considerRemovedParameters,
-                ConsiderUnassignedParameters = considerUnassignedParameters,
+                RevitParams_ConsiderAddedAssigned = revitParams_ConsiderAddedAssigned,
+                RevitParams_ConsiderAddedUnassigned = revitParams_ConsiderAddedUnassigned,
+                RevitParams_ConsiderRemovedAssigned = revitParams_ConsiderRemovedAssigned,
+                RevitParams_ConsiderRemovedUnassigned = revitParams_ConsiderRemovedUnassigned,
+
                 ParametersToConsider = parametersToConsider,
                 PropertiesToConsider = considerOnlyParameterDifferences ? new List<string>() { "Considering only Revit Parameter Differences" } : propertiesToConsider // using a very improbable PropertyToConsider name to exclude all differences that are not Revit Parameter differences.
             };

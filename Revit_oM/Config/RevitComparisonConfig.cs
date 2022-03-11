@@ -57,10 +57,14 @@ namespace BH.oM.Adapters.Revit
         public virtual HashSet<NamedSignificantFigures> ParameterSignificantFigures { get; set; } = new HashSet<NamedSignificantFigures>();
 
         [Description("(Defaults to `true`) If false, if an object gets a new RevitParameter added to it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
-        public virtual bool ConsiderAddedParameters { get; set; } = true;
+        public virtual bool RevitParams_ConsiderAddedAssigned { get; set; } = true;
+
+        public virtual bool RevitParams_ConsiderAddedUnassigned { get; set; } = true;
 
         [Description("(Defaults to `true`) If false, if an object has a RevitParameter deleted from it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
-        public virtual bool ConsiderRemovedParameters { get; set; } = true;
+        public virtual bool RevitParams_ConsiderRemovedAssigned { get; set; } = true;
+
+        public virtual bool RevitParams_ConsiderRemovedUnassigned { get; set; } = true;
 
         [Description("(Defaults to `true`) If true, considers all differences including parameters that are null (unassigned)." +
              "\nIf false:\n" +

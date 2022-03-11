@@ -164,6 +164,7 @@
     <Compile Include="Compute\CloneType.cs" />
     <Compile Include="Compute\SortByPerformance.cs" />
     <Compile Include="Compute\RevitDiffing.cs" />
+    <Compile Include="Query\DifferenceType.cs" />
     <Compile Include="Create\Config\RevitPushConfig.cs" />
     <Compile Include="Create\Config\RevitPullConfig.cs" />
     <Compile Include="Create\Config\RevitComparisonConfig.cs" />
@@ -214,6 +215,7 @@
     <Compile Include="Query\LinkDocument.cs" />
     <Compile Include="Query\MappedFamilyNames.cs" />
     <Compile Include="Query\RenderMeshes.cs" />
+    <Compile Include="Query\OfType.cs" />
     <Compile Include="Query\RevitParametersDifferences.cs" />
     <Compile Include="Query\RevitParametersToPushDifferences.cs" />
     <Compile Include="Query\RevitPulledParametersDifferences.cs" />

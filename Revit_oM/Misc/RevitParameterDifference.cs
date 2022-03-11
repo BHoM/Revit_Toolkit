@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Diffing;
 using System.ComponentModel;
 
@@ -44,7 +45,7 @@ namespace BH.oM.Adapters.Revit
         public virtual string FullName { get; set; }
 
         [Description("Whether the RevitParameter that is Different was Modified, Removed or Added with respect to the old version of the owner object. Useful for filtering.")]
-        public virtual DifferenceType DifferenceType { get; set; }
+        public virtual RevitParameterDifferenceType DifferenceType { get; set; }
     }
 }
 

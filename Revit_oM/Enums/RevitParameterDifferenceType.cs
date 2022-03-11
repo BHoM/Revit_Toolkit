@@ -20,39 +20,28 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Base;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Elements;
-using BH.oM.Adapters.Revit.Parameters;
-using BH.oM.Base;
-using BH.oM.Diffing;
-using BH.oM.Base.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Xml.Linq;
-using BH.oM.Adapters.Revit.Enums;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.oM.Adapters.Revit.Enums
 {
-    public static partial class Query
+    /***************************************************/
+
+    [Description("Specifies various kinds of Differences found between a pair of RevitParameters.")]
+    public enum RevitParameterDifferenceType
     {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
-
-        [Description("Returns Property differences between RevitParameters owned by the two input objects.")]
-        [Input("obj1", "Past object being compared.")]
-        [Input("obj2", "Following object being compared.")]
-        [Input("comparisonConfig", "Comparison Config to be used during comparison.")]
-        [Output("parametersDifferences", "Differences in terms of RevitParameters found on the two input objects.")]
-        public static List<IPropertyDifference> RevitParametersDifferences(this object obj1, object obj2, BaseComparisonConfig comparisonConfig)
-        {
-            return RevitParametersDifferences<RevitPulledParameters>(obj1, obj2, comparisonConfig)
-                .Union(RevitParametersDifferences<RevitParametersToPush>(obj1, obj2, comparisonConfig)).ToList();
-        }
+        [Description("Indicates that a RevitParameter which was already existing on the owner object was modified in its Value.")]
+        Modified,
+        [Description("Indicates that a RevitParameter was added with a non-null Value on the owner object.")]
+        AddedAssigned,
+        [Description("Indicates that a RevitParameter was added with no value assigned (null Value) on the owner object.")]
+        AddedUnassigned,
+        [Description("Indicates that a RevitParameter that had a non-null Value was removed from the owner object.")]
+        RemovedAssigned,
+        [Description("Indicates that a RevitParameter which had no value assigned was removed from the owner object.")]
+        RemovedUnassigned,
     }
-}
 
+    /***************************************************/
+}
 
 
