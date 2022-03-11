@@ -56,21 +56,17 @@ namespace BH.oM.Adapters.Revit
              "\nIf conflicting values/multiple matches are found among the Configurations on numerical precision, the largest approximation among all (least precise number) is registered.")]
         public virtual HashSet<NamedSignificantFigures> ParameterSignificantFigures { get; set; } = new HashSet<NamedSignificantFigures>();
 
-        [Description("(Defaults to `true`) If false, if an object gets a new RevitParameter added to it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
+        [Description("(Defaults to `true`) If false, if an object gets a new RevitParameter with a non-null Value added to it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
         public virtual bool RevitParams_ConsiderAddedAssigned { get; set; } = true;
 
+        [Description("(Defaults to `true`) If false, if an object gets a new RevitParameter with a null Value added to it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
         public virtual bool RevitParams_ConsiderAddedUnassigned { get; set; } = true;
 
-        [Description("(Defaults to `true`) If false, if an object has a RevitParameter deleted from it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
+        [Description("(Defaults to `true`) If false, if an object has a RevitParameter with a non-null Value deleted from it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
         public virtual bool RevitParams_ConsiderRemovedAssigned { get; set; } = true;
 
+        [Description("(Defaults to `true`) If false, if an object has a RevitParameter with a null Value deleted from it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
         public virtual bool RevitParams_ConsiderRemovedUnassigned { get; set; } = true;
-
-        [Description("(Defaults to `true`) If true, considers all differences including parameters that are null (unassigned)." +
-             "\nIf false:\n" +
-             "- a RevitParameter that was null in the past object and is deleted in the following object is NOT considered as a difference, and it does not count in considering the owner object as 'Modified'.\n" +
-             "- a RevitParameter that is null in the following object and was not present in the pastobject is NOT considered as a difference, and it does not count in considering the owner object as 'Modified'.")]
-        public virtual bool ConsiderUnassignedParameters { get; set; } = true;
 
         /***************************************************/
     }
