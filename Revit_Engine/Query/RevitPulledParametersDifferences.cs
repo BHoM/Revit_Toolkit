@@ -121,7 +121,11 @@ namespace BH.Engine.Adapters.Revit
                         continue;
 
                     // If we got here, the two parameters are different, and we want to record this difference.
-                    string description = $"A Revit Parameter with name `{paramName}` was modified on the object. It had value: `{parameter1.Value}` and was updated to value: `{parameter2.Value}`";
+                    string description = $"A Revit Parameter with name `{paramName}` was modified on the object. ";
+                    if (parameter1.Value == null || string.IsNullOrWhiteSpace(parameter1.Value.ToString()))
+                        description += $"It had no value before, and it is now updated to value: `{parameter2.Value}`";
+                    else
+                        description += $"It had value: `{parameter1.Value}` and was updated to value: `{parameter2.Value}`";
                     result.AddParameterDifference($"{paramName} (RevitParameter)", differenceFullName, parameter1.Value, parameter2.Value, RevitParameterDifferenceType.Modified, description);
                 }
 
@@ -144,13 +148,13 @@ namespace BH.Engine.Adapters.Revit
                             continue;
 
                         // Check if we want to consider null parameters.
-                        if (rcc != null && rcc.RevitParams_ConsiderRemovedUnassigned && deletedParameter.Value == null)
+                        if (rcc != null && rcc.RevitParams_ConsiderRemovedUnassigned && string.IsNullOrWhiteSpace(deletedParameter.Value?.ToString()))
                         {
                             string description = $"A Revit Parameter named `{deletedParamName}` and which had no Value was removed from the object.";
                             result.AddParameterDifference($"{deletedParamName} (RevitParameter)", differenceFullName, deletedParameter.Value, null, RevitParameterDifferenceType.RemovedUnassigned, description);
                         }
 
-                        if (rcc != null && rcc.RevitParams_ConsiderRemovedAssigned && deletedParameter.Value != null)
+                        if (rcc != null && rcc.RevitParams_ConsiderRemovedAssigned && !string.IsNullOrWhiteSpace(deletedParameter.Value?.ToString()))
                         {
                             string description = $"A Revit Parameter with name `{deletedParamName}` was removed from the object. It had value: {deletedParameter.Value}";
                             result.AddParameterDifference($"{deletedParamName} (RevitParameter)", differenceFullName, deletedParameter.Value, null, RevitParameterDifferenceType.RemovedAssigned, description);
@@ -176,13 +180,13 @@ namespace BH.Engine.Adapters.Revit
                             continue;
 
                         // Check if we want to consider null parameters.
-                        if (rcc != null && rcc.RevitParams_ConsiderAddedUnassigned && addedParameter.Value == null)
+                        if (rcc != null && rcc.RevitParams_ConsiderAddedUnassigned && string.IsNullOrWhiteSpace(addedParameter.Value?.ToString()))
                         {
                             string description = $"A Revit Parameter named `{addedParamName}` was added to the object, but with no Value assigned.";
                             result.AddParameterDifference($"{addedParamName} (RevitParameter)", differenceFullName, null, addedParameter.Value, RevitParameterDifferenceType.AddedUnassigned, description);
                         }
 
-                        if (rcc != null && rcc.RevitParams_ConsiderAddedAssigned && addedParameter.Value != null)
+                        if (rcc != null && rcc.RevitParams_ConsiderAddedAssigned && !string.IsNullOrWhiteSpace(addedParameter.Value?.ToString()))
                         {
                             string description = $"A Revit Parameter `{addedParamName}` with value `{addedParameter.Value}` was added to the object.";
                             result.AddParameterDifference($"{addedParamName} (RevitParameter)", differenceFullName, null, addedParameter.Value, RevitParameterDifferenceType.AddedAssigned, description);
