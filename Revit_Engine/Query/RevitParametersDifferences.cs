@@ -48,6 +48,9 @@ namespace BH.Engine.Adapters.Revit
         [Output("parametersDifferences", "Differences in terms of RevitParameters found on the two input objects.")]
         public static List<IPropertyDifference> RevitParametersDifferences(this object obj1, object obj2, BaseComparisonConfig comparisonConfig)
         {
+            if (obj1 == null || obj2 == null)
+                return new List<IPropertyDifference>();
+
             return RevitParametersDifferences<RevitPulledParameters>(obj1, obj2, comparisonConfig)
                 .Union(RevitParametersDifferences<RevitParametersToPush>(obj1, obj2, comparisonConfig)).ToList();
         }

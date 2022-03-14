@@ -49,6 +49,9 @@ namespace BH.Engine.Adapters.Revit
         [Output("parametersDifferences", "Differences in terms of RevitPulledParameters found on the two input objects.")]
         public static List<IPropertyDifference> RevitPulledParametersDifferences(this object obj1, object obj2, BaseComparisonConfig comparisonConfig)
         {
+            if (obj1 == null || obj2 == null)
+                return new List<IPropertyDifference>();
+
             return RevitParametersDifferences<RevitPulledParameters>(obj1, obj2, comparisonConfig);
         }
 
@@ -91,9 +94,8 @@ namespace BH.Engine.Adapters.Revit
             List<IPropertyDifference> result = new List<IPropertyDifference>();
 
             // Check if we have a RevitComparisonConfig input.
-            RevitComparisonConfig rcc = comparisonConfig as RevitComparisonConfig;
-
-
+            RevitComparisonConfig rcc = comparisonConfig as RevitComparisonConfig ?? new RevitComparisonConfig();
+            
             // Find the overlapping nesting levels, i.e. those object property levels where RevitParameters were found, and which are common between obj1 and obj2.
             // We look for differences in Parameters only in those. If there is a difference in nesting levels between obj1 and obj2,
             // the difference is picked as an object property difference, which is higher-importance than RevitParameters.
