@@ -47,6 +47,9 @@ namespace BH.Engine.Adapters.Revit
         [Output("parametersDifferences", "RevitParamDifferences that are of the input type.")]
         public static List<RevitParameterDifference> OfType(this IEnumerable<RevitParameterDifference> revitParamDifferences, RevitParameterDifferenceType revitParameterDifferenceType)
         {
+            if (revitParamDifferences == null)
+                return new List<RevitParameterDifference>();
+
             return revitParamDifferences.Where(rpd => rpd.DifferenceType == revitParameterDifferenceType).ToList();
         }
     }
