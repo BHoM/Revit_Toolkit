@@ -72,8 +72,8 @@ namespace BH.Engine.Adapters.Revit
             var allParamsDict_obj1 = new Dictionary<string, Dictionary<string, RevitParameter>>();
             var allParamsDict_obj2 = new Dictionary<string, Dictionary<string, RevitParameter>>();
 
-            allParamsDict_obj1 = BH.Engine.Reflection.Query.PropertyFullNameValueGroups<RevitParameter>(obj1 as IBHoMObject);
-            allParamsDict_obj2 = BH.Engine.Reflection.Query.PropertyFullNameValueGroups<RevitParameter>(obj2 as IBHoMObject);
+            allParamsDict_obj1 = BH.Engine.Reflection.Query.PropertyFullNameValueGroups<RevitParameter>(obj1 as IBHoMObject, typeof(T));
+            allParamsDict_obj2 = BH.Engine.Reflection.Query.PropertyFullNameValueGroups<RevitParameter>(obj2 as IBHoMObject, typeof(T));
 
             if ((!allParamsDict_obj1?.Any() ?? true) || (!allParamsDict_obj2?.Any() ?? true))
                 return result; // no pulled parameters found.
