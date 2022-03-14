@@ -80,7 +80,7 @@ namespace BH.Engine.Adapters.Revit
            "\nSupports * wildcard." +
            "\nNote that using this will incur in a general slowdown because it is computationally heavy. See the wiki for more details.")]
         [Input("considerOnlyParameterDifferences", "(Optional, defaults to `false`) If `true`, objects will be considered 'Modified' only if their RevitParameter changed, and only RevitParameterDifferences will be returned.")]
-        [Input("considerAddedParameters", "(Optional, defaults to `true`) If false, if an object gets a new RevitParameter added to it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
+        [Input("revitParams_ConsiderAddedAssigned", "(Optional, defaults to `true`) If false, if an object gets a new RevitParameter added to it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
         [Input("considerRemovedParameters", "(Optional, defaults to `true`) If false, if an object has a RevitParameter deleted from it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
         [Input("considerUnassignedParameters", "(Optional, defaults to `true`) If true, considers all differences including parameters that are null (unassigned)." +
             "\nIf false:\n" +
@@ -90,22 +90,22 @@ namespace BH.Engine.Adapters.Revit
         public static RevitComparisonConfig RevitComparisonConfig(
             List<string> parametersToConsider,
             List<string> propertiesToConsider,
-            bool considerOnlyParameterDifferences = false, 
-            bool revitParams_ConsiderAddedAssigned = true,
-            bool revitParams_ConsiderAddedUnassigned = true,
-            bool revitParams_ConsiderRemovedAssigned = true,
-            bool revitParams_ConsiderRemovedUnassigned = true,
+            bool params_ConsiderOnlyParameterDifferences = false, 
+            bool params_ConsiderAddedAssigned = true,
+            bool params_ConsiderAddedUnassigned = true,
+            bool params_ConsiderRemovedAssigned = true,
+            bool params_ConsiderRemovedUnassigned = true,
             bool considerUnassignedParameters = true)
         {
             RevitComparisonConfig rcc = new RevitComparisonConfig()
             {
-                RevitParams_ConsiderAddedAssigned = revitParams_ConsiderAddedAssigned,
-                RevitParams_ConsiderAddedUnassigned = revitParams_ConsiderAddedUnassigned,
-                RevitParams_ConsiderRemovedAssigned = revitParams_ConsiderRemovedAssigned,
-                RevitParams_ConsiderRemovedUnassigned = revitParams_ConsiderRemovedUnassigned,
+                RevitParams_ConsiderAddedAssigned = params_ConsiderAddedAssigned,
+                RevitParams_ConsiderAddedUnassigned = params_ConsiderAddedUnassigned,
+                RevitParams_ConsiderRemovedAssigned = params_ConsiderRemovedAssigned,
+                RevitParams_ConsiderRemovedUnassigned = params_ConsiderRemovedUnassigned,
 
                 ParametersToConsider = parametersToConsider,
-                PropertiesToConsider = considerOnlyParameterDifferences ? new List<string>() { "Considering only Revit Parameter Differences" } : propertiesToConsider // using a very improbable PropertyToConsider name to exclude all differences that are not Revit Parameter differences.
+                PropertiesToConsider = params_ConsiderOnlyParameterDifferences ? new List<string>() { "Considering only Revit Parameter Differences" } : propertiesToConsider // using a very improbable PropertyToConsider name to exclude all differences that are not Revit Parameter differences.
             };
 
             return rcc;
