@@ -79,13 +79,11 @@ namespace BH.Engine.Adapters.Revit
            "\nE.g. Given input objects BH.oM.Structure.Elements.Bar, specifying `StartNode` will only check that property of the Bar." +
            "\nSupports * wildcard." +
            "\nNote that using this will incur in a general slowdown because it is computationally heavy. See the wiki for more details.")]
-        [Input("considerOnlyParameterDifferences", "(Optional, defaults to `false`) If `true`, objects will be considered 'Modified' only if their RevitParameter changed, and only RevitParameterDifferences will be returned.")]
-        [Input("revitParams_ConsiderAddedAssigned", "(Optional, defaults to `true`) If false, if an object gets a new RevitParameter added to it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
-        [Input("considerRemovedParameters", "(Optional, defaults to `true`) If false, if an object has a RevitParameter deleted from it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
-        [Input("considerUnassignedParameters", "(Optional, defaults to `true`) If true, considers all differences including parameters that are null (unassigned)." +
-            "\nIf false:\n" +
-            "- a RevitParameter that was null in the past object and is deleted in the following object is NOT considered as a difference, and it does not count in considering the owner object as 'Modified'.\n" +
-            "- a RevitParameter that is null in the following object and was not present in the pastobject is NOT considered as a difference, and it does not count in considering the owner object as 'Modified'.")]
+        [Input("params_ConsiderOnlyParameterDifferences", "(Optional, defaults to `false`) If `true`, objects will be considered 'Modified' only if their RevitParameter changed (as per the options below), and only RevitParameterDifferences will be returned.")]
+        [Input("params_ConsiderAddedAssigned", "(Optional, defaults to `true`) If false, if an object gets a new RevitParameter added to it with a non-null Value assigned to it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
+        [Input("params_ConsiderAddedUnassigned", "(Optional, defaults to `true`) If false, if an object gets a new RevitParameter added to it without a Value or with a null Value assigned to it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
+        [Input("params_ConsiderRemovedAssigned", "(Optional, defaults to `true`) If false, if an object had a RevitParameter with a non-null Value assigned to it, and the RevitParameter is deleted, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
+        [Input("params_ConsiderRemovedUnassigned", "(Optional, defaults to `true`) If false, if an object had a RevitParameter without a Value or with a null Value assigned to it, and the RevitParameter is deleted, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
         [Output("rcc", "RevitComparisonConfig that can be used to configure the Comparison/Diffing process.")]
         public static RevitComparisonConfig RevitComparisonConfig(
             List<string> parametersToConsider,
@@ -94,8 +92,7 @@ namespace BH.Engine.Adapters.Revit
             bool params_ConsiderAddedAssigned = true,
             bool params_ConsiderAddedUnassigned = true,
             bool params_ConsiderRemovedAssigned = true,
-            bool params_ConsiderRemovedUnassigned = true,
-            bool considerUnassignedParameters = true)
+            bool params_ConsiderRemovedUnassigned = true)
         {
             RevitComparisonConfig rcc = new RevitComparisonConfig()
             {
