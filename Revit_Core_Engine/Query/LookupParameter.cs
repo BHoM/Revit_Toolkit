@@ -62,6 +62,40 @@ namespace BH.Revit.Engine.Core
             return null;
         }
 
+        [Description("Searches a Revit Family Instance for the first existing parameter of a given name, by first looking for Instance parameters and then, optionally, for Type parameters.")]
+        [Input("familyInstance", "Revit Family Instance to be queried.")]
+        [Input("parameterName", "Names of the parameter to be iterated over in search for the parameter.")]
+        [Input("allowTypeParameters", "Optional, whether or not to also look for Type parameters if no Instance parameters were found.")]
+        [Output("parameter", "Parameter extracted from the input Revit Family Instance.")]
+        public static Parameter LookupParameter(this FamilyInstance familyInstance, string parameterName, bool allowTypeParameters = true)
+        {
+            if (familyInstance == null || string.IsNullOrEmpty(parameterName))
+                return null;
+           
+            // Try to return an Instance Parameter
+            foreach (Parameter p in familyInstance.Parameters)
+            {
+                if (p != null && p.Definition.Name == parameterName)
+                    return p;
+            }
+
+            if (!allowTypeParameters)
+                return null;
+            
+            FamilySymbol familySymbol = familyInstance.Symbol;
+            if (familySymbol == null)
+                return null;
+            
+            // Try to return a Type Parameter
+            foreach (Parameter p in familySymbol.Parameters)
+            {
+                if (p != null && p.HasValue && p.Definition.Name == parameterName)
+                    return p;
+            }
+
+            return null;
+        }
+
         /***************************************************/
 
         [Description("Queries a Revit Element for the value of a parameter under the given name and returns this value as a double.")]
@@ -310,6 +344,36 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        [Description("Queries a Revit Parameter for its value, regardless of the its storage type.")]
+        [Input("parameter", "Revit Parameter to be queried.")]
+        [Input("convertUnits", "If true, the output will be converted double values from Revit internal units to SI.")]
+        [Output("value", "Value as object extracted from the input Revit Parameter.")]
+        public static object LookupParameterObject(this Parameter parameter, bool convertUnits = true)
+        {
+            if (parameter == null || parameter.IsReadOnly)
+                return null;
+
+            switch (parameter.StorageType)
+            {
+                case StorageType.Double:
+                    if (convertUnits)
+                        return parameter.AsDouble().ToSI(parameter.Definition.GetSpecTypeId());
+                    else
+                        return parameter.AsDouble();
+                case StorageType.Integer:
+                    return parameter.AsInteger();
+                case StorageType.String:
+                    return parameter.AsString();
+                case StorageType.ElementId:
+                    if (parameter.AsElementId() == null || !parameter.HasValue)
+                        return parameter.AsValueString();
+                    else
+                        return parameter.AsElementId();
+            }
+
+            return null;
+        }
     }
 }
 
