@@ -36,19 +36,42 @@ namespace BH.Revit.Engine.Core
         [Description("Creates and returns a new Section view in the current Revit file.")]
         [Input("document", "Revit current UI document to be processed.")]
         [Input("boundingBoxXyz", "The BoundingBoxXYZ to fit the section to.")]
-        [Input("viewName", "Optional, name of the new view.")]
-        [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
-        [Input("viewDetailLevel", "Optional, the Detail Level of the view.")]
-        [Output("viewSection", "The new Section view.")]
-        public static View ViewSection(this Document document, Autodesk.Revit.DB.BoundingBoxXYZ boundingBoxXyz, string viewName = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse)
+        [Input("viewName", "Name of the new view.")]
+        [Input("viewFamilyType", "View type to be applied on view creation. If left empty, a default section view type will be used.")]
+        [Input("viewTemplateId", "View Template Id to be applied in the view. If left empty, default template defined in view type will be applied.")]
+        [Input("viewScale", "Scale of the view in format 1:value (1:100 should take input equal to 100). Only applicable if the template does not own the parameter.")]
+        [Input("viewDetailLevel", "Detail Level of the view. Only applicable if the template does not own the parameter.")]
+        [Output("viewSection", "Section view created based on the inputs.")]
+        public static ViewSection ViewSection(this Document document, BoundingBoxXYZ boundingBoxXyz, string viewName = null, ViewFamilyType viewFamilyType = null, ElementId viewTemplateId = null, int viewScale = 0, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Undefined)
         {
-            View result = null;
+            if (document == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Could not create a section view in a null document.");
+                return null;
+            }
 
-            ViewFamilyType vft = Query.ViewFamilyType(document, ViewFamily.Section);
+            if (boundingBoxXyz == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Could not create a section view based on a null box.");
+                return null;
+            }
 
-            result = Autodesk.Revit.DB.ViewSection.CreateSection(document, vft.Id, boundingBoxXyz);
-            
-            Modify.SetViewDetailLevel(result, viewDetailLevel);
+            if (viewFamilyType == null)
+                viewFamilyType = Query.ViewFamilyType(document, ViewFamily.Section);
+
+            if (viewFamilyType == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Section view creation failed: no valid view type could not be found to create it.");
+                return null;
+            }
+
+            ViewSection result = Autodesk.Revit.DB.ViewSection.CreateSection(document, viewFamilyType.Id, boundingBoxXyz);
+
+            if (viewScale != 0)
+                result.SetViewScale(viewScale);
+
+            if (viewDetailLevel != ViewDetailLevel.Undefined)
+                result.SetViewDetailLevel(viewDetailLevel);
 
             if (viewTemplateId != null)
             {
