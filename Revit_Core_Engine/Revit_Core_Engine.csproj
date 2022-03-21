@@ -381,10 +381,12 @@
     <Compile Include="Modify\SetDimensions.cs" />
     <Compile Include="Modify\SetProperty.cs" />
     <Compile Include="Modify\SetViewDetailLevel.cs" />
+    <Compile Include="Modify\SetViewScale.cs" />
     <Compile Include="Objects\SpecTypeId.cs" />
     <Compile Include="Objects\UnitTypeId.cs" />
     <Compile Include="Query\AllConvertMethods.cs" />
     <Compile Include="Query\BHoMType.cs" />
+    <Compile Include="Query\Bounds.cs" />
     <Compile Include="Query\CableTraySectionProfile.cs" />
     <Compile Include="Query\CableTraySectionProperty.cs" />
     <Compile Include="Query\CategoriesWithBoundParameters.cs" />
@@ -394,6 +396,7 @@
     <Compile Include="Query\ConvertMethod.cs" />
     <Compile Include="Query\CoordinateSystem.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfEverything.cs" />
+    <Compile Include="Query\ElevationBox.cs" />
     <Compile Include="Query\FacadeCurtainPanels.cs" />
     <Compile Include="Query\CurtainWallMullions.cs" />
     <Compile Include="Compute\FindHost.cs" />
@@ -419,6 +422,7 @@
     <Compile Include="Query\LinkPanelFaces.cs" />
     <Compile Include="Query\LinkTransform.cs" />
     <Compile Include="Query\Passes.cs" />
+    <Compile Include="Query\PhysicalBounds.cs" />
     <Compile Include="Query\Shape.cs" />
     <Compile Include="Query\MaterialTakeoff.cs" />
     <Compile Include="Query\PipeSectionProperty.cs" />
