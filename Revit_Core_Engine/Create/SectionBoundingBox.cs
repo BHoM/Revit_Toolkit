@@ -48,14 +48,14 @@ namespace BH.Revit.Engine.Core
             BoundingBoxXYZ result = new BoundingBoxXYZ();
 
             //calculates the sizes of a BB
-            double lengthOffseted = line.Length + offset;
-            double heightOffseted = height + (offset / 2);
-            double bottomOffseted = bottomElevation - (offset / 2);
+            double lengthWithOffset = line.Length + offset * 2;
+            double heightWithOffset = bottomElevation + height + offset;
+            double bottomWithOffset = bottomElevation - offset;
 
             result.Enabled = true;
 
-            result.Max = new XYZ(lengthOffseted / 2, heightOffseted, depth);
-            result.Min = new XYZ(-lengthOffseted / 2, bottomOffseted, 0);
+            result.Max = new XYZ(lengthWithOffset / 2, heightWithOffset, depth);
+            result.Min = new XYZ(-lengthWithOffset / 2, bottomWithOffset, 0);
 
             //transform to view coordinates
             XYZ direction = (line.GetEndPoint(1) - line.GetEndPoint(0)).Normalize();
