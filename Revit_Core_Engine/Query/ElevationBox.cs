@@ -22,8 +22,9 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
-
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -33,16 +34,16 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the bounding box containing a given Revit element, aligned with the given direction, inflated by a given offset.")]
-        [Input("element", "Element to find the elevation box for.")]
+        [Description("Returns the combined bounding box containing given Revit elements, aligned with the given direction, inflated by a given offset.")]
+        [Input("elements", "Elements to find the elevation box for.")]
         [Input("direction", "Direction, along which the elevation is meant to be made.")]
         [Input("offset", "Offset value to inflate the elevation view in width and height.")]
-        [Output("box", "Elevation box of the input Revit element.")]
-        public static BoundingBoxXYZ ElevationBox(this Element element, XYZ direction, double offset)
+        [Output("box", "Elevation box of the input Revit elements.")]
+        public static BoundingBoxXYZ ElevationBox(this IEnumerable<Element> elements, XYZ direction, double offset)
         {
-            if (element == null)
+            if (elements == null || !elements.Any())
             {
-                BH.Engine.Base.Compute.RecordError("Could create elevation box for a null Revit element.");
+                BH.Engine.Base.Compute.RecordError("Could create elevation box for null Revit elements.");
                 return null;
             }
 
@@ -55,7 +56,7 @@ namespace BH.Revit.Engine.Core
             direction = new XYZ(direction.X, direction.Y, 0);
             if (direction.GetLength() < BH.oM.Geometry.Tolerance.Distance)
             {
-                BH.Engine.Base.Compute.RecordError("Cannot create the elevation box of an element because its location curve starts and ends at the same point.");
+                BH.Engine.Base.Compute.RecordError("Cannot create the elevation box of an element because its direction starts and ends at the same point.");
                 return null;
             }
 
@@ -63,7 +64,7 @@ namespace BH.Revit.Engine.Core
             Transform sectionRotation = Transform.CreateRotation(XYZ.BasisZ, XYZ.BasisX.AngleOnPlaneTo(direction, XYZ.BasisZ));
 
             // Dimensions of the box
-            BoundingBoxXYZ boundingBox = element.PhysicalBounds(sectionRotation.Inverse);
+            BoundingBoxXYZ boundingBox = elements.PhysicalBounds(sectionRotation.Inverse);
             double offsetFromElement = 1;
             double y = boundingBox.Transform.Origin.Y + boundingBox.Max.Y + offsetFromElement;
             XYZ start = sectionRotation.OfPoint(new XYZ(boundingBox.Min.X + boundingBox.Transform.Origin.X, y, 0));
@@ -75,6 +76,18 @@ namespace BH.Revit.Engine.Core
             double height = maxZ - minZ;
 
             return BH.Revit.Engine.Core.Create.SectionBoundingBox(line, minZ, height, offset.FromSI(SpecTypeId.Length), depth);
+        }
+
+        /***************************************************/
+        
+        [Description("Returns the bounding box containing a given Revit element, aligned with the given direction, inflated by a given offset.")]
+        [Input("element", "Element to find the elevation box for.")]
+        [Input("direction", "Direction, along which the elevation is meant to be made.")]
+        [Input("offset", "Offset value to inflate the elevation view in width and height.")]
+        [Output("box", "Elevation box of the input Revit element.")]
+        public static BoundingBoxXYZ ElevationBox(this Element element, XYZ direction, double offset)
+        {
+            return new List<Element> { element }.ElevationBox(direction, offset);
         }
 
         /***************************************************/

@@ -39,13 +39,13 @@ namespace BH.Revit.Engine.Core
         [Input("solids", "A collection of solids to find the bounds for.")]
         [Input("transform", "Optional transform of the bounding box's coordinate system.")]
         [Output("bounds", "Combined bounding box of the input colection of volumetric solids.")]
-        public static BoundingBoxXYZ Bounds(this List<Solid> solids, Transform transform = null)
+        public static BoundingBoxXYZ Bounds(this IEnumerable<Solid> solids, Transform transform = null)
         {
             solids = solids?.Where(x => x != null && x.Volume > 1e-6).ToList();
-            if (solids == null || solids.Count == 0)
+            if (solids == null || !solids.Any())
                 return null;
 
-            Solid union = solids[0];
+            Solid union = solids.First();
             foreach (Solid solid in solids.Skip(1))
             {
                 union = BooleanOperationsUtils.ExecuteBooleanOperation(union, solid, BooleanOperationsType.Union);

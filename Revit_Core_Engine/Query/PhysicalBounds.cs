@@ -22,8 +22,9 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
-
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -33,15 +34,15 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the physical bounds (i.e. the combined bounds of all volumetric solids) of a given Revit element.")]
-        [Input("element", "Revit element to extract the bounds from.")]
+        [Description("Returns the physical bounds (i.e. the combined bounds of all volumetric solids) of given Revit elements.")]
+        [Input("elements", "Revit elements to extract the bounds from.")]
         [Input("transform", "Optional transform of the bounding box's coordinate system.")]
-        [Output("bounds", "Physical bounds of the input Revit element.")]
-        public static BoundingBoxXYZ PhysicalBounds(this Element element, Transform transform = null)
+        [Output("bounds", "Physical bounds of the input Revit elements.")]
+        public static BoundingBoxXYZ PhysicalBounds(this IEnumerable<Element> elements, Transform transform = null)
         {
-            if (element == null)
+            if (elements == null)
             {
-                BH.Engine.Base.Compute.RecordError("Could not extract physical bounds from a null Revit element.");
+                BH.Engine.Base.Compute.RecordError("Could not extract physical bounds from null Revit elements.");
                 return null;
             }
 
@@ -50,7 +51,18 @@ namespace BH.Revit.Engine.Core
             options.ComputeReferences = false;
             options.IncludeNonVisibleObjects = false;
 
-            return element?.Solids(options)?.Bounds(transform);
+            return elements?.SelectMany(x => x.Solids(options))?.Bounds(transform);
+        }
+
+        /***************************************************/
+
+        [Description("Returns the physical bounds (i.e. the combined bounds of all volumetric solids) of a given Revit element.")]
+        [Input("element", "Revit element to extract the bounds from.")]
+        [Input("transform", "Optional transform of the bounding box's coordinate system.")]
+        [Output("bounds", "Physical bounds of the input Revit element.")]
+        public static BoundingBoxXYZ PhysicalBounds(this Element element, Transform transform = null)
+        {
+            return new List<Element> { element }.PhysicalBounds(transform);
         }
 
         /***************************************************/
