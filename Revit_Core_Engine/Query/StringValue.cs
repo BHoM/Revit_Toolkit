@@ -42,10 +42,10 @@ namespace BH.Revit.Engine.Core
                 switch (parameter.StorageType)
                 {
                     case (StorageType.Double):
-                        return UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), parameter.GetUnitTypeId()).ToString();
+                        return parameter.AsValueString();
                     case (StorageType.Integer):
                         {
-                            if (parameter.Definition.ParameterType == ParameterType.Invalid)
+                            if (parameter.Definition.ParameterType == ParameterType.YesNo || parameter.Definition.ParameterType == ParameterType.Invalid)
                                 return parameter.AsValueString();
                             else
                                 return parameter.AsInteger().ToString();
