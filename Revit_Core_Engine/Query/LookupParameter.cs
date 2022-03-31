@@ -82,6 +82,7 @@ namespace BH.Revit.Engine.Core
             if (!allowTypeParameters)
                 return null;
             
+            // Try to return a Type Parameter
             Element elementSymbol = element.Document.GetElement(element.GetTypeId());
             return elementSymbol?.LookupParameter(parameterName);
         }
