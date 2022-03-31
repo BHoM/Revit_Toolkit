@@ -63,17 +63,17 @@ namespace BH.Revit.Engine.Core
         }
 
         [Description("Searches a Revit Family Instance for the first existing parameter of a given name, by first looking for Instance parameters and then, optionally, for Type parameters.")]
-        [Input("familyInstance", "Revit Family Instance to be queried.")]
+        [Input("element", "Revit element to be queried.")]
         [Input("parameterName", "Names of the parameter to be iterated over in search for the parameter.")]
         [Input("allowTypeParameters", "Optional, whether or not to also look for Type parameters if no Instance parameters were found.")]
         [Output("parameter", "Parameter extracted from the input Revit Family Instance.")]
-        public static Parameter LookupParameter(this FamilyInstance familyInstance, string parameterName, bool allowTypeParameters = true)
+        public static Parameter LookupParameter(this Element element, string parameterName, bool allowTypeParameters = true)
         {
-            if (familyInstance == null || string.IsNullOrEmpty(parameterName))
+            if (element == null || string.IsNullOrEmpty(parameterName))
                 return null;
            
             // Try to return an Instance Parameter
-            foreach (Parameter p in familyInstance.Parameters)
+            foreach (Parameter p in element.Parameters)
             {
                 if (p != null && p.Definition.Name == parameterName)
                     return p;
@@ -82,18 +82,8 @@ namespace BH.Revit.Engine.Core
             if (!allowTypeParameters)
                 return null;
             
-            FamilySymbol familySymbol = familyInstance.Symbol;
-            if (familySymbol == null)
-                return null;
-            
-            // Try to return a Type Parameter
-            foreach (Parameter p in familySymbol.Parameters)
-            {
-                if (p != null && p.HasValue && p.Definition.Name == parameterName)
-                    return p;
-            }
-
-            return null;
+            Element elementSymbol = element.Document.GetElement(element.GetTypeId());
+            return elementSymbol?.LookupParameter(parameterName);
         }
 
         /***************************************************/
@@ -345,48 +335,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Queries a Revit Parameter for its value, regardless of the its storage type.")]
-        [Input("parameter", "Revit Parameter to be queried.")]
-        [Input("convertDoubleUnits", "If true, the output will convert double values from Revit internal units to SI.")]
-        [Input("convertDoubleToHumanReadable", "If true, the output will convert double values from Revit internal units to Revit document's display unit (mm, cm, degrees, etc).")]
-        [Input("convertIdToHumanReadable", "If true, the output will convert ElementId values from Revit internal units to human readable values, such as Level name.")]
-        [Output("value", "Value as object extracted from the input Revit Parameter.")]
-        public static object LookupParameterObject(this Parameter parameter, bool convertDoubleUnits = false, bool convertDoubleToHumanReadable = false, bool convertIdToHumanReadable = false)
-        {
-            if (parameter == null || parameter.IsReadOnly)
-                return null;
-
-            switch (parameter.StorageType)
-            {
-                case StorageType.Double:
-                    if (convertDoubleUnits)
-#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
-                        return parameter.AsDouble().ToSI(parameter.Definition.GetSpecTypeId());
-#else
-                        return parameter.AsDouble().ToSI(parameter.Definition.GetDataType());
-#endif
-                    else if (convertDoubleToHumanReadable)
-#if (REVIT2018 || REVIT2019 || REVIT2020)
-                        return UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), parameter.DisplayUnitType);//parameter.AsDouble();
-#else
-                        return UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(), parameter.GetUnitTypeId());
-#endif
-                    else
-                        return parameter.AsDouble();
-
-                case StorageType.Integer:
-                    return parameter.AsInteger();
-                case StorageType.String:
-                    return parameter.AsString();
-                case StorageType.ElementId:
-                    if (parameter.AsElementId() == null || !parameter.HasValue || convertIdToHumanReadable)
-                        return parameter.AsValueString();
-                    else
-                        return parameter.AsElementId();
-            }
-
-            return null;
-        }
     }
 }
 
