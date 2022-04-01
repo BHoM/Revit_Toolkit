@@ -73,11 +73,9 @@ namespace BH.Revit.Engine.Core
                 return null;
            
             // Try to return an Instance Parameter
-            foreach (Parameter p in element.Parameters)
-            {
-                if (p != null && p.Definition.Name == parameterName)
-                    return p;
-            }
+            Parameter parameter = element.LookupParameter("parameterName");
+            if (parameter != null)
+                return parameter;
 
             if (!allowTypeParameters)
                 return null;
