@@ -67,13 +67,13 @@ namespace BH.Revit.Engine.Core
         [Input("parameterName", "Names of the parameter to be iterated over in search for the parameter.")]
         [Input("allowTypeParameters", "Optional, whether or not to also look for Type parameters if no Instance parameters were found.")]
         [Output("parameter", "Parameter extracted from the input Revit Family Instance.")]
-        public static Parameter LookupParameter(this Element element, string parameterName, bool allowTypeParameters = true)
+        public static Parameter LookupParameter(this Element element, string parameterName, bool allowTypeParameters)
         {
             if (element == null || string.IsNullOrEmpty(parameterName))
                 return null;
            
             // Try to return an Instance Parameter
-            Parameter parameter = element.LookupParameter("parameterName");
+            Parameter parameter = element.LookupParameter(parameterName);
             if (parameter != null)
                 return parameter;
 
