@@ -23,7 +23,6 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
