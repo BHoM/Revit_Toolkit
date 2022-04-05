@@ -48,28 +48,29 @@ namespace BH.Revit.Engine.Core
 
             if (box1.Transform.IsTranslation == false || box2.Transform.IsTranslation == false)
             {
-                BH.Engine.Base.Compute.RecordError("Intersection of the bounding boxes could not be checked. One or both of the bounding boxes has unsupported transformation.");
+                BH.Engine.Base.Compute.RecordError("Intersection of the bounding boxes could not be checked. Only translation transformation is currently supported.");
                 return false;
             }
 
+            XYZ min1 = box1.Min;
+            XYZ max1 = box1.Max;
+            XYZ min2 = box2.Min;
+            XYZ max2 = box2.Max;
+
             if (!box1.Transform.IsIdentity)
             {
-                BoundingBoxXYZ newBox1 = new BoundingBoxXYZ();
-                newBox1.Min = box1.Min.Add(box1.Transform.Origin);
-                newBox1.Max = box1.Max.Add(box1.Transform.Origin);
-                box1 = newBox1;
+                min1 += box1.Transform.Origin;
+                max1 += box1.Transform.Origin;
             }
             if (!box2.Transform.IsIdentity)
             {
-                BoundingBoxXYZ newBox2 = new BoundingBoxXYZ();
-                newBox2.Min = box2.Min.Add(box2.Transform.Origin);
-                newBox2.Max = box2.Max.Add(box2.Transform.Origin);
-                box2 = newBox2;
+                min2 += box2.Transform.Origin;
+                max2 += box2.Transform.Origin;
             }
 
-            return (box1.Min.X <= box2.Max.X + tolerance && box2.Min.X <= box1.Max.X + tolerance &&
-                     box1.Min.Y <= box2.Max.Y + tolerance && box2.Min.Y <= box1.Max.Y + tolerance &&
-                     box1.Min.Z <= box2.Max.Z + tolerance && box2.Min.Z <= box1.Max.Z + tolerance);
+            return (min1.X <= max2.X + tolerance && min2.X <= max1.X + tolerance &&
+                     min1.Y <= max2.Y + tolerance && min2.Y <= max1.Y + tolerance &&
+                     min1.Z <= max2.Z + tolerance && min2.Z <= max1.Z + tolerance);
         }
     }
 }
