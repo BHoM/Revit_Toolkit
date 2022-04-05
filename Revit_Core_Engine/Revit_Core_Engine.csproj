@@ -402,7 +402,7 @@
     <Compile Include="Query\HasLocation.cs" />
     <Compile Include="Query\HostElement.cs" />
     <Compile Include="Query\HostIdentifiers.cs" />
-    <Compile Include="Query\Intersection.cs" />
+    <Compile Include="Query\Intersections.cs" />
     <Compile Include="Query\IsContaining.cs" />
     <Compile Include="Query\IsInRange.cs" />
     <Compile Include="Query\MEPConnectorsLocation.cs" />

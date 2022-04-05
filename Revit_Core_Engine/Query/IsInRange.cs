@@ -42,7 +42,29 @@ namespace BH.Revit.Engine.Core
         {
             if (box1 == null || box2 == null)
             {
+                BH.Engine.Base.Compute.RecordError("Intersection of the bounding boxes could not be checked. One or both of the objects are null.");
                 return false;
+            }
+
+            if (box1.Transform.IsTranslation == false || box2.Transform.IsTranslation == false)
+            {
+                BH.Engine.Base.Compute.RecordError("Intersection of the bounding boxes could not be checked. One or both of the bounding boxes has unsupported transformation.");
+                return false;
+            }
+
+            if (!box1.Transform.IsIdentity)
+            {
+                BoundingBoxXYZ newBox1 = new BoundingBoxXYZ();
+                newBox1.Min = box1.Min.Add(box1.Transform.Origin);
+                newBox1.Max = box1.Max.Add(box1.Transform.Origin);
+                box1 = newBox1;
+            }
+            if (!box2.Transform.IsIdentity)
+            {
+                BoundingBoxXYZ newBox2 = new BoundingBoxXYZ();
+                newBox2.Min = box2.Min.Add(box2.Transform.Origin);
+                newBox2.Max = box2.Max.Add(box2.Transform.Origin);
+                box2 = newBox2;
             }
 
             return (box1.Min.X <= box2.Max.X + tolerance && box2.Min.X <= box1.Max.X + tolerance &&
