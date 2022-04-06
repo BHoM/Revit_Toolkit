@@ -396,7 +396,7 @@
     <Compile Include="Query\ConvertMethod.cs" />
     <Compile Include="Query\CoordinateSystem.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfEverything.cs" />
-    <Compile Include="Query\ElevationBox.cs" />
+    <Compile Include="Query\ViewBox.cs" />
     <Compile Include="Query\FacadeCurtainPanels.cs" />
     <Compile Include="Query\CurtainWallMullions.cs" />
     <Compile Include="Compute\FindHost.cs" />
