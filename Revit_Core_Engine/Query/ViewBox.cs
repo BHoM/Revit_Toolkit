@@ -38,8 +38,8 @@ namespace BH.Revit.Engine.Core
         [Input("elements", "Elements to find the elevation box for.")]
         [Input("direction", "Direction, along which the elevation is meant to be made.")]
         [Input("sideOffset", "Offset value to inflate the elevation view in width and height, in metres.")]
-        [Input("frontOffset", "Offset distance between the element front and the origin of the view. Use negative value to create section.")]
-        [Input("backOffset", "Offset distance between the element back and the back edge of the view.")]
+        [Input("frontOffset", "Offset distance between the element front and the origin of the view, in metres. Use negative value to create section.")]
+        [Input("backOffset", "Offset distance between the element back and the back edge of the view, in metres.")]
         [Output("box", "Elevation box of the input Revit elements.")]
         public static BoundingBoxXYZ ViewBoxElevation(this IEnumerable<Element> elements, XYZ direction, double sideOffset, double frontOffset, double backOffset)
         {
@@ -92,9 +92,9 @@ namespace BH.Revit.Engine.Core
         [Description("Returns the bounding box containing a given Revit element, aligned with the given direction, inflated by a given offset.")]
         [Input("element", "Element to find the elevation box for.")]
         [Input("direction", "Direction, along which the elevation is meant to be made.")]
-        [Input("sideOffset", "Offset value to inflate the elevation view in width and height, in metres.")]
-        [Input("frontOffset", "Offset distance between the element front and the origin of the view. Use negative value to create section.")]
-        [Input("backOffset", "Offset distance between the element back and the back edge of the view.")]
+        [Input("sideOffset", "Offset value to inflate the elevation view in width and height, in metres, in metres.")]
+        [Input("frontOffset", "Offset distance between the element front and the origin of the view, in metres. Use negative value to create section.")]
+        [Input("backOffset", "Offset distance between the element back and the back edge of the view, in metres.")]
         [Output("box", "Elevation box of the input Revit element.")]
         public static BoundingBoxXYZ ViewBoxElevation(this Element element, XYZ direction, double sideOffset, double frontOffset, double backOffset)
         {
