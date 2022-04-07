@@ -131,7 +131,7 @@ namespace BH.Revit.Adapter.Core
 
             IEnumerable<ElementId> worksetPrefilter = null;
             if (!pullConfig.IncludeClosedWorksets)
-                worksetPrefilter = document.ElementIdsByWorksets(document.OpenWorksetIds().Union(document.SystemWorksetIds()).ToList());
+                worksetPrefilter = document.OpenWorksetsPrefilter();
 
             List<ElementId> elementIds = request.IElementIds(document, pullConfig.Discipline, settings, worksetPrefilter).RemoveGridSegmentIds(document)?.ToList();
             if (elementIds == null)

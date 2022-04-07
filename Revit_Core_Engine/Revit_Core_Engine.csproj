@@ -387,6 +387,7 @@
     <Compile Include="Objects\SpecTypeId.cs" />
     <Compile Include="Objects\UnitTypeId.cs" />
     <Compile Include="Query\AllConvertMethods.cs" />
+    <Compile Include="Query\AllWorksetIds.cs" />
     <Compile Include="Query\BHoMType.cs" />
     <Compile Include="Query\Bounds.cs" />
     <Compile Include="Query\CableTraySectionProfile.cs" />
@@ -397,6 +398,7 @@
     <Compile Include="Query\ContainingElement.cs" />
     <Compile Include="Query\ConvertMethod.cs" />
     <Compile Include="Query\CoordinateSystem.cs" />
+    <Compile Include="Compute\OpenWorksetsPrefilter.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfEverything.cs" />
     <Compile Include="Query\ViewBox.cs" />
     <Compile Include="Query\FacadeCurtainPanels.cs" />
