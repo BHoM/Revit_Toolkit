@@ -35,7 +35,7 @@ namespace BH.Revit.Engine.Core
         [Description("Converts a Revit API color to a System.Drawing color.")]
         [Input("color","Revit color to be converted.")]
         [Output("color", "The System.Drawing converted from a Revit API color.")]
-        public static Color FromRevit(Autodesk.Revit.DB.Color color)
+        public static Color FromRevit(this Autodesk.Revit.DB.Color color)
         {
             return Color.FromArgb(color.Red, color.Green, color.Blue);
         }
