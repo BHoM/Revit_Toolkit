@@ -84,10 +84,16 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            if (((BH.oM.Geometry.Line)framingElement.Location).Start.Z >= ((BH.oM.Geometry.Line)framingElement.Location).End.Z)
+            BH.oM.Geometry.Line locationLine = (BH.oM.Geometry.Line)framingElement.Location;
+            if (locationLine.Start.Z == locationLine.End.Z)
             {
-                BH.Engine.Base.Compute.RecordError(string.Format("Start point of Revit columns need to have lower elevation than the end point. Have a look at flipping your location curves. BHoM_Guid: {0}", framingElement.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError(string.Format("Column's start and end points have the same height. Conversion failed. BHoM_Guid: {0}", framingElement.BHoM_Guid));
                 return null;
+            }
+            else if (locationLine.Start.Z > locationLine.End.Z)
+            {
+                BH.Engine.Base.Compute.RecordWarning(string.Format("Revit column's start point needs to be higher than its end points. Consider flipping your location curves. BHoM_Guid: {0}", framingElement.BHoM_Guid));
+                framingElement.Location = locationLine.Flip();
             }
 
             Level level = document.LevelBelow(framingElement.Location, settings);
