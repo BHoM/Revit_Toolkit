@@ -371,7 +371,7 @@
     <Compile Include="Create\Definition\ProjectParameter.cs" />
     <Compile Include="Create\Definition\SharedParameter.cs" />
     <Compile Include="Create\ReferencePlane.cs" />
-    <Compile Include="Create\SectionBoundingBox.cs" />
+    <Compile Include="Create\BoundingBoxXYZ\SectionBoundingBox.cs" />
     <Compile Include="Create\Solid.cs" />
     <Compile Include="Create\View\View3D.cs" />
     <Compile Include="Create\View\ViewPlan.cs" />
