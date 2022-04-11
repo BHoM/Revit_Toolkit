@@ -32,6 +32,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("5.2", "TestMethod()")]
         [Description("Activates a Revit element type in case it had not been activated after being loaded.")]
         [Input("elementType", "Revit element type to be activated.")]
         public static void Activate(this ElementType elementType)
