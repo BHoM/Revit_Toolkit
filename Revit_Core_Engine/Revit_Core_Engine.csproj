@@ -362,7 +362,6 @@
     <Compile Include="Convert\Revit\ToRevit\ParameterElement.cs" />
     <Compile Include="Modify\CopySpatialElementTypeToFragment.cs" />
     <Compile Include="Modify\CopyTypeToFragment.cs" />
-    <Compile Include="Modify\SortColumEndpoints.cs" />
     <Compile Include="Modify\SetInsulation.cs" />
     <Compile Include="Create\CategorySet.cs" />
     <Compile Include="Create\Definition\Parameter.cs" />
@@ -390,6 +389,7 @@
     <Compile Include="Query\CableTraySectionProperty.cs" />
     <Compile Include="Query\CategoriesWithBoundParameters.cs" />
     <Compile Include="Query\ClosestElement.cs" />
+    <Compile Include="Query\ColumnLine.cs" />
     <Compile Include="Query\ContainingElement.cs" />
     <Compile Include="Query\ConvertMethod.cs" />
     <Compile Include="Query\CoordinateSystem.cs" />

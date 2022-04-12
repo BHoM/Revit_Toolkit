@@ -23,35 +23,46 @@
 using BH.Engine.Geometry;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
+using BH.oM.Physical.Elements;
+using System;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Modify
+    public static partial class Query
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Flip the input line of a BHoM Column object if its start point is higher than its endpoint. This allows pushing it to Revit")]
-        [Input("line", "Column line to check.")]
-        [Output("line", "The original column line if its start point is already below its endpoint. Otherwise, the same line flipped.")]
-        public static Line SortColumEndpoints(this Line columnLine)
+        [Description("Extracts the location line of a BHoM Column object.")]
+        [Input("column", "A BHoM Column object.")]
+        [Output("line", "The location line of the BHoM Column object.")]
+        public static Line ColumnLine(this Column column)
         {
-            if (Math.Abs(columnLine.Start.Z - columnLine.End.Z) <= BH.oM.Geometry.Tolerance.Distance)
+            Line columnLine = (BH.oM.Geometry.Line)column.Location;
+
+            if (columnLine == null)
             {
-                BH.Engine.Base.Compute.RecordError(string.Format("Column line's start and end points have the same elevation."));
+                BH.Engine.Base.Compute.RecordError(string.Format("Invalid column line. Only linear columns are allowed in Revit. BHoM_Guid: {0}", column.BHoM_Guid));
                 return null;
             }
-            else if (columnLine.Start.Z > columnLine.End.Z)
+
+            if (Math.Abs(columnLine.Start.Z - columnLine.End.Z) <= BH.oM.Geometry.Tolerance.Distance)
             {
-                BH.Engine.Base.Compute.RecordNote(string.Format("The input Column line's bottom was above its top. This line has been flipped to allow pushing to Revit."));
+                BH.Engine.Base.Compute.RecordError(string.Format("Column line's start and end points have the same elevation. BHoM_Guid: {0}", column.BHoM_Guid));
+                return null;
+            }
+            
+            if (columnLine.Start.Z > columnLine.End.Z)
+            {
+                BH.Engine.Base.Compute.RecordNote(string.Format("The input column line's bottom was above its top. This line has been flipped to allow pushing to Revit. BHoM_Guid: {0}", column.BHoM_Guid));
                 columnLine = columnLine.Flip();
             }
+            
             return columnLine;
         }
 
         /***************************************************/
     }
 }
-

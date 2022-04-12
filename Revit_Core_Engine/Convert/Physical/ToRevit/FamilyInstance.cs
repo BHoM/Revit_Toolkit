@@ -84,13 +84,9 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            BH.oM.Geometry.Line locationLine = (BH.oM.Geometry.Line)framingElement.Location;
-            locationLine = locationLine.SortColumEndpoints();
+            BH.oM.Geometry.Line locationLine = framingElement.ColumnLine();
             if (locationLine == null)
-            {
-                BH.Engine.Base.Compute.RecordError(string.Format("Column line's start and end points have the same elevation. Conversion failed for BHoM_Guid: {0}", framingElement.BHoM_Guid));
                 return null;
-            }
 
             Level level = document.LevelBelow(locationLine, settings);
             if (level == null)
