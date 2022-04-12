@@ -148,17 +148,10 @@ namespace BH.Revit.Engine.Core
             if (!(typeof(Column).BuiltInCategories().Contains((BuiltInCategory)element.Category.Id.IntegerValue)))
                 return false;
 
-            oM.Geometry.Line columnLine = column.Location as oM.Geometry.Line;
+            oM.Geometry.Line columnLine = column.ColumnLine();
             if (columnLine == null)
             {
-                BH.Engine.Base.Compute.RecordError(String.Format("Location has not been updated, only linear columns are allowed in Revit. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, column.BHoM_Guid));
-                return false;
-            }
-
-            columnLine = columnLine.SortColumEndpoints();
-            if (columnLine == null)
-            {
-                BH.Engine.Base.Compute.RecordError(string.Format("Column line's start and end points have the same elevation. Conversion failed for BHoM_Guid: {0}", column.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError(String.Format("Location has not been updated. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, column.BHoM_Guid));
                 return false;
             }
 
