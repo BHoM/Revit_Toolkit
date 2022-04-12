@@ -87,7 +87,7 @@ namespace BH.Revit.Engine.Core
             BH.oM.Geometry.Line locationLine = (BH.oM.Geometry.Line)framingElement.Location;
             if (locationLine.Start.Z == locationLine.End.Z)
             {
-                BH.Engine.Base.Compute.RecordError(string.Format("Column's start and end points have the same height. Conversion failed. BHoM_Guid: {0}", framingElement.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError(string.Format("Column's start and end points have the same elevation. Conversion failed. BHoM_Guid: {0}", framingElement.BHoM_Guid));
                 return null;
             }
             else if (locationLine.Start.Z > locationLine.End.Z)
