@@ -362,6 +362,7 @@
     <Compile Include="Convert\Revit\ToRevit\ParameterElement.cs" />
     <Compile Include="Modify\CopySpatialElementTypeToFragment.cs" />
     <Compile Include="Modify\CopyTypeToFragment.cs" />
+    <Compile Include="Modify\SortColumEndpoints.cs" />
     <Compile Include="Modify\SetInsulation.cs" />
     <Compile Include="Create\CategorySet.cs" />
     <Compile Include="Create\Definition\Parameter.cs" />

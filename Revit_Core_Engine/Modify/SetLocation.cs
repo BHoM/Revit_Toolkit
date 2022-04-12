@@ -155,15 +155,11 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
-            if (columnLine.Start.Z == columnLine.End.Z)
+            columnLine = columnLine.SortColumEndpoints();
+            if (columnLine == null)
             {
-                BH.Engine.Base.Compute.RecordError(string.Format("Column's start and end points have the same elevation. Conversion failed. BHoM_Guid: {0}", column.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError(string.Format("Column line's start and end points have the same elevation. Conversion failed for BHoM_Guid: {0}", column.BHoM_Guid));
                 return false;
-            }
-            else if (columnLine.Start.Z > columnLine.End.Z)
-            {
-                BH.Engine.Base.Compute.RecordNote(string.Format("The bottom of the input column was above its top. Its location line was flipped to allow updating the Revit element's location. BHoM_Guid: {0}", column.BHoM_Guid));
-                columnLine = columnLine.Flip();
             }
 
             if (1 - columnLine.Direction().DotProduct(Vector.ZAxis) > settings.AngleTolerance && element.LookupParameterInteger(BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM) == 0)
