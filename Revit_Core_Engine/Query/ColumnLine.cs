@@ -40,8 +40,13 @@ namespace BH.Revit.Engine.Core
         [Output("line", "The location line of the BHoM Column object.")]
         public static Line ColumnLine(this Column column)
         {
-            Line columnLine = (BH.oM.Geometry.Line)column.Location;
+            if (column == null)
+            {
+                BH.Engine.Base.Compute.RecordError(string.Format("Cannot read location line because column is null. BHoM_Guid: {0}", column.BHoM_Guid));
+                return null;
+            }
 
+            Line columnLine = (BH.oM.Geometry.Line)column.Location;
             if (columnLine == null)
             {
                 BH.Engine.Base.Compute.RecordError(string.Format("Invalid column line. Only linear columns are allowed in Revit. BHoM_Guid: {0}", column.BHoM_Guid));
