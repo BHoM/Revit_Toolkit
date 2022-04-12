@@ -93,7 +93,7 @@ namespace BH.Revit.Engine.Core
             else if (locationLine.Start.Z > locationLine.End.Z)
             {
                 BH.Engine.Base.Compute.RecordWarning(string.Format("Revit column's start point needs to be higher than its end points. Consider flipping your location curves. BHoM_Guid: {0}", framingElement.BHoM_Guid));
-                framingElement.Location = locationLine.Flip();
+                locationLine = locationLine.Flip();
             }
 
             Level level = document.LevelBelow(framingElement.Location, settings);
