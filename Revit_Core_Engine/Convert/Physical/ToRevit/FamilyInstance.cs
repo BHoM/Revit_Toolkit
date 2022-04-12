@@ -92,8 +92,8 @@ namespace BH.Revit.Engine.Core
             }
             else if (locationLine.Start.Z > locationLine.End.Z)
             {
-                BH.Engine.Base.Compute.RecordWarning(string.Format("Revit column's start point needs to be higher than its end points. Consider flipping your location curves. BHoM_Guid: {0}", framingElement.BHoM_Guid));
-                locationLine = locationLine.Flip();
+                BH.Engine.Base.Compute.RecordNote(string.Format("The bottom of the input column was above its top. Its location line has been flipped to allow creating the Revit element. BHoM_Guid: {0}", framingElement.BHoM_Guid));
+                framingElement.Location = locationLine.Flip();
             }
 
             Level level = document.LevelBelow(framingElement.Location, settings);
