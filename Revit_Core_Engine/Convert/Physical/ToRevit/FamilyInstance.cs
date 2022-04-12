@@ -92,15 +92,15 @@ namespace BH.Revit.Engine.Core
             }
             else if (locationLine.Start.Z > locationLine.End.Z)
             {
-                BH.Engine.Base.Compute.RecordNote(string.Format("The bottom of the input column was above its top. Its location line has been flipped to allow creating the Revit element. BHoM_Guid: {0}", framingElement.BHoM_Guid));
-                framingElement.Location = locationLine.Flip();
+                BH.Engine.Base.Compute.RecordNote(string.Format("The bottom of the input column was above its top. Its location line was flipped to allow creating the Revit element. BHoM_Guid: {0}", framingElement.BHoM_Guid));
+                locationLine = locationLine.Flip();
             }
 
-            Level level = document.LevelBelow(framingElement.Location, settings);
+            Level level = document.LevelBelow(locationLine, settings);
             if (level == null)
                 return null;
 
-            Line columnLine = framingElement.Location.IToRevit() as Line;
+            Line columnLine = locationLine.IToRevit() as Line;
 
             FamilySymbol familySymbol = framingElement.ElementType(document, settings);
             if (familySymbol == null)

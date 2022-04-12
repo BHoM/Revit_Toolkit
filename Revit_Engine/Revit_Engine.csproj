@@ -164,6 +164,7 @@
     <Compile Include="Compute\CloneType.cs" />
     <Compile Include="Compute\SortByPerformance.cs" />
     <Compile Include="Compute\RevitDiffing.cs" />
+    <Compile Include="Modify\SortEndpoints.cs" />
     <Compile Include="Query\DifferenceType.cs" />
     <Compile Include="Create\Config\RevitPushConfig.cs" />
     <Compile Include="Create\Config\RevitPullConfig.cs" />
