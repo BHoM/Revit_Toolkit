@@ -38,7 +38,7 @@ namespace BH.Revit.Engine.Core
         [Output("line", "The original column line if its start point is already below its endpoint. Otherwise, the same line flipped.")]
         public static Line SortColumEndpoints(this Line columnLine)
         {
-            if (columnLine.Start.Z == columnLine.End.Z)
+            if (Math.Abs(columnLine.Start.Z - columnLine.End.Z) <= BH.oM.Geometry.Tolerance.Distance)
             {
                 BH.Engine.Base.Compute.RecordError(string.Format("Column line's start and end points have the same elevation."));
                 return null;
