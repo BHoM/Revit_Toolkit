@@ -75,6 +75,7 @@ namespace BH.Revit.Engine.Core
                     BH.Engine.Base.Compute.RecordError("Insulation could not be created. Host element type does not support insulation adding functionality.");
                     return false;
                 }
+                return true;
             }
             else if (insIds.Count == 1)
             {
@@ -92,8 +93,8 @@ namespace BH.Revit.Engine.Core
                 else
                 {
                     doc.Delete(insId);
-                    return true;
                 }
+                return true;
             }
             else if (insIds.Count > 1)
             {
