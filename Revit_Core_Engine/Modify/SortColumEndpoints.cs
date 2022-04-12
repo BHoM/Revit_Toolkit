@@ -25,34 +25,33 @@ using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using System.ComponentModel;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Revit.Engine.Core
 {
     public static partial class Modify
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Flip the input line if its start point is higher than its endpoint.")]
-        [Input("line", "Line to check.")]
-        [Output("line", "The original line if its start point is already below its endpoint. Otherwise, the line flipped.")]
-        public static Line SortEndpoint(this Line locationLine)
+        [Description("Flip the input line of a BHoM Column object if its start point is higher than its endpoint. This allows pushing it to Revit")]
+        [Input("line", "Column line to check.")]
+        [Output("line", "The original column line if its start point is already below its endpoint. Otherwise, the same line flipped.")]
+        public static Line SortColumEndpoints(this Line columnLine)
         {
-            if (locationLine.Start.Z == locationLine.End.Z)
+            if (columnLine.Start.Z == columnLine.End.Z)
             {
-                BH.Engine.Base.Compute.RecordError(string.Format("Line's start and end points have the same elevation.}"));
+                BH.Engine.Base.Compute.RecordError(string.Format("Column line's start and end points have the same elevation."));
                 return null;
             }
-            else if (locationLine.Start.Z > locationLine.End.Z)
+            else if (columnLine.Start.Z > columnLine.End.Z)
             {
-                BH.Engine.Base.Compute.RecordNote(string.Format("The input line's bottom was above its top. This line has been flipped to resolve the issue."));
-                locationLine = locationLine.Flip();
+                BH.Engine.Base.Compute.RecordNote(string.Format("The input Column line's bottom was above its top. This line has been flipped to allow pushing to Revit."));
+                columnLine = columnLine.Flip();
             }
-            return locationLine;
+            return columnLine;
         }
 
         /***************************************************/
     }
 }
-
 
