@@ -35,9 +35,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts the location line of a BHoM Column object.")]
-        [Input("column", "A BHoM Column object.")]
-        [Output("line", "The location line of the BHoM Column object.")]
+        [Description("Extracts the location line of a BHoM Column object in preparation to push to Revit. Includes validity checks and flipping reversed nodes.")]
+        [Input("column", "A BHoM Column object to extract the line from.")]
+        [Output("line", "Preprocessed location line of the BHoM Column object to be used on push to Revit.")]
         public static Line ColumnLine(this Column column)
         {
             if (column == null)
