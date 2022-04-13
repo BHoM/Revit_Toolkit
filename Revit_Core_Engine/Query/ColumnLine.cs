@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            Line columnLine = (BH.oM.Geometry.Line)column.Location;
+            Line columnLine = column.Location as BH.oM.Geometry.Line;
             if (columnLine == null)
             {
                 BH.Engine.Base.Compute.RecordError(string.Format("Invalid column line. Only linear columns are allowed in Revit. BHoM_Guid: {0}", column.BHoM_Guid));
