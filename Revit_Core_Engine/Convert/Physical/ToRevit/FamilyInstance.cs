@@ -72,18 +72,6 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            if (framingElement.Location == null)
-            {
-                BH.Engine.Base.Compute.RecordError(String.Format("Revit element could not be created because the driving curve of a BHoM object is null. BHoM_Guid: {0}", framingElement.BHoM_Guid));
-                return null;
-            }
-
-            if (framingElement.Location as BH.oM.Geometry.Line == null)
-            {
-                BH.Engine.Base.Compute.RecordError(string.Format("Revit does only support line-based columns. Try pushing your element as a beam instead. BHoM_Guid: {0}", framingElement.BHoM_Guid));
-                return null;
-            }
-
             BH.oM.Geometry.Line locationLine = framingElement.ColumnLine();
             if (locationLine == null)
                 return null;
