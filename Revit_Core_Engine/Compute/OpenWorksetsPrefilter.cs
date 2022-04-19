@@ -28,7 +28,7 @@ using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Query
+    public static partial class Compute
     {
         /***************************************************/
         /****              Public methods               ****/
