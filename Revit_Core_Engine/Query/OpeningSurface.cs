@@ -276,10 +276,10 @@ namespace BH.Revit.Engine.Core
                     if (planes.Count == 0)
                         continue;
 
-                    List<Solid> fullSolids = h.Solids(new Options()).SelectMany(x => SolidUtils.SplitVolumes(x)).ToList();
+                    List<Solid> fullSolids = h.Solids(new Options()).SelectMany(x => SolidUtils.SplitVolumes(x)).Where(x => x != null).ToList();
                     if (h is Wall)
                     {
-                        fullSolids = fullSolids.Select(x => BooleanOperationsUtils.CutWithHalfSpace(x, planes[0])).ToList();
+                        fullSolids = fullSolids.Select(x => BooleanOperationsUtils.CutWithHalfSpace(x, planes[0])).Where(x => x != null).ToList();
                         planes[0] = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(-planes[0].Normal, planes[0].Origin);
                     }
 

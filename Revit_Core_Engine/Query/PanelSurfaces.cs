@@ -114,16 +114,16 @@ namespace BH.Revit.Engine.Core
                 else
                     fullSolids = solidsWithOpenings;
 
-                fullSolids = fullSolids.SelectMany(x => SolidUtils.SplitVolumes(x)).ToList();
+                fullSolids = fullSolids.SelectMany(x => SolidUtils.SplitVolumes(x)).Where(x => x != null).ToList();
                 if (hostObject is Wall)
                 {
                     fullSolids.ForEach(x => BooleanOperationsUtils.CutWithHalfSpaceModifyingOriginalSolid(x, planes[0]));
+                    fullSolids = fullSolids.Where(x => x != null).ToList();
                     Autodesk.Revit.DB.Plane flippedPlane = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(-planes[0].Normal, planes[0].Origin + planes[0].Normal * 1e-3);
                     fullSolids.ForEach(x => BooleanOperationsUtils.CutWithHalfSpaceModifyingOriginalSolid(x, flippedPlane));
-                    fullSolids = fullSolids.SelectMany(x => SolidUtils.SplitVolumes(x)).ToList();
+                    fullSolids = fullSolids.Where(x => x != null).SelectMany(x => SolidUtils.SplitVolumes(x)).ToList();
                     planes[0] = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(-planes[0].Normal, planes[0].Origin);
                 }
-
 
                 foreach (Autodesk.Revit.DB.Plane plane in planes)
                 {
