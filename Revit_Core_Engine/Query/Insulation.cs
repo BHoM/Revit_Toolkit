@@ -21,8 +21,6 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Mechanical;
-using Autodesk.Revit.DB.Plumbing;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -36,14 +34,14 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get the insulation of the duct or pipe. Return null for no insulation.")]
+        [Description("Get the insulation of element. Return null if element has no insulation.")]
         [Input("host", "Host element to get the insulation from.")]
         [Output("insulation", "Insulation of the host element.")]
         public static InsulationLiningBase Insulation(this Element host)
         {
             if (host == null)
             {
-                BH.Engine.Base.Compute.RecordError("Insulation could not be created. Host element not found.");
+                BH.Engine.Base.Compute.RecordError("Insulation cannot be return. Host element is null.");
                 return null;
             }
 
