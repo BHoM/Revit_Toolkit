@@ -68,6 +68,12 @@ namespace BH.oM.Adapters.Revit
         [Description("(Defaults to `true`) If false, if an object has a RevitParameter with a null Value deleted from it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
         public virtual bool RevitParams_ConsiderRemovedUnassigned { get; set; } = true;
 
+        [Description("Numeric tolerance for property values, applied to all numerical properties. Defaults to 1e-6." +
+                     "\nApplies rounding for numbers smaller than this." +
+                     "\nYou can override on a per-property basis by using `PropertyNumericTolerances`." +
+                     "\nIf conflicting values/multiple matches are found among the Configurations on numerical precision, the largest approximation among all (least precise number) is registered.")]
+        public override double NumericTolerance { get; set; } = 1e-6;
+
         /***************************************************/
     }
 }
