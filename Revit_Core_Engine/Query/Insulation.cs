@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
         {
             if (host == null)
             {
-                BH.Engine.Base.Compute.RecordError("Insulation cannot be return. Host element is null.");
+                BH.Engine.Base.Compute.RecordError("Insulation could not be returned because the type of host insulation is not supported.");
                 return null;
             }
 
@@ -59,7 +59,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                BH.Engine.Base.Compute.RecordError("Insulation cannot be return. Not supported type of host insulation.");
+                BH.Engine.Base.Compute.RecordError("Insulation could not be returned because the type of host insulation is not supported.");
                 return null;
             }
         }
