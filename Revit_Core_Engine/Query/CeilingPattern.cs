@@ -68,10 +68,12 @@ namespace BH.Revit.Engine.Core
 
             double rotation;
             XYZ alignment = ceiling.CeilingPatternAlignment(material, settings, out rotation);
+
             if (alignment == null)
             {
                 // Try getting pattern of the main painted material if any
                 var paintedMaterialIds = ceiling.GetMaterialIds(true);
+
                 if (paintedMaterialIds.Count > 0)
                 {
                     var mainPaintedId = paintedMaterialIds.Aggregate((id1, id2) => ceiling.GetMaterialArea(id1, true) > ceiling.GetMaterialArea(id2, true) ? id1 : id2);
@@ -79,6 +81,7 @@ namespace BH.Revit.Engine.Core
                     alignment = ceiling.CeilingPatternAlignment(material, settings, out rotation);
                 }
             }
+
             if (alignment == null)
             {
                 BH.Engine.Base.Compute.RecordWarning($"Ceiling patterns could not be pulled because the material of Revit ElementId {ceiling.Id} has no Foreground Surface Pattern.");
