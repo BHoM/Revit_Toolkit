@@ -194,14 +194,9 @@ namespace BH.Revit.Engine.Core
         private static Dictionary<PlanarSurface, List<PlanarSurface>> PanelSurfaces_LinkDocument(this HostObject hostObject, IEnumerable<ElementId> insertsToIgnore = null, RevitSettings settings = null)
         {
             List<Autodesk.Revit.DB.Face> faces = hostObject.ILinkPanelFaces(settings);
-            List<PlanarFace> planarFaces = faces?.Where(x => x is PlanarFace).Cast<PlanarFace>().ToList();
-            if (planarFaces == null || faces.Count != planarFaces.Count)
-            {
+            List<PlanarFace> planarFaces = faces.Where(x => x is PlanarFace).Cast<PlanarFace>().ToList();
+            if (faces.Count != planarFaces.Count)
                 BH.Engine.Base.Compute.RecordWarning($"Some faces of the link element were not planar and could not be retrieved.\n ElementId: {hostObject.Id} Document: {hostObject.Document.PathName}");
-
-                if (planarFaces == null)
-                    return null;
-            }
 
             Dictionary<PlanarSurface, List<PlanarSurface>> result = new Dictionary<PlanarSurface, List<PlanarSurface>>();
             List<Autodesk.Revit.DB.Face> edgeFaces = null;
