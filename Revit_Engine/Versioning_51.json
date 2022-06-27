@@ -1,5 +1,0 @@
-﻿{
-    "MessageForDeleted": {
-        "BH.Engine.Adapters.Revit.Query.Description(BH.oM.Diffing.PropertyDifference)": "Removed due to the introduction of the IPropertyDifference `Description` property. To view the description, explode the PropertyDifference object and get the `Description` property."
-    }
-}
