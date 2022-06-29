@@ -404,6 +404,8 @@
     <Compile Include="Query\DoesIntersect.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfEverything.cs" />
     <Compile Include="Query\Insulation.cs" />
+    <Compile Include="Query\LinkName.cs" />
+    <Compile Include="Query\SpatialBoundCondition.cs" />
     <Compile Include="Query\ViewBox.cs" />
     <Compile Include="Query\FacadeCurtainPanels.cs" />
     <Compile Include="Query\CurtainWallMullions.cs" />
