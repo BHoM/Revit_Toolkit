@@ -199,7 +199,7 @@ namespace BH.Revit.Engine.Core
             if (!CheckIfNotNull(parameter, request))
                 return false;
 
-            if (parameter.HasValue && parameter.StorageType == StorageType.Integer && parameter.Definition.ParameterType == ParameterType.YesNo)
+            if (parameter.StorageType == StorageType.Integer && parameter.Definition.ParameterType == ParameterType.YesNo)
             {
                 int paramValue = parameter.AsInteger();
                 return (request.Value && paramValue == 1) || (!request.Value && paramValue == 0);
@@ -253,9 +253,10 @@ namespace BH.Revit.Engine.Core
             if (!CheckIfNotNull(parameter, request))
                 return false;
 
+
+            double paramValue;
             if (parameter.HasValue)
             {
-                double paramValue;
                 if (parameter.StorageType == StorageType.Double)
                     paramValue = parameter.AsDouble();
                 else if (parameter.StorageType == StorageType.Integer)
@@ -267,31 +268,38 @@ namespace BH.Revit.Engine.Core
                 }
                 else
                     return false;
+            }
+            else
+            {
+                paramValue = double.NaN;
+            }
 
-                double comparisonValue = request.Value;
-                double comparisonTolerance = request.Tolerance;
+            double comparisonValue = request.Value;
+            double comparisonTolerance = request.Tolerance;
 
-                if (request.ConvertUnits)
-                {
-                    comparisonValue = comparisonValue.FromSI(parameter.Definition.GetSpecTypeId());
-                    comparisonTolerance = comparisonTolerance.FromSI(parameter.Definition.GetSpecTypeId());
-                }
+            if (request.ConvertUnits)
+            {
+                comparisonValue = comparisonValue.FromSI(parameter.Definition.GetSpecTypeId());
+                comparisonTolerance = comparisonTolerance.FromSI(parameter.Definition.GetSpecTypeId());
+            }
 
-                switch (request.NumberComparisonType)
-                {
-                    case NumberComparisonType.Equal:
-                        return Math.Abs(paramValue - comparisonValue) <= comparisonTolerance;
-                    case NumberComparisonType.Greater:
-                        return paramValue - comparisonValue > comparisonTolerance;
-                    case NumberComparisonType.GreaterOrEqual:
-                        return paramValue - comparisonValue > -comparisonTolerance;
-                    case NumberComparisonType.Less:
-                        return paramValue - comparisonValue < -comparisonTolerance;
-                    case NumberComparisonType.LessOrEqual:
-                        return paramValue - comparisonValue < comparisonTolerance;
-                    case NumberComparisonType.NotEqual:
-                        return Math.Abs(paramValue - comparisonValue) > comparisonTolerance;
-                }
+            switch (request.NumberComparisonType)
+            {
+                case NumberComparisonType.Equal:
+                    return Math.Abs(paramValue - comparisonValue) <= comparisonTolerance;
+                case NumberComparisonType.Greater:
+                    return paramValue - comparisonValue > comparisonTolerance;
+                case NumberComparisonType.GreaterOrEqual:
+                    return paramValue - comparisonValue > -comparisonTolerance;
+                case NumberComparisonType.Less:
+                    return paramValue - comparisonValue < -comparisonTolerance;
+                case NumberComparisonType.LessOrEqual:
+                    return paramValue - comparisonValue < comparisonTolerance;
+                case NumberComparisonType.NotEqual:
+                    if (double.IsNaN(paramValue))
+                        return true;
+                    return Math.Abs(paramValue - comparisonValue) > comparisonTolerance;
+                    
             }
 
             return false;
@@ -307,33 +315,35 @@ namespace BH.Revit.Engine.Core
         {
             if (!CheckIfNotNull(parameter, request))
                 return false;
-
-            if (parameter.HasValue)
+            
+            string paramValue;
+            if (parameter.StorageType == StorageType.String)
             {
-                string paramValue;
-                if (parameter.StorageType == StorageType.String)
-                    paramValue = parameter.AsString();
-                else if (parameter.StorageType == StorageType.ElementId || (parameter.StorageType == StorageType.Integer && parameter.Definition.ParameterType != ParameterType.YesNo))
-                    paramValue = parameter.AsValueString();
-                else
-                    return false;
-
-                switch (request.TextComparisonType)
-                {
-                    case TextComparisonType.Contains:
-                        return paramValue.Contains(request.Value);
-                    case TextComparisonType.ContainsNot:
-                        return !paramValue.Contains(request.Value);
-                    case TextComparisonType.EndsWith:
-                        return paramValue.EndsWith(request.Value);
-                    case TextComparisonType.Equal:
-                        return paramValue == request.Value;
-                    case TextComparisonType.NotEqual:
-                        return paramValue != request.Value;
-                    case TextComparisonType.StartsWith:
-                        return paramValue.StartsWith(request.Value);
-                }
+                paramValue = parameter.AsString();
+                if (paramValue == null)
+                    paramValue = "";
             }
+            else if (parameter.StorageType == StorageType.ElementId || (parameter.StorageType == StorageType.Integer && parameter.Definition.ParameterType != ParameterType.YesNo))
+                paramValue = parameter.AsValueString();
+            else
+                return false;
+
+            switch (request.TextComparisonType)
+            {
+                case TextComparisonType.Contains:
+                    return paramValue.Contains(request.Value);
+                case TextComparisonType.ContainsNot:
+                    return !paramValue.Contains(request.Value);
+                case TextComparisonType.EndsWith:
+                    return paramValue.EndsWith(request.Value);
+                case TextComparisonType.Equal:
+                    return paramValue == request.Value;
+                case TextComparisonType.NotEqual:
+                    return paramValue != request.Value;
+                case TextComparisonType.StartsWith:
+                    return paramValue.StartsWith(request.Value);
+            }
+            
 
             return false;
         }
