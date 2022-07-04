@@ -254,7 +254,7 @@ namespace BH.Revit.Engine.Core
                 return false;
 
 
-            double paramValue;
+            double paramValue = double.NaN;
             if (parameter.HasValue)
             {
                 if (parameter.StorageType == StorageType.Double)
@@ -269,10 +269,6 @@ namespace BH.Revit.Engine.Core
                 else
                     return false;
             }
-            else
-            {
-                paramValue = double.NaN;
-            }
 
             double comparisonValue = request.Value;
             double comparisonTolerance = request.Tolerance;
@@ -286,7 +282,7 @@ namespace BH.Revit.Engine.Core
             switch (request.NumberComparisonType)
             {
                 case NumberComparisonType.Equal:
-                    return Math.Abs(paramValue - comparisonValue) <= comparisonTolerance;
+                    return Math.Abs(paramValue - comparisonValue) <= comparisonTolerance || (double.IsNaN(paramValue) && double.IsNaN(comparisonValue));
                 case NumberComparisonType.Greater:
                     return paramValue - comparisonValue > comparisonTolerance;
                 case NumberComparisonType.GreaterOrEqual:
