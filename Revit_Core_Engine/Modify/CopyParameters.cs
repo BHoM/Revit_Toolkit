@@ -129,6 +129,12 @@ namespace BH.Revit.Engine.Core
                 // Sort the parameters so that doubles get assigned last, to make sure all reference levels etc. go first.
                 foreach (RevitParameter param in fragment.Parameters.Where(x => !(x.Value is double)).Union(fragment.Parameters.Where(x => x.Value is double)))
                 {
+                    if (param.IsReadOnly)
+                    {
+                        BH.Engine.Base.Compute.RecordError($"'{param.Name}' is a read-only Revit parameter so cannot be modified.");
+                        continue;
+                    }
+
                     IEnumerable<IParameterLink> parameterLinks = parameterMap.ParameterLinks(param.Name);
                     if (parameterLinks != null)
                     {
