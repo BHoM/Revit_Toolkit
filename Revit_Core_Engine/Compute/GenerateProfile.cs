@@ -24,11 +24,13 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
+using BH.Engine.Geometry;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Autodesk.Revit.UI;
 
 namespace BH.Revit.Engine.Core
 {
@@ -54,20 +56,24 @@ namespace BH.Revit.Engine.Core
             }
 
             string familyName = element.ProfileFamilyName();
+            if (string.IsNullOrWhiteSpace(familyName))
+            {
+                BH.Engine.Base.Compute.RecordError($"Creation of a Revit profile family failed because the source neither the BHoM section property nor its profile has a name. BHoM_Guid: {property.BHoM_Guid}");
+                return null;
+            }
+
             Family family = new FilteredElementCollector(document).OfClass(typeof(Family)).FirstOrDefault(x => x.Name == familyName) as Family;
             if (family != null)
             {
                 List<FamilySymbol> symbols = family.GetFamilySymbolIds().Select(x => document.GetElement(x) as FamilySymbol).Where(x => x != null).ToList();
                 FamilySymbol result = symbols.FirstOrDefault(x => x?.Name == element.Property.Name);
-                if (result != null)
-                    return result;
-
-                if (symbols.Count != 0)
+                if (result == null && symbols.Count != 0)
                 {
                     result = symbols[0].Duplicate(element.Property.Name) as FamilySymbol;
                     property.Profile.ICopyDimensions(result);
-                    return result;
                 }
+
+                return result;
             }
             else
             {
@@ -77,15 +83,11 @@ namespace BH.Revit.Engine.Core
                     family.Name = familyName;
                 else
                 {
-                    family = document.LoadFreeformFamily();
+                    family = GenerateFreeformFamily(document, property, settings);
                     if (family == null)
-                    {
-                        BH.Engine.Base.Compute.RecordWarning($"Families used to generate the Revit profiles based on BHoM section properties could not be found." +
-                                                             $"\nPlease check whether the families exist in the folder {m_FamilyDirectory}.");
                         return null;
-                    }
 
-                    family.Name = property.Name;
+                    BH.Engine.Base.Compute.RecordWarning($"Generation of profiles with shape {property.Profile.GetType().Name} is currently not fully supported - a freeform, dimensionless profile with a dedicated family has been created.");
                     freeform = true;
                 }
 
@@ -95,23 +97,70 @@ namespace BH.Revit.Engine.Core
                     result.Activate();
 
                 result.Name = element.Property.Name;
-                if (freeform)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"Generation of profiles with shape {property.Profile.GetType().Name} is currently not fully supported - a freeform, dimensionless profile with a dedicated family has been created.");
-                    family.SetProfileGeometry(property?.Profile);
-                }
-                else
+                if (!freeform)
                     property.Profile.ICopyDimensions(result);
 
                 return result;
             }
-            
-            return null;
         }
 
 
         /***************************************************/
         /****              Private methods              ****/
+        /***************************************************/
+
+        private static Family GenerateFreeformFamily(this Document document, BH.oM.Physical.FramingProperties.ConstantFramingProperty property, RevitSettings settings = null)
+        {
+            List<BH.oM.Geometry.ICurve> edges = property?.Profile?.Edges?.ToList();
+            if (edges == null)
+            {
+                BH.Engine.Base.Compute.RecordError($"Creation of a custom Revit profile geometry failed because the BHoM section property does not have a valid geometrical profile. BHoM_Guid: {property.BHoM_Guid}");
+                return null;
+            }
+
+            settings = settings.DefaultIfNull();
+            List<BH.oM.Geometry.PolyCurve> edgeLoops = edges.IJoin(settings.DistanceTolerance);
+            if (edgeLoops.Any(x => !x.IsClosed(settings.DistanceTolerance)))
+            {
+                BH.Engine.Base.Compute.RecordError($"Creation of a custom Revit profile geometry failed because one of the edge loops coming from the BHoM section property was not closed. BHoM_Guid: {property.BHoM_Guid}");
+                return null;
+            }
+
+            UIDocument uidoc = new UIDocument(document);
+            Document familyDocument = uidoc.Application.Application.OpenDocumentFile(m_FamilyDirectory + "\\StructuralFraming_Freeform.rfa");
+
+            Extrusion extrusion = new FilteredElementCollector(familyDocument).OfClass(typeof(Extrusion)).FirstElement() as Extrusion;
+            BH.oM.Geometry.CoordinateSystem.Cartesian coordinateSystem = extrusion.Sketch.SketchPlane.GetPlane().FromRevit();
+            BH.oM.Geometry.TransformMatrix transform = BH.Engine.Geometry.Create.OrientationMatrix(new BH.oM.Geometry.CoordinateSystem.Cartesian(), coordinateSystem);
+            edgeLoops = edgeLoops.Select(x => x.Transform(transform)).ToList();
+
+            CurveArrArray newProfile = new CurveArrArray();
+            foreach (BH.oM.Geometry.PolyCurve loop in edgeLoops)
+            {
+                newProfile.Append(loop.ToRevitCurveArray());
+            }
+
+            double length = extrusion.LookupParameterDouble(BuiltInParameter.EXTRUSION_END_PARAM, false) - extrusion.LookupParameterDouble(BuiltInParameter.EXTRUSION_START_PARAM, false);
+
+            using (Transaction t = new Transaction(familyDocument, "Update Extrusion"))
+            {
+                t.Start();
+                familyDocument.FamilyCreate.NewExtrusion(true, newProfile, extrusion.Sketch.SketchPlane, length);
+                familyDocument.Delete(extrusion.Id);
+                t.Commit();
+            }
+
+            Family result;
+
+            string tempLocation = $"{m_TempFolder}\\{property.Name}.rfa";
+            familyDocument.SaveAs(tempLocation);
+            document.LoadFamily(tempLocation, out result);
+
+            familyDocument.Close(false);
+            System.IO.File.Delete(tempLocation);
+            return result;
+        }
+
         /***************************************************/
 
         private static bool SetMaterialForModelBehaviour(this Family family, BH.oM.Physical.Materials.Material material)
@@ -166,10 +215,28 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static void SetProfileGeometry(this Family family, BH.oM.Spatial.ShapeProfiles.IProfile profile)
+        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.AngleProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
-            if (profile == null)
-                return;
+            settings = settings.DefaultIfNull();
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.Width);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_WEBTHICKNESS, sourceProfile.WebThickness);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_FLANGETHICKNESS, sourceProfile.FlangeThickness);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_WEBFILLET, sourceProfile.RootRadius);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_TOP_WEB_FILLET, sourceProfile.ToeRadius);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_FLANGEFILLET, sourceProfile.ToeRadius);
+
+            BH.oM.Geometry.BoundingBox bounds = new BH.oM.Geometry.BoundingBox();
+            foreach (BH.oM.Geometry.ICurve edge in sourceProfile.Edges)
+            {
+                bounds += edge.IBounds();
+            }
+
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_CENTROID_HORIZ, -bounds.Min.X);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_CENTROID_VERTICAL, -bounds.Min.Y);
+
+            if (sourceProfile.MirrorAboutLocalZ || sourceProfile.MirrorAboutLocalY)
+                BH.Engine.Base.Compute.RecordWarning($"Profile of the BHoM section property is mirrored against one of its axes - this information has been ignored while creating the Revit family type on the fly.");
         }
 
         /***************************************************/
@@ -190,10 +257,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static Family LoadFreeformFamily(this Document document)
+        private static Family LoadProfileFamily(this Document document, BH.oM.Spatial.ShapeProfiles.AngleProfile profile)
         {
             Family family;
-            document.LoadFamily(m_FamilyDirectory + "\\StructuralFraming_Freeform.rfa", out family);
+            document.LoadFamily(m_FamilyDirectory + "\\StructuralFraming_Angle.rfa", out family);
             return family;
         }
 
@@ -202,6 +269,9 @@ namespace BH.Revit.Engine.Core
         private static string ProfileFamilyName(this BH.oM.Physical.Elements.IFramingElement element)
         {
             string name = element?.Property?.Name;
+            if (string.IsNullOrWhiteSpace(name))
+                name = (element?.Property as BH.oM.Physical.FramingProperties.ConstantFramingProperty)?.Profile?.Name;
+            
             if (string.IsNullOrWhiteSpace(name))
                 return null;
 
@@ -233,6 +303,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         private static readonly string m_FamilyDirectory = @"C:\ProgramData\BHoM\Resources\Revit\Families";
+        private static readonly string m_TempFolder = @"C:\temp";
 
         /***************************************************/
     }
