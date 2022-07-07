@@ -344,6 +344,7 @@
     <Compile Include="Convert\Architecture\FromRevit\Room.cs" />
     <Compile Include="Convert\Architecture\ToRevit\Opening.cs" />
     <Compile Include="Convert\Facade\FromRevit\FrameEdge.cs" />
+    <Compile Include="Convert\Geometry\ToRevit\CurveArray.cs" />
     <Compile Include="Convert\MEP\FromRevit\CableTray.cs" />
     <Compile Include="Convert\MEP\FromRevit\Duct.cs" />
     <Compile Include="Convert\MEP\FromRevit\Fitting.cs" />
