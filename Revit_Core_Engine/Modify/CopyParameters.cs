@@ -131,7 +131,7 @@ namespace BH.Revit.Engine.Core
                 {
                     if (param.IsReadOnly)
                     {
-                        BH.Engine.Base.Compute.RecordError($"'{param.Name}' is a read-only Revit parameter so cannot be modified.");
+                        BH.Engine.Base.Compute.RecordWarning($"'{param.Name}' is a read-only Revit parameter so cannot be modified.");
                         continue;
                     }
 
