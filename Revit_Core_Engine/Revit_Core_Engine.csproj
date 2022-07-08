@@ -644,9 +644,28 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="Files\Families\StructuralFraming_AngleProfile.rfa" />
+    <None Include="Files\Families\StructuralFraming_BoxProfile.rfa" />
+    <None Include="Files\Families\StructuralFraming_ChannelProfile.rfa" />
+    <None Include="Files\Families\StructuralFraming_CircleProfile.rfa" />
+    <None Include="Files\Families\StructuralFraming_FabricatedBox.rfa" />
+    <None Include="Files\Families\StructuralFraming_FabricatedIProfile.rfa" />
+    <None Include="Files\Families\StructuralFraming_FreeformProfile.rfa" />
+    <None Include="Files\Families\StructuralFraming_IProfile.rfa" />
+    <None Include="Files\Families\StructuralFraming_RectangleProfile.rfa" />
+    <None Include="Files\Families\StructuralFraming_TaperFlangeChannelProfile.rfa" />
+    <None Include="Files\Families\StructuralFraming_TaperFlangeISectionProfile.rfa" />
+    <None Include="Files\Families\StructuralFraming_TProfile.rfa" />
+    <None Include="Files\Families\StructuralFraming_Tube.rfa" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\\ProgramData\\BHoM\\Assemblies" /Y</PostBuildEvent>
+    <PostBuildEvent>
+		xcopy "$(ProjectDir)Files\Families"  "C:\ProgramData\BHoM\Resources\Revit\Families" /Y /I /E
+		xcopy "$(TargetDir)$(TargetFileName)"  "C:\\ProgramData\\BHoM\\Assemblies" /Y
+	</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
