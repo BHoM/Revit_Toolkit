@@ -25,6 +25,7 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
 using BH.Engine.Geometry;
+using BH.Engine.Spatial;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -78,7 +79,7 @@ namespace BH.Revit.Engine.Core
             else
             {
                 bool freeform = false;
-                family = document.ILoadProfileFamily(property.Profile);
+                family = document.LoadProfileFamily(property.Profile, element is BH.oM.Physical.Elements.Column);
                 if (family != null)
                     family.Name = familyName;
                 else
@@ -109,6 +110,20 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
+        private static Family LoadProfileFamily(this Document document, BH.oM.Spatial.ShapeProfiles.IProfile profile, bool isColumn)
+        {
+            Type profileType = profile?.GetType();
+            if (!m_FamilyFileNames.ContainsKey(profileType))
+                return null;
+
+            Family family;
+            string prefix = ProfileFamilyNamePrefix(isColumn);
+            document.LoadFamily($"{m_FamilyDirectory}\\{prefix}{m_FamilyFileNames[profileType]}.rfa", out family);
+            return family;
+        }
+
+        /***************************************************/
+
         private static Family GenerateFreeformFamily(this Document document, BH.oM.Physical.FramingProperties.ConstantFramingProperty property, RevitSettings settings = null)
         {
             List<BH.oM.Geometry.ICurve> edges = property?.Profile?.Edges?.ToList();
@@ -127,7 +142,7 @@ namespace BH.Revit.Engine.Core
             }
 
             UIDocument uidoc = new UIDocument(document);
-            Document familyDocument = uidoc.Application.Application.OpenDocumentFile(m_FamilyDirectory + "\\StructuralFraming_Freeform.rfa");
+            Document familyDocument = uidoc.Application.Application.OpenDocumentFile(m_FamilyDirectory + "\\StructuralFraming_FreeformProfile.rfa");
 
             Extrusion extrusion = new FilteredElementCollector(familyDocument).OfClass(typeof(Extrusion)).FirstElement() as Extrusion;
             BH.oM.Geometry.CoordinateSystem.Cartesian coordinateSystem = extrusion.Sketch.SketchPlane.GetPlane().FromRevit();
@@ -202,7 +217,6 @@ namespace BH.Revit.Engine.Core
 
         private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.ISectionProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
-            settings = settings.DefaultIfNull();
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.Width);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_WEBTHICKNESS, sourceProfile.WebThickness);
@@ -217,7 +231,6 @@ namespace BH.Revit.Engine.Core
 
         private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.AngleProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
-            settings = settings.DefaultIfNull();
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.Width);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_WEBTHICKNESS, sourceProfile.WebThickness);
@@ -226,12 +239,7 @@ namespace BH.Revit.Engine.Core
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_TOP_WEB_FILLET, sourceProfile.ToeRadius);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_FLANGEFILLET, sourceProfile.ToeRadius);
 
-            BH.oM.Geometry.BoundingBox bounds = new BH.oM.Geometry.BoundingBox();
-            foreach (BH.oM.Geometry.ICurve edge in sourceProfile.Edges)
-            {
-                bounds += edge.IBounds();
-            }
-
+            BH.oM.Geometry.BoundingBox bounds = sourceProfile.Bounds();
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_CENTROID_HORIZ, -bounds.Min.X);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_CENTROID_VERTICAL, -bounds.Min.Y);
 
@@ -241,27 +249,156 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static Family ILoadProfileFamily(this Document document, BH.oM.Spatial.ShapeProfiles.IProfile profile)
+        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.BoxProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
-            return LoadProfileFamily(document, profile as dynamic);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.Width);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_PIPESTANDARD_WALLNOMINALTHICKNESS, sourceProfile.Thickness);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_HSS_INNERFILLET, sourceProfile.InnerRadius);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_HSS_OUTERFILLET, sourceProfile.OuterRadius);
         }
 
         /***************************************************/
 
-        private static Family LoadProfileFamily(this Document document, BH.oM.Spatial.ShapeProfiles.ISectionProfile profile)
+        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.ChannelProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
-            Family family;
-            document.LoadFamily(m_FamilyDirectory + "\\StructuralFraming_IProfile.rfa", out family);
-            return family;
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.FlangeWidth);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_WEBTHICKNESS, sourceProfile.WebThickness);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_FLANGETHICKNESS, sourceProfile.FlangeThickness);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_WEBFILLET, sourceProfile.RootRadius);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_FLANGE_TOE_OF_FILLET, sourceProfile.ToeRadius);
+
+            BH.oM.Geometry.BoundingBox bounds = sourceProfile.Bounds();
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_CENTROID_HORIZ, -bounds.Min.X);
+
+            if (sourceProfile.MirrorAboutLocalZ)
+                BH.Engine.Base.Compute.RecordWarning($"Profile of the BHoM section property is mirrored against its axis - this information has been ignored while creating the Revit family type on the fly.");
         }
 
         /***************************************************/
 
-        private static Family LoadProfileFamily(this Document document, BH.oM.Spatial.ShapeProfiles.AngleProfile profile)
+        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.FabricatedISectionProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
-            Family family;
-            document.LoadFamily(m_FamilyDirectory + "\\StructuralFraming_Angle.rfa", out family);
-            return family;
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_IWELDED_TOPFLANGEWIDTH, sourceProfile.TopFlangeWidth);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_IWELDED_BOTTOMFLANGEWIDTH, sourceProfile.BotFlangeWidth);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_WEBTHICKNESS, sourceProfile.WebThickness);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_IWELDED_TOPFLANGETHICKNESS, sourceProfile.TopFlangeThickness);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_IWELDED_BOTTOMFLANGETHICKNESS, sourceProfile.BotFlangeThickness);
+        }
+
+        /***************************************************/
+
+        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.CircleProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        {
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_DIAMETER, sourceProfile.Diameter);
+        }
+
+        /***************************************************/
+
+        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.RectangleProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        {
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.Width);
+
+            if (sourceProfile.CornerRadius > settings.DistanceTolerance)
+                BH.Engine.Base.Compute.RecordWarning($"Corner radius of a profile has been ignored when generating the rectangular profile. ElementId: {targetSymbol.Id}");
+        }
+
+        /***************************************************/
+
+        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.TaperFlangeChannelProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        {
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.FlangeWidth);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_WEBTHICKNESS, sourceProfile.WebThickness);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_FLANGETHICKNESS, sourceProfile.FlangeThickness);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_SLOPED_FLANGE_ANGLE, sourceProfile.FlangeSlope);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_WEBFILLET, sourceProfile.RootRadius);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_FLANGEFILLET, sourceProfile.ToeRadius);
+
+            BH.oM.Geometry.BoundingBox bounds = sourceProfile.Bounds();
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_CENTROID_HORIZ, -bounds.Min.X);
+
+            if (sourceProfile.MirrorAboutLocalZ)
+                BH.Engine.Base.Compute.RecordWarning($"Profile of the BHoM section property is mirrored against its axis - this information has been ignored while creating the Revit family type on the fly.");
+        }
+
+        /***************************************************/
+
+        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.TaperFlangeISectionProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        {
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.Width);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_WEBTHICKNESS, sourceProfile.WebThickness);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_FLANGETHICKNESS, sourceProfile.FlangeThickness);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_SLOPED_FLANGE_ANGLE, sourceProfile.FlangeSlope);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_WEBFILLET, sourceProfile.RootRadius);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_FLANGEFILLET, sourceProfile.ToeRadius);
+        }
+
+        /***************************************************/
+
+        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.TSectionProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        {
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.Width);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_WEBTHICKNESS, sourceProfile.WebThickness);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_FLANGETHICKNESS, sourceProfile.FlangeThickness);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_WEBFILLET, sourceProfile.RootRadius);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_FLANGEFILLET, sourceProfile.ToeRadius);
+
+            BH.oM.Geometry.BoundingBox bounds = sourceProfile.Bounds();
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_CENTROID_VERTICAL, bounds.Max.Y);
+
+            if (sourceProfile.MirrorAboutLocalY)
+                BH.Engine.Base.Compute.RecordWarning($"Profile of the BHoM section property is mirrored against its axis - this information has been ignored while creating the Revit family type on the fly.");
+        }
+
+        /***************************************************/
+
+        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.TubeProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        {
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_DIAMETER, sourceProfile.Diameter);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_PIPESTANDARD_WALLNOMINALTHICKNESS, sourceProfile.Thickness);
+        }
+
+        /***************************************************/
+
+        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.FabricatedBoxProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        {
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.Width);
+            targetSymbol.SetParameter("Web Thickness", sourceProfile.WebThickness);
+            targetSymbol.SetParameter("Top Flange Thickness", sourceProfile.TopFlangeThickness);
+            targetSymbol.SetParameter("Bottom Flange Thickness", sourceProfile.BotFlangeThickness);
+
+            BH.oM.Geometry.BoundingBox bounds = sourceProfile.Bounds();
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_CENTROID_HORIZ, -bounds.Min.X);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_CENTROID_VERTICAL, -bounds.Min.Y);
+
+            if (sourceProfile.WeldSize > settings.DistanceTolerance)
+                BH.Engine.Base.Compute.RecordWarning($"Weld size has been ignored when generating the fabricated box profile. ElementId: {targetSymbol.Id}");
+        }
+
+        /***************************************************/
+
+        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.GeneralisedFabricatedBoxProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        {
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.Width);
+            targetSymbol.SetParameter("Web Thickness", sourceProfile.WebThickness);
+            targetSymbol.SetParameter("Top Flange Thickness", sourceProfile.TopFlangeThickness);
+            targetSymbol.SetParameter("Bottom Flange Thickness", sourceProfile.BotFlangeThickness);
+            targetSymbol.SetParameter("Top Left Corbel Width", sourceProfile.TopLeftCorbelWidth);
+            targetSymbol.SetParameter("Top Right Corbel Width", sourceProfile.TopRightCorbelWidth);
+            targetSymbol.SetParameter("Bottom Left Corbel Width", sourceProfile.BotLeftCorbelWidth);
+            targetSymbol.SetParameter("Bottom Right Corbel Width", sourceProfile.BotRightCorbelWidth);
+
+            BH.oM.Geometry.BoundingBox bounds = sourceProfile.Bounds();
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_CENTROID_HORIZ, -bounds.Min.X);
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_CENTROID_VERTICAL, -bounds.Min.Y);
         }
 
         /***************************************************/
@@ -275,9 +412,16 @@ namespace BH.Revit.Engine.Core
             if (string.IsNullOrWhiteSpace(name))
                 return null;
 
-            string prefix = element is BH.oM.Physical.Elements.Column ? "StructuralColumns_" : "StructuralFraming_";
+            string prefix = ProfileFamilyNamePrefix(element is BH.oM.Physical.Elements.Column);
             Regex pattern = new Regex(@"\d([\d\.\/xX])*\d");
             return prefix + pattern.Replace(name, "").Replace("  ", " ").Trim();
+        }
+
+        /***************************************************/
+
+        private static string ProfileFamilyNamePrefix(bool isColumn)
+        {
+            return isColumn ? "StructuralColumns_" : "StructuralFraming_";
         }
 
 
@@ -290,13 +434,6 @@ namespace BH.Revit.Engine.Core
             BH.Engine.Base.Compute.RecordWarning($"Dimensions of a profile with shape {sourceProfile.GetType().Name} could not be copied to the Revit family symbol because such shape is not supported. ElementId: {targetSymbol.Id}");
         }
 
-        /***************************************************/
-
-        private static Family LoadProfileFamily(this Document document, BH.oM.Spatial.ShapeProfiles.IProfile profile)
-        {
-            return null;
-        }
-
 
         /***************************************************/
         /****               Private fields              ****/
@@ -304,6 +441,23 @@ namespace BH.Revit.Engine.Core
 
         private static readonly string m_FamilyDirectory = @"C:\ProgramData\BHoM\Resources\Revit\Families";
         private static readonly string m_TempFolder = @"C:\temp";
+
+        private static readonly Dictionary<Type, string> m_FamilyFileNames = new Dictionary<Type, string>
+        {
+            { typeof(BH.oM.Spatial.ShapeProfiles.ISectionProfile), "IProfile" },
+            { typeof(BH.oM.Spatial.ShapeProfiles.AngleProfile), "AngleProfile" },
+            { typeof(BH.oM.Spatial.ShapeProfiles.BoxProfile), "BoxProfile" },
+            { typeof(BH.oM.Spatial.ShapeProfiles.ChannelProfile), "ChannelProfile" },
+            { typeof(BH.oM.Spatial.ShapeProfiles.CircleProfile), "CircleProfile" },
+            { typeof(BH.oM.Spatial.ShapeProfiles.FabricatedISectionProfile), "FabricatedIProfile" },
+            { typeof(BH.oM.Spatial.ShapeProfiles.RectangleProfile), "RectangleProfile" },
+            { typeof(BH.oM.Spatial.ShapeProfiles.TaperFlangeChannelProfile), "TaperFlangeChannelProfile" },
+            { typeof(BH.oM.Spatial.ShapeProfiles.TaperFlangeISectionProfile), "TaperFlangeISectionProfile" },
+            { typeof(BH.oM.Spatial.ShapeProfiles.TSectionProfile), "TProfile" },
+            { typeof(BH.oM.Spatial.ShapeProfiles.TubeProfile), "Tube" },
+            { typeof(BH.oM.Spatial.ShapeProfiles.FabricatedBoxProfile), "FabricatedBox" },
+            { typeof(BH.oM.Spatial.ShapeProfiles.GeneralisedFabricatedBoxProfile), "FabricatedBox" },
+        };
 
         /***************************************************/
     }
