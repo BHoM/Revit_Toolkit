@@ -63,6 +63,8 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
+            settings = settings.DefaultIfNull();
+
             Family family = new FilteredElementCollector(document).OfClass(typeof(Family)).FirstOrDefault(x => x.Name == familyName) as Family;
             if (family != null)
             {
@@ -71,7 +73,7 @@ namespace BH.Revit.Engine.Core
                 if (result == null && symbols.Count != 0)
                 {
                     result = symbols[0].Duplicate(element.Property.Name) as FamilySymbol;
-                    property.Profile.ICopyDimensions(result);
+                    property.Profile.ICopyDimensions(result, settings);
                 }
 
                 return result;
@@ -93,13 +95,18 @@ namespace BH.Revit.Engine.Core
                 }
 
                 family.SetMaterialForModelBehaviour(property?.Material);
-                FamilySymbol result = document.GetElement(family.GetFamilySymbolIds().FirstOrDefault()) as FamilySymbol;
-                if (result != null)
-                    result.Activate();
 
+                FamilySymbol result = document.GetElement(family.GetFamilySymbolIds().FirstOrDefault()) as FamilySymbol;
+                if (result == null)
+                {
+                    BH.Engine.Base.Compute.RecordWarning($"Generation of a Revit family representing the section property of a BHoM framing element failed due to an internal error. BHoM_Guid: {element.BHoM_Guid}");
+                    return null;
+                }
+
+                result.Activate();
                 result.Name = element.Property.Name;
                 if (!freeform)
-                    property.Profile.ICopyDimensions(result);
+                    property.Profile.ICopyDimensions(result, settings);
 
                 return result;
             }
@@ -127,13 +134,18 @@ namespace BH.Revit.Engine.Core
         private static Family GenerateFreeformFamily(this Document document, BH.oM.Physical.FramingProperties.ConstantFramingProperty property, RevitSettings settings = null)
         {
             List<BH.oM.Geometry.ICurve> edges = property?.Profile?.Edges?.ToList();
-            if (edges == null)
+            if (edges == null || edges.Count == 0)
             {
                 BH.Engine.Base.Compute.RecordError($"Creation of a custom Revit profile geometry failed because the BHoM section property does not have a valid geometrical profile. BHoM_Guid: {property.BHoM_Guid}");
                 return null;
             }
 
-            settings = settings.DefaultIfNull();
+            if (edges.Any(x => x.Length() < 1e-3))
+            {
+                BH.Engine.Base.Compute.RecordError($"Creation of a custom Revit profile geometry failed because one of the edges defining the BHoM section property is less than 1mm long (this is a Revit limitation). Please simplify the profile and try again. BHoM_Guid: {property.BHoM_Guid}");
+                return null;
+            }
+
             List<BH.oM.Geometry.PolyCurve> edgeLoops = edges.IJoin(settings.DistanceTolerance);
             if (edgeLoops.Any(x => !x.IsClosed(settings.DistanceTolerance)))
             {
@@ -210,7 +222,7 @@ namespace BH.Revit.Engine.Core
 
         private static void ICopyDimensions(this BH.oM.Spatial.ShapeProfiles.IProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
-            CopyDimensions(sourceProfile as dynamic, targetSymbol);
+            CopyDimensions(sourceProfile as dynamic, targetSymbol, settings);
         }
 
         /***************************************************/
