@@ -454,9 +454,9 @@ namespace BH.Revit.Engine.Core
             { typeof(BH.oM.Spatial.ShapeProfiles.TaperFlangeChannelProfile), "TaperFlangeChannelProfile" },
             { typeof(BH.oM.Spatial.ShapeProfiles.TaperFlangeISectionProfile), "TaperFlangeISectionProfile" },
             { typeof(BH.oM.Spatial.ShapeProfiles.TSectionProfile), "TProfile" },
-            { typeof(BH.oM.Spatial.ShapeProfiles.TubeProfile), "Tube" },
-            { typeof(BH.oM.Spatial.ShapeProfiles.FabricatedBoxProfile), "FabricatedBox" },
-            { typeof(BH.oM.Spatial.ShapeProfiles.GeneralisedFabricatedBoxProfile), "FabricatedBox" },
+            { typeof(BH.oM.Spatial.ShapeProfiles.TubeProfile), "TubeProfile" },
+            { typeof(BH.oM.Spatial.ShapeProfiles.FabricatedBoxProfile), "FabricatedBoxProfile" },
+            { typeof(BH.oM.Spatial.ShapeProfiles.GeneralisedFabricatedBoxProfile), "FabricatedBoxProfile" },
         };
 
         /***************************************************/

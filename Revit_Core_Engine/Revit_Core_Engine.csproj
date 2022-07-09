@@ -650,7 +650,7 @@
     <None Include="Files\Families\StructuralFraming_BoxProfile.rfa" />
     <None Include="Files\Families\StructuralFraming_ChannelProfile.rfa" />
     <None Include="Files\Families\StructuralFraming_CircleProfile.rfa" />
-    <None Include="Files\Families\StructuralFraming_FabricatedBox.rfa" />
+    <None Include="Files\Families\StructuralFraming_FabricatedBoxProfile.rfa" />
     <None Include="Files\Families\StructuralFraming_FabricatedIProfile.rfa" />
     <None Include="Files\Families\StructuralFraming_FreeformProfile.rfa" />
     <None Include="Files\Families\StructuralFraming_IProfile.rfa" />
@@ -658,7 +658,7 @@
     <None Include="Files\Families\StructuralFraming_TaperFlangeChannelProfile.rfa" />
     <None Include="Files\Families\StructuralFraming_TaperFlangeISectionProfile.rfa" />
     <None Include="Files\Families\StructuralFraming_TProfile.rfa" />
-    <None Include="Files\Families\StructuralFraming_Tube.rfa" />
+    <None Include="Files\Families\StructuralFraming_TubeProfile.rfa" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
