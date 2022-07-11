@@ -20,57 +20,39 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.ComponentModel;
-using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.MEP.System.SectionProperties;
 using BH.oM.Base.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Convert
+    public static partial class Query
     {
         /***************************************************/
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Convert a Revit family instance that is a fitting or an accessory to a BHoM Fitting.")]
-        [Input("revitMepFitting", "Revit family instance to be converted.")]
+        [Description("Query a Revit duct to extract a BHoM duct section property.")]
+        [Input("revitDuct", "Revit duct to be queried for information required for a BHoM section property.")]
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("fitting", "BHoM fitting object converted from a Revit family instance element.")]
-        public static BH.oM.MEP.System.Fittings.Fitting FittingFromRevit(this FamilyInstance revitMepFitting, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("sectionProperty", "BHoM duct section property extracted from a Revit duct.")]
+        public static BH.oM.MEP.System.SectionProperties.ConnectorSectionProperty ConnectorSectionProperty(this Autodesk.Revit.DB.Mechanical.MechanicalFitting revitFitting, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
-            
-            // Reuse a BHoM fitting from refObjects it it has been converted before
-            BH.oM.MEP.System.Fittings.Fitting bhomFitting = refObjects.GetValue<BH.oM.MEP.System.Fittings.Fitting>(revitMepFitting.Id);
-            if (bhomFitting != null)
-                return bhomFitting;
 
-            bhomFitting = new BH.oM.MEP.System.Fittings.Fitting()
-            {
-                Location = (revitMepFitting.Location as LocationPoint)?.Point?.PointFromRevit(),
-                Connections = revitMepFitting.GetConnectors(),
-            };
+            // Connector section profile
+            SectionProfile sectionProfile = revitFitting.ConnectorSectionProfile(settings);
 
-
-            //Set type
-            revitMepFitting.CopyTypeToFragment(bhomFitting, settings, refObjects);
-
-            //Set identifiers, parameters & custom data
-            bhomFitting.SetIdentifiers(revitMepFitting);
-            bhomFitting.CopyParameters(revitMepFitting, settings.MappingSettings);
-            bhomFitting.SetProperties(revitMepFitting, settings.MappingSettings);
-
-            refObjects.AddOrReplace(revitMepFitting.Id, bhomFitting);
-            return bhomFitting;
+            // Connector section property
+            return BH.Engine.MEP.Create.DuctSectionProperty(sectionProfile);
         }
-        
+
         /***************************************************/
     }
 }
-
 

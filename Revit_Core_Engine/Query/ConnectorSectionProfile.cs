@@ -20,57 +20,55 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.ComponentModel;
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Spatial.ShapeProfiles;
 using BH.oM.Base.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Convert
+    public static partial class Query
     {
         /***************************************************/
         /****               Public Methods              ****/
         /***************************************************/
-
-        [Description("Convert a Revit family instance that is a fitting or an accessory to a BHoM Fitting.")]
-        [Input("revitMepFitting", "Revit family instance to be converted.")]
+        
+        [Description("Query a Revit duct to extract a BHoM duct section profile.")]
+        [Input("revitDuct", "Revit duct to be queried for information needed for a BHoM section profile.")]
         [Input("settings", "Revit adapter settings.")]
-        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("fitting", "BHoM fitting object converted from a Revit family instance element.")]
-        public static BH.oM.MEP.System.Fittings.Fitting FittingFromRevit(this FamilyInstance revitMepFitting, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("profile", "BHoM section profile for a duct extracted from a Revit duct.")]
+        public static BH.oM.MEP.System.SectionProperties.SectionProfile ConnectorSectionProfile(this Autodesk.Revit.DB.Connector revitConnector, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
-            
-            // Reuse a BHoM fitting from refObjects it it has been converted before
-            BH.oM.MEP.System.Fittings.Fitting bhomFitting = refObjects.GetValue<BH.oM.MEP.System.Fittings.Fitting>(revitMepFitting.Id);
-            if (bhomFitting != null)
-                return bhomFitting;
 
-            bhomFitting = new BH.oM.MEP.System.Fittings.Fitting()
+            IProfile profile = revitConnector.Shape(settings);
+
+            // Lining thickness
+            double liningThickness = revitConnector.LookupParameterDouble(BuiltInParameter.RBS_REFERENCE_LINING_THICKNESS);
+            if (liningThickness == double.NaN)
+                liningThickness = 0;
+
+            // Insulation thickness
+            double insulationThickness = revitConnector.LookupParameterDouble(BuiltInParameter.RBS_REFERENCE_INSULATION_THICKNESS);
+            if (insulationThickness == double.NaN)
+                insulationThickness = 0;
+
+            // Create a section profile
+            if (profile != null)
             {
-                Location = (revitMepFitting.Location as LocationPoint)?.Point?.PointFromRevit(),
-                Connections = revitMepFitting.GetConnectors(),
-            };
-
-
-            //Set type
-            revitMepFitting.CopyTypeToFragment(bhomFitting, settings, refObjects);
-
-            //Set identifiers, parameters & custom data
-            bhomFitting.SetIdentifiers(revitMepFitting);
-            bhomFitting.CopyParameters(revitMepFitting, settings.MappingSettings);
-            bhomFitting.SetProperties(revitMepFitting, settings.MappingSettings);
-
-            refObjects.AddOrReplace(revitMepFitting.Id, bhomFitting);
-            return bhomFitting;
+                return BH.Engine.MEP.Create.SectionProfile(profile as dynamic, liningThickness, insulationThickness);
+            }
+            else
+            {
+                return null;
+            }
         }
-        
+
         /***************************************************/
     }
 }
-
 
