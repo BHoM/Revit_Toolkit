@@ -90,7 +90,9 @@ namespace BH.Revit.Engine.Core
                     if (family == null)
                         return null;
 
-                    BH.Engine.Base.Compute.RecordWarning($"Generation of profiles with shape {property.Profile.GetType().Name} is currently not fully supported - a freeform, dimensionless profile with a dedicated family has been created.");
+                    if (!(property.Profile is BH.oM.Spatial.ShapeProfiles.FreeFormProfile))
+                        BH.Engine.Base.Compute.RecordWarning($"Generation of profiles with shape {property.Profile.GetType().Name} is currently not fully supported - a freeform, dimensionless profile with a dedicated family has been created.");
+
                     freeform = true;
                 }
 
@@ -311,6 +313,9 @@ namespace BH.Revit.Engine.Core
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_WEBTHICKNESS, sourceProfile.WebThickness);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_IWELDED_TOPFLANGETHICKNESS, sourceProfile.TopFlangeThickness);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_IWELDED_BOTTOMFLANGETHICKNESS, sourceProfile.BotFlangeThickness);
+
+            BH.oM.Geometry.BoundingBox bounds = sourceProfile.Bounds();
+            targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_CENTROID_VERTICAL, -bounds.Min.Y);
         }
 
         /***************************************************/
@@ -398,6 +403,10 @@ namespace BH.Revit.Engine.Core
             targetSymbol.SetParameter("Web Thickness", sourceProfile.WebThickness);
             targetSymbol.SetParameter("Top Flange Thickness", sourceProfile.TopFlangeThickness);
             targetSymbol.SetParameter("Bottom Flange Thickness", sourceProfile.BotFlangeThickness);
+            targetSymbol.SetParameter("Top Left Corbel Width", 0.0);
+            targetSymbol.SetParameter("Top Right Corbel Width", 0.0);
+            targetSymbol.SetParameter("Bottom Left Corbel Width", 0.0);
+            targetSymbol.SetParameter("Bottom Right Corbel Width", 0.0);
 
             BH.oM.Geometry.BoundingBox bounds = sourceProfile.Bounds();
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_CENTROID_HORIZ, -bounds.Min.X);
