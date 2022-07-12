@@ -166,12 +166,26 @@ namespace BH.Revit.Engine.Core
                 newProfile.Append(loop.ToRevitCurveArray());
             }
 
-            double length = extrusion.LookupParameterDouble(BuiltInParameter.EXTRUSION_END_PARAM, false) - extrusion.LookupParameterDouble(BuiltInParameter.EXTRUSION_START_PARAM, false);
-
             using (Transaction t = new Transaction(familyDocument, "Update Extrusion"))
             {
                 t.Start();
-                familyDocument.FamilyCreate.NewExtrusion(true, newProfile, extrusion.Sketch.SketchPlane, length);
+                View view = new FilteredElementCollector(familyDocument).OfClass(typeof(View)).FirstOrDefault(x => x.Name == "Ref. Level") as View;
+                ReferencePlane leftRef = new FilteredElementCollector(familyDocument).OfClass(typeof(ReferencePlane)).FirstOrDefault(x => x.Name == "Member Left") as ReferencePlane;
+                ReferencePlane rightRef = new FilteredElementCollector(familyDocument).OfClass(typeof(ReferencePlane)).FirstOrDefault(x => x.Name == "Member Right") as ReferencePlane;
+                if (view == null || leftRef == null || rightRef == null)
+                    return null;
+
+                SketchPlane sketchPlane = SketchPlane.Create(familyDocument, rightRef.Id);
+                Extrusion newExtrusion = familyDocument.FamilyCreate.NewExtrusion(true, newProfile, sketchPlane, rightRef.GetPlane().Origin.X - leftRef.GetPlane().Origin.X);
+
+                Options opt = new Options();
+                opt.ComputeReferences = true;
+                List<Face> extrusionFaces = newExtrusion.Faces(opt);
+                Face leftFace = extrusionFaces.Where(x => x is PlanarFace).FirstOrDefault(x => ((PlanarFace)x).FaceNormal.IsAlmostEqualTo(new XYZ(-1, 0, 0)));
+                Face rightFace = extrusionFaces.Where(x => x is PlanarFace).FirstOrDefault(x => ((PlanarFace)x).FaceNormal.IsAlmostEqualTo(new XYZ(1, 0, 0)));
+                familyDocument.FamilyCreate.NewAlignment(view, leftRef.GetReference(), leftFace.Reference);
+                familyDocument.FamilyCreate.NewAlignment(view, rightRef.GetReference(), rightFace.Reference);
+
                 familyDocument.Delete(extrusion.Id);
                 t.Commit();
             }
@@ -416,15 +430,18 @@ namespace BH.Revit.Engine.Core
 
         private static string ProfileFamilyName(this BH.oM.Physical.Elements.IFramingElement element)
         {
-            string name = element?.Property?.Name;
-            if (string.IsNullOrWhiteSpace(name))
-                name = (element?.Property as BH.oM.Physical.FramingProperties.ConstantFramingProperty)?.Profile?.Name;
-            
-            if (string.IsNullOrWhiteSpace(name))
+            string propertyName = element?.Property?.Name;
+            string profileName = (element?.Property as BH.oM.Physical.FramingProperties.ConstantFramingProperty)?.Profile?.Name;
+            if (string.IsNullOrWhiteSpace(propertyName) && string.IsNullOrWhiteSpace(profileName))
                 return null;
 
+            if (!string.IsNullOrWhiteSpace(propertyName) && !string.IsNullOrWhiteSpace(profileName) && profileName != propertyName)
+                BH.Engine.Base.Compute.RecordWarning("The BHoM object has different section property and profile names - section property name has been used to create Revit profile family.");
+
+            string name = !string.IsNullOrWhiteSpace(propertyName) ? propertyName : profileName;
+
             string prefix = ((BH.oM.Physical.FramingProperties.ConstantFramingProperty)element.Property).Profile.TemplateProfileFamilyName(element is BH.oM.Physical.Elements.Column);
-            Regex pattern = new Regex(@"\d([\d\.\/\-xX])*\d");
+            Regex pattern = new Regex(@"\d([\d\.\/\-xX ])*\d");
             return $"{prefix}_{pattern.Replace(name, "").Replace("  ", " ").Trim()}";
         }
 
