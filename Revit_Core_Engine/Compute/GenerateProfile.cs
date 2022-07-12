@@ -50,7 +50,7 @@ namespace BH.Revit.Engine.Core
         public static FamilySymbol GenerateProfile(this BH.oM.Physical.Elements.IFramingElement element, Document document, RevitSettings settings = null)
         {
             BH.oM.Physical.FramingProperties.ConstantFramingProperty property = element?.Property as BH.oM.Physical.FramingProperties.ConstantFramingProperty;
-            if (property == null)
+            if (property?.Profile == null)
             {
                 BH.Engine.Base.Compute.RecordError($"The BHoM framing element is null or does not have a valid profile. BHoM_Guid: {element.BHoM_Guid}");
                 return null;
@@ -81,7 +81,7 @@ namespace BH.Revit.Engine.Core
             else
             {
                 bool freeform = false;
-                family = document.LoadProfileFamily(property.Profile, element is BH.oM.Physical.Elements.Column);
+                family = document.LoadTemplateProfileFamily(property.Profile, element is BH.oM.Physical.Elements.Column);
                 if (family != null)
                     family.Name = familyName;
                 else
@@ -117,15 +117,14 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
-        private static Family LoadProfileFamily(this Document document, BH.oM.Spatial.ShapeProfiles.IProfile profile, bool isColumn)
+        private static Family LoadTemplateProfileFamily(this Document document, BH.oM.Spatial.ShapeProfiles.IProfile profile, bool isColumn)
         {
-            Type profileType = profile?.GetType();
-            if (!m_FamilyFileNames.ContainsKey(profileType))
+            string templateFamilyName = profile.TemplateProfileFamilyName(isColumn);
+            if (string.IsNullOrWhiteSpace(templateFamilyName))
                 return null;
 
             Family family;
-            string prefix = ProfileFamilyNamePrefix(isColumn);
-            document.LoadFamily($"{m_FamilyDirectory}\\{prefix}{m_FamilyFileNames[profileType]}.rfa", out family);
+            document.LoadFamily($"{m_FamilyDirectory}\\{templateFamilyName}.rfa", out family);
             return family;
         }
 
@@ -424,9 +423,20 @@ namespace BH.Revit.Engine.Core
             if (string.IsNullOrWhiteSpace(name))
                 return null;
 
-            string prefix = ProfileFamilyNamePrefix(element is BH.oM.Physical.Elements.Column);
-            Regex pattern = new Regex(@"\d([\d\.\/xX])*\d");
-            return prefix + pattern.Replace(name, "").Replace("  ", " ").Trim();
+            string prefix = ((BH.oM.Physical.FramingProperties.ConstantFramingProperty)element.Property).Profile.TemplateProfileFamilyName(element is BH.oM.Physical.Elements.Column);
+            Regex pattern = new Regex(@"\d([\d\.\/\-xX])*\d");
+            return $"{prefix}_{pattern.Replace(name, "").Replace("  ", " ").Trim()}";
+        }
+
+        /***************************************************/
+
+        private static string TemplateProfileFamilyName(this BH.oM.Spatial.ShapeProfiles.IProfile profile, bool isColumn)
+        {
+            Type profileType = profile?.GetType();
+            if (!m_FamilyFileNames.ContainsKey(profileType))
+                return null;
+
+            return ProfileFamilyNamePrefix(isColumn) + m_FamilyFileNames[profileType];
         }
 
         /***************************************************/
