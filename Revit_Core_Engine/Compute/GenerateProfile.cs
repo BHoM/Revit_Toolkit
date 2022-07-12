@@ -211,14 +211,16 @@ namespace BH.Revit.Engine.Core
             if (structuralProperties == null || structuralProperties.Count == 0)
             {
                 BH.Engine.Base.Compute.RecordWarning($"Material for model behaviour of family {family.Name} could not be set because the source BHoM section property does not contain relevant material information. ElementId: {family.Id}");
+                family.SetParameter(BuiltInParameter.FAMILY_STRUCT_MATERIAL_TYPE, (int)Autodesk.Revit.DB.Structure.StructuralMaterialType.Other);
                 return false;
             }
             else if (structuralProperties.Select(x => x.GetType().FullName).Distinct().Count() > 1) 
             {
                 BH.Engine.Base.Compute.RecordWarning($"Material for model behaviour of family {family.Name} could not be set because the source BHoM section property contains more than one relevant material information. ElementId: {family.Id}");
+                family.SetParameter(BuiltInParameter.FAMILY_STRUCT_MATERIAL_TYPE, (int)Autodesk.Revit.DB.Structure.StructuralMaterialType.Other);
                 return false;
             }
-
+            
             Type materialType = structuralProperties[0].GetType();
             if (materialType == typeof(BH.oM.Structure.MaterialFragments.Steel))
                 return family.SetParameter(BuiltInParameter.FAMILY_STRUCT_MATERIAL_TYPE, (int)Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel);
