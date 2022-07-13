@@ -399,6 +399,7 @@
     <Compile Include="Query\ConvertMethod.cs" />
     <Compile Include="Query\CoordinateSystem.cs" />
     <Compile Include="Compute\OpenWorksetsPrefilter.cs" />
+    <Compile Include="Query\DoesIntersect.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfEverything.cs" />
     <Compile Include="Query\Insulation.cs" />
     <Compile Include="Query\ViewBox.cs" />
