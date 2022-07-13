@@ -646,6 +646,19 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="Files\Families\StructuralColumns_AngleProfile.rfa" />
+    <None Include="Files\Families\StructuralColumns_BoxProfile.rfa" />
+    <None Include="Files\Families\StructuralColumns_ChannelProfile.rfa" />
+    <None Include="Files\Families\StructuralColumns_CircleProfile.rfa" />
+    <None Include="Files\Families\StructuralColumns_FabricatedBoxProfile.rfa" />
+    <None Include="Files\Families\StructuralColumns_FabricatedIProfile.rfa" />
+    <None Include="Files\Families\StructuralColumns_FreeformProfile.rfa" />
+    <None Include="Files\Families\StructuralColumns_IProfile.rfa" />
+    <None Include="Files\Families\StructuralColumns_RectangleProfile.rfa" />
+    <None Include="Files\Families\StructuralColumns_TaperFlangeChannelProfile.rfa" />
+    <None Include="Files\Families\StructuralColumns_TaperFlangeISectionProfile.rfa" />
+    <None Include="Files\Families\StructuralColumns_TProfile.rfa" />
+    <None Include="Files\Families\StructuralColumns_TubeProfile.rfa" />
     <None Include="Files\Families\StructuralFraming_AngleProfile.rfa" />
     <None Include="Files\Families\StructuralFraming_BoxProfile.rfa" />
     <None Include="Files\Families\StructuralFraming_ChannelProfile.rfa" />
