@@ -27,6 +27,7 @@ using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -41,26 +42,42 @@ namespace BH.Revit.Engine.Core
         [Input("uniqueId", "Revit unique Id to find a matching element for.")]
         [Input("linkUniqueId", "Revit unique Id of a Revit link instance. If not null, the link instance under this unique Id will be searched instead of the host document.")]
         [Output("element", "Revit element matching the input Revit unique Ids.")]
-        public static List<Element> ElementsInView(this ViewPlan view, List<Document> documents, List<ElementFilter> elementFilters)
+        public static List<Element> ElementsInView(this ViewPlan view, List<RevitLinkInstance> linkInstances, List<ElementFilter> elementFilters)
+        {
+
+            List<Element> elements = new List<Element>();
+            foreach (RevitLinkInstance linkInst in linkInstances)
+            {
+                List<Element> filteredElements = ElementsInView(view, linkInst, elementFilters);
+                elements.AddRange(filteredElements);
+            }
+
+            return elements;
+
+        }
+
+        /***************************************************/
+
+        [Description("Returns an element from a Revit document that matches a given Revit unique Id and optionally link unique Id.")]
+        [Input("document", "Revit document to search for the element.")]
+        [Input("uniqueId", "Revit unique Id to find a matching element for.")]
+        [Input("linkUniqueId", "Revit unique Id of a Revit link instance. If not null, the link instance under this unique Id will be searched instead of the host document.")]
+        [Output("element", "Revit element matching the input Revit unique Ids.")]
+        public static List<Element> ElementsInView(this ViewPlan view, RevitLinkInstance linkInst, List<ElementFilter> elementFilters)
         {
 
             //view bbox filter
-            BoundingBoxXYZ viewBbox = view.ViewBBox();
-            Outline viewOutline = new Outline(viewBbox.Min, viewBbox.Max);
-            BoundingBoxIsInsideFilter bboxInsideFilter = new BoundingBoxIsInsideFilter(viewOutline);
-            BoundingBoxIntersectsFilter bboxIntersectFilter = new BoundingBoxIntersectsFilter(viewOutline);
-            LogicalOrFilter bboxFilter = new LogicalOrFilter(bboxInsideFilter, bboxIntersectFilter);
+            Document doc = linkInst.GetLinkDocument();
+            Transform linkTransform = linkInst.GetTotalTransform();
+            Solid viewSolid = view.ViewSolid(linkTransform);
 
+            ElementIntersectsSolidFilter solidFilter = new ElementIntersectsSolidFilter(viewSolid);
             LogicalOrFilter elementFilter = new LogicalOrFilter(elementFilters);
+            LogicalAndFilter elementSolidFilter = new LogicalAndFilter(elementFilter, solidFilter);
 
-            List<Element> elemets = new List<Element>();
-            foreach (Document doc in documents)
-            {
-                IList<Element> filteredElements = new FilteredElementCollector(doc).WherePasses(new LogicalAndFilter(elementFilter, bboxFilter)).WhereElementIsNotElementType().ToElements();
-                elemets.AddRange(filteredElements);
-            }
+            List<Element> elements = new FilteredElementCollector(doc).WherePasses(elementSolidFilter).WhereElementIsNotElementType().ToElements().ToList();
 
-            return elemets;
+            return elements;
 
         }
 
@@ -69,13 +86,14 @@ namespace BH.Revit.Engine.Core
         [Description("Bounding Box of the View Plan.")]
         [Input("view", "ViewPlan to get the bounding box from.")]
         [Output("bbox", "Bounding Box of the view.")]
-        private static BoundingBoxXYZ ViewBBox(this ViewPlan view)
+        private static Solid ViewSolid(this ViewPlan view, Transform transform)
         {
             //bbox of current view
             Document doc = view.Document;
             PlanViewRange viewRange = view.GetViewRange();
             BoundingBoxXYZ viewCropBox = view.CropBox;
-            Transform viewTransform = viewCropBox.Transform;
+            //to solid
+            //isRigid
 
             //topElevation (from the CutPlane)
             Level topLevel = doc.GetElement(viewRange.GetLevelId(PlanViewPlane.CutPlane)) as Level;
@@ -106,9 +124,12 @@ namespace BH.Revit.Engine.Core
             BoundingBoxXYZ viewBbox = new BoundingBoxXYZ();
             viewBbox.Min = new XYZ(viewCropBox.Min.X, viewCropBox.Min.Y, bottomElevation);
             viewBbox.Max = new XYZ(viewCropBox.Max.X, viewCropBox.Max.Y, topElevation);
-            viewBbox.Transform = viewTransform;
+            viewBbox.Transform = viewCropBox.Transform;
 
-            return viewBbox;
+            Solid viewSolid = viewBbox.ToSolid();
+            Solid transformedSolid = SolidUtils.CreateTransformed(viewSolid, transform.Inverse);
+
+            return transformedSolid;
         }
     }
 }
