@@ -97,7 +97,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Converts Revit bounding box to a Revit Solid.")]
-        [Input("scopeBox", "Revit bounding box to be converted.")]
+        [Input("bbox", "Revit bounding box to be converted.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Output("solid", "Revit Solid resulting from converting the input Revit scope box.")]
         public static Solid ToSolid(this BoundingBoxXYZ bbox, RevitSettings settings = null)
