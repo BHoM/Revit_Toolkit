@@ -80,13 +80,14 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
+                bool isColumn = element is BH.oM.Physical.Elements.Column;
                 bool freeform = false;
-                family = document.LoadTemplateProfileFamily(property.Profile, element is BH.oM.Physical.Elements.Column);
+                family = document.LoadTemplateProfileFamily(property.Profile, isColumn);
                 if (family != null)
                     family.Name = familyName;
                 else
                 {
-                    family = GenerateFreeformFamily(document, property, settings);
+                    family = GenerateFreeformFamily(document, property, isColumn, settings);
                     if (family == null)
                         return null;
 
@@ -132,7 +133,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static Family GenerateFreeformFamily(this Document document, BH.oM.Physical.FramingProperties.ConstantFramingProperty property, RevitSettings settings = null)
+        private static Family GenerateFreeformFamily(this Document document, BH.oM.Physical.FramingProperties.ConstantFramingProperty property, bool isColumn, RevitSettings settings = null)
         {
             List<BH.oM.Geometry.ICurve> edges = property?.Profile?.Edges?.ToList();
             if (edges == null || edges.Count == 0)
@@ -155,7 +156,7 @@ namespace BH.Revit.Engine.Core
             }
 
             UIDocument uidoc = new UIDocument(document);
-            Document familyDocument = uidoc.Application.Application.OpenDocumentFile(m_FamilyDirectory + "\\StructuralFraming_FreeformProfile.rfa");
+            Document familyDocument = uidoc.Application.Application.OpenDocumentFile($"{m_FamilyDirectory}\\{ProfileFamilyNamePrefix(isColumn)}FreeformProfile.rfa");
 
             Extrusion extrusion = new FilteredElementCollector(familyDocument).OfClass(typeof(Extrusion)).FirstElement() as Extrusion;
             BH.oM.Geometry.CoordinateSystem.Cartesian coordinateSystem = extrusion.Sketch.SketchPlane.GetPlane().FromRevit();
@@ -168,25 +169,53 @@ namespace BH.Revit.Engine.Core
                 newProfile.Append(loop.ToRevitCurveArray());
             }
 
+            string constraintViewName = isColumn ? "Front" : "Ref. Level";
+            View constraintView = new FilteredElementCollector(familyDocument).OfClass(typeof(View)).FirstOrDefault(x => x.Name == constraintViewName) as View;
+            if (constraintView == null)
+                return null;
+
+            Reference startRef, endRef;
+            double length;
+            XYZ dir;
+            if (isColumn)
+            {
+                Level bottom = new FilteredElementCollector(familyDocument).OfClass(typeof(Level)).FirstOrDefault(x => x.Name == "Lower Ref Level") as Level;
+                Level top = new FilteredElementCollector(familyDocument).OfClass(typeof(Level)).FirstOrDefault(x => x.Name == "Upper Ref Level") as Level;
+                if (bottom == null || top == null)
+                    return null;
+
+                startRef = bottom.GetPlaneReference();
+                endRef = top.GetPlaneReference();
+                length = top.ProjectElevation - bottom.ProjectElevation;
+                dir = XYZ.BasisZ;
+            }
+            else
+            {
+                ReferencePlane left = new FilteredElementCollector(familyDocument).OfClass(typeof(ReferencePlane)).FirstOrDefault(x => x.Name == "Member Left") as ReferencePlane;
+                ReferencePlane right = new FilteredElementCollector(familyDocument).OfClass(typeof(ReferencePlane)).FirstOrDefault(x => x.Name == "Member Right") as ReferencePlane;
+                if (left == null || right == null)
+                    return null;
+
+                endRef = left.GetReference();
+                startRef = right.GetReference();
+                length = left.GetPlane().Origin.X - right.GetPlane().Origin.X;
+                dir = -XYZ.BasisX;
+            }
+
             using (Transaction t = new Transaction(familyDocument, "Update Extrusion"))
             {
                 t.Start();
-                View view = new FilteredElementCollector(familyDocument).OfClass(typeof(View)).FirstOrDefault(x => x.Name == "Ref. Level") as View;
-                ReferencePlane leftRef = new FilteredElementCollector(familyDocument).OfClass(typeof(ReferencePlane)).FirstOrDefault(x => x.Name == "Member Left") as ReferencePlane;
-                ReferencePlane rightRef = new FilteredElementCollector(familyDocument).OfClass(typeof(ReferencePlane)).FirstOrDefault(x => x.Name == "Member Right") as ReferencePlane;
-                if (view == null || leftRef == null || rightRef == null)
-                    return null;
 
-                SketchPlane sketchPlane = SketchPlane.Create(familyDocument, rightRef.Id);
-                Extrusion newExtrusion = familyDocument.FamilyCreate.NewExtrusion(true, newProfile, sketchPlane, rightRef.GetPlane().Origin.X - leftRef.GetPlane().Origin.X);
+                SketchPlane sketchPlane = SketchPlane.Create(familyDocument, startRef.ElementId);
+                Extrusion newExtrusion = familyDocument.FamilyCreate.NewExtrusion(true, newProfile, sketchPlane, length);
 
                 Options opt = new Options();
                 opt.ComputeReferences = true;
                 List<Face> extrusionFaces = newExtrusion.Faces(opt);
-                Face leftFace = extrusionFaces.Where(x => x is PlanarFace).FirstOrDefault(x => ((PlanarFace)x).FaceNormal.IsAlmostEqualTo(new XYZ(-1, 0, 0)));
-                Face rightFace = extrusionFaces.Where(x => x is PlanarFace).FirstOrDefault(x => ((PlanarFace)x).FaceNormal.IsAlmostEqualTo(new XYZ(1, 0, 0)));
-                familyDocument.FamilyCreate.NewAlignment(view, leftRef.GetReference(), leftFace.Reference);
-                familyDocument.FamilyCreate.NewAlignment(view, rightRef.GetReference(), rightFace.Reference);
+                Face startFace = extrusionFaces.Where(x => x is PlanarFace).FirstOrDefault(x => ((PlanarFace)x).FaceNormal.IsAlmostEqualTo(-dir));
+                Face endFace = extrusionFaces.Where(x => x is PlanarFace).FirstOrDefault(x => ((PlanarFace)x).FaceNormal.IsAlmostEqualTo(dir));
+                familyDocument.FamilyCreate.NewAlignment(constraintView, startRef, startFace.Reference);
+                familyDocument.FamilyCreate.NewAlignment(constraintView, endRef, endFace.Reference);
 
                 familyDocument.Delete(extrusion.Id);
                 t.Commit();
