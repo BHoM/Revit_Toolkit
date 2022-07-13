@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -45,16 +46,36 @@ namespace BH.Revit.Engine.Core
             if (solids == null || !solids.Any())
                 return null;
 
-            Solid union = solids.First();
-            foreach (Solid solid in solids.Skip(1))
+            double minX = double.MaxValue;
+            double minY = double.MaxValue;
+            double minZ = double.MaxValue;
+            double maxX = double.MinValue;
+            double maxY = double.MinValue;
+            double maxZ = double.MinValue;
+
+            foreach (Solid solid in solids)
             {
-                union = BooleanOperationsUtils.ExecuteBooleanOperation(union, solid, BooleanOperationsType.Union);
+                BoundingBoxXYZ solidBBox = solid.GetBoundingBox();
+                XYZ solidMin = solidBBox.Min;
+                XYZ solidMax = solidBBox.Max;
+                XYZ solidOrigin = solidBBox.Transform.Origin;
+
+                minX = Math.Min(minX, solidMin.X + solidOrigin.X);
+                minY = Math.Min(minY, solidMin.Y + solidOrigin.Y);
+                minZ = Math.Min(minZ, solidMin.Z + solidOrigin.Z);
+                maxX = Math.Max(maxX, solidMax.X + solidOrigin.X);
+                maxY = Math.Max(maxY, solidMax.Y + solidOrigin.Y);
+                maxZ = Math.Max(maxZ, solidMax.Z + solidOrigin.Z);
             }
 
-            if (transform != null)
-                union = SolidUtils.CreateTransformed(union, transform);
+            BoundingBoxXYZ unionBbox = new BoundingBoxXYZ();
+            unionBbox.Min = new XYZ(minX, minY, minZ);
+            unionBbox.Max = new XYZ(maxX, maxY, maxZ);
 
-            return union.GetBoundingBox();
+            if (transform != null)
+                unionBbox.Transform = transform;
+
+            return unionBbox;
         }
 
         /***************************************************/
