@@ -46,83 +46,38 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
-            Document doc1 = element1.Document;
-            Document doc2 = element2.Document;
+            Transform transform1 = element1.Document.LinkTransform();
+            Transform transform2 = element2.Document.LinkTransform();
 
             //host vs host
-            if (!doc1.IsLinked && !doc2.IsLinked)
+            if (transform1 == null && transform2 == null)
             {
-                BoundingBoxXYZ bbox1 = element1.PhysicalBounds();
-                BoundingBoxXYZ bbox2 = element2.PhysicalBounds();
-
-                if (!bbox1.IsInRange(bbox2))
-                    return false;
-
                 ElementIntersectsElementFilter intersectFilter = new ElementIntersectsElementFilter(element2);
                 return intersectFilter.PassesFilter(element1);
             }
-            //host vs link
-            else if (!doc1.IsLinked && doc2.IsLinked)
+            //host vs link || link vs host
+            else if ((transform1 == null && transform2 != null) || (transform1 != null && transform2 == null))
             {
-                BoundingBoxXYZ bbox1 = element1.PhysicalBounds();
-                Transform transform2 = doc2.LinkTransform();
-                BoundingBoxXYZ bbox2 = element2.get_Geometry(new Options()).GetTransformed(transform2).GetBoundingBox();
-
-                if (!bbox1.IsInRange(bbox2))
-                    return false;
-
-                List<Solid> element2Solids = element2.Solids(new Options());
-                foreach (Solid elSolid in element2Solids)
-                {
-                    Solid transformedSolid = SolidUtils.CreateTransformed(elSolid, transform2);
-                    ElementIntersectsSolidFilter intersectFilter = new ElementIntersectsSolidFilter(transformedSolid);
-                    if (intersectFilter.PassesFilter(element1))
-                        return true;
-                }
-            }
-            //link vs host
-            else if (doc1.IsLinked && !doc2.IsLinked)
-            {
-                BoundingBoxXYZ bbox2 = element2.PhysicalBounds();
-                Transform transform1 = doc1.LinkTransform();
-                BoundingBoxXYZ bbox1 = element1.get_Geometry(new Options()).GetTransformed(transform1).GetBoundingBox();
-
-                if (!bbox1.IsInRange(bbox2))
-                    return false;
-
-                List<Solid> element1Solids = element1.Solids(new Options());
-                foreach (Solid elSolid in element1Solids)
-                {
-                    Solid transformedSolid = SolidUtils.CreateTransformed(elSolid, transform1);
-                    ElementIntersectsSolidFilter intersectFilter = new ElementIntersectsSolidFilter(transformedSolid);
-                    if (intersectFilter.PassesFilter(element1))
-                        return true;
-                }
+                return DoesIntersectHostVsLink(element1, transform1, element2, transform2);
             }
             //link vs link
-            else if (doc1.IsLinked && doc2.IsLinked)
+            else if (transform1 != null && transform2 != null)
             {
-                Transform transform1 = doc1.LinkTransform();
-                Transform transform2 = doc2.LinkTransform();
-                BoundingBoxXYZ bbox1 = element1.get_Geometry(new Options()).GetTransformed(transform1).GetBoundingBox();
-                BoundingBoxXYZ bbox2 = element2.get_Geometry(new Options()).GetTransformed(transform2).GetBoundingBox();
-
-                if (!bbox1.IsInRange(bbox2))
-                    return false;
-
-                List<Solid> element1Solids = element1.Solids(new Options());
-                List<Solid> element2Solids = element2.Solids(new Options());
-                List<Solid> el1TransSolids = element1Solids.Select(x => SolidUtils.CreateTransformed(x, transform1)).ToList();
-                List<Solid> el2TransSolids = element2Solids.Select(x => SolidUtils.CreateTransformed(x, transform2)).ToList();
-
-                foreach (Solid el1Solid in el1TransSolids)
+                if (transform1.AlmostEqual(transform2))
                 {
-                    foreach (Solid el2Solid in el2TransSolids)
-                    {
-                        Solid intersection = BooleanOperationsUtils.ExecuteBooleanOperation(el1Solid, el2Solid, BooleanOperationsType.Intersect);
-                        if (intersection.Volume != 0)
-                            return true;
-                    }
+                    ElementIntersectsElementFilter intersectFilter = new ElementIntersectsElementFilter(element2);
+                    return intersectFilter.PassesFilter(element1);
+                }
+
+                List<Solid> element2Solids = element2.Solids(new Options());
+                Transform doubleTransform = transform2.Multiply(transform1.Inverse);
+                List<Solid> el2TransSolids = element2Solids.Select(x => SolidUtils.CreateTransformed(x, doubleTransform)).ToList();
+
+                foreach (Solid el2Solid in el2TransSolids)
+                {
+                    ElementIntersectsSolidFilter intersectFilter = new ElementIntersectsSolidFilter(el2Solid);
+                    if (intersectFilter.PassesFilter(element1))
+                        return true;
                 }
             }
 
@@ -142,32 +97,71 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
-            Document doc = element.Document;
+            if (!bbox.Transform.IsIdentity)
+            {
+                BH.Engine.Base.Compute.RecordWarning("Intersection of the bounding boxe could not be checked. Only identity transformation is currently supported.");
+                return false;
+            }
 
-            Outline outline = new Outline(bbox.Min, bbox.Max);
-            BoundingBoxIntersectsFilter bboxIntersect = new BoundingBoxIntersectsFilter(outline);
-            BoundingBoxIsInsideFilter bboxInside = new BoundingBoxIsInsideFilter(outline);
-            LogicalOrFilter bboxFilter = new LogicalOrFilter(new List<ElementFilter> { bboxIntersect, bboxInside });
+            Transform transform = element.Document.LinkTransform();
 
             //host vs host
-            if (!doc.IsLinked)
+            if (transform == null)
             {
+                Outline outline = new Outline(bbox.Min, bbox.Max);
+                BoundingBoxIntersectsFilter bboxIntersect = new BoundingBoxIntersectsFilter(outline);
+                BoundingBoxIsInsideFilter bboxInside = new BoundingBoxIsInsideFilter(outline);
+                LogicalOrFilter bboxFilter = new LogicalOrFilter(new List<ElementFilter> { bboxIntersect, bboxInside });
+
                 return bboxFilter.PassesFilter(element);
             }
             //host vs link
             else
             {
-                Transform transform = doc.LinkTransform();
-                BoundingBoxXYZ elBbox = element.get_Geometry(new Options()).GetTransformed(transform).GetBoundingBox();
-
-                if (!bbox.IsInRange(elBbox))
-                    return false;
-
                 Solid bboxSolid = bbox.ToSolid();
                 Solid transformedBBoxSolid = SolidUtils.CreateTransformed(bboxSolid, transform.Inverse);
                 ElementIntersectsSolidFilter intersectFilter = new ElementIntersectsSolidFilter(transformedBBoxSolid);
                 return intersectFilter.PassesFilter(element);
             }
+        }
+
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        [Description("Check if two elements intersect.")]
+        [Input("element1", "First element to check the intersection for.")]
+        [Input("element2", "Second element to check the intersection for.")]
+        [Output("bool", "Result of the intersect checking.")]
+        private static bool DoesIntersectHostVsLink(this Element element1, Transform transform1, Element element2, Transform transform2)
+        {
+            Element hostElement = null;
+            Element linkElement = null;
+            Transform linkTransform = null;
+
+            if (transform1 == null && transform2 != null)
+            {
+                hostElement = element1;
+                linkElement = element2;
+                linkTransform = transform2;
+            }
+            else if (transform1 != null && transform2 == null)
+            {
+                hostElement = element2;
+                linkElement = element1;
+                linkTransform = transform1;
+            }
+
+            List<Solid> element2Solids = linkElement.Solids(new Options());
+            foreach (Solid elSolid in element2Solids)
+            {
+                Solid transformedSolid = SolidUtils.CreateTransformed(elSolid, linkTransform);
+                ElementIntersectsSolidFilter intersectFilter = new ElementIntersectsSolidFilter(transformedSolid);
+                if (intersectFilter.PassesFilter(hostElement))
+                    return true;
+            }
+
+            return false;
         }
 
         /***************************************************/

@@ -73,7 +73,10 @@ namespace BH.Revit.Engine.Core
             unionBbox.Max = new XYZ(maxX, maxY, maxZ);
 
             if (transform != null)
-                unionBbox.Transform = transform;
+            {
+                Solid union = SolidUtils.CreateTransformed(unionBbox.ToSolid(), transform);
+                unionBbox = union.GetBoundingBox();
+            }
 
             return unionBbox;
         }
