@@ -59,7 +59,7 @@ namespace BH.Revit.Engine.Core
             string familyName = element.ProfileFamilyName();
             if (string.IsNullOrWhiteSpace(familyName))
             {
-                BH.Engine.Base.Compute.RecordError($"Creation of a Revit profile family failed because the source neither the BHoM section property nor its profile has a name. BHoM_Guid: {property.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordError($"Creation of a Revit profile family failed because neither the BHoM section property nor its profile has a name. BHoM_Guid: {property.BHoM_Guid}");
                 return null;
             }
 
