@@ -55,13 +55,11 @@ namespace BH.Revit.Engine.Core
 
             foreach (Solid solid in solids)
             {
-                BoundingBoxXYZ solidBBox = new BoundingBoxXYZ();
-
                 Solid newSolid = solid;
                 if (transform != null)
                     newSolid = SolidUtils.CreateTransformed(solid, transform);
 
-                solidBBox = newSolid.GetBoundingBox();
+                BoundingBoxXYZ solidBBox = newSolid.GetBoundingBox();
 
                 XYZ solidMin = solidBBox.Min;
                 XYZ solidMax = solidBBox.Max;
