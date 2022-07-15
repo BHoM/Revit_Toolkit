@@ -57,15 +57,11 @@ namespace BH.Revit.Engine.Core
             {
                 BoundingBoxXYZ solidBBox = new BoundingBoxXYZ();
 
+                Solid newSolid = solid;
                 if (transform != null)
-                {
-                    Solid transSolid = SolidUtils.CreateTransformed(solid, transform);
-                    solidBBox = transSolid.GetBoundingBox();
-                }
-                else
-                {
-                    solidBBox = solid.GetBoundingBox();
-                }
+                    newSolid = SolidUtils.CreateTransformed(solid, transform);
+
+                solidBBox = newSolid.GetBoundingBox();
 
                 XYZ solidMin = solidBBox.Min;
                 XYZ solidMax = solidBBox.Max;
