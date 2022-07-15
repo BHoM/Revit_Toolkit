@@ -36,20 +36,27 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        [Description("Returns a list of elements that match the given CheckoutStatus.")]
+
+        [Description("Returns a list of elements that are not owned by others.")]
         [Input("elements", "Revit elements.")]
-        [Input("checkoutStatus", "Revit built-in CheckoutStatus Enum.")]
-        [Output("elements", "List of Revit element matching the given checkedoutStatus.")]
-        public static IEnumerable<Element> CheckOwnershipStatusIsNotByOtherUser(this List<Element> elements)
+        [Output("elementsNotOwnedByOthers", "List of Revit elements matching the given checkedoutStatus.")]
+        public static List<Element> ElementsNotOwnedByOthers(this List<Element> elements)
         {
-            foreach (var element in elements)
+            var ownedElements = elements.Where(e => WorksharingUtils.GetCheckoutStatus(e.Document, e.Id) == CheckoutStatus.OwnedByOtherUser).ToList();
+            
+            foreach (Element element in ownedElements)
             {
-                if(WorksharingUtils.GetCheckoutStatus(element.Document, element.Id) != CheckoutStatus.OwnedByOtherUser)
-                {
-                    yield return element;
-                }
+                ElementOwnedByOtherError(element);
+                continue;
             }
+
+            return elements.Where(e => WorksharingUtils.GetCheckoutStatus(e.Document, e.Id) != CheckoutStatus.OwnedByOtherUser).ToList();
+        }
+
+       
+        private static void ElementOwnedByOtherError(Element element)
+        {
+            BH.Engine.Base.Compute.RecordWarning($"Revit object could not be updated or modified due to it's CheckoutStatus. Revit ElementId: {element.Id} is owned by another user.");
         }
         /***************************************************/
     }
