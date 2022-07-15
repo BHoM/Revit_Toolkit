@@ -223,6 +223,9 @@ namespace BH.Revit.Engine.Core
 
             Family result;
 
+            if (!System.IO.Directory.Exists(m_TempFolder))
+                System.IO.Directory.CreateDirectory(m_TempFolder);
+
             string tempLocation = $"{m_TempFolder}\\{property.Name}.rfa";
             familyDocument.SaveAs(tempLocation);
             document.LoadFamily(tempLocation, out result);
