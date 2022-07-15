@@ -46,38 +46,32 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
-            Transform transform1 = element1.Document.LinkTransform();
-            Transform transform2 = element2.Document.LinkTransform();
+            Transform transform1 = element1.Document.LinkTransform() ?? Transform.Identity;
+            Transform transform2 = element2.Document.LinkTransform() ?? Transform.Identity;
 
-            //host vs host
-            if (transform1 == null && transform2 == null)
+            //null or equal transforms
+            if ((transform1.IsIdentity && transform2.IsIdentity) ||  transform1.AlmostEqual(transform2))
             {
                 ElementIntersectsElementFilter intersectFilter = new ElementIntersectsElementFilter(element2);
                 return intersectFilter.PassesFilter(element1);
             }
-            //host vs link || link vs host
-            else if ((transform1 == null && transform2 != null) || (transform1 != null && transform2 == null))
+            else
             {
-                return DoesIntersectHostVsLink(element1, transform1, element2, transform2);
-            }
-            //link vs link
-            else if (transform1 != null && transform2 != null)
-            {
-                if (transform1.AlmostEqual(transform2))
+                //host vs link
+                if (transform1.IsIdentity && !transform2.IsIdentity)
                 {
-                    ElementIntersectsElementFilter intersectFilter = new ElementIntersectsElementFilter(element2);
-                    return intersectFilter.PassesFilter(element1);
+                    return DoesIntersectWithTransform(element1, element2, transform2);
                 }
-
-                List<Solid> element2Solids = element2.Solids(new Options());
-                Transform doubleTransform = transform2.Multiply(transform1.Inverse);
-                List<Solid> el2TransSolids = element2Solids.Select(x => SolidUtils.CreateTransformed(x, doubleTransform)).ToList();
-
-                foreach (Solid el2Solid in el2TransSolids)
+                //link vs host
+                else if (!transform1.IsIdentity && transform2.IsIdentity)
                 {
-                    ElementIntersectsSolidFilter intersectFilter = new ElementIntersectsSolidFilter(el2Solid);
-                    if (intersectFilter.PassesFilter(element1))
-                        return true;
+                    return DoesIntersectWithTransform(element2, element1, transform1);
+                }
+                //link vs link
+                if (!transform1.IsIdentity && !transform2.IsIdentity)
+                {
+                    Transform doubleTransform = transform2.Multiply(transform1.Inverse);
+                    return DoesIntersectWithTransform(element1, element2, doubleTransform);
                 }
             }
 
@@ -109,6 +103,13 @@ namespace BH.Revit.Engine.Core
             if (transform == null)
             {
                 Outline outline = new Outline(bbox.Min, bbox.Max);
+
+                if (bbox.Transform.IsTranslation)
+                {
+                    outline.MinimumPoint += bbox.Transform.Origin;
+                    outline.MaximumPoint += bbox.Transform.Origin;
+                }
+
                 BoundingBoxIntersectsFilter bboxIntersect = new BoundingBoxIntersectsFilter(outline);
                 BoundingBoxIsInsideFilter bboxInside = new BoundingBoxIsInsideFilter(outline);
                 LogicalOrFilter bboxFilter = new LogicalOrFilter(new List<ElementFilter> { bboxIntersect, bboxInside });
@@ -130,33 +131,18 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Check if two elements intersect.")]
-        [Input("element1", "First element to check the intersection for.")]
-        [Input("element2", "Second element to check the intersection for.")]
+        [Input("hostElement", "First element to check the intersection for.")]
+        [Input("transElement", "Second element to check the intersection for.")]
+        [Input("transform", "Transformation of the second element.")]
         [Output("bool", "Result of the intersect checking.")]
-        private static bool DoesIntersectHostVsLink(this Element element1, Transform transform1, Element element2, Transform transform2)
+        private static bool DoesIntersectWithTransform(this Element hostElement, Element transElement, Transform transform)
         {
-            Element hostElement = null;
-            Element linkElement = null;
-            Transform linkTransform = null;
 
-            if (transform1 == null && transform2 != null)
-            {
-                hostElement = element1;
-                linkElement = element2;
-                linkTransform = transform2;
-            }
-            else if (transform1 != null && transform2 == null)
-            {
-                hostElement = element2;
-                linkElement = element1;
-                linkTransform = transform1;
-            }
+            List<Solid> solids = transElement.Solids(new Options()).Select(x => SolidUtils.CreateTransformed(x, transform)).ToList();
 
-            List<Solid> element2Solids = linkElement.Solids(new Options());
-            foreach (Solid elSolid in element2Solids)
+            foreach (Solid solid in solids)
             {
-                Solid transformedSolid = SolidUtils.CreateTransformed(elSolid, linkTransform);
-                ElementIntersectsSolidFilter intersectFilter = new ElementIntersectsSolidFilter(transformedSolid);
+                ElementIntersectsSolidFilter intersectFilter = new ElementIntersectsSolidFilter(solid);
                 if (intersectFilter.PassesFilter(hostElement))
                     return true;
             }

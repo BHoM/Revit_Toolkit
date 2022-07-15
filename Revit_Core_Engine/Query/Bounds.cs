@@ -55,7 +55,18 @@ namespace BH.Revit.Engine.Core
 
             foreach (Solid solid in solids)
             {
-                BoundingBoxXYZ solidBBox = solid.GetBoundingBox();
+                BoundingBoxXYZ solidBBox = new BoundingBoxXYZ();
+
+                if (transform != null)
+                {
+                    Solid transSolid = SolidUtils.CreateTransformed(solid, transform);
+                    solidBBox = transSolid.GetBoundingBox();
+                }
+                else
+                {
+                    solidBBox = solid.GetBoundingBox();
+                }
+
                 XYZ solidMin = solidBBox.Min;
                 XYZ solidMax = solidBBox.Max;
                 XYZ solidOrigin = solidBBox.Transform.Origin;
@@ -71,12 +82,6 @@ namespace BH.Revit.Engine.Core
             BoundingBoxXYZ unionBbox = new BoundingBoxXYZ();
             unionBbox.Min = new XYZ(minX, minY, minZ);
             unionBbox.Max = new XYZ(maxX, maxY, maxZ);
-
-            if (transform != null)
-            {
-                Solid union = SolidUtils.CreateTransformed(unionBbox.ToSolid(), transform);
-                unionBbox = union.GetBoundingBox();
-            }
 
             return unionBbox;
         }
