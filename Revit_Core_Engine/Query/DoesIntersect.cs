@@ -49,7 +49,6 @@ namespace BH.Revit.Engine.Core
             Transform transform1 = element1.Document.LinkTransform() ?? Transform.Identity;
             Transform transform2 = element2.Document.LinkTransform() ?? Transform.Identity;
 
-            //null or equal transforms
             if ((transform1.IsIdentity && transform2.IsIdentity) ||  transform1.AlmostEqual(transform2))
             {
                 ElementIntersectsElementFilter intersectFilter = new ElementIntersectsElementFilter(element2);
@@ -57,25 +56,9 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                //host vs link
-                if (transform1.IsIdentity && !transform2.IsIdentity)
-                {
-                    return DoesIntersectWithTransform(element1, element2, transform2);
-                }
-                //link vs host
-                else if (!transform1.IsIdentity && transform2.IsIdentity)
-                {
-                    return DoesIntersectWithTransform(element2, element1, transform1);
-                }
-                //link vs link
-                if (!transform1.IsIdentity && !transform2.IsIdentity)
-                {
-                    Transform doubleTransform = transform2.Multiply(transform1.Inverse);
-                    return DoesIntersectWithTransform(element1, element2, doubleTransform);
-                }
+                Transform doubleTransform = transform2.Multiply(transform1.Inverse);
+                return DoesIntersectWithTransform(element1, element2, doubleTransform);
             }
-
-            return false;
         }
 
         /***************************************************/
@@ -91,9 +74,9 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
-            if (!bbox.Transform.IsIdentity)
+            if (!bbox.Transform.IsTranslation)
             {
-                BH.Engine.Base.Compute.RecordWarning("Intersection of the bounding boxe could not be checked. Only identity transformation is currently supported.");
+                BH.Engine.Base.Compute.RecordWarning("Intersection of the bounding boxes could not be checked. Only translation and identity transformation is currently supported.");
                 return false;
             }
 
@@ -137,12 +120,12 @@ namespace BH.Revit.Engine.Core
         [Output("bool", "Result of the intersect checking.")]
         private static bool DoesIntersectWithTransform(this Element hostElement, Element transElement, Transform transform)
         {
-
-            List<Solid> solids = transElement.Solids(new Options()).Select(x => SolidUtils.CreateTransformed(x, transform)).ToList();
+            List<Solid> solids = transElement.Solids(new Options());
 
             foreach (Solid solid in solids)
             {
-                ElementIntersectsSolidFilter intersectFilter = new ElementIntersectsSolidFilter(solid);
+                Solid newSolid = SolidUtils.CreateTransformed(solid, transform);
+                ElementIntersectsSolidFilter intersectFilter = new ElementIntersectsSolidFilter(newSolid);
                 if (intersectFilter.PassesFilter(hostElement))
                     return true;
             }
