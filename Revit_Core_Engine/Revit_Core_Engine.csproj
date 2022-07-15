@@ -401,6 +401,7 @@
     <Compile Include="Query\CableTraySectionProfile.cs" />
     <Compile Include="Query\CableTraySectionProperty.cs" />
     <Compile Include="Query\CategoriesWithBoundParameters.cs" />
+    <Compile Include="Query\CheckedoutStatus.cs" />
     <Compile Include="Query\ClosestElement.cs" />
     <Compile Include="Query\ColumnLine.cs" />
     <Compile Include="Query\ContainingElement.cs" />
