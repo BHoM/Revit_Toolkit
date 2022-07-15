@@ -41,13 +41,6 @@ namespace BH.Revit.Adapter.Core
             RevitSettings settings = this.RevitSettings.DefaultIfNull();
             string tagsParameterName = settings.MappingSettings.TagsParameter;
 
-            if(WorksharingUtils.GetCheckoutStatus(element.Document, element.Id) == CheckoutStatus.OwnedByOtherUser)
-            {
-                BH.Engine.Base.Compute.RecordError("Element is owned by an user that is not the current user. No updates will be made.");
-                ObjectNotUpdatedError(element, bHoMObject);
-                return false;
-            }
-
             try
             {
                 element.IUpdate(bHoMObject, settings, pushConfig.SetLocationOnUpdate);
