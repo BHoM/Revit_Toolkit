@@ -20,52 +20,31 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Analysis;
 using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.Revit.Engine.Core;
+using BH.oM.Base.Attributes;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
-namespace BH.Revit.Adapter.Core
+namespace BH.Revit.Engine.Core
 {
-    public partial class RevitListenerAdapter
+    public static partial class Query
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
-
-        public bool Update(Element element, IBHoMObject bHoMObject, RevitPushConfig pushConfig)
+        
+        [Description("Returns a list of elements that matcht the given CheckedoutStatus.")]
+        [Input("elements", "Revit elements")]
+        [Input("checkedoutStatus", "Revit unique Id of a Revit link instance. If not null, the link instance under this unique Id will be searched instead of the host document.")]
+        [Output("element", "Revit element matching the input Revit unique Ids.")]
+        public static List<Element> OwnershipStatus(this List<Element> elements, CheckoutStatus checkedoutStatus)
         {
-            RevitSettings settings = this.RevitSettings.DefaultIfNull();
-            string tagsParameterName = settings.MappingSettings.TagsParameter;
-
-            if(WorksharingUtils.GetCheckoutStatus(element.Document, element.Id) == CheckoutStatus.OwnedByOtherUser)
-            {
-                BH.Engine.Base.Compute.RecordError("Element is owned by an user that is not the current user. No updates will be made.");
-                ObjectNotUpdatedError(element, bHoMObject);
-                return false;
-            }
-
-            try
-            {
-                element.IUpdate(bHoMObject, settings, pushConfig.SetLocationOnUpdate);
-
-                //Assign Tags
-                if (!string.IsNullOrEmpty(tagsParameterName))
-                    element.SetTags(bHoMObject, tagsParameterName);
-
-                return true;
-            }
-            catch
-            {
-                ObjectNotUpdatedError(element, bHoMObject);
-                return false;
-            }
+            return elements.Where(e => WorksharingUtils.GetCheckoutStatus(e.Document, e.Id) == checkedoutStatus).ToList();
         }
-
         /***************************************************/
     }
 }
-
