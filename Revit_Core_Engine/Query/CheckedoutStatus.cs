@@ -37,10 +37,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
         
-        [Description("Returns a list of elements that matcht the given CheckedoutStatus.")]
-        [Input("elements", "Revit elements")]
-        [Input("checkedoutStatus", "Revit unique Id of a Revit link instance. If not null, the link instance under this unique Id will be searched instead of the host document.")]
-        [Output("element", "Revit element matching the input Revit unique Ids.")]
+        [Description("Returns a list of elements that match the given CheckedoutStatus.")]
+        [Input("elements", "Revit elements.")]
+        [Input("checkedoutStatus", "Revit built-in CheckedoutStatus Enum.")]
+        [Output("elements", "List of Revit element matching the given checkedoutStatus.")]
         public static List<Element> OwnershipStatus(this List<Element> elements, CheckoutStatus checkedoutStatus)
         {
             return elements.Where(e => WorksharingUtils.GetCheckoutStatus(e.Document, e.Id) == checkedoutStatus).ToList();
