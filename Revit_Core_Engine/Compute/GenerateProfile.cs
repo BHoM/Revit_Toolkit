@@ -138,100 +138,127 @@ namespace BH.Revit.Engine.Core
             List<BH.oM.Geometry.ICurve> edges = property?.Profile?.Edges?.ToList();
             if (edges == null || edges.Count == 0)
             {
-                BH.Engine.Base.Compute.RecordError($"Creation of a custom Revit profile geometry failed because the BHoM section property does not have a valid geometrical profile. BHoM_Guid: {property.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordError($"Creation of a freeform Revit profile geometry failed because the BHoM section property does not have a valid geometrical profile. BHoM_Guid: {property.BHoM_Guid}");
                 return null;
             }
 
             if (edges.Any(x => x.Length() < 1e-3))
             {
-                BH.Engine.Base.Compute.RecordError($"Creation of a custom Revit profile geometry failed because one of the edges defining the BHoM section property is less than 1mm long (this is a Revit limitation). Please simplify the profile and try again. BHoM_Guid: {property.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordError($"Creation of a freeform Revit profile geometry failed because one of the edges defining the BHoM section property is less than 1mm long (this is a Revit limitation). Please simplify the profile and try again. BHoM_Guid: {property.BHoM_Guid}");
                 return null;
             }
 
             List<BH.oM.Geometry.PolyCurve> edgeLoops = edges.IJoin(settings.DistanceTolerance);
             if (edgeLoops.Any(x => !x.IsClosed(settings.DistanceTolerance)))
             {
-                BH.Engine.Base.Compute.RecordError($"Creation of a custom Revit profile geometry failed because one of the edge loops coming from the BHoM section property was not closed. BHoM_Guid: {property.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordError($"Creation of a freeform Revit profile geometry failed because one of the edge loops coming from the BHoM section property was not closed. BHoM_Guid: {property.BHoM_Guid}");
                 return null;
             }
 
+            Family result = null;
             UIDocument uidoc = new UIDocument(document);
             Document familyDocument = uidoc.Application.Application.OpenDocumentFile($"{m_FamilyDirectory}\\{ProfileFamilyNamePrefix(isColumn)}FreeformProfile.rfa");
 
-            Extrusion extrusion = new FilteredElementCollector(familyDocument).OfClass(typeof(Extrusion)).FirstElement() as Extrusion;
-            BH.oM.Geometry.CoordinateSystem.Cartesian coordinateSystem = extrusion.Sketch.SketchPlane.GetPlane().FromRevit();
-            BH.oM.Geometry.TransformMatrix transform = BH.Engine.Geometry.Create.OrientationMatrix(new BH.oM.Geometry.CoordinateSystem.Cartesian(), coordinateSystem);
-            edgeLoops = edgeLoops.Select(x => x.Transform(transform)).ToList();
-
-            CurveArrArray newProfile = new CurveArrArray();
-            foreach (BH.oM.Geometry.PolyCurve loop in edgeLoops)
+            try
             {
-                newProfile.Append(loop.ToRevitCurveArray());
-            }
+                Extrusion extrusion = new FilteredElementCollector(familyDocument).OfClass(typeof(Extrusion)).FirstElement() as Extrusion;
+                BH.oM.Geometry.CoordinateSystem.Cartesian coordinateSystem = extrusion.Sketch.SketchPlane.GetPlane().FromRevit();
+                BH.oM.Geometry.TransformMatrix transform = BH.Engine.Geometry.Create.OrientationMatrix(new BH.oM.Geometry.CoordinateSystem.Cartesian(), coordinateSystem);
+                edgeLoops = edgeLoops.Select(x => x.Transform(transform)).ToList();
 
-            string constraintViewName = isColumn ? "Front" : "Ref. Level";
-            View constraintView = new FilteredElementCollector(familyDocument).OfClass(typeof(View)).FirstOrDefault(x => x.Name == constraintViewName) as View;
-            if (constraintView == null)
-                return null;
+                CurveArrArray newProfile = new CurveArrArray();
+                foreach (BH.oM.Geometry.PolyCurve loop in edgeLoops)
+                {
+                    newProfile.Append(loop.ToRevitCurveArray());
+                }
 
-            Reference startRef, endRef;
-            double length;
-            XYZ dir;
-            if (isColumn)
-            {
-                Level bottom = new FilteredElementCollector(familyDocument).OfClass(typeof(Level)).FirstOrDefault(x => x.Name == "Lower Ref Level") as Level;
-                Level top = new FilteredElementCollector(familyDocument).OfClass(typeof(Level)).FirstOrDefault(x => x.Name == "Upper Ref Level") as Level;
-                if (bottom == null || top == null)
+                string constraintViewName = isColumn ? "Front" : "Ref. Level";
+                View constraintView = new FilteredElementCollector(familyDocument).OfClass(typeof(View)).FirstOrDefault(x => x.Name == constraintViewName) as View;
+                if (constraintView == null)
                     return null;
 
-                startRef = bottom.GetPlaneReference();
-                endRef = top.GetPlaneReference();
-                length = top.ProjectElevation - bottom.ProjectElevation;
-                dir = XYZ.BasisZ;
-            }
-            else
-            {
-                ReferencePlane left = new FilteredElementCollector(familyDocument).OfClass(typeof(ReferencePlane)).FirstOrDefault(x => x.Name == "Member Left") as ReferencePlane;
-                ReferencePlane right = new FilteredElementCollector(familyDocument).OfClass(typeof(ReferencePlane)).FirstOrDefault(x => x.Name == "Member Right") as ReferencePlane;
-                if (left == null || right == null)
+                Reference startRef, endRef;
+                double length;
+                XYZ dir;
+                if (isColumn)
+                {
+                    Level bottom = new FilteredElementCollector(familyDocument).OfClass(typeof(Level)).FirstOrDefault(x => x.Name == "Lower Ref Level") as Level;
+                    Level top = new FilteredElementCollector(familyDocument).OfClass(typeof(Level)).FirstOrDefault(x => x.Name == "Upper Ref Level") as Level;
+                    if (bottom == null || top == null)
+                        return null;
+
+                    startRef = bottom.GetPlaneReference();
+                    endRef = top.GetPlaneReference();
+                    length = top.ProjectElevation - bottom.ProjectElevation;
+                    dir = XYZ.BasisZ;
+                }
+                else
+                {
+                    ReferencePlane left = new FilteredElementCollector(familyDocument).OfClass(typeof(ReferencePlane)).FirstOrDefault(x => x.Name == "Member Left") as ReferencePlane;
+                    ReferencePlane right = new FilteredElementCollector(familyDocument).OfClass(typeof(ReferencePlane)).FirstOrDefault(x => x.Name == "Member Right") as ReferencePlane;
+                    if (left == null || right == null)
+                        return null;
+
+                    endRef = left.GetReference();
+                    startRef = right.GetReference();
+                    length = left.GetPlane().Origin.X - right.GetPlane().Origin.X;
+                    dir = -XYZ.BasisX;
+                }
+
+                using (Transaction t = new Transaction(familyDocument, "Update Extrusion"))
+                {
+                    t.Start();
+
+                    SketchPlane sketchPlane = SketchPlane.Create(familyDocument, startRef.ElementId);
+                    Extrusion newExtrusion = familyDocument.FamilyCreate.NewExtrusion(true, newProfile, sketchPlane, length);
+
+                    Options opt = new Options();
+                    opt.ComputeReferences = true;
+                    List<Face> extrusionFaces = newExtrusion.Faces(opt);
+                    Face startFace = extrusionFaces.Where(x => x is PlanarFace).FirstOrDefault(x => ((PlanarFace)x).FaceNormal.IsAlmostEqualTo(-dir));
+                    Face endFace = extrusionFaces.Where(x => x is PlanarFace).FirstOrDefault(x => ((PlanarFace)x).FaceNormal.IsAlmostEqualTo(dir));
+                    familyDocument.FamilyCreate.NewAlignment(constraintView, startRef, startFace.Reference);
+                    familyDocument.FamilyCreate.NewAlignment(constraintView, endRef, endFace.Reference);
+
+                    familyDocument.Delete(extrusion.Id);
+                    t.Commit();
+                }
+
+                string tempLocation = $"{m_TempFolder}\\{property.Name}.rfa";
+                try
+                {
+                    if (!System.IO.Directory.Exists(m_TempFolder))
+                        System.IO.Directory.CreateDirectory(m_TempFolder);
+
+                    familyDocument.SaveAs(tempLocation);
+                }
+                catch (Exception ex)
+                {
+                    BH.Engine.Base.Compute.RecordError($"Creation of a freeform Revit profile geometry failed because the family could not be temporarily saved in {m_TempFolder}. Please make sure the folder exists and you have access to it.");
+                    familyDocument.Close(false);
                     return null;
+                }
 
-                endRef = left.GetReference();
-                startRef = right.GetReference();
-                length = left.GetPlane().Origin.X - right.GetPlane().Origin.X;
-                dir = -XYZ.BasisX;
+                document.LoadFamily(tempLocation, out result);
+
+                try
+                {
+                    System.IO.File.Delete(tempLocation);
+                }
+                catch (Exception ex)
+                {
+                    BH.Engine.Base.Compute.RecordNote($"File {tempLocation} could not be deleted.");
+                }
             }
-
-            using (Transaction t = new Transaction(familyDocument, "Update Extrusion"))
+            catch (Exception ex)
             {
-                t.Start();
-
-                SketchPlane sketchPlane = SketchPlane.Create(familyDocument, startRef.ElementId);
-                Extrusion newExtrusion = familyDocument.FamilyCreate.NewExtrusion(true, newProfile, sketchPlane, length);
-
-                Options opt = new Options();
-                opt.ComputeReferences = true;
-                List<Face> extrusionFaces = newExtrusion.Faces(opt);
-                Face startFace = extrusionFaces.Where(x => x is PlanarFace).FirstOrDefault(x => ((PlanarFace)x).FaceNormal.IsAlmostEqualTo(-dir));
-                Face endFace = extrusionFaces.Where(x => x is PlanarFace).FirstOrDefault(x => ((PlanarFace)x).FaceNormal.IsAlmostEqualTo(dir));
-                familyDocument.FamilyCreate.NewAlignment(constraintView, startRef, startFace.Reference);
-                familyDocument.FamilyCreate.NewAlignment(constraintView, endRef, endFace.Reference);
-
-                familyDocument.Delete(extrusion.Id);
-                t.Commit();
+                BH.Engine.Base.Compute.RecordError($"Creation of a freeform Revit profile geometry failed with the following error: {ex.Message}");
+            }
+            finally
+            {
+                familyDocument.Close(false);
             }
 
-            Family result;
-
-            if (!System.IO.Directory.Exists(m_TempFolder))
-                System.IO.Directory.CreateDirectory(m_TempFolder);
-
-            string tempLocation = $"{m_TempFolder}\\{property.Name}.rfa";
-            familyDocument.SaveAs(tempLocation);
-            document.LoadFamily(tempLocation, out result);
-
-            familyDocument.Close(false);
-            System.IO.File.Delete(tempLocation);
             return result;
         }
 
