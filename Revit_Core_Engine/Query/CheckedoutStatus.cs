@@ -37,13 +37,19 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
         
-        [Description("Returns a list of elements that match the given CheckedoutStatus.")]
+        [Description("Returns a list of elements that match the given CheckoutStatus.")]
         [Input("elements", "Revit elements.")]
-        [Input("checkedoutStatus", "Revit built-in CheckedoutStatus Enum.")]
+        [Input("checkoutStatus", "Revit built-in CheckoutStatus Enum.")]
         [Output("elements", "List of Revit element matching the given checkedoutStatus.")]
-        public static List<Element> OwnershipStatus(this List<Element> elements, CheckoutStatus checkedoutStatus)
+        public static IEnumerable<Element> CheckOwnershipStatusIsNotByOtherUser(this List<Element> elements)
         {
-            return elements.Where(e => WorksharingUtils.GetCheckoutStatus(e.Document, e.Id) == checkedoutStatus).ToList();
+            foreach (var element in elements)
+            {
+                if(WorksharingUtils.GetCheckoutStatus(element.Document, element.Id) != CheckoutStatus.OwnedByOtherUser)
+                {
+                    yield return element;
+                }
+            }
         }
         /***************************************************/
     }
