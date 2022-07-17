@@ -39,12 +39,45 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("")]
+        [Input("", "")]
+        [Output("", "")]
+        public static bool IsFileLocalModel(this Document doc)
+        {
+            return BasicFileInfo.Extract(doc.PathName).IsLocal;
+        }
+
+        [Description("")]
+        [Input("", "")]
+        [Output("", "")]
+        public static bool IsFileCentralModel(this Document doc)
+        {
+            return BasicFileInfo.Extract(doc.PathName).IsCentral;
+        }
+
+        [Description("")]
+        [Input("", "")]
+        [Output("", "")]
+        public static bool IsFileWorkshared(this Document doc)
+        {
+            return BasicFileInfo.Extract(doc.PathName).IsWorkshared;
+        }
+
+        [Description("")]
+        [Input("", "")]
+        [Output("", "")]
+        public static bool IsAllLocalChangesSavedToCentralModel(this Document doc)
+        {
+            return BasicFileInfo.Extract(doc.PathName).AllLocalChangesSavedToCentral;
+        }
+
+
+
+
+        [Description("")]
         [Input("elements", "Revit elements.")]
         [Output("", "")]
         public static List<Element> GetElementsOwnedByOtherUsers(this List<Element> elements)
         {
-            ReloadLatestWithMessage(elements.First().Document);
-
             return elements.Where(e => WorksharingUtils.GetCheckoutStatus(e.Document, e.Id) == CheckoutStatus.OwnedByOtherUser).ToList();
         }
 
@@ -53,8 +86,6 @@ namespace BH.Revit.Engine.Core
         [Output("", ".")]
         public static List<Element> GetElementsOwnedByCurrentUser(this List<Element> elements)
         {
-            ReloadLatestWithMessage(elements.First().Document);
-
             return elements.Where(e => WorksharingUtils.GetCheckoutStatus(e.Document, e.Id) == CheckoutStatus.OwnedByCurrentUser).ToList();
         }
 
@@ -63,9 +94,23 @@ namespace BH.Revit.Engine.Core
         [Output("", "")]
         public static List<Element> GetElementsOwnedByNone(this List<Element> elements)
         {
-            ReloadLatestWithMessage(elements.First().Document);
-
             return elements.Where(e => WorksharingUtils.GetCheckoutStatus(e.Document, e.Id) == CheckoutStatus.NotOwned).ToList();
+        }
+
+        [Description("")]
+        [Input("elements", "Revit elements.")]
+        [Output("", "")]
+        public static List<Element> GetElementsEditablePerCheckoutStatus(this List<Element> elements, bool returnWarnings)
+        {
+            if (returnWarnings)
+            {
+                foreach (var element in elements.GetElementsOwnedByOtherUsers())
+                {
+                    ElementOwnedByOtherUserWarning(element);
+                }
+            }
+
+            return elements.Where(e => WorksharingUtils.GetCheckoutStatus(e.Document, e.Id) != CheckoutStatus.OwnedByOtherUser).ToList();
         }
 
 
@@ -74,8 +119,6 @@ namespace BH.Revit.Engine.Core
         [Output("", "")]
         public static bool IsOwnedByOtherUser(this Element element)
         {
-            ReloadLatestWithMessage(element.Document);
-
             if (WorksharingUtils.GetCheckoutStatus(element.Document, element.Id) == CheckoutStatus.OwnedByOtherUser)
             {
                 return true;
@@ -87,10 +130,8 @@ namespace BH.Revit.Engine.Core
         [Description("")]
         [Input("element", "Revit element.")]
         [Output("", "")]
-        public static bool IsOwnedCurrentUser(this Element element)
+        public static bool IsOwnedByCurrentUser(this Element element)
         {
-            ReloadLatestWithMessage(element.Document);
-
             if (WorksharingUtils.GetCheckoutStatus(element.Document, element.Id) == CheckoutStatus.OwnedByCurrentUser)
             {
                 return true;
@@ -104,8 +145,6 @@ namespace BH.Revit.Engine.Core
         [Output("", "")]
         public static bool IsOwnedByNone(this Element element)
         {
-            ReloadLatestWithMessage(element.Document);
-
             if (WorksharingUtils.GetCheckoutStatus(element.Document, element.Id) == CheckoutStatus.NotOwned)
             {
                 return true;
@@ -120,8 +159,6 @@ namespace BH.Revit.Engine.Core
         [Output("", "")]
         public static CheckoutStatus OwnershipStatus(this Element element)
         {
-            ReloadLatestWithMessage(element.Document);
-
             return WorksharingUtils.GetCheckoutStatus(element.Document, element.Id);
         }
 
@@ -130,19 +167,17 @@ namespace BH.Revit.Engine.Core
         [Output("", "")]
         public static void Checkout(this Element element)
         {
-            ReloadLatestWithMessage(element.Document);
-
             if (element.IsOwnedByNone())
             {
-                ISet<ElementId> elementsToCheckout = new List<ElementId>
+                List<ElementId> elementsToCheckout = new List<ElementId>
                 {
                     element.Id
-                } as ISet<ElementId>;
+                };
 
                 WorksharingUtils.CheckoutElements(element.Document, elementsToCheckout);
             }
 
-            else if (element.IsOwnedCurrentUser())
+            else if (element.IsOwnedByCurrentUser())
             {
                 ElementOwnedByCurrentUserNote(element);
             }
@@ -157,10 +192,7 @@ namespace BH.Revit.Engine.Core
         public static void Checkout(this List<Element> elements)
         {
             Document document = elements.First().Document;
-
-            ReloadLatestWithMessage(document);
-
-            ISet<ElementId> elementsToCheckout = new List<ElementId>() as ISet<ElementId>;
+            List<ElementId> elementsToCheckout = new List<ElementId>();
 
             foreach (var element in elements.GetElementsOwnedByOtherUsers())
             {
@@ -176,6 +208,7 @@ namespace BH.Revit.Engine.Core
             {
                 elementsToCheckout.Add(element.Id);
             }
+            
 
             WorksharingUtils.CheckoutElements(document, elementsToCheckout);
         }
@@ -195,33 +228,7 @@ namespace BH.Revit.Engine.Core
         {
             BH.Engine.Base.Compute.RecordNote($"Revit object with ElementId: {element.Id} is not owned by any user.");
         }
+        
         /***************************************************/
-
-
-        public static void ReloadLatestWithMessage(Document doc)
-        {
-            // Tell user what we're doing
-            TaskDialog td = new TaskDialog("Alert")
-            {
-                MainInstruction = "The requested operation needs to reload changes from central in order to proceed.",
-                MainContent = "This will update your local with all changes currently in the central model.  This operation " +
-                             "may take some time depending on the number of changes available on the central.",
-                CommonButtons = TaskDialogCommonButtons.Ok | TaskDialogCommonButtons.Cancel
-            };
-
-            TaskDialogResult result = td.Show();
-
-            if (result == TaskDialogResult.Ok)
-            {
-                // There are no currently customizable user options for ReloadLatest.
-                doc.ReloadLatest(new ReloadLatestOptions());
-                TaskDialog.Show("Proceeding...", "Reload operation completed, proceeding with requested operation.");
-            }
-            else
-            {
-                TaskDialog.Show("Canceled.", "Reload operation canceled, so changes will not be made.  Return to this command later when ready to reload.");
-            }
-        }
-
     }
 }
