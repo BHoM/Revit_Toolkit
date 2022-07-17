@@ -37,26 +37,143 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns a list of elements that are not owned by others.")]
+        [Description("")]
         [Input("elements", "Revit elements.")]
-        [Output("elementsNotOwnedByOthers", "List of Revit elements matching the given checkedoutStatus.")]
-        public static List<Element> ElementsNotOwnedByOthers(this List<Element> elements)
+        [Output("", "")]
+        public static List<Element> GetElementsOwnedByOtherUsers(this List<Element> elements)
         {
-            var ownedElements = elements.Where(e => WorksharingUtils.GetCheckoutStatus(e.Document, e.Id) == CheckoutStatus.OwnedByOtherUser).ToList();
-            
-            foreach (Element element in ownedElements)
-            {
-                ElementOwnedByOtherError(element);
-                continue;
-            }
-
-            return elements.Where(e => WorksharingUtils.GetCheckoutStatus(e.Document, e.Id) != CheckoutStatus.OwnedByOtherUser).ToList();
+            return elements.Where(e => WorksharingUtils.GetCheckoutStatus(e.Document, e.Id) == CheckoutStatus.OwnedByOtherUser).ToList();
         }
 
-       
-        private static void ElementOwnedByOtherError(Element element)
+        [Description("")]
+        [Input("elements", "Revit elements.")]
+        [Output("", ".")]
+        public static List<Element> GetElementsOwnedByCurrentUser(this List<Element> elements)
+        {
+            return elements.Where(e => WorksharingUtils.GetCheckoutStatus(e.Document, e.Id) == CheckoutStatus.OwnedByCurrentUser).ToList();
+        }
+
+        [Description("")]
+        [Input("elements", "Revit elements.")]
+        [Output("", "")]
+        public static List<Element> GetElementsOwnedByNone(this List<Element> elements)
+        {
+            return elements.Where(e => WorksharingUtils.GetCheckoutStatus(e.Document, e.Id) == CheckoutStatus.NotOwned).ToList();
+        }
+
+
+        [Description("")]
+        [Input("element", "Revit element.")]
+        [Output("", "")]
+        public static bool IsOwnedByOtherUser(this Element element)
+        {
+            if (WorksharingUtils.GetCheckoutStatus(element.Document, element.Id) == CheckoutStatus.OwnedByOtherUser)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        [Description("")]
+        [Input("element", "Revit element.")]
+        [Output("", "")]
+        public static bool IsOwnedCurrentUser(this Element element)
+        {
+            if (WorksharingUtils.GetCheckoutStatus(element.Document, element.Id) == CheckoutStatus.OwnedByCurrentUser)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        [Description("")]
+        [Input("element", "Revit element.")]
+        [Output("", "")]
+        public static bool IsOwnedByNone(this Element element)
+        {
+            if (WorksharingUtils.GetCheckoutStatus(element.Document, element.Id) == CheckoutStatus.NotOwned)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+
+        [Description("")]
+        [Input("element", "Revit element.")]
+        [Output("", "")]
+        public static CheckoutStatus OwnershipStatus(this Element element)
+        {
+            return WorksharingUtils.GetCheckoutStatus(element.Document, element.Id);
+        }
+
+        [Description("")]
+        [Input("element", "Revit element.")]
+        [Output("", "")]
+        public static void Checkout(this Element element)
+        {
+            if (element.IsOwnedByNone())
+            {
+                ISet<ElementId> elementsToCheckout = new List<ElementId>
+                {
+                    element.Id
+                } as ISet<ElementId>;
+
+                WorksharingUtils.CheckoutElements(element.Document, elementsToCheckout);
+            }
+
+            else if (element.IsOwnedCurrentUser())
+            {
+                ElementOwnedByCurrentUserNote(element);
+            }
+
+            ElementOwnedByOtherUserWarning(element);
+
+        }
+
+        [Description("")]
+        [Input("element", "Revit element.")]
+        [Output("", "")]
+        public static void Checkout(this List<Element> elements)
+        {
+            Document document = elements.First().Document;
+            ISet<ElementId> elementsToCheckout = new List<ElementId>() as ISet<ElementId>;
+
+            foreach (var element in elements.GetElementsOwnedByOtherUsers())
+            {
+                ElementOwnedByOtherUserWarning(element);
+            }
+
+            foreach (var element in elements.GetElementsOwnedByCurrentUser())
+            {
+                ElementOwnedByCurrentUserNote(element);
+            }
+
+            foreach (var element in elements.GetElementsOwnedByNone())
+            {
+                elementsToCheckout.Add(element.Id);
+            }
+
+            WorksharingUtils.CheckoutElements(document, elementsToCheckout);
+        }
+
+
+        private static void ElementOwnedByOtherUserWarning(Element element)
         {
             BH.Engine.Base.Compute.RecordWarning($"Revit object could not be updated or modified due to it's CheckoutStatus. Revit ElementId: {element.Id} is owned by another user.");
+        }
+
+        private static void ElementOwnedByCurrentUserNote(Element element)
+        {
+            BH.Engine.Base.Compute.RecordNote($"Revit object with ElementId: {element.Id} is owned by the current user.");
+        }
+
+        private static void ElementOwnedByNoneNote(Element element)
+        {
+            BH.Engine.Base.Compute.RecordNote($"Revit object with ElementId: {element.Id} is not owned by any user.");
         }
         /***************************************************/
     }
