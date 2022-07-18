@@ -37,42 +37,6 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-
-        [Description("")]
-        [Input("", "")]
-        [Output("", "")]
-        public static bool IsFileLocalModel(this Document doc)
-        {
-            return BasicFileInfo.Extract(doc.PathName).IsLocal;
-        }
-
-        [Description("")]
-        [Input("", "")]
-        [Output("", "")]
-        public static bool IsFileCentralModel(this Document doc)
-        {
-            return BasicFileInfo.Extract(doc.PathName).IsCentral;
-        }
-
-        [Description("")]
-        [Input("", "")]
-        [Output("", "")]
-        public static bool IsFileWorkshared(this Document doc)
-        {
-            return BasicFileInfo.Extract(doc.PathName).IsWorkshared;
-        }
-
-        [Description("")]
-        [Input("", "")]
-        [Output("", "")]
-        public static bool IsAllLocalChangesSavedToCentralModel(this Document doc)
-        {
-            return BasicFileInfo.Extract(doc.PathName).AllLocalChangesSavedToCentral;
-        }
-
-
-
-
         [Description("")]
         [Input("elements", "Revit elements.")]
         [Output("", "")]
