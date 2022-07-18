@@ -514,6 +514,26 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        internal static void ElementOwnedByOtherUserWarning(Element element)
+        {
+            BH.Engine.Base.Compute.RecordWarning($"Revit object could not be updated or modified due to it's CheckoutStatus. Revit ElementId: {element.Id} is owned by another user.");
+        }
+
+        /***************************************************/
+
+        internal static void ElementOwnedByCurrentUserWarning(Element element)
+        {
+            BH.Engine.Base.Compute.RecordWarning($"Revit object with ElementId: {element.Id} is owned by the current user.");
+        }
+
+        /***************************************************/
+
+        internal static void ElementOwnedByNoneWarning(Element element)
+        {
+            BH.Engine.Base.Compute.RecordWarning($"Revit object with ElementId: {element.Id} is not owned by any user.");
+        }
+        /***************************************************/
     }
 }
 

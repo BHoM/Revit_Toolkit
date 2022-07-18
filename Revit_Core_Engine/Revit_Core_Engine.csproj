@@ -333,6 +333,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compute\Checkout.cs" />
     <Compile Include="Compute\Activate.cs" />
     <Compile Include="Compute\CachePanelGeometry.cs" />
     <Compile Include="Compute\CheckFamilyMapUsage.cs" />
@@ -401,7 +402,14 @@
     <Compile Include="Query\CableTraySectionProfile.cs" />
     <Compile Include="Query\CableTraySectionProperty.cs" />
     <Compile Include="Query\CategoriesWithBoundParameters.cs" />
-    <Compile Include="Query\CheckedoutStatus.cs" />
+    <Compile Include="Query\IsOwnedByNone.cs" />
+    <Compile Include="Query\IsOwnedByCurrentUser.cs" />
+    <Compile Include="Query\IsOwnedByOtherUser.cs" />
+    <Compile Include="Query\ElementsEditablePerCheckoutStatus.cs" />
+    <Compile Include="Query\ElementsOwnedByNone.cs" />
+    <Compile Include="Query\ElementsOwnedByCurrentUser.cs" />
+    <Compile Include="Query\OwnershipStatus.cs" />
+    <Compile Include="Query\ElementsOwnedByOtherUsers.cs" />
     <Compile Include="Query\ClosestElement.cs" />
     <Compile Include="Query\ColumnLine.cs" />
     <Compile Include="Query\ContainingElement.cs" />
