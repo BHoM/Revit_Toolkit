@@ -333,7 +333,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Compute\Checkout.cs" />
+    <Compile Include="Modify\Checkout.cs" />
     <Compile Include="Compute\Activate.cs" />
     <Compile Include="Compute\CachePanelGeometry.cs" />
     <Compile Include="Compute\CheckFamilyMapUsage.cs" />

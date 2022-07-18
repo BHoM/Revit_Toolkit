@@ -38,9 +38,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
        
-        [Description("")]
+        [Description("Check if element is owned by the current user.")]
         [Input("element", "Revit element.")]
-        [Output("", "")]
+        [Output("ownedByCurrentUser", "True if the input Revit element is owned by current user, otherwise false.")]
         public static bool IsOwnedByCurrentUser(this Element element)
         {
             if (WorksharingUtils.GetCheckoutStatus(element.Document, element.Id) == CheckoutStatus.OwnedByCurrentUser)
