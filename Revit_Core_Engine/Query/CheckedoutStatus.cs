@@ -143,7 +143,7 @@ namespace BH.Revit.Engine.Core
 
             else if (element.IsOwnedByCurrentUser())
             {
-                ElementOwnedByCurrentUserNote(element);
+                ElementOwnedByCurrentUserWarning(element);
             }
 
             ElementOwnedByOtherUserWarning(element);
@@ -165,7 +165,7 @@ namespace BH.Revit.Engine.Core
 
             foreach (var element in elements.GetElementsOwnedByCurrentUser())
             {
-                ElementOwnedByCurrentUserNote(element);
+                ElementOwnedByCurrentUserWarning(element);
             }
 
             foreach (var element in elements.GetElementsOwnedByNone())
@@ -183,14 +183,14 @@ namespace BH.Revit.Engine.Core
             BH.Engine.Base.Compute.RecordWarning($"Revit object could not be updated or modified due to it's CheckoutStatus. Revit ElementId: {element.Id} is owned by another user.");
         }
 
-        private static void ElementOwnedByCurrentUserNote(Element element)
+        private static void ElementOwnedByCurrentUserWarning(Element element)
         {
-            BH.Engine.Base.Compute.RecordNote($"Revit object with ElementId: {element.Id} is owned by the current user.");
+            BH.Engine.Base.Compute.RecordWarning($"Revit object with ElementId: {element.Id} is owned by the current user.");
         }
 
-        private static void ElementOwnedByNoneNote(Element element)
+        private static void ElementOwnedByNoneWarning(Element element)
         {
-            BH.Engine.Base.Compute.RecordNote($"Revit object with ElementId: {element.Id} is not owned by any user.");
+            BH.Engine.Base.Compute.RecordWarning($"Revit object with ElementId: {element.Id} is not owned by any user.");
         }
         
         /***************************************************/
