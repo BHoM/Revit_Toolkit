@@ -117,7 +117,6 @@ namespace BH.Revit.Engine.Core
             return false;
         }
 
-
         [Description("")]
         [Input("element", "Revit element.")]
         [Output("", "")]
