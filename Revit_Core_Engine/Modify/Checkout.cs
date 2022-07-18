@@ -28,16 +28,15 @@ using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Compute
+    public static partial class Modify
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
 
-        [Description("")]
+        [Description("Modifies element CheckoutStatus if element is not currently owned by the current user or others.")]
         [Input("element", "Revit element.")]
-        [Output("", "")]
         public static void Checkout(this Element element)
         {
             if (element.IsOwnedByNone())
@@ -52,16 +51,15 @@ namespace BH.Revit.Engine.Core
 
             else if (element.IsOwnedByCurrentUser())
             {
-                ElementOwnedByCurrentUserWarning(element);
+                Compute.ElementOwnedByCurrentUserWarning(element);
             }
 
-            ElementOwnedByOtherUserWarning(element);
+            Compute.ElementOwnedByOtherUserWarning(element);
 
         }
 
-        [Description("")]
-        [Input("element", "Revit element.")]
-        [Output("", "")]
+        [Description("Modifies CheckoutStatus for each element selectd if element is not currently owned by the current user or others.")]
+        [Input("elements", "Revit elements.")]
         public static void Checkout(this List<Element> elements)
         {
             Document document = elements.First().Document;
@@ -69,12 +67,12 @@ namespace BH.Revit.Engine.Core
 
             foreach (var element in elements.ElementsOwnedByOtherUsers())
             {
-                ElementOwnedByOtherUserWarning(element);
+                Compute.ElementOwnedByOtherUserWarning(element);
             }
 
             foreach (var element in elements.ElementsOwnedByCurrentUser())
             {
-                ElementOwnedByCurrentUserWarning(element);
+                Compute.ElementOwnedByCurrentUserWarning(element);
             }
 
             foreach (var element in elements.ElementsOwnedByNone())

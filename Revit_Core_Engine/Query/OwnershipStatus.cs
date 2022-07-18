@@ -38,9 +38,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
        
-        [Description("")]
+        [Description("Returns element CheckoutStatus.")]
         [Input("element", "Revit element.")]
-        [Output("", "")]
+        [Output("checkoutStatus", "The worksharing ownership/CheckoutStatus of the element.")]
         public static CheckoutStatus OwnershipStatus(this Element element)
         {
             return WorksharingUtils.GetCheckoutStatus(element.Document, element.Id);

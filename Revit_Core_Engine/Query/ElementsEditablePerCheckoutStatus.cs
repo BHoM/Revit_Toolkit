@@ -37,9 +37,10 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        [Description("")]
+        [Description("Returns a sublist of elements, from the given list of elements, that are editable per the element's CheckoutStatus." +
+            "Return warnings option, if true, alerts the user of which elements are uneditable due to ownership by other users.")]
         [Input("elements", "Revit elements.")]
-        [Output("", "")]
+        [Output("elementsEditablePerCheckoutStatus", "List of elements that are editable per the element's CheckoutStatus.")]
         public static List<Element> ElementsEditablePerCheckoutStatus(this List<Element> elements, bool returnWarnings)
         {
             if (returnWarnings)

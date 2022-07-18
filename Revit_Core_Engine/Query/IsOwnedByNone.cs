@@ -38,9 +38,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
         
-        [Description("")]
+        [Description("Check if element is currently unowned.")]
         [Input("element", "Revit element.")]
-        [Output("", "")]
+        [Output("ownedByNone", "True if the input Revit element is not owned, otherwise false.")]
         public static bool IsOwnedByNone(this Element element)
         {
             if (WorksharingUtils.GetCheckoutStatus(element.Document, element.Id) == CheckoutStatus.NotOwned)
