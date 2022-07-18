@@ -58,7 +58,7 @@ namespace BH.Revit.Engine.Core
 
         }
 
-        [Description("Modifies CheckoutStatus for each element selectd if element is not currently owned by the current user or others.")]
+        [Description("Modifies CheckoutStatus for each element selected if element is not currently owned by the current user or others.")]
         [Input("elements", "Revit elements.")]
         public static void Checkout(this List<Element> elements)
         {
