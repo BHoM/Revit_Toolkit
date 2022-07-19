@@ -26,7 +26,12 @@ namespace BH.oM.Adapters.Revit.Enums
 {
     /***************************************************/
 
-    [Description("An enumerator defining possible bound condition of a Revit room/space/area.")]
+    [Description("An enumerator defining possible bound condition of a Revit room/space/area. " +
+        "Below is the meaning of each condition for rooms. The same applies to spaces and areas." +
+        "- Unplaced: https://help.autodesk.com/view/RVT/2022/ENU/?guid=GUID-BC1DC181-B6D0-4479-8385-363A9EE5E75E" +
+        "- Not enclosed: https://help.autodesk.com/view/RVT/2022/ENU/?guid=GUID-1AEDF540-7CB3-4CAB-885A-ACDF70154312" +
+        "- Redundant: https://help.autodesk.com/view/RVT/2022/ENU/?guid=GUID-0DF409DD-3BBD-4488-B544-D075D1807747" +
+        "- Bounded (fully bounded on all sides by bounding elements): https://help.autodesk.com/view/RVT/2022/ENU/?guid=GUID-241430FC-8084-43A1-AA3A-681B2883B0FC")]
     public enum BoundCondition
     {
         Bounded,
