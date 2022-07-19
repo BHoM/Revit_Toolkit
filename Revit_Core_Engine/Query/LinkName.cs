@@ -35,6 +35,7 @@ namespace BH.Revit.Engine.Core
 
         [Description("Queries the name of a given Revit link instance.")]
         [Input("rvLink", "Revit link instance to query the name from.")]
+        [Output("string", "The name of the input Revit link instance.")]
         public static string LinkName(this RevitLinkInstance rvLink)
         {
             string linkName;

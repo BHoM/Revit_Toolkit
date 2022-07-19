@@ -36,8 +36,13 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Check if a room/space/area is bounded, unplaced, redundant, or not enclosed.")]
-        public static BoundCondition SpatialBoundCondition(this SpatialElement elem)
+        [Input("elem", "A spatial element to be check if it's bounded, unplaced, redundant, or not enclosed.")]
+        [Output("BoundCondition", "The bound condition of the spatial element to be checked.")]
+        public static BoundCondition? SpatialBoundCondition(this SpatialElement elem)
         {
+            if (elem == null)
+                return null;
+
             if (elem.Area == 0)
             {
                 if (elem.Location == null)
