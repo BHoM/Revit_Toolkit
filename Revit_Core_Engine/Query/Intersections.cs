@@ -34,10 +34,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Intersection result between curve and solid. For no intersection, an empty list is returned.")]
+        [Description("Returns the segment of a curve that are inside a given solid. For no intersection, an empty list of curves is returned.")]
         [Input("curve", "Curve to get the intersection for.")]
         [Input("solid", "Solid to get the intersection for.")]
-        [Output("curves", "List of intersecting curves.")]
+        [Output("curves", "Segments of the input curve that are inside the input solid.")]
         public static List<Curve> Intersections(this Curve curve, Solid solid)
         {
             if (curve == null || solid == null)
@@ -47,6 +47,10 @@ namespace BH.Revit.Engine.Core
 
             List<Curve> curves = new List<Curve>();
             SolidCurveIntersection intersection = solid.IntersectWithCurve(curve, new SolidCurveIntersectionOptions());
+
+            if (intersection == null)
+                return curves;
+
             foreach(Curve intersectionCurve in intersection)
             {
                 curves.Add(intersectionCurve);

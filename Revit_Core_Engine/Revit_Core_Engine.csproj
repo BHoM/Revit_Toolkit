@@ -412,6 +412,7 @@
     <Compile Include="Query\ElementsOwnedByOtherUsers.cs" />
     <Compile Include="Query\ClosestElement.cs" />
     <Compile Include="Query\ColumnLine.cs" />
+    <Compile Include="Query\ConnectedElements.cs" />
     <Compile Include="Query\ContainingElement.cs" />
     <Compile Include="Query\ConvertMethod.cs" />
     <Compile Include="Query\CoordinateSystem.cs" />
