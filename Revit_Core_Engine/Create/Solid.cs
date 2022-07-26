@@ -94,5 +94,62 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        [Description("Create Solid object from ViewPlan (based on cropbox and view range).")]
+        [Input("view", "ViewPlan to get the solid from.")]
+        [Input("transform", "Transform of the link model.")]
+        [Output("solid", "Solid object created from the ViewPlan.")]
+        public static Solid Solid(this ViewPlan view, Transform transform)
+        {
+            if (view == null || transform == null)
+                return null;
+
+            //bbox of current view
+            Document doc = view.Document;
+            PlanViewRange viewRange = view.GetViewRange();
+            BoundingBoxXYZ viewBBox = view.CropBox;
+            if (!view.CropBoxActive)
+            {
+                viewBBox.Min = new XYZ(-1e6, -1e6, -1e6);
+                viewBBox.Max = new XYZ(1e6, 1e6, 1e6);
+            }
+
+            //topElevation (from the CutPlane)
+            Level topLevel = doc.GetElement(viewRange.GetLevelId(PlanViewPlane.CutPlane)) as Level;
+            double topElevation;
+            if (topLevel == null)
+            {
+                topElevation = 1e6;
+            }
+            else
+            {
+                double topOffset = viewRange.GetOffset(PlanViewPlane.CutPlane);
+                topElevation = topLevel.ProjectElevation + topOffset;
+            }
+
+            //bottomElevation
+            Level bottomLevel = doc.GetElement(viewRange.GetLevelId(PlanViewPlane.BottomClipPlane)) as Level;
+            double bottomElevation;
+            if (bottomLevel == null)
+            {
+                bottomElevation = -1e6;
+            }
+            else
+            {
+                double bottomOffset = viewRange.GetOffset(PlanViewPlane.BottomClipPlane);
+                bottomElevation = bottomLevel.ProjectElevation + bottomOffset;
+            }
+
+            viewBBox.Min = new XYZ(viewBBox.Min.X, viewBBox.Min.Y, bottomElevation);
+            viewBBox.Max = new XYZ(viewBBox.Max.X, viewBBox.Max.Y, topElevation);
+            viewBBox.Transform = Transform.Identity;
+
+            Solid viewSolid = viewBBox.ToSolid();
+            Solid transformedSolid = SolidUtils.CreateTransformed(viewSolid, transform.Inverse);
+
+            return transformedSolid;
+        }
+
+        /***************************************************/
     }
 }
