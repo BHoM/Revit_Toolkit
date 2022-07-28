@@ -39,8 +39,11 @@ namespace BH.Revit.Engine.Core
         [Output("curveLoopPoints", "CurveLoop points.")]
         public static List<XYZ> Tessellate(this CurveLoop curveLoop)
         {
-            if (curveLoop == null)
+            if (curveLoop == null || curveLoop.Count() == 0)
+            {
+                BH.Engine.Base.Compute.RecordError($"CurveLoop is null or has 0 curves.");
                 return null;
+            }
 
             List<XYZ> curveLoopPoints = new List<XYZ>();
             foreach (Curve curve in curveLoop)
