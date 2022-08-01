@@ -34,7 +34,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Intersection result of two curves. If there is no intersection, an empty list is returned.")]
+        [Description("Intersection result of two curves. For no intersection, an empty list is returned.")]
         [Input("curve1", "First curve to check the intersection for.")]
         [Input("curve2", "Second curve to check the intersection for.")]
         [Output("points", "List of intersecting points.")]
@@ -64,7 +64,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Intersection of curve and curveloop. If there is no intersection, an empty list is returned.")]
+        [Description("Intersection of curve and CurveLoop. For no intersection, an empty list is returned.")]
         [Input("curve", "Curve to check the intersection for.")]
         [Input("curveLoop", "CurveLoop to check the intersection for.")]
         [Output("points", "List of intersecting points.")]
@@ -78,11 +78,64 @@ namespace BH.Revit.Engine.Core
             List<XYZ> intersectionPoints = new List<XYZ>();
             foreach (Curve bCurve in curveLoop)
             {
-                List<XYZ> points = bCurve.Intersections(curve);
+                List<XYZ> points = curve.Intersections(bCurve);
                 intersectionPoints.AddRange(points);
             }
 
             return intersectionPoints;
+        }
+
+        /***************************************************/
+
+        [Description("UV parameters of intersection points of two curves. For no intersection, an empty list is returned.")]
+        [Input("curve1", "First curve to check the intersection for.")]
+        [Input("curve2", "Second curve to check the intersection for.")]
+        [Output("uvPoints", "List of UV parameters points.")]
+        public static List<UV> IntersectionsAsUV(this Curve curve1, Curve curve2)
+        {
+            if (curve1 == null || curve2 == null)
+            {
+                return null;
+            }
+
+            List<UV> uvPoints = new List<UV>();
+            curve1.Intersect(curve2, out IntersectionResultArray intersectionResultArray);
+
+            if (intersectionResultArray == null)
+            {
+                return uvPoints;
+            }
+
+            foreach (IntersectionResult intersectionResult in intersectionResultArray)
+            {
+                UV intersectionPoint = intersectionResult.UVPoint;
+                uvPoints.Add(intersectionPoint);
+            }
+
+            return uvPoints;
+        }
+
+        /***************************************************/
+
+        [Description("UV parameters of intersection points of curve and CurveLoop. For no intersection, an empty list is returned.")]
+        [Input("curve", "Curve to check the intersection for.")]
+        [Input("curveLoop", "CurveLoop to check the intersection for.")]
+        [Output("points", "List of intersecting points.")]
+        public static List<UV> IntersectionsAsUV(this Curve curve, CurveLoop curveLoop)
+        {
+            if (curve == null || curveLoop == null)
+            {
+                return null;
+            }
+
+            List<UV> intersectionUVPoints = new List<UV>();
+            foreach (Curve bCurve in curveLoop)
+            {
+                List<UV> points = curve.IntersectionsAsUV(bCurve);
+                intersectionUVPoints.AddRange(points);
+            }
+
+            return intersectionUVPoints;
         }
 
         /***************************************************/
