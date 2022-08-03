@@ -34,27 +34,29 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get elements from link instance located in given view. Method returns all elements in the view scope (including hidden elements).")]
+        [Description("Return elements from link instance located in given view. Method returns all instance elements in the view scope (including hidden elements)")]
         [Input("view", "ViewPlan to get the elements from.")]
-        [Input("linkInst", "Revit Link Instance to get the elements from.")]
-        [Input("elementFilters", "ElementFilter list for the elements.")]
+        [Input("linkInstance", "Revit Link Instance to get the elements from.")]
+        [Input("elementFilters", "Additional filters for the element collector. If null, no additional filters will be applied.")]
         [Output("elements", "Elements of link instance in given view.")]
-        public static List<Element> LinkedElementsInView(this ViewPlan view, RevitLinkInstance linkInst, List<ElementFilter> elementFilters)
+        public static List<Element> LinkedElementsInView(this ViewPlan view, RevitLinkInstance linkInstance, List<ElementFilter> elementFilters = null)
         {
-            if (view == null || linkInst == null || elementFilters.Count == 0)
+            if (view == null || linkInstance == null || elementFilters.Count == 0)
                 return null;
 
-            Document linkDoc = linkInst.GetLinkDocument();
-            Transform linkTransform = linkInst.GetTotalTransform();
+            Document linkDoc = linkInstance.GetLinkDocument();
+            Transform linkTransform = linkInstance.GetTotalTransform();
             Solid viewSolid = view.Solid(linkTransform);
 
             ElementIntersectsSolidFilter solidFilter = new ElementIntersectsSolidFilter(viewSolid);
+
+            if (elementFilters == null)
+                return new FilteredElementCollector(linkDoc).WherePasses(solidFilter).WhereElementIsNotElementType().ToElements().ToList();
+
             LogicalOrFilter elementFilter = new LogicalOrFilter(elementFilters);
             LogicalAndFilter elementSolidFilter = new LogicalAndFilter(elementFilter, solidFilter);
 
-            List<Element> elements = new FilteredElementCollector(linkDoc).WherePasses(elementSolidFilter).WhereElementIsNotElementType().ToElements().ToList();
-
-            return elements;
+            return new FilteredElementCollector(linkDoc).WherePasses(elementSolidFilter).WhereElementIsNotElementType().ToElements().ToList();
         }
 
         /***************************************************/
