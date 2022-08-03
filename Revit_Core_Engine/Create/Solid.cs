@@ -101,7 +101,7 @@ namespace BH.Revit.Engine.Core
         [Output("solid", "Solid object created from the ViewPlan.")]
         public static Solid Solid(this ViewPlan view, Transform transform)
         {
-            if (view == null || transform == null)
+            if (view == null)
                 return null;
 
             //bbox of current view
@@ -145,9 +145,11 @@ namespace BH.Revit.Engine.Core
             viewBBox.Transform = Transform.Identity;
 
             Solid viewSolid = viewBBox.ToSolid();
-            Solid transformedSolid = SolidUtils.CreateTransformed(viewSolid, transform.Inverse);
 
-            return transformedSolid;
+            if (transform == null)
+                return viewSolid;
+
+            return SolidUtils.CreateTransformed(viewSolid, transform.Inverse);
         }
 
         /***************************************************/
