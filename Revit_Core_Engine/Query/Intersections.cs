@@ -91,7 +91,7 @@ namespace BH.Revit.Engine.Core
         [Input("curve1", "First curve to check the intersection for.")]
         [Input("curve2", "Second curve to check the intersection for.")]
         [Output("uvPoints", "List of UV parameters points.")]
-        public static List<UV> IntersectionsAsUV(this Curve curve1, Curve curve2)
+        public static List<UV> UVIntersections(this Curve curve1, Curve curve2)
         {
             if (curve1 == null || curve2 == null)
             {
@@ -121,7 +121,7 @@ namespace BH.Revit.Engine.Core
         [Input("curve", "Curve to check the intersection for.")]
         [Input("curveLoop", "CurveLoop to check the intersection for.")]
         [Output("points", "List of intersecting points.")]
-        public static List<UV> IntersectionsAsUV(this Curve curve, CurveLoop curveLoop)
+        public static List<UV> UVIntersections(this Curve curve, CurveLoop curveLoop)
         {
             if (curve == null || curveLoop == null)
             {
@@ -131,7 +131,7 @@ namespace BH.Revit.Engine.Core
             List<UV> intersectionUVPoints = new List<UV>();
             foreach (Curve bCurve in curveLoop)
             {
-                List<UV> points = curve.IntersectionsAsUV(bCurve);
+                List<UV> points = curve.UVIntersections(bCurve);
                 intersectionUVPoints.AddRange(points);
             }
 
