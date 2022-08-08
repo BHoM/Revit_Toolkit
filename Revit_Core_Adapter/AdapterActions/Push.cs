@@ -24,6 +24,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Base;
 using BH.Revit.Engine.Core;
 using System.Collections.Generic;
@@ -102,24 +103,87 @@ namespace BH.Revit.Adapter.Core
                 }
             }
 
-            // Push the objects
-            string transactionName = "BHoM Push " + pushType;
+            // Push the objects of type other than assembly first (including assembly members)
+            List<List<IBHoMObject>> revitAssemblies;
+            List<IBHoMObject> nonAssemblies = ExcludeAssemblies(objectsToPush, out revitAssemblies);
+            List<IBHoMObject> pushed = PushToRevit(document, nonAssemblies, pushType, pushConfig, "BHoM Push " + pushType);
+
+            // Create the assemblies - no changes applied to the newly created assemblies here due to Revit API limitations
+            // Warnings are being suppressed to avoid all assembly-related warnings
+            UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
+            List<IBHoMObject> createdAssemblies = new List<IBHoMObject>();
+            if (pushType == PushType.CreateOnly || pushType == PushType.CreateNonExisting || pushType == PushType.DeleteThenCreate || pushType == PushType.UpdateOrCreateOnly)
+            {
+                foreach (List<IBHoMObject> assemblyLevel in revitAssemblies)
+                {
+                    createdAssemblies.AddRange(PushToRevit(document, assemblyLevel, pushType, pushConfig, "BHoM Push Create Assemblies", true));
+                }
+            }
+
+            // Update the assemblies in a separate transaction
+            List<IBHoMObject> assembliesToUpdate = pushType == PushType.UpdateOnly || pushType == PushType.UpdateOrCreateOnly ? revitAssemblies.SelectMany(x => x).ToList() : createdAssemblies;
+            foreach (var group in assembliesToUpdate.GroupBy(x => x.ElementId()).Where(x => x != null))
+            {
+                List<string> distinctNames = group.Select(x => x.Name).Distinct().ToList();
+                if (distinctNames.Count > 1)
+                    BH.Engine.Base.Compute.RecordWarning($"BHoM objects with names {string.Join(", ", distinctNames)} correspond to the same Revit assembly with ElementId {group.Key}. Last mentioned name will be applied to the assembly.");
+            }
+            pushed.AddRange(PushToRevit(document, assembliesToUpdate, PushType.UpdateOnly, pushConfig, "BHoM Push Update Assemblies", true));
+
+            // Switch of warning suppression
+            if (UIControlledApplication != null)
+                UIControlledApplication.ControlledApplication.FailuresProcessing -= ControlledApplication_FailuresProcessing;
+
+            return pushed.Cast<object>().ToList();
+        }
+
+
+        /***************************************************/
+        /****               Private Methods             ****/
+        /***************************************************/
+
+        private List<IBHoMObject> ExcludeAssemblies(IEnumerable<IBHoMObject> objects, out List<List<IBHoMObject>> assemblyHierarchy)
+        {
+            List<IBHoMObject> result = new List<IBHoMObject>();
+            assemblyHierarchy = new List<List<IBHoMObject>>();
+            List<IBHoMObject> currentLevelAssemblies;
+            do
+            {
+                result.AddRange(objects.Where(x => !(x is Assembly)));
+                currentLevelAssemblies = objects.Where(x => x is Assembly).ToList();
+                if (currentLevelAssemblies.Count != 0)
+                {
+                    assemblyHierarchy.Add(currentLevelAssemblies);
+                    objects = currentLevelAssemblies.SelectMany(x => ((Assembly)x).MemberElements).ToList();
+                }
+            }
+
+            while (currentLevelAssemblies.Count != 0);
+
+            assemblyHierarchy.Reverse();
+            return result;
+        }
+
+        /***************************************************/
+
+        private List<IBHoMObject> PushToRevit(Document document, IEnumerable<IBHoMObject> objects, PushType pushType, RevitPushConfig pushConfig, string transactionName)
+        {
             List<IBHoMObject> pushed = new List<IBHoMObject>();
             using (Transaction transaction = new Transaction(document, transactionName))
             {
                 transaction.Start();
 
                 if (pushType == PushType.CreateOnly)
-                    pushed = Create(objectsToPush, pushConfig);
+                    pushed = Create(objects, pushConfig);
                 else if (pushType == PushType.CreateNonExisting)
                 {
-                    IEnumerable<IBHoMObject> toCreate = objectsToPush.Where(x => x.Element(document) == null);
+                    IEnumerable<IBHoMObject> toCreate = objects.Where(x => x.Element(document) == null);
                     pushed = Create(toCreate, pushConfig);
                 }
                 else if (pushType == PushType.DeleteThenCreate)
                 {
                     List<IBHoMObject> toCreate = new List<IBHoMObject>();
-                    foreach (IBHoMObject obj in objectsToPush)
+                    foreach (IBHoMObject obj in objects)
                     {
                         Element element = obj.Element(document);
                         if (element == null || Delete(element.Id, document, false).Count() != 0)
@@ -130,22 +194,32 @@ namespace BH.Revit.Adapter.Core
                 }
                 else if (pushType == PushType.UpdateOnly)
                 {
-                    foreach (IBHoMObject obj in objectsToPush)
+                    foreach (IBHoMObject obj in objects)
                     {
                         Element element = obj.Element(document);
                         if (element != null && Update(element, obj, pushConfig))
                             pushed.Add(obj);
                     }
                 }
+                else if (pushType == PushType.UpdateOrCreateOnly)
+                {
+                    List<IBHoMObject> toCreate = new List<IBHoMObject>();
+                    foreach (IBHoMObject obj in objects)
+                    {
+                        Element element = obj.Element(document);
+                        if (element != null && Update(element, obj, pushConfig))
+                            pushed.Add(obj);
+                        else if (element == null || Delete(element.Id, document, false).Count() != 0)
+                            toCreate.Add(obj);
+                    }
+
+                    pushed.AddRange(Create(toCreate, pushConfig));
+                }
 
                 transaction.Commit();
             }
 
-            // Switch of warning suppression
-            if (UIControlledApplication != null)
-                UIControlledApplication.ControlledApplication.FailuresProcessing -= ControlledApplication_FailuresProcessing;
-
-            return pushed.Cast<object>().ToList();
+            return pushed;
         }
 
         /***************************************************/
