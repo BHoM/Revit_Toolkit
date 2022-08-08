@@ -66,7 +66,7 @@ namespace BH.Revit.Engine.Core
             return FromRevit(location as dynamic);
         }
 
-        
+
         /***************************************************/
         /****      Convert Revit elements to BHoM       ****/
         /***************************************************/
@@ -93,6 +93,31 @@ namespace BH.Revit.Engine.Core
                 default:
                     return null;
             }
+        }
+
+        /***************************************************/
+
+        [Description("Converts a Revit AssemblyInstance to a BHoM object based on the requested engineering discipline.")]
+        [Input("assemblyInstance", "Revit AssemblyInstance to be converted.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("transform", "Optional, a transform to apply to the converted object. Irrelevant in case of assembly instances.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("fromRevit", "Resulted BHoM object converted from a Revit AssemblyInstance.")]
+        public static List<IBHoMObject> FromRevit(this AssemblyInstance assemblyInstance, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            if (assemblyInstance == null)
+            {
+                BH.Engine.Base.Compute.RecordWarning("BHoM object could not be read because Revit assembly instance is null.");
+                return null;
+            }
+
+            foreach (ElementId memberId in assemblyInstance.GetMemberIds())
+            {
+                assemblyInstance.Document.GetElement(memberId).IFromRevit(discipline, transform, settings, refObjects);
+            }
+
+            return new List<IBHoMObject> { assemblyInstance.AssemblyFromRevit(settings, refObjects) };
         }
 
         /***************************************************/

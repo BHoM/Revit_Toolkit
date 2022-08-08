@@ -336,6 +336,19 @@ namespace BH.Revit.Engine.Core
             return opening.ToRevitFamilyInstance(document, settings, refObjects);
         }
 
+        /***************************************************/
+
+        [Description("Converts BH.oM.Adapters.Revit.Elements.Assembly to a Revit AssemblyInstance.")]
+        [Input("assembly", "BH.oM.Adapters.Revit.Elements.Assembly to be converted.")]
+        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("assemblyInstance", "Revit AssemblyInstance resulting from converting the input BH.oM.Adapters.Revit.Elements.Assembly.")]
+        public static Element ToRevit(this Assembly assembly, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            return assembly.ToRevitAssembly(document, settings, refObjects);
+        }
+
 
         /***************************************************/
         /****             Disallowed Types              ****/

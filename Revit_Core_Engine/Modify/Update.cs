@@ -28,7 +28,9 @@ using BH.oM.Base;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -201,6 +203,35 @@ namespace BH.Revit.Engine.Core
 
                 }
             }
+
+            return true;
+        }
+
+        /***************************************************/
+
+        [Description("Updates the existing Revit Assembly instance based on the given BHoM Assembly.")]
+        [Input("element", "Revit Assembly instance to be updated.")]
+        [Input("bHoMObject", "BHoM Assembly, based on which the Revit element will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Input("setLocationOnUpdate", "Revit Assembly instance does not have location property, therefore this parameter is irrelevant.")]
+        [Output("success", "True if the Revit Assembly instance has been updated successfully based on the input BHoM Assembly.")]
+        public static bool Update(this AssemblyInstance element, Assembly bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            List<ElementId> memberElementIds = bHoMObject.MemberElements.Select(x => x.ElementId()).Where(x => x != null).ToList();
+            if (memberElementIds.Count == 0)
+            {
+                BH.Engine.Base.Compute.RecordError($"Update of the assembly failed because it does not have any valid member elements. BHoM_Guid: {bHoMObject.BHoM_Guid}");
+                return false;
+            }
+            else if (memberElementIds.Count != bHoMObject.MemberElements.Count)
+                BH.Engine.Base.Compute.RecordWarning($"The assembly is missing some member elements. BHoM_Guid: {bHoMObject.BHoM_Guid}");
+
+            element.SetMemberIds(memberElementIds);
+
+            element.CopyParameters(bHoMObject, settings);
+
+            if (!string.IsNullOrWhiteSpace(bHoMObject.Name))
+                element.AssemblyTypeName = bHoMObject.Name;
 
             return true;
         }
