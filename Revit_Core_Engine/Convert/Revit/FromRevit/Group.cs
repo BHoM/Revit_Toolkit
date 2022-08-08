@@ -22,7 +22,6 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
@@ -37,40 +36,40 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Converts a Revit AssemblyInstance to BH.oM.Adapters.Revit.Elements.Assembly.")]
-        [Input("assemblyInstance", "Revit AssemblyInstance to be converted.")]
+        [Description("Converts a Revit Group to BH.oM.Adapters.Revit.Elements.Group.")]
+        [Input("group", "Revit Group to be converted.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("assembly", "BH.oM.Adapters.Revit.Elements.Assembly resulting from converting the input Revit AssemblyInstance.")]
-        public static Assembly AssemblyFromRevit(this AssemblyInstance assemblyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("group", "BH.oM.Adapters.Revit.Elements.Group resulting from converting the input Revit Group.")]
+        public static BH.oM.Adapters.Revit.Elements.Group GroupFromRevit(this Autodesk.Revit.DB.Group revitGroup, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
-            Assembly assembly = refObjects.GetValue<Assembly>(assemblyInstance.Id);
-            if (assembly != null)
-                return assembly;
+            BH.oM.Adapters.Revit.Elements.Group group = refObjects.GetValue<BH.oM.Adapters.Revit.Elements.Group>(revitGroup.Id);
+            if (group != null)
+                return group;
 
-            assembly = new Assembly { Name = assemblyInstance.AssemblyTypeName };
-            foreach (ElementId memberId in assemblyInstance.GetMemberIds())
+            group = new BH.oM.Adapters.Revit.Elements.Group { Name = revitGroup.Name };
+            foreach (ElementId memberId in revitGroup.GetMemberIds())
             {
                 List<IBHoMObject> members;
                 if (refObjects == null || !refObjects.TryGetValue(memberId.ToString(), out members))
                 {
-                    BH.Engine.Base.Compute.RecordError("Assembly instance could not be converted from Revit because not all of its members were converted prior to it." +
-                                                       "\nPlease make sure all member elements of an assembly instance get converted to BHoM and cached in refObjects before conversion of the instance itself.");
+                    BH.Engine.Base.Compute.RecordError("Group could not be converted from Revit because not all of its members were converted prior to it." +
+                                                       "\nPlease make sure all member elements of a group get converted to BHoM and cached in refObjects before conversion of the instance itself.");
                     return null;
                 }
 
-                assembly.MemberElements.AddRange(members);
+                group.MemberElements.AddRange(members);
             }
 
             //Set identifiers, parameters & custom data
-            assembly.SetIdentifiers(assemblyInstance);
-            assembly.CopyParameters(assemblyInstance, settings.MappingSettings);
-            assembly.SetProperties(assemblyInstance, settings.MappingSettings);
+            group.SetIdentifiers(revitGroup);
+            group.CopyParameters(revitGroup, settings.MappingSettings);
+            group.SetProperties(revitGroup, settings.MappingSettings);
 
-            refObjects.AddOrReplace(assemblyInstance.Id, assembly);
-            return assembly;
+            refObjects.AddOrReplace(revitGroup.Id, group);
+            return group;
         }
 
         /***************************************************/
