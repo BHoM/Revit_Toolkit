@@ -236,6 +236,40 @@ namespace BH.Revit.Engine.Core
             return true;
         }
 
+        /***************************************************/
+
+        [Description("Updates the existing Revit Group based on the given BHoM Group.")]
+        [Input("element", "Revit Group to be updated.")]
+        [Input("bHoMObject", "BHoM Group, based on which the Revit element will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Input("setLocationOnUpdate", "Revit Group does not have location property, therefore this parameter is irrelevant.")]
+        [Output("success", "True if the Revit Group has been updated successfully based on the input BHoM Group.")]
+        public static bool Update(this Autodesk.Revit.DB.Group element, BH.oM.Adapters.Revit.Elements.Group bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            List<ElementId> memberElementIds = bHoMObject.MemberElements.Select(x => x.ElementId()).Where(x => x != null).ToList();
+            if (memberElementIds.Count == 0)
+            {
+                BH.Engine.Base.Compute.RecordError($"Update of the group failed because it does not have any valid member elements. BHoM_Guid: {bHoMObject.BHoM_Guid}");
+                return false;
+            }
+            else if (memberElementIds.Count != bHoMObject.MemberElements.Count)
+                BH.Engine.Base.Compute.RecordWarning($"The group is missing some member elements. BHoM_Guid: {bHoMObject.BHoM_Guid}");
+
+            IList<ElementId> revitMemberIds = element.GetMemberIds();
+            revitMemberIds.Clear();
+            foreach (ElementId id in memberElementIds)
+            {
+                revitMemberIds.Add(id);
+            }
+
+            element.CopyParameters(bHoMObject, settings);
+
+            if (!string.IsNullOrWhiteSpace(bHoMObject.Name))
+                element.Name = bHoMObject.Name;
+
+            return true;
+        }
+
 
         /***************************************************/
         /****             Disallowed Types              ****/

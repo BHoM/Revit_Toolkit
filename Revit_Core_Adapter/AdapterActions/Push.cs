@@ -103,10 +103,17 @@ namespace BH.Revit.Adapter.Core
                 }
             }
 
-            // Push the objects of type other than assembly first (including assembly members)
+            // Push the objects of type other than assembly and group first (including assembly group members)
             List<List<IBHoMObject>> revitAssemblies;
-            List<IBHoMObject> nonAssemblies = ExcludeAssemblies(objectsToPush, out revitAssemblies);
+            List<List<IBHoMObject>> revitGroups;
+            List<IBHoMObject> nonAssemblies = ExcludeAssembliesAndGroups(objectsToPush, out revitAssemblies, out revitGroups);
             List<IBHoMObject> pushed = PushToRevit(document, nonAssemblies, pushType, pushConfig, "BHoM Push " + pushType);
+
+            // Push the groups to Revit
+            foreach (List<IBHoMObject> groupLevel in revitGroups)
+            {
+                pushed.AddRange(PushToRevit(document, groupLevel, pushType, pushConfig, "BHoM Push Create Groups"));
+            }
 
             // Create the assemblies - no changes applied to the newly created assemblies here due to Revit API limitations
             // Warnings are being suppressed to avoid all assembly-related warnings
@@ -116,7 +123,7 @@ namespace BH.Revit.Adapter.Core
             {
                 foreach (List<IBHoMObject> assemblyLevel in revitAssemblies)
                 {
-                    createdAssemblies.AddRange(PushToRevit(document, assemblyLevel, pushType, pushConfig, "BHoM Push Create Assemblies", true));
+                    createdAssemblies.AddRange(PushToRevit(document, assemblyLevel, pushType, pushConfig, "BHoM Push Create Assemblies"));
                 }
             }
 
@@ -128,7 +135,7 @@ namespace BH.Revit.Adapter.Core
                 if (distinctNames.Count > 1)
                     BH.Engine.Base.Compute.RecordWarning($"BHoM objects with names {string.Join(", ", distinctNames)} correspond to the same Revit assembly with ElementId {group.Key}. Last mentioned name will be applied to the assembly.");
             }
-            pushed.AddRange(PushToRevit(document, assembliesToUpdate, PushType.UpdateOnly, pushConfig, "BHoM Push Update Assemblies", true));
+            pushed.AddRange(PushToRevit(document, assembliesToUpdate, PushType.UpdateOnly, pushConfig, "BHoM Push Update Assemblies"));
 
             // Switch of warning suppression
             if (UIControlledApplication != null)
@@ -142,25 +149,41 @@ namespace BH.Revit.Adapter.Core
         /****               Private Methods             ****/
         /***************************************************/
 
-        private List<IBHoMObject> ExcludeAssemblies(IEnumerable<IBHoMObject> objects, out List<List<IBHoMObject>> assemblyHierarchy)
+        private List<IBHoMObject> ExcludeAssembliesAndGroups(IEnumerable<IBHoMObject> objects, out List<List<IBHoMObject>> assemblyHierarchy, out List<List<IBHoMObject>> groupHierarchy)
         {
             List<IBHoMObject> result = new List<IBHoMObject>();
             assemblyHierarchy = new List<List<IBHoMObject>>();
+            List<IBHoMObject> currentLevelObjects = objects.ToList();
             List<IBHoMObject> currentLevelAssemblies;
             do
             {
-                result.AddRange(objects.Where(x => !(x is Assembly)));
-                currentLevelAssemblies = objects.Where(x => x is Assembly).ToList();
+                result.AddRange(currentLevelObjects.Where(x => !(x is Assembly)));
+                currentLevelAssemblies = currentLevelObjects.Where(x => x is Assembly).ToList();
                 if (currentLevelAssemblies.Count != 0)
                 {
                     assemblyHierarchy.Add(currentLevelAssemblies);
-                    objects = currentLevelAssemblies.SelectMany(x => ((Assembly)x).MemberElements).ToList();
+                    currentLevelObjects = currentLevelAssemblies.SelectMany(x => ((Assembly)x).MemberElements).ToList();
                 }
             }
-
             while (currentLevelAssemblies.Count != 0);
 
+            groupHierarchy = new List<List<IBHoMObject>>();
+            currentLevelObjects = objects.ToList();
+            List<IBHoMObject> currentLevelGroups;
+            do
+            {
+                result.AddRange(currentLevelObjects.Where(x => !(x is BH.oM.Adapters.Revit.Elements.Group)));
+                currentLevelGroups = currentLevelObjects.Where(x => x is BH.oM.Adapters.Revit.Elements.Group).ToList();
+                if (currentLevelGroups.Count != 0)
+                {
+                    groupHierarchy.Add(currentLevelGroups);
+                    currentLevelObjects = currentLevelGroups.SelectMany(x => ((BH.oM.Adapters.Revit.Elements.Group)x).MemberElements).ToList();
+                }
+            }
+            while (currentLevelGroups.Count != 0);
+
             assemblyHierarchy.Reverse();
+            groupHierarchy.Reverse();
             return result;
         }
 

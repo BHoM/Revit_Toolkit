@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2022, the respective contributors. All rights reserved.
  *
@@ -21,7 +21,6 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
 using System;
@@ -37,58 +36,40 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Converts BH.oM.Adapters.Revit.Elements.ViewPlan to a Revit ViewPlan.")]
-        [Input("viewPlan", "BH.oM.Adapters.Revit.Elements.ViewPlan to be converted.")]
+        [Description("Converts BH.oM.Adapters.Revit.Elements.Group to a Revit Group.")]
+        [Input("assembly", "BH.oM.Adapters.Revit.Elements.Assembly to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("viewPlan", "Revit ViewPlan resulting from converting the input BH.oM.Adapters.Revit.Elements.ViewPlan.")]
-        public static ViewPlan ToRevitViewPlan(this oM.Adapters.Revit.Elements.ViewPlan viewPlan, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        [Output("group", "Revit Group resulting from converting the input BH.oM.Adapters.Revit.Elements.Group.")]
+        public static Group ToRevitGroup(this oM.Adapters.Revit.Elements.Group group, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            if (viewPlan == null || string.IsNullOrEmpty(viewPlan.LevelName) || string.IsNullOrEmpty(viewPlan.ViewName))
+            if (group?.MemberElements == null)
                 return null;
 
-            ViewPlan revitViewPlan = refObjects.GetValue<ViewPlan>(document, viewPlan.BHoM_Guid);
-            if (revitViewPlan != null)
-                return revitViewPlan;
+            Group revitGroup = refObjects.GetValue<Group>(document, group.BHoM_Guid);
+            if (revitGroup != null)
+                return revitGroup;
 
-            settings = settings.DefaultIfNull();
-
-            ElementId levelElementID = null;
-
-            List<Level> levels = new FilteredElementCollector(document).OfClass(typeof(Level)).Cast<Level>().ToList();
-            if (levels == null || levels.Count < 1)
-                return null;
-
-            Level level = levels.Find(x => x.Name == viewPlan.LevelName);
-            if (level == null)
-                return null;
-
-            levelElementID = level.Id;
-            
-            ElementId viewTemplateId = ElementId.InvalidElementId;
-            
-            if (!string.IsNullOrWhiteSpace(viewPlan.TemplateName))
+            List<ElementId> memberElementIds = group.MemberElements.Select(x => x.ElementId()).Where(x => x != null).ToList();
+            if (memberElementIds.Count == 0)
             {
-                IEnumerable<ViewPlan> viewPlans = new FilteredElementCollector(document).OfClass(typeof(ViewPlan)).Cast<ViewPlan>();
-                ViewPlan viewPlanTemplate = viewPlans.FirstOrDefault(x => x.IsTemplate && viewPlan.TemplateName == x.Name);
-                if (viewPlanTemplate == null)
-                    Compute.ViewTemplateNotExistsWarning(viewPlan);
-                else
-                    viewTemplateId = viewPlanTemplate.Id;
+                BH.Engine.Base.Compute.RecordError($"Creation of the group failed because it does not have any valid member elements. BHoM_Guid: {group.BHoM_Guid}");
+                return null;
             }
+            else if (memberElementIds.Count != group.MemberElements.Count)
+                BH.Engine.Base.Compute.RecordWarning($"The group is missing some member elements. BHoM_Guid: {group.BHoM_Guid}");
 
-            revitViewPlan = Create.ViewPlan(document, level, viewPlan.ViewName, null, viewTemplateId) as ViewPlan;
+            revitGroup = document.Create.NewGroup(memberElementIds);
+            revitGroup.Name = group.Name;
 
             // Copy parameters from BHoM object to Revit element
-            revitViewPlan.CopyParameters(viewPlan, settings);
+            revitGroup.CopyParameters(group, settings);
 
-            refObjects.AddOrReplace(viewPlan, revitViewPlan);
-            return revitViewPlan;
+            refObjects.AddOrReplace(group, revitGroup);
+            return revitGroup;
         }
 
         /***************************************************/
     }
 }
-
-
