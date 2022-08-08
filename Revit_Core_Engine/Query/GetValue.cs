@@ -33,7 +33,7 @@ namespace BH.Revit.Engine.Core
     public static partial class Query
     {
         /***************************************************/
-        /****             Public Methods              ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
         [Description("Queries the collection of BHoM objects already processed in the current adapter action for the ones correspondent to a given key.")]

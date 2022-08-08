@@ -37,7 +37,6 @@ namespace BH.Revit.Adapter.Core
             bool hasFailure = false;
             FailuresAccessor failuresAccessor = e.GetFailuresAccessor();
             List<FailureMessageAccessor> failureMessageAccessorsList = failuresAccessor.GetFailureMessages().ToList();
-            List<ElementId> elementsToDelete = new List<ElementId>();
             foreach (FailureMessageAccessor failureMessageAccessor in failureMessageAccessorsList)
             {
                 try
@@ -59,9 +58,6 @@ namespace BH.Revit.Adapter.Core
                 {
                 }
             }
-
-            if (elementsToDelete.Count != 0)
-                failuresAccessor.DeleteElements(elementsToDelete);
 
             if (hasFailure)
                 e.SetProcessingResult(FailureProcessingResult.ProceedWithCommit);
