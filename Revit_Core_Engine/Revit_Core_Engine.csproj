@@ -392,6 +392,7 @@
     <Compile Include="Objects\UnitTypeId.cs" />
     <Compile Include="Query\AllConvertMethods.cs" />
     <Compile Include="Query\AllWorksetIds.cs" />
+    <Compile Include="Query\AssemblyMembers.cs" />
     <Compile Include="Query\BHoMType.cs" />
     <Compile Include="Query\Bounds.cs" />
     <Compile Include="Query\CableTraySectionProfile.cs" />

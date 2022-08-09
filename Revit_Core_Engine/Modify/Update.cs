@@ -216,13 +216,14 @@ namespace BH.Revit.Engine.Core
         [Output("success", "True if the Revit Assembly instance has been updated successfully based on the input BHoM Assembly.")]
         public static bool Update(this AssemblyInstance element, Assembly bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
         {
-            List<ElementId> memberElementIds = bHoMObject.MemberElements.Select(x => x.ElementId()).Where(x => x != null).ToList();
+            List<IBHoMObject> assemblyMembers = bHoMObject.AssemblyMembers();
+            List<ElementId> memberElementIds = assemblyMembers.Select(x => x.ElementId()).Where(x => x != null).ToList();
             if (memberElementIds.Count == 0)
             {
                 BH.Engine.Base.Compute.RecordError($"Update of the assembly failed because it does not have any valid member elements. BHoM_Guid: {bHoMObject.BHoM_Guid}");
                 return false;
             }
-            else if (memberElementIds.Count != bHoMObject.MemberElements.Count)
+            else if (memberElementIds.Count != assemblyMembers.Count)
                 BH.Engine.Base.Compute.RecordWarning($"The assembly is missing some member elements. BHoM_Guid: {bHoMObject.BHoM_Guid}");
 
             element.SetMemberIds(memberElementIds);
