@@ -365,8 +365,6 @@ namespace BH.Revit.Engine.Core
                 default:
                     return typeof(BH.oM.Spatial.SettingOut.Level);
             }
-
-            return null;
         }
 
         /***************************************************/
@@ -383,8 +381,6 @@ namespace BH.Revit.Engine.Core
                 default:
                     return typeof(BH.oM.Spatial.SettingOut.Grid);
             }
-
-            return null;
         }
 
         /***************************************************/
@@ -401,8 +397,6 @@ namespace BH.Revit.Engine.Core
                 default:
                     return typeof(BH.oM.Spatial.SettingOut.Grid);
             }
-
-            return null;
         }
 
         /***************************************************/
@@ -419,8 +413,6 @@ namespace BH.Revit.Engine.Core
                 default:
                     return typeof(BH.oM.Adapters.Revit.Properties.InstanceProperties);
             }
-
-            return null;
         }
 
         /***************************************************/
@@ -437,8 +429,6 @@ namespace BH.Revit.Engine.Core
                 default:
                     return typeof(BH.oM.Adapters.Revit.Properties.InstanceProperties);
             }
-
-            return null;
         }
 
         /***************************************************/
@@ -540,8 +530,6 @@ namespace BH.Revit.Engine.Core
                 default:
                     return typeof(BH.oM.Adapters.Revit.Elements.Sheet);
             }
-
-            return null;
         }
 
         /***************************************************/
@@ -558,8 +546,6 @@ namespace BH.Revit.Engine.Core
                 default:
                     return typeof(BH.oM.Adapters.Revit.Elements.Viewport);
             }
-
-            return null;
         }
 
         /***************************************************/
@@ -576,8 +562,6 @@ namespace BH.Revit.Engine.Core
                 default:
                     return typeof(BH.oM.Adapters.Revit.Elements.ViewPlan);
             }
-
-            return null;
         }
 
         /***************************************************/
@@ -618,8 +602,6 @@ namespace BH.Revit.Engine.Core
                 default:
                     return typeof(BH.oM.Adapters.Revit.Elements.Family);
             }
-
-            return null;
         }
 
         /***************************************************/
@@ -636,8 +618,22 @@ namespace BH.Revit.Engine.Core
                 default:
                     return typeof(BH.oM.Adapters.Revit.Elements.IInstance);
             }
+        }
 
-            return null;
+        /***************************************************/
+
+        [Description("Finds a suitable BHoM type to convert the given Revit AssemblyInstance to, based on the requested engineering discipline and adapter settings.")]
+        [Input("assemblyInstance", "Revit AssemblyInstance to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit AssemblyInstance to.")]
+        public static Type BHoMType(this AssemblyInstance assemblyInstance, Discipline discipline, RevitSettings settings = null)
+        {
+            switch (discipline)
+            {
+                default:
+                    return typeof(BH.oM.Adapters.Revit.Elements.Assembly);
+            }
         }
 
         /***************************************************/
