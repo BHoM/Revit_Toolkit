@@ -122,31 +122,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts a Revit Group to a BHoM object based on the requested engineering discipline.")]
-        [Input("group", "Revit Group to be converted.")]
-        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        [Input("transform", "Optional, a transform to apply to the converted object. Irrelevant in case of assembly instances.")]
-        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
-        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("fromRevit", "Resulted BHoM object converted from a Revit Group.")]
-        public static List<IBHoMObject> FromRevit(this Group group, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
-            if (group == null)
-            {
-                BH.Engine.Base.Compute.RecordWarning("BHoM object could not be read because Revit group is null.");
-                return null;
-            }
-
-            foreach (ElementId memberId in group.GetMemberIds())
-            {
-                group.Document.GetElement(memberId).IFromRevit(discipline, transform, settings, refObjects);
-            }
-
-            return new List<IBHoMObject> { group.GroupFromRevit(settings, refObjects) };
-        }
-
-        /***************************************************/
-
         [Description("Converts a Revit Element to a BHoM object based on the requested engineering discipline.")]
         [Input("element", "Revit EnergyAnalysisDetailModel to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
