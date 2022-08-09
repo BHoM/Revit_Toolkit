@@ -360,13 +360,11 @@
     <Compile Include="Convert\Physical\ToRevit\ElementType.cs" />
     <Compile Include="Convert\Revit\FromRevit\Assembly.cs" />
     <Compile Include="Convert\Revit\FromRevit\Color.cs" />
-    <Compile Include="Convert\Revit\FromRevit\Group.cs" />
     <Compile Include="Convert\Revit\FromRevit\TypeFragment.cs" />
     <Compile Include="Convert\Revit\Internal\ToSolid.cs" />
     <Compile Include="Convert\Physical\ToRevit\Rebar.cs" />
     <Compile Include="Convert\Revit\ToRevit\AssemblyInstance.cs" />
     <Compile Include="Convert\Revit\ToRevit\Color.cs" />
-    <Compile Include="Convert\Revit\ToRevit\Group.cs" />
     <Compile Include="Convert\Revit\ToRevit\ParameterElement.cs" />
     <Compile Include="Modify\CopySpatialElementTypeToFragment.cs" />
     <Compile Include="Modify\CopyTypeToFragment.cs" />
