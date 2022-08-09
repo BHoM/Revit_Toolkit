@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
@@ -52,13 +53,14 @@ namespace BH.Revit.Engine.Core
             if (revitAssembly != null)
                 return revitAssembly;
 
-            List<ElementId> memberElementIds = assembly.MemberElements.Select(x => x.ElementId()).Where(x => x != null).ToList();
+            List<IBHoMObject> assemblyMembers = assembly.AssemblyMembers();
+            List<ElementId> memberElementIds = assemblyMembers.Select(x => x.ElementId()).Where(x => x != null).ToList();
             if (memberElementIds.Count == 0)
             {
                 BH.Engine.Base.Compute.RecordError($"Creation of the assembly failed because it does not have any valid member elements. BHoM_Guid: {assembly.BHoM_Guid}");
                 return null;
             }
-            else if (memberElementIds.Count != assembly.MemberElements.Count)
+            else if (memberElementIds.Count != assemblyMembers.Count)
                 BH.Engine.Base.Compute.RecordWarning($"The assembly is missing some member elements. BHoM_Guid: {assembly.BHoM_Guid}");
 
             revitAssembly = AssemblyInstance.Create(document, memberElementIds, document.GetElement(memberElementIds[0]).Category.Id);

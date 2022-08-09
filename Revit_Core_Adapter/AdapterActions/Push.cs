@@ -112,7 +112,7 @@ namespace BH.Revit.Adapter.Core
             if (revitAssemblies.Count != 0)
             {
                 // Push assembly members first
-                List<IBHoMObject> pushedMembers = PushToRevit(document, revitAssemblies.SelectMany(x => AssemblyMembers((Assembly)x)), pushType, pushConfig, "BHoM Push " + pushType);
+                List<IBHoMObject> pushedMembers = PushToRevit(document, revitAssemblies.SelectMany(x => ((Assembly)x).AssemblyMembers()), pushType, pushConfig, "BHoM Push " + pushType);
 
                 // Create the assemblies - no changes applied to the newly created assemblies here due to Revit API limitations
                 // Warnings are being suppressed to avoid all assembly-related warnings
@@ -145,25 +145,6 @@ namespace BH.Revit.Adapter.Core
 
         /***************************************************/
         /****               Private Methods             ****/
-        /***************************************************/
-
-        private List<IBHoMObject> AssemblyMembers(Assembly assembly)
-        {
-            List<IBHoMObject> result = new List<IBHoMObject>();
-            foreach (IBHoMObject member in assembly.MemberElements)
-            {
-                if (member is Assembly)
-                {
-                    BH.Engine.Base.Compute.RecordWarning("Nested assemblies are not allowed - they got squashed with their members being added into the top assembly.");
-                    result.AddRange(AssemblyMembers((Assembly)member));
-                }
-                else
-                    result.Add(member);
-            }
-
-            return result;
-        }
-
         /***************************************************/
 
         private List<IBHoMObject> PushToRevit(Document document, IEnumerable<IBHoMObject> objects, PushType pushType, RevitPushConfig pushConfig, string transactionName)
