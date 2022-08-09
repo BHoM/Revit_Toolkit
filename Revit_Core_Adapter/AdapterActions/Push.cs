@@ -63,7 +63,7 @@ namespace BH.Revit.Adapter.Core
             
             // If unset, set the pushType to AdapterSettings' value (base AdapterSettings default is FullCRUD). Disallow the unsupported PushTypes.
             if (pushType == PushType.AdapterDefault)
-                pushType = PushType.DeleteThenCreate;
+                pushType = PushType.UpdateOrCreateOnly;
             else if (pushType == PushType.FullPush)
             {
                 BH.Engine.Base.Compute.RecordError("Full Push is currently not supported by Revit_Toolkit, please use Create, UpdateOnly or DeleteThenCreate instead.");
@@ -103,39 +103,37 @@ namespace BH.Revit.Adapter.Core
                 }
             }
 
-            // Push the objects of type other than assembly and group first (including assembly group members)
-            List<List<IBHoMObject>> revitAssemblies;
-            List<List<IBHoMObject>> revitGroups;
-            List<IBHoMObject> nonAssemblies = ExcludeAssembliesAndGroups(objectsToPush, out revitAssemblies, out revitGroups);
+            // First push everything that is not a Revit assembly
+            List<IBHoMObject> nonAssemblies = objectsToPush.Where(x => !(x is Assembly)).ToList();
             List<IBHoMObject> pushed = PushToRevit(document, nonAssemblies, pushType, pushConfig, "BHoM Push " + pushType);
 
-            // Push the groups to Revit
-            foreach (List<IBHoMObject> groupLevel in revitGroups)
+            // Assemblies are being pushed separately in a few steps due to Revit API limitations in this field
+            List<IBHoMObject> revitAssemblies = objectsToPush.Where(x => x is Assembly).ToList();
+            if (revitAssemblies.Count != 0)
             {
-                pushed.AddRange(PushToRevit(document, groupLevel, pushType, pushConfig, "BHoM Push Create Groups"));
-            }
+                // Push assembly members first
+                List<IBHoMObject> pushedMembers = PushToRevit(document, revitAssemblies.SelectMany(x => AssemblyMembers((Assembly)x)), pushType, pushConfig, "BHoM Push " + pushType);
 
-            // Create the assemblies - no changes applied to the newly created assemblies here due to Revit API limitations
-            // Warnings are being suppressed to avoid all assembly-related warnings
-            UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
-            List<IBHoMObject> createdAssemblies = new List<IBHoMObject>();
-            if (pushType == PushType.CreateOnly || pushType == PushType.CreateNonExisting || pushType == PushType.DeleteThenCreate || pushType == PushType.UpdateOrCreateOnly)
-            {
-                foreach (List<IBHoMObject> assemblyLevel in revitAssemblies)
+                // Create the assemblies - no changes applied to the newly created assemblies here due to Revit API limitations
+                // Warnings are being suppressed to avoid all assembly-related warnings
+                UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
+                List<IBHoMObject> createdAssemblies = new List<IBHoMObject>();
+                if (pushType == PushType.CreateOnly || pushType == PushType.CreateNonExisting || pushType == PushType.DeleteThenCreate || pushType == PushType.UpdateOrCreateOnly)
+                    createdAssemblies.AddRange(PushToRevit(document, revitAssemblies, pushType, pushConfig, "BHoM Push Create Assemblies"));
+
+                // Update the assemblies in a separate transaction
+                List<IBHoMObject> assembliesToUpdate = pushType == PushType.UpdateOnly || pushType == PushType.UpdateOrCreateOnly ? revitAssemblies : createdAssemblies;
+                List<IBHoMObject> pushedAssemblies = PushToRevit(document, assembliesToUpdate, PushType.UpdateOnly, pushConfig, "BHoM Push Update Assemblies");
+                pushed.AddRange(pushedAssemblies);
+
+                // Warn the user if he/she self-overwrites the assembly name
+                foreach (var group in pushedAssemblies.GroupBy(x => new { (document.GetElement(x.ElementId()) as AssemblyInstance).NamingCategoryId, (document.GetElement(x.ElementId()) as AssemblyInstance).AssemblyTypeName }))
                 {
-                    createdAssemblies.AddRange(PushToRevit(document, assemblyLevel, pushType, pushConfig, "BHoM Push Create Assemblies"));
+                    List<string> distinctNames = group.Select(x => x.Name).Distinct().ToList();
+                    if (distinctNames.Count > 1)
+                        BH.Engine.Base.Compute.RecordWarning($"BHoM objects with names {string.Join(", ", distinctNames)} correspond to the same Revit assembly that has finally been named {group.Key.AssemblyTypeName}.");
                 }
             }
-
-            // Update the assemblies in a separate transaction
-            List<IBHoMObject> assembliesToUpdate = pushType == PushType.UpdateOnly || pushType == PushType.UpdateOrCreateOnly ? revitAssemblies.SelectMany(x => x).ToList() : createdAssemblies;
-            foreach (var group in assembliesToUpdate.GroupBy(x => x.ElementId()).Where(x => x != null))
-            {
-                List<string> distinctNames = group.Select(x => x.Name).Distinct().ToList();
-                if (distinctNames.Count > 1)
-                    BH.Engine.Base.Compute.RecordWarning($"BHoM objects with names {string.Join(", ", distinctNames)} correspond to the same Revit assembly with ElementId {group.Key}. Last mentioned name will be applied to the assembly.");
-            }
-            pushed.AddRange(PushToRevit(document, assembliesToUpdate, PushType.UpdateOnly, pushConfig, "BHoM Push Update Assemblies"));
 
             // Switch of warning suppression
             if (UIControlledApplication != null)
@@ -149,41 +147,20 @@ namespace BH.Revit.Adapter.Core
         /****               Private Methods             ****/
         /***************************************************/
 
-        private List<IBHoMObject> ExcludeAssembliesAndGroups(IEnumerable<IBHoMObject> objects, out List<List<IBHoMObject>> assemblyHierarchy, out List<List<IBHoMObject>> groupHierarchy)
+        private List<IBHoMObject> AssemblyMembers(Assembly assembly)
         {
             List<IBHoMObject> result = new List<IBHoMObject>();
-            assemblyHierarchy = new List<List<IBHoMObject>>();
-            List<IBHoMObject> currentLevelObjects = objects.ToList();
-            List<IBHoMObject> currentLevelAssemblies;
-            do
+            foreach (IBHoMObject member in assembly.MemberElements)
             {
-                result.AddRange(currentLevelObjects.Where(x => !(x is Assembly)));
-                currentLevelAssemblies = currentLevelObjects.Where(x => x is Assembly).ToList();
-                if (currentLevelAssemblies.Count != 0)
+                if (member is Assembly)
                 {
-                    assemblyHierarchy.Add(currentLevelAssemblies);
-                    currentLevelObjects = currentLevelAssemblies.SelectMany(x => ((Assembly)x).MemberElements).ToList();
+                    BH.Engine.Base.Compute.RecordWarning("Nested assemblies are not allowed - they got squashed with their members being added into the top assembly.");
+                    result.AddRange(AssemblyMembers((Assembly)member));
                 }
+                else
+                    result.Add(member);
             }
-            while (currentLevelAssemblies.Count != 0);
 
-            groupHierarchy = new List<List<IBHoMObject>>();
-            currentLevelObjects = objects.ToList();
-            List<IBHoMObject> currentLevelGroups;
-            do
-            {
-                result.AddRange(currentLevelObjects.Where(x => !(x is BH.oM.Adapters.Revit.Elements.Group)));
-                currentLevelGroups = currentLevelObjects.Where(x => x is BH.oM.Adapters.Revit.Elements.Group).ToList();
-                if (currentLevelGroups.Count != 0)
-                {
-                    groupHierarchy.Add(currentLevelGroups);
-                    currentLevelObjects = currentLevelGroups.SelectMany(x => ((BH.oM.Adapters.Revit.Elements.Group)x).MemberElements).ToList();
-                }
-            }
-            while (currentLevelGroups.Count != 0);
-
-            assemblyHierarchy.Reverse();
-            groupHierarchy.Reverse();
             return result;
         }
 
@@ -248,5 +225,3 @@ namespace BH.Revit.Adapter.Core
         /***************************************************/
     }
 }
-
-
