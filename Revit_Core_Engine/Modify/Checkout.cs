@@ -44,7 +44,8 @@ namespace BH.Revit.Engine.Core
 
         [Description("Modifies CheckoutStatus for each element selected if element is not currently owned by the current user or others.")]
         [Input("elements", "Revit elements.")]
-        public static void Checkout(this List<Element> elements)
+        [Output("elementsCheckedOut", "List of elements checked out (ownership modified to be by current user) by this process.")]
+        public static List<ElementId> Checkout(this List<Element> elements)
         {
             Document document = elements.First().Document;
             List<ElementId> elementsToCheckout = new List<ElementId>();
@@ -66,6 +67,7 @@ namespace BH.Revit.Engine.Core
             }
             
             WorksharingUtils.CheckoutElements(document, elementsToCheckout);
+            return elementsToCheckout;
         }
 
         /***************************************************/
