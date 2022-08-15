@@ -521,12 +521,6 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-
-        internal static void ElementOwnedByCurrentUserWarning(Element element)
-        {
-            BH.Engine.Base.Compute.RecordWarning($"Revit object with ElementId: {element.Id} is owned by the current user.");
-        }
-        /***************************************************/
     }
 }
 

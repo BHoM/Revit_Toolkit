@@ -39,23 +39,7 @@ namespace BH.Revit.Engine.Core
         [Input("element", "Revit element.")]
         public static void Checkout(this Element element)
         {
-            if (element.IsOwnedByNone())
-            {
-                List<ElementId> elementsToCheckout = new List<ElementId>
-                {
-                    element.Id
-                };
-
-                WorksharingUtils.CheckoutElements(element.Document, elementsToCheckout);
-            }
-
-            else if (element.IsOwnedByCurrentUser())
-            {
-                Compute.ElementOwnedByCurrentUserWarning(element);
-            }
-
-            Compute.ElementOwnedByOtherUserWarning(element);
-
+            Checkout(new List<Element>() { element });
         }
 
         [Description("Modifies CheckoutStatus for each element selected if element is not currently owned by the current user or others.")]
@@ -67,25 +51,20 @@ namespace BH.Revit.Engine.Core
 
             foreach (Element element in elements)
             {
-                
+                switch (element.CheckoutStatus())
+                {
+                    case CheckoutStatus.NotOwned:
+                        elementsToCheckout.Add(element.Id);
+                        break;
+                    case CheckoutStatus.OwnedByCurrentUser:
+                        Compute.ElementOwnedByCurrentUserNote(element);
+                        break;
+                    case CheckoutStatus.OwnedByOtherUser:
+                        Compute.ElementOwnedByOtherUserWarning(element);
+                        break;
+                }
             }
-
-            /*foreach (var element in elements.ElementsOwnedByOtherUsers())
-            {
-                Compute.ElementOwnedByOtherUserWarning(element);
-            }
-
-            foreach (var element in elements.ElementsOwnedByCurrentUser())
-            {
-                Compute.ElementOwnedByCurrentUserWarning(element);
-            }
-
-            foreach (var element in elements.ElementsOwnedByNone())
-            {
-                elementsToCheckout.Add(element.Id);
-            }*/
-
-
+            
             WorksharingUtils.CheckoutElements(document, elementsToCheckout);
         }
 
