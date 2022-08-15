@@ -53,7 +53,7 @@ namespace BH.Revit.Engine.Core
 
             oM.Geometry.ICurve locationCurve = familyInstance.LocationCurveFraming(settings);
             IFramingElementProperty property = familyInstance.FramingElementProperty(settings, refObjects);
-            bracing = BH.Engine.Physical.Create.Bracing(locationCurve, property, familyInstance.Name);
+            bracing = BH.Engine.Physical.Create.Bracing(locationCurve, property);
 
             //Set identifiers, parameters & custom data
             bracing.SetIdentifiers(familyInstance);
