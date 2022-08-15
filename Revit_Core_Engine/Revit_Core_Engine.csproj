@@ -408,7 +408,7 @@
     <Compile Include="Query\ElementsEditablePerCheckoutStatus.cs" />
     <Compile Include="Query\ElementsOwnedByNone.cs" />
     <Compile Include="Query\ElementsOwnedByCurrentUser.cs" />
-    <Compile Include="Query\OwnershipStatus.cs" />
+    <Compile Include="Query\CheckoutStatus.cs" />
     <Compile Include="Query\ElementsOwnedByOtherUsers.cs" />
     <Compile Include="Query\ClosestElement.cs" />
     <Compile Include="Query\ColumnLine.cs" />

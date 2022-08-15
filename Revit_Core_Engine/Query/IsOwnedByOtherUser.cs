@@ -43,12 +43,12 @@ namespace BH.Revit.Engine.Core
         [Output("ownedByOtherUser", "True if the input Revit element is owned by another user, otherwise false.")]
         public static bool IsOwnedByOtherUser(this Element element)
         {
-            if (WorksharingUtils.GetCheckoutStatus(element.Document, element.Id) == CheckoutStatus.OwnedByOtherUser)
+            if (WorksharingUtils.GetCheckoutStatus(element.Document, element.Id) == Autodesk.Revit.DB.CheckoutStatus.OwnedByOtherUser)
             {
                 return true;
             }
 
-            return false;
+            return element.CheckoutStatus() == Autodesk.Revit.DB.CheckoutStatus.OwnedByOtherUser;
         }
         /***************************************************/
     }

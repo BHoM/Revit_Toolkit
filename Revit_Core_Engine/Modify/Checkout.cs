@@ -65,7 +65,12 @@ namespace BH.Revit.Engine.Core
             Document document = elements.First().Document;
             List<ElementId> elementsToCheckout = new List<ElementId>();
 
-            foreach (var element in elements.ElementsOwnedByOtherUsers())
+            foreach (Element element in elements)
+            {
+                
+            }
+
+            /*foreach (var element in elements.ElementsOwnedByOtherUsers())
             {
                 Compute.ElementOwnedByOtherUserWarning(element);
             }
@@ -78,7 +83,7 @@ namespace BH.Revit.Engine.Core
             foreach (var element in elements.ElementsOwnedByNone())
             {
                 elementsToCheckout.Add(element.Id);
-            }
+            }*/
 
 
             WorksharingUtils.CheckoutElements(document, elementsToCheckout);

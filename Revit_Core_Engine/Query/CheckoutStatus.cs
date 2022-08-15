@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
         [Description("Returns element CheckoutStatus.")]
         [Input("element", "Revit element.")]
         [Output("checkoutStatus", "The worksharing ownership/CheckoutStatus of the element.")]
-        public static CheckoutStatus OwnershipStatus(this Element element)
+        public static CheckoutStatus CheckoutStatus(this Element element)
         {
             return WorksharingUtils.GetCheckoutStatus(element.Document, element.Id);
         }
