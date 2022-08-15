@@ -272,7 +272,7 @@ namespace BH.Revit.Engine.Core
                 {
                     HostObject h = hosts[i];
 
-                    List<Autodesk.Revit.DB.Plane> planes = h.IPanelPlanes();
+                    List<Autodesk.Revit.DB.Plane> planes = h.IPanelPlanes(settings);
                     if (planes.Count == 0)
                         continue;
 

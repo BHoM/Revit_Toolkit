@@ -67,5 +67,28 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        [Description("Checks whether two Revit planes are similar within the tolerance specified in the settings.")]
+        [Input("plane1", "First Revit plane to compare.")]
+        [Input("plane2", "Second Revit plane to compare.")]
+        [Input("settings", "Revit adapter settings to be used while performing the comparison.")]
+        [Input("flippedIsEqual", "If true, flipped planes will be considered as similar, otherwise not.")]
+        [Output("similar", "True if the input Revit planes are similar within the tolerance, otherwise false.")]
+        public static bool IsSimilar(this Plane plane1, Plane plane2, RevitSettings settings, bool flippedIsEqual = false)
+        {
+            double dotProduct = plane1.Normal.DotProduct(plane2.Normal);
+            if (flippedIsEqual)
+                dotProduct = Math.Abs(dotProduct);
+
+            if (1 - dotProduct <= settings.AngleTolerance)
+                return true;
+
+            UV uv;
+            double distance;
+            plane1.Project(plane2.Origin, out uv, out distance);
+            return distance <= settings.DistanceTolerance;
+        }
+
+        /***************************************************/
     }
 }

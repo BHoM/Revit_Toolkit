@@ -128,7 +128,7 @@ namespace BH.Revit.Engine.Core
             foreach ((ElementId, IEnumerable<ElementId>) tuple in hostsWithInsertsToIgnore)
             {
                 ElementId id = tuple.Item1;
-                List<Autodesk.Revit.DB.Plane> hostPlanes = (doc.GetElement(id) as HostObject)?.IPanelPlanes();
+                List<Autodesk.Revit.DB.Plane> hostPlanes = (doc.GetElement(id) as HostObject)?.IPanelPlanes(settings);
                 if (hostPlanes == null || hostPlanes.Count == 0)
                     result.Add(id, null);
                 else
