@@ -40,12 +40,12 @@ namespace BH.Revit.Engine.Core
         [Description("Returns a sublist of elements, from the given list of elements, that are editable per the element's CheckoutStatus." +
             "Return warnings option, if true, alerts the user of which elements are uneditable due to ownership by other users.")]
         [Input("elements", "Revit elements.")]
-        [Input("returnWarnings", "If it is desired, a value of 'True' will raise warnings on which elements"
+        [Input("recordWarnings", "If it is desired, a value of 'True' will raise warnings on which elements"
             +"in the list are uneditable due to ownership by other users.")]
         [Output("elementsEditablePerCheckoutStatus", "List of elements that are editable per the element's CheckoutStatus.")]
-        public static List<Element> ElementsEditablePerCheckoutStatus(this List<Element> elements, bool returnWarnings)
+        public static List<Element> ElementsEditablePerCheckoutStatus(this List<Element> elements, bool recordWarnings)
         {
-            if (returnWarnings)
+            if (recordWarnings)
             {
                 foreach (var element in elements.ElementsOwnedByOtherUsers())
                 {
@@ -53,7 +53,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            return elements.Where(e => WorksharingUtils.GetCheckoutStatus(e.Document, e.Id) != CheckoutStatus.OwnedByOtherUser).ToList();
+            return elements.Where(e => !e.IsOwnedByOtherUser()).ToList();
         }
         /***************************************************/
     }

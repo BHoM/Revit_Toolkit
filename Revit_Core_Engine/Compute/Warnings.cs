@@ -526,13 +526,6 @@ namespace BH.Revit.Engine.Core
         {
             BH.Engine.Base.Compute.RecordWarning($"Revit object with ElementId: {element.Id} is owned by the current user.");
         }
-
-        /***************************************************/
-
-        internal static void ElementOwnedByNoneWarning(Element element)
-        {
-            BH.Engine.Base.Compute.RecordWarning($"Revit object with ElementId: {element.Id} is not owned by any user.");
-        }
         /***************************************************/
     }
 }

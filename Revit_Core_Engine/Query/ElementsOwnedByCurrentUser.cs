@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
         [Output("elementsOwnedByCurrentUser", "List of elements that are owned by the current user.")]
         public static List<Element> ElementsOwnedByCurrentUser(this List<Element> elements)
         {
-            return elements.Where(e => WorksharingUtils.GetCheckoutStatus(e.Document, e.Id) == CheckoutStatus.OwnedByCurrentUser).ToList();
+            return elements.Where(e => e.IsOwnedByCurrentUser()).ToList();
         }
         /***************************************************/
     }

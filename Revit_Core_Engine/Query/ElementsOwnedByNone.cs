@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
         [Output("elementsOwnedByNone", "List of elements that are unowned.")]
         public static List<Element> ElementsOwnedByNone(this List<Element> elements)
         {
-            return elements.Where(e => WorksharingUtils.GetCheckoutStatus(e.Document, e.Id) == CheckoutStatus.NotOwned).ToList();
+            return elements.Where(e => e.IsOwnedByNone()).ToList();
         }
         /***************************************************/
     }
