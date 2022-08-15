@@ -43,6 +43,10 @@ namespace BH.Revit.Engine.Core
             BH.Engine.Base.Compute.RecordNote(message);
         }
 
+        internal static void ElementOwnedByCurrentUserNote(Element element)
+        {
+            BH.Engine.Base.Compute.RecordNote($"Revit object with ElementId: {element.Id} is owned by the current user.");
+        }
         /***************************************************/
     }
 }
