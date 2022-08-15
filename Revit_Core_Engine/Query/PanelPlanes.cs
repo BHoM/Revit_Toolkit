@@ -66,6 +66,7 @@ namespace BH.Revit.Engine.Core
         [Output("planes", "BHoM-representative planes extracted from the input Revit floor.")]
         public static List<Plane> PanelPlanes(this Floor floor)
         {
+            //TODO: leave unique only!!
             List<Plane> result = new List<Plane>();
             foreach (Reference reference in HostObjectUtils.GetTopFaces(floor))
             {
@@ -84,6 +85,7 @@ namespace BH.Revit.Engine.Core
         [Output("planes", "BHoM-representative planes extracted from the input Revit roof.")]
         public static List<Plane> PanelPlanes(this RoofBase roof)
         {
+            //TODO: leave unique only!!
             List<Plane> result = new List<Plane>();
             foreach (Reference reference in HostObjectUtils.GetTopFaces(roof))
             {
@@ -102,6 +104,7 @@ namespace BH.Revit.Engine.Core
         [Output("planes", "BHoM-representative planes extracted from the input Revit ceiling.")]
         public static List<Plane> PanelPlanes(this Ceiling ceiling)
         {
+            //TODO: leave unique only!!
             List<Plane> result = new List<Plane>();
             foreach (Reference reference in HostObjectUtils.GetBottomFaces(ceiling))
             {
