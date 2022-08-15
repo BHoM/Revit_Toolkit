@@ -204,9 +204,10 @@ namespace BH.Revit.Adapter.Core
             }
 
             Dictionary<string, List<IBHoMObject>> refObjects = new Dictionary<string, List<IBHoMObject>>();
-            
+
             // Extract panel geometry prior to running the converts (this is an optimisation aimed to reduce the number of view regenerations)
-            document.CachePanelGeometry(elementIds, discipline, refObjects, settings);
+            if (!document.IsLinked)
+                document.CachePanelGeometry(elementIds, discipline, settings, refObjects);
             
             List<IBHoMObject> result = new List<IBHoMObject>();
             foreach (ElementId id in elementIds)

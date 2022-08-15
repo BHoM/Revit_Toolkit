@@ -40,11 +40,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Extracts the BHoM-representative location surfaces from a given Revit host object.")]
-        //[Input("hostObject", "Revit host object to extract the location surfaces from.")]
-        //[Input("insertsToIgnore", "Revit inserts (doors, windows etc.) to ignore when extracting the location surfaces.")]
-        //[Input("settings", "Revit adapter settings to be used while performing the query.")]
-        //[Output("surfaces", "BHoM-representative location surfaces extracted from the input Revit host object.")]
+        [Description("Extracts the BHoM-representative location surfaces from a given collection Revit host objects." +
+                     "\nOptimised to regenerate the document only twice for all input elements, not twice per each.")]
+        [Input("hostObjects", "Revit host objects to extract the location surfaces from.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("surfaces", "BHoM-representative location surfaces extracted from the input Revit host objects.")]
         public static Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>> PanelSurfaces(this List<HostObject> hostObjects, Discipline discipline, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
@@ -55,6 +56,7 @@ namespace BH.Revit.Engine.Core
             List<HostObject> curtains = hostObjects.Where(x => !x.Document.IsLinked && x.ICurtainGrids().Count != 0).ToList();
             List<HostObject> solids = hostObjects.Except(linked.Union(curtains)).ToList();
 
+            // First process linked elements
             foreach (HostObject hostObject in linked)
             {
                 if (hostObject.ICurtainGrids().Count != 0)
@@ -70,11 +72,13 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Base.Compute.RecordWarning("Pulling panels and openings from Revit link documents is simplified compared to pulling directly from the host document, therefore it may result in degraded output.\n" +
                                                      "In case of requirement for best possible outcome, it is recommended to open the link document in Revit and pull the elements directly from there.");
 
+            // Return null for curtain panels because their location is extracted differently
             foreach (HostObject hostObject in curtains)
             {
                 result.Add(hostObject.Id, null);
             }
 
+            // Extract location surfaces for all panels at once
             foreach (var group in solids.GroupBy(x => x.Document)) 
             {
                 var surfs = group.Key.PanelSurfaces_HostDocument(group.Select(x => (x.Id, x.InsertsToIgnore(discipline) as IEnumerable<ElementId>)).ToList(), settings);
@@ -117,6 +121,8 @@ namespace BH.Revit.Engine.Core
         private static Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>> PanelSurfaces_HostDocument(this Document doc, List<(ElementId, IEnumerable<ElementId>)> hostsWithInsertsToIgnore, RevitSettings settings = null)
         {
             Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>> result = new Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>>();
+
+            // query panel surfaces from each of the panels and rule out the ones that do not have any
             Dictionary<ElementId, List<Autodesk.Revit.DB.Plane>> planes = new Dictionary<ElementId, List<Autodesk.Revit.DB.Plane>>();
             List<(ElementId, IEnumerable<ElementId>)> toProcess = new List<(ElementId, IEnumerable<ElementId>)>();
             foreach ((ElementId, IEnumerable<ElementId>) tuple in hostsWithInsertsToIgnore)
@@ -137,6 +143,7 @@ namespace BH.Revit.Engine.Core
                 FailureHandlingOptions failureHandlingOptions = t.GetFailureHandlingOptions().SetClearAfterRollback(true);
                 t.Start();
 
+                // Do the preprocessing by unjoining the elements from each other and deleting the openings meant to be ignored
                 HashSet<ElementId> insertsToDelete = new HashSet<ElementId>();
                 foreach ((ElementId, IEnumerable<ElementId>) tuple in toProcess)
                 {
@@ -166,8 +173,10 @@ namespace BH.Revit.Engine.Core
                 if (insertsToDelete.Count != 0)
                     doc.Delete(insertsToDelete);
                 
+                // 1st regenerate
                 doc.Regenerate();
 
+                // Get the solid representations of each of the panels with openings
                 Dictionary<ElementId, List<Solid>> withOpenings = new Dictionary<ElementId, List<Solid>>();
                 foreach ((ElementId, IEnumerable<ElementId>) tuple in toProcess)
                 {
@@ -175,6 +184,7 @@ namespace BH.Revit.Engine.Core
                     withOpenings.Add(hostObject.Id, hostObject.Solids(new Options()).Select(x => SolidUtils.Clone(x)).ToList());
                 }
 
+                // Delete remaining openings
                 insertsToDelete = new HashSet<ElementId>();
                 Dictionary<ElementId, bool> insertsDeleted = new Dictionary<ElementId, bool>();
                 foreach ((ElementId, IEnumerable<ElementId>) tuple in toProcess)
@@ -206,6 +216,7 @@ namespace BH.Revit.Engine.Core
                     doc.Regenerate();
                 }
 
+                // Get the solid representations of each of the panels without openings
                 Dictionary<ElementId, List<Solid>> withoutOpenings = new Dictionary<ElementId, List<Solid>>();
                 foreach ((ElementId, IEnumerable<ElementId>) tuple in toProcess)
                 {
@@ -226,6 +237,7 @@ namespace BH.Revit.Engine.Core
                         withoutOpenings.Add(id, solidsWithOpenings);
                 }
 
+                // Extract the location of the panel and its not ignored openings
                 foreach ((ElementId, IEnumerable<ElementId>) tuple in toProcess)
                 {
                     ElementId id = tuple.Item1;

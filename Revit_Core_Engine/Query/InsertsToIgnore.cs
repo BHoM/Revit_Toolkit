@@ -35,9 +35,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Returns the workset Ids of all worksets in a given Revit document.")]
-        //[Input("document", "Revit document to be queried for worksets.")]
-        //[Output("ids", "Workset Ids of all worksets in the input Revit document.")]
+        [Description("Returns ElementIds of insert objects to be ignored in convert of a Revit panel element to given engineering discipline.")]
+        [Input("hostObject", "Revit HostObject (panel element) to find the inserts that should be ignored on convert.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Output("ids", "ElementIds of insert objects to be ignored in convert of a Revit panel element to the input engineering discipline.")]
         public static IList<ElementId> InsertsToIgnore(this HostObject hostObject, Discipline discipline)
         {
             switch (discipline)
