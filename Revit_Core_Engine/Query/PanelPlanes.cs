@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
         [Output("planes", "BHoM-representative planes extracted from the input Revit host object.")]
         public static List<Plane> IPanelPlanes(this HostObject hostObject, RevitSettings settings)
         {
-            return PanelPlanes(hostObject as dynamic);
+            return PanelPlanes(hostObject as dynamic, settings);
         }
 
 
@@ -145,7 +145,7 @@ namespace BH.Revit.Engine.Core
         /****             Fallback methods              ****/
         /***************************************************/
 
-        private static List<Plane> PanelPlanes(this HostObject hostObject)
+        private static List<Plane> PanelPlanes(this HostObject hostObject, RevitSettings settings)
         {
             BH.Engine.Base.Compute.RecordError(String.Format("Querying panel locations for Revit elements of type {0} is currently not supported.", hostObject.GetType().Name));
             return new List<Plane>();
