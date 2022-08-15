@@ -38,10 +38,15 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Queries the WorksetId of the active workset in a given Revit document.")]
-        //[Input("document", "Revit document to be queried for the active workset.")]
-        //[Output("worksetId", "WorksetId of the active workset in the input Revit document.")]
-        public static void CachePanelGeometry(this Document document, List<ElementId> elementIds, Discipline discipline, Dictionary<string, List<IBHoMObject>> refObjects, RevitSettings settings)
+        [Description("Extracts the panel geometry from Revit walls, floors, roofs etc. and caches it in refObjects in order to use it in panel converts downstream." +
+                     "\nIt is an optimisation meant to minimise the number of document regenerations on panel converts, which often become the major time consumer.")]
+        [Input("document", "Revit document hosting the panel elements with locations to be cached.")]
+        [Input("elementIds", "Ids of the panel elements with locations to be cached.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Input("refObjects", "Collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once." +
+               "\nExtracted location surfaces are stored here.")]
+        public static void CachePanelGeometry(this Document document, List<ElementId> elementIds, Discipline discipline, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects)
         {
             List<HostObject> hostObjectsToExtractSurfaces = new List<HostObject>();
             foreach (ElementId id in elementIds)

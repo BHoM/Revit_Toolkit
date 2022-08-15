@@ -21,12 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Adapters.Revit.Enums;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
 using BH.oM.Base.Attributes;
-using BH.oM.Geometry;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
@@ -37,9 +32,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Queries the WorksetId of the active workset in a given Revit document.")]
-        //[Input("document", "Revit document to be queried for the active workset.")]
-        //[Output("worksetId", "WorksetId of the active workset in the input Revit document.")]
+        [Description("Returns the refObjects key, under which the surface location of a given Revit panel element is stored.")]
+        [Input("elementId", "ElementId of the Revit panel for which the refObjects key is queried.")]
+        [Output("key", "RefObjects key, under which the surface location of the input Revit panel element is stored.")]
         public static string SurfaceCacheKey(this ElementId elementId)
         {
             return $"AnalyticalOutlines_{elementId.IntegerValue}";
