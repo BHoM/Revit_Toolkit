@@ -32,6 +32,7 @@ using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using BH.Engine.Base;
+using BH.Revit.Engine.Core.Objects;
 
 namespace BH.Revit.Engine.Core
 {
@@ -117,7 +118,13 @@ namespace BH.Revit.Engine.Core
             if (panels != null && panels.Count != 0)
                 return panels;
 
-            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = ceiling.PanelSurfaces(ceiling.FindInserts(true, true, true, true), settings);
+            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces;
+            SurfaceCache cache = refObjects.GetValue<SurfaceCache>(ceiling.Id.SurfaceCacheKey());
+            if (cache != null)
+                surfaces = cache.Surfaces;
+            else
+                surfaces = ceiling.PanelSurfaces(ceiling.FindInserts(true, true, true, true), settings);
+
             if (surfaces == null)
                 return panels;
 
@@ -185,7 +192,13 @@ namespace BH.Revit.Engine.Core
             if (panels != null && panels.Count != 0)
                 return panels;
 
-            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = floor.PanelSurfaces(floor.FindInserts(true, true, true, true), settings);
+            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces;
+            SurfaceCache cache = refObjects.GetValue<SurfaceCache>(floor.Id.SurfaceCacheKey());
+            if (cache != null)
+                surfaces = cache.Surfaces;
+            else
+                surfaces = floor.PanelSurfaces(floor.FindInserts(true, true, true, true), settings);
+
             if (surfaces == null)
                 return panels;
 
@@ -253,8 +266,14 @@ namespace BH.Revit.Engine.Core
             List<oM.Environment.Elements.Panel> panels = refObjects.GetValues<oM.Environment.Elements.Panel>(roofBase.Id);
             if (panels != null && panels.Count > 0)
                 return panels;
-
-            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = roofBase.PanelSurfaces(roofBase.FindInserts(true, true, true, true), settings);
+            
+            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces;
+            SurfaceCache cache = refObjects.GetValue<SurfaceCache>(roofBase.Id.SurfaceCacheKey());
+            if (cache != null)
+                surfaces = cache.Surfaces;
+            else
+                surfaces = roofBase.PanelSurfaces(roofBase.FindInserts(true, true, true, true), settings);
+            
             if (surfaces == null)
                 return panels;
             
@@ -325,7 +344,13 @@ namespace BH.Revit.Engine.Core
             if (wall.StackedWallOwnerId != null && wall.StackedWallOwnerId != ElementId.InvalidElementId)
                 return null;
 
-            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = wall.PanelSurfaces(wall.FindInserts(true, true, true, true), settings);
+            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces;
+            SurfaceCache cache = refObjects.GetValue<SurfaceCache>(wall.Id.SurfaceCacheKey());
+            if (cache != null)
+                surfaces = cache.Surfaces;
+            else
+                surfaces = wall.PanelSurfaces(wall.FindInserts(true, true, true, true), settings);
+
             if (surfaces == null)
                 return panels;
 

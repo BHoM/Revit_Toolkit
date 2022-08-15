@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using BHS = BH.Engine.Structure;
+using BH.Revit.Engine.Core.Objects;
 
 namespace BH.Revit.Engine.Core
 {
@@ -101,7 +102,13 @@ namespace BH.Revit.Engine.Core
             if (property2D == null)
                 BH.Engine.Base.Compute.RecordError(String.Format("Conversion of Revit panel's construction to BHoM ISurfaceProperty failed. A panel without property is returned. Revit ElementId : {0}", hostObjAttributes.Id));
 
-            List<ICurve> outlines = hostObject.AnalyticalOutlines(settings);
+            List<ICurve> outlines;
+            OutlineCache outlineCache = refObjects.GetValue<OutlineCache>(hostObject.Id.SurfaceCacheKey());
+            if (outlineCache != null)
+                outlines = outlineCache.Outlines;
+            else
+                outlines = hostObject.AnalyticalOutlines(settings);
+
             if (outlines != null && outlines.Count != 0)
             {
                 hostObject.AnalyticalPullWarning();
@@ -109,14 +116,21 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                Vector translation = new Vector();
-                if (property2D is ConstantThickness && (hostObject is Floor || hostObject is RoofBase))
-                    translation = -((ConstantThickness)property2D).Thickness * 0.5 * Vector.ZAxis;
+                Dictionary<PlanarSurface, List<PlanarSurface>> surfaces;
+                SurfaceCache surfaceCache = refObjects.GetValue<SurfaceCache>(hostObject.Id.SurfaceCacheKey());
+                if (surfaceCache != null)
+                    surfaces = surfaceCache.Surfaces;
+                else
+                    surfaces = hostObject.PanelSurfaces(null, settings);
 
                 result = new List<oM.Structure.Elements.Panel>();
-                Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = hostObject.PanelSurfaces(null, settings);
                 if (surfaces != null)
                 {
+
+                    Vector translation = new Vector();
+                    if (property2D is ConstantThickness && (hostObject is Floor || hostObject is RoofBase))
+                        translation = -((ConstantThickness)property2D).Thickness * 0.5 * Vector.ZAxis;
+
                     foreach (PlanarSurface planarSurface in surfaces.Keys)
                     {
                         List<ICurve> internalBoundaries = new List<ICurve>();
