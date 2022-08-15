@@ -43,11 +43,6 @@ namespace BH.Revit.Engine.Core
         [Output("ownedByNone", "True if the input Revit element is not owned, otherwise false.")]
         public static bool IsOwnedByNone(this Element element)
         {
-            if (WorksharingUtils.GetCheckoutStatus(element.Document, element.Id) == Autodesk.Revit.DB.CheckoutStatus.NotOwned)
-            {
-                return true;
-            }
-
             return element.CheckoutStatus() == Autodesk.Revit.DB.CheckoutStatus.NotOwned;
         }
         /***************************************************/
