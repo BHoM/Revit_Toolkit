@@ -53,7 +53,7 @@ namespace BH.Revit.Engine.Core
 
             oM.Geometry.ICurve locationCurve = familyInstance.LocationCurveColumn(settings);
             IFramingElementProperty property = familyInstance.FramingElementProperty(settings, refObjects);
-            column = BH.Engine.Physical.Create.Column(locationCurve, property, familyInstance.Name);
+            column = BH.Engine.Physical.Create.Column(locationCurve, property);
 
             //Set identifiers, parameters & custom data
             column.SetIdentifiers(familyInstance);
