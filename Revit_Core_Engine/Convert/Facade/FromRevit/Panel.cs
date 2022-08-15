@@ -31,6 +31,7 @@ using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using BH.Revit.Engine.Core.Objects;
 
 namespace BH.Revit.Engine.Core
 {
@@ -79,20 +80,18 @@ namespace BH.Revit.Engine.Core
             BoundingBoxXYZ bbox = wall.get_BoundingBox(null);
             if (bbox != null)
             {
-                BoundingBoxIntersectsFilter bbif = new BoundingBoxIntersectsFilter(new Outline(bbox.Min, bbox.Max));
-                IList<ElementId> insertIds = (wall as HostObject).FindInserts(true, true, true, true);
-                List<Element> inserts;
-                if (insertIds.Count == 0)
-                    inserts = new List<Element>();
+                IList<ElementId> insertIds = wall.InsertsToIgnore(oM.Adapters.Revit.Enums.Discipline.Physical);
+
+                SurfaceCache cache = refObjects.GetValue<SurfaceCache>(wall.Id.SurfaceCacheKey());
+                if (cache != null)
+                    surfaces = cache.Surfaces;
                 else
-                    inserts = new FilteredElementCollector(wall.Document, insertIds).WherePasses(bbif).ToList();
+                    surfaces = wall.PanelSurfaces(insertIds, settings);
 
-                List<FamilyInstance> windows = inserts.Where(x => x is FamilyInstance && x.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Windows).Cast<FamilyInstance>().ToList();
-                List<FamilyInstance> doors = inserts.Where(x => x is FamilyInstance && x.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Doors).Cast<FamilyInstance>().ToList();
-
-                surfaces = wall.PanelSurfaces(windows.Union(doors).Select(x => x.Id), settings);
                 if (surfaces != null)
                 {
+                    List<FamilyInstance> inserts = insertIds.Select(x => wall.Document.GetElement(x)).Cast<FamilyInstance>().ToList();
+
                     List<ISurface> locations = new List<ISurface>(surfaces.Keys);
                     if (locations.Count == 1)
                         location = locations[0];
@@ -114,14 +113,14 @@ namespace BH.Revit.Engine.Core
                         }
                     }
 
-                    foreach (FamilyInstance window in windows)
+                    foreach (FamilyInstance window in inserts.Where(x => x.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Windows))
                     {
                         BH.oM.Facade.Elements.Opening bHoMWindow = window.FacadeOpeningFromRevit(wall, settings, refObjects);
                         if (bHoMWindow != null)
                             openings.Add(bHoMWindow);
                     }
 
-                    foreach (FamilyInstance door in doors)
+                    foreach (FamilyInstance door in inserts.Where(x => x.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Doors))
                     {
                         BH.oM.Facade.Elements.Opening bHoMDoor = door.FacadeOpeningFromRevit(wall, settings, refObjects);
                         if (bHoMDoor != null)

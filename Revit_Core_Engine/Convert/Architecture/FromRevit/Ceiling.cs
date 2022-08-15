@@ -29,6 +29,7 @@ using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using BH.Revit.Engine.Core.Objects;
 
 namespace BH.Revit.Engine.Core
 {
@@ -57,7 +58,13 @@ namespace BH.Revit.Engine.Core
             oM.Physical.Constructions.Construction construction = (ceiling.Document.GetElement(ceiling.GetTypeId()) as HostObjAttributes).ConstructionFromRevit(null, settings, refObjects);
 
             ISurface location = null;
-            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces = ceiling.PanelSurfaces(null, settings);
+            Dictionary<PlanarSurface, List<PlanarSurface>> surfaces;
+            SurfaceCache cache = refObjects.GetValue<SurfaceCache>(ceiling.Id.SurfaceCacheKey());
+            if (cache != null)
+                surfaces = cache.Surfaces;
+            else
+                surfaces = ceiling.PanelSurfaces(null, settings);
+
             if (surfaces != null && surfaces.Count != 0)
             {
                 List<ISurface> locations = new List<ISurface>();
