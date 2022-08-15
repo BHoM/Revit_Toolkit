@@ -334,6 +334,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compute\Activate.cs" />
+    <Compile Include="Compute\CachePanelGeometry.cs" />
     <Compile Include="Compute\CheckFamilyMapUsage.cs" />
     <Compile Include="Compute\Errors.cs" />
     <Compile Include="Compute\GenerateProfile.cs" />
@@ -388,7 +389,9 @@
     <Compile Include="Modify\SetProperty.cs" />
     <Compile Include="Modify\SetViewDetailLevel.cs" />
     <Compile Include="Modify\SetViewScale.cs" />
+    <Compile Include="Objects\OutlineCache.cs" />
     <Compile Include="Objects\SpecTypeId.cs" />
+    <Compile Include="Objects\SurfaceCache.cs" />
     <Compile Include="Objects\UnitTypeId.cs" />
     <Compile Include="Query\AllConvertMethods.cs" />
     <Compile Include="Query\AllWorksetIds.cs" />
@@ -406,10 +409,13 @@
     <Compile Include="Compute\OpenWorksetsPrefilter.cs" />
     <Compile Include="Query\DoesIntersect.cs" />
     <Compile Include="Query\ElementIds\ElementIdsOfEverything.cs" />
+    <Compile Include="Query\InsertsToIgnore.cs" />
     <Compile Include="Query\Insulation.cs" />
     <Compile Include="Query\LinkedElementsInView.cs" />
     <Compile Include="Query\LinkName.cs" />
+    <Compile Include="Query\OutlineCacheKey.cs" />
     <Compile Include="Query\SpatialBoundCondition.cs" />
+    <Compile Include="Query\SurfaceCacheKey.cs" />
     <Compile Include="Query\Tessellate.cs" />
     <Compile Include="Query\ViewBox.cs" />
     <Compile Include="Query\FacadeCurtainPanels.cs" />

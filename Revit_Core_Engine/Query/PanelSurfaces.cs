@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using BH.oM.Adapters.Revit.Enums;
 
 namespace BH.Revit.Engine.Core
 {
@@ -37,6 +38,55 @@ namespace BH.Revit.Engine.Core
     {
         /***************************************************/
         /****              Public methods               ****/
+        /***************************************************/
+
+        //[Description("Extracts the BHoM-representative location surfaces from a given Revit host object.")]
+        //[Input("hostObject", "Revit host object to extract the location surfaces from.")]
+        //[Input("insertsToIgnore", "Revit inserts (doors, windows etc.) to ignore when extracting the location surfaces.")]
+        //[Input("settings", "Revit adapter settings to be used while performing the query.")]
+        //[Output("surfaces", "BHoM-representative location surfaces extracted from the input Revit host object.")]
+        public static Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>> PanelSurfaces(this List<HostObject> hostObjects, Discipline discipline, RevitSettings settings = null)
+        {
+            settings = settings.DefaultIfNull();
+
+            Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>> result = new Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>>();
+
+            List<HostObject> linked = hostObjects.Where(x => x.Document.IsLinked).ToList();
+            List<HostObject> curtains = hostObjects.Where(x => !x.Document.IsLinked && x.ICurtainGrids().Count != 0).ToList();
+            List<HostObject> solids = hostObjects.Except(linked.Union(curtains)).ToList();
+
+            foreach (HostObject hostObject in linked)
+            {
+                if (hostObject.ICurtainGrids().Count != 0)
+                    result.Add(hostObject.Id, null);
+                else
+                {
+                    IList<ElementId> insertsToIgnore = hostObject.InsertsToIgnore(discipline);
+                    result.Add(hostObject.Id, hostObject.PanelSurfaces_LinkDocument(insertsToIgnore, settings));
+                }
+            }
+
+            if (result.Count(x => x.Value != null) != 0)
+                BH.Engine.Base.Compute.RecordWarning("Pulling panels and openings from Revit link documents is simplified compared to pulling directly from the host document, therefore it may result in degraded output.\n" +
+                                                     "In case of requirement for best possible outcome, it is recommended to open the link document in Revit and pull the elements directly from there.");
+
+            foreach (HostObject hostObject in curtains)
+            {
+                result.Add(hostObject.Id, null);
+            }
+
+            foreach (var group in solids.GroupBy(x => x.Document)) 
+            {
+                var surfs = group.Key.PanelSurfaces_HostDocument(group.Select(x => (x.Id, x.InsertsToIgnore(discipline) as IEnumerable<ElementId>)).ToList(), settings);
+                foreach (var kvp in surfs)
+                {
+                    result.Add(kvp.Key, kvp.Value);
+                }
+            }
+
+            return result;
+        }
+
         /***************************************************/
 
         [Description("Extracts the BHoM-representative location surfaces from a given Revit host object.")]
@@ -49,11 +99,11 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             if (!hostObject.Document.IsLinked)
-                return hostObject.PanelSurfaces_HostDocument(insertsToIgnore, settings);
+                return hostObject.Document.PanelSurfaces_HostDocument(new List<(ElementId, IEnumerable<ElementId>)> { (hostObject.Id, insertsToIgnore) }, settings)[hostObject.Id];
             else
             {
                 BH.Engine.Base.Compute.RecordWarning("Pulling panels and openings from Revit link documents is simplified compared to pulling directly from the host document, therefore it may result in degraded output.\n" +
-                                                           "In case of requirement for best possible outcome, it is recommended to open the link document in Revit and pull the elements directly from there.");
+                                                     "In case of requirement for best possible outcome, it is recommended to open the link document in Revit and pull the elements directly from there.");
 
                 return hostObject.PanelSurfaces_LinkDocument(insertsToIgnore, settings);
             }
@@ -64,127 +114,213 @@ namespace BH.Revit.Engine.Core
         /****              Private Methods              ****/
         /***************************************************/
 
-        private static Dictionary<PlanarSurface, List<PlanarSurface>> PanelSurfaces_HostDocument(this HostObject hostObject, IEnumerable<ElementId> insertsToIgnore = null, RevitSettings settings = null)
+        private static Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>> PanelSurfaces_HostDocument(this Document doc, List<(ElementId, IEnumerable<ElementId>)> hostsWithInsertsToIgnore, RevitSettings settings = null)
         {
-            List<Autodesk.Revit.DB.Plane> planes = hostObject.IPanelPlanes();
-            if (planes.Count == 0)
-                return null;
-
-            Document doc = hostObject.Document;
-            Dictionary<PlanarSurface, List<PlanarSurface>> result = new Dictionary<PlanarSurface, List<PlanarSurface>>();
-
-            IList<ElementId> inserts = hostObject.FindInserts(true, true, true, true);
-            if (insertsToIgnore != null)
-                inserts = inserts.Where(x => insertsToIgnore.All(y => x.IntegerValue != y.IntegerValue)).ToList();
-
-            Transaction t = new Transaction(doc);
-            FailureHandlingOptions failureHandlingOptions = t.GetFailureHandlingOptions().SetClearAfterRollback(true);
-            t.Start("Temp Delete Inserts And Unjoin Geometry");
-
-            try
+            Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>> result = new Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>>();
+            Dictionary<ElementId, List<Autodesk.Revit.DB.Plane>> planes = new Dictionary<ElementId, List<Autodesk.Revit.DB.Plane>>();
+            List<(ElementId, IEnumerable<ElementId>)> toProcess = new List<(ElementId, IEnumerable<ElementId>)>();
+            foreach ((ElementId, IEnumerable<ElementId>) tuple in hostsWithInsertsToIgnore)
             {
-                foreach (ElementId id in JoinGeometryUtils.GetJoinedElements(doc, hostObject))
+                ElementId id = tuple.Item1;
+                List<Autodesk.Revit.DB.Plane> hostPlanes = (doc.GetElement(id) as HostObject)?.IPanelPlanes();
+                if (hostPlanes == null || hostPlanes.Count == 0)
+                    result.Add(id, null);
+                else
                 {
-                    JoinGeometryUtils.UnjoinGeometry(doc, hostObject, doc.GetElement(id));
+                    toProcess.Add(tuple);
+                    planes.Add(id, hostPlanes);
+                }
+            }
+
+            using (Transaction t = new Transaction(doc, "Temp Delete Inserts And Unjoin Geometry"))
+            {
+                FailureHandlingOptions failureHandlingOptions = t.GetFailureHandlingOptions().SetClearAfterRollback(true);
+                t.Start();
+
+                HashSet<ElementId> insertsToDelete = new HashSet<ElementId>();
+                foreach ((ElementId, IEnumerable<ElementId>) tuple in toProcess)
+                {
+                    HostObject hostObject = doc.GetElement(tuple.Item1) as HostObject;
+                    IEnumerable<ElementId> insertsToIgnore = tuple.Item2;
+
+                    foreach (ElementId id in JoinGeometryUtils.GetJoinedElements(doc, hostObject))
+                    {
+                        JoinGeometryUtils.UnjoinGeometry(doc, hostObject, doc.GetElement(id));
+                    }
+
+                    if (hostObject is Wall)
+                    {
+                        WallUtils.DisallowWallJoinAtEnd((Wall)hostObject, 0);
+                        WallUtils.DisallowWallJoinAtEnd((Wall)hostObject, 1);
+                    }
+
+                    if (insertsToIgnore != null)
+                    {
+                        foreach (ElementId id in insertsToIgnore)
+                        {
+                            insertsToDelete.Add(id);
+                        }
+                    }
                 }
 
-                if (hostObject is Wall)
-                {
-                    WallUtils.DisallowWallJoinAtEnd((Wall)hostObject, 0);
-                    WallUtils.DisallowWallJoinAtEnd((Wall)hostObject, 1);
-                }
-
-                if (insertsToIgnore != null)
-                    doc.Delete(insertsToIgnore.ToList());
-
+                if (insertsToDelete.Count != 0)
+                    doc.Delete(insertsToDelete);
+                
                 doc.Regenerate();
 
-                List<Solid> solidsWithOpenings = hostObject.Solids(new Options());
-                List<Solid> fullSolids;
-
-                if (inserts.Count != 0)
+                Dictionary<ElementId, List<Solid>> withOpenings = new Dictionary<ElementId, List<Solid>>();
+                foreach ((ElementId, IEnumerable<ElementId>) tuple in toProcess)
                 {
-                    solidsWithOpenings = solidsWithOpenings.Select(x => SolidUtils.Clone(x)).ToList();
-
-                    doc.Delete(inserts);
-                    doc.Regenerate();
-
-                    fullSolids = hostObject.Solids(new Options());
-                }
-                else
-                    fullSolids = solidsWithOpenings;
-
-                fullSolids = fullSolids.SelectMany(x => SolidUtils.SplitVolumes(x)).Where(x => x != null).ToList();
-                if (hostObject is Wall)
-                {
-                    fullSolids.ForEach(x => BooleanOperationsUtils.CutWithHalfSpaceModifyingOriginalSolid(x, planes[0]));
-                    fullSolids = fullSolids.Where(x => x != null).ToList();
-                    Autodesk.Revit.DB.Plane flippedPlane = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(-planes[0].Normal, planes[0].Origin + planes[0].Normal * 1e-3);
-                    fullSolids.ForEach(x => BooleanOperationsUtils.CutWithHalfSpaceModifyingOriginalSolid(x, flippedPlane));
-                    fullSolids = fullSolids.Where(x => x != null).SelectMany(x => SolidUtils.SplitVolumes(x)).ToList();
-                    planes[0] = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(-planes[0].Normal, planes[0].Origin);
+                    HostObject hostObject = doc.GetElement(tuple.Item1) as HostObject;
+                    withOpenings.Add(hostObject.Id, hostObject.Solids(new Options()).Select(x => SolidUtils.Clone(x)).ToList());
                 }
 
-                foreach (Autodesk.Revit.DB.Plane plane in planes)
+                insertsToDelete = new HashSet<ElementId>();
+                Dictionary<ElementId, bool> insertsDeleted = new Dictionary<ElementId, bool>();
+                foreach ((ElementId, IEnumerable<ElementId>) tuple in toProcess)
                 {
-                    foreach (Solid s in fullSolids)
+                    ElementId id = tuple.Item1;
+                    if (withOpenings[id] == null)
                     {
-                        List<CurveLoop> loops = new List<CurveLoop>();
-                        foreach (Autodesk.Revit.DB.Face f in s.Faces)
-                        {
-                            PlanarFace pf = f as PlanarFace;
-                            if (pf == null)
-                                continue;
+                        insertsDeleted.Add(id, false);
+                        continue;
+                    }
 
-                            if (Math.Abs(1 - pf.FaceNormal.DotProduct(plane.Normal)) <= settings.DistanceTolerance && Math.Abs((pf.Origin - plane.Origin).DotProduct(plane.Normal)) <= settings.AngleTolerance)
-                                loops.AddRange(pf.GetEdgesAsCurveLoops());
+                    HostObject hostObject = doc.GetElement(id) as HostObject;
+                    IEnumerable<ElementId> insertsToIgnore = tuple.Item2;
+
+                    IList<ElementId> inserts = hostObject.FindInserts(true, true, true, true);
+                    if (insertsToIgnore != null)
+                        inserts = inserts.Where(x => insertsToIgnore.All(y => x.IntegerValue != y.IntegerValue)).ToList();
+
+                    insertsDeleted.Add(id, inserts.Count != 0);
+                    foreach (ElementId insert in inserts)
+                    {
+                        insertsToDelete.Add(insert);
+                    }
+                }
+
+                if (insertsToDelete.Count != 0)
+                {
+                    doc.Delete(insertsToDelete);
+                    doc.Regenerate();
+                }
+
+                Dictionary<ElementId, List<Solid>> withoutOpenings = new Dictionary<ElementId, List<Solid>>();
+                foreach ((ElementId, IEnumerable<ElementId>) tuple in toProcess)
+                {
+                    ElementId id = tuple.Item1;
+                    List<Solid> solidsWithOpenings = withOpenings[id];
+                    if (solidsWithOpenings == null)
+                    {
+                        withoutOpenings.Add(id, null);
+                        continue;
+                    }
+
+                    if (insertsDeleted[id])
+                    {
+                        HostObject hostObject = doc.GetElement(id) as HostObject;
+                        withoutOpenings.Add(id, hostObject.Solids(new Options()).Select(x => SolidUtils.Clone(x)).ToList());
+                    }
+                    else
+                        withoutOpenings.Add(id, solidsWithOpenings);
+                }
+
+                foreach ((ElementId, IEnumerable<ElementId>) tuple in toProcess)
+                {
+                    ElementId id = tuple.Item1;
+                    HostObject hostObject = doc.GetElement(id) as HostObject;
+
+                    List<Solid> solidsWithOpenings = withOpenings[id];
+                    List<Solid> fullSolids = withoutOpenings[id];
+                    if (solidsWithOpenings == null || fullSolids == null)
+                    {
+                        result.Add(id, null);
+                        continue;
+                    }
+
+                    List<Autodesk.Revit.DB.Plane> objectPlanes = planes[id];
+
+                    try
+                    {
+                        Dictionary<PlanarSurface, List<PlanarSurface>> subResult = new Dictionary<PlanarSurface, List<PlanarSurface>>();
+
+                        fullSolids = fullSolids.SelectMany(x => SolidUtils.SplitVolumes(x)).Where(x => x != null).ToList();
+                        if (hostObject is Wall)
+                        {
+                            fullSolids.ForEach(x => BooleanOperationsUtils.CutWithHalfSpaceModifyingOriginalSolid(x, objectPlanes[0]));
+                            fullSolids = fullSolids.Where(x => x != null).ToList();
+                            Autodesk.Revit.DB.Plane flippedPlane = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(-objectPlanes[0].Normal, objectPlanes[0].Origin + objectPlanes[0].Normal * 1e-3);
+                            fullSolids.ForEach(x => BooleanOperationsUtils.CutWithHalfSpaceModifyingOriginalSolid(x, flippedPlane));
+                            fullSolids = fullSolids.Where(x => x != null).SelectMany(x => SolidUtils.SplitVolumes(x)).ToList();
+                            objectPlanes[0] = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(-objectPlanes[0].Normal, objectPlanes[0].Origin);
                         }
 
-                        CurveLoop outline = loops.FirstOrDefault(x => x.IsCounterclockwise(plane.Normal));
-                        PlanarSurface surface = new PlanarSurface(outline.FromRevit(), null);
-                        List<PlanarSurface> openings = new List<PlanarSurface>();
-                        foreach (CurveLoop loop in loops.Where(x => x != outline))
+                        foreach (Autodesk.Revit.DB.Plane plane in objectPlanes)
                         {
-                            openings.Add(new PlanarSurface(loop.FromRevit(), null));
-                        }
-
-                        if (inserts.Count != 0)
-                        {
-                            List<Solid> openingVolumes = new List<Solid>();
-                            foreach (Solid s2 in solidsWithOpenings)
+                            foreach (Solid s in fullSolids)
                             {
-                                openingVolumes.Add(BooleanOperationsUtils.ExecuteBooleanOperation(s, s2, BooleanOperationsType.Difference));
-                            }
-
-                            foreach (Solid s2 in openingVolumes)
-                            {
-                                foreach (Autodesk.Revit.DB.Face f in s2.Faces)
+                                List<CurveLoop> loops = new List<CurveLoop>();
+                                foreach (Autodesk.Revit.DB.Face f in s.Faces)
                                 {
                                     PlanarFace pf = f as PlanarFace;
                                     if (pf == null)
                                         continue;
 
                                     if (Math.Abs(1 - pf.FaceNormal.DotProduct(plane.Normal)) <= settings.DistanceTolerance && Math.Abs((pf.Origin - plane.Origin).DotProduct(plane.Normal)) <= settings.AngleTolerance)
+                                        loops.AddRange(pf.GetEdgesAsCurveLoops());
+                                }
+
+                                CurveLoop outline = loops.FirstOrDefault(x => x.IsCounterclockwise(plane.Normal));
+                                PlanarSurface surface = new PlanarSurface(outline.FromRevit(), null);
+                                List<PlanarSurface> openings = new List<PlanarSurface>();
+                                foreach (CurveLoop loop in loops.Where(x => x != outline))
+                                {
+                                    openings.Add(new PlanarSurface(loop.FromRevit(), null));
+                                }
+
+                                if (insertsDeleted[id])
+                                {
+                                    List<Solid> openingVolumes = new List<Solid>();
+                                    foreach (Solid s2 in solidsWithOpenings)
                                     {
-                                        foreach (CurveLoop cl in pf.GetEdgesAsCurveLoops())
+                                        openingVolumes.Add(BooleanOperationsUtils.ExecuteBooleanOperation(s, s2, BooleanOperationsType.Difference));
+                                    }
+
+                                    foreach (Solid s2 in openingVolumes)
+                                    {
+                                        foreach (Autodesk.Revit.DB.Face f in s2.Faces)
                                         {
-                                            openings.Add(new PlanarSurface(cl.FromRevit(), null));
+                                            PlanarFace pf = f as PlanarFace;
+                                            if (pf == null)
+                                                continue;
+
+                                            if (Math.Abs(1 - pf.FaceNormal.DotProduct(plane.Normal)) <= settings.DistanceTolerance && Math.Abs((pf.Origin - plane.Origin).DotProduct(plane.Normal)) <= settings.AngleTolerance)
+                                            {
+                                                foreach (CurveLoop cl in pf.GetEdgesAsCurveLoops())
+                                                {
+                                                    openings.Add(new PlanarSurface(cl.FromRevit(), null));
+                                                }
+                                            }
                                         }
                                     }
                                 }
+
+                                subResult.Add(surface, openings);
                             }
                         }
 
-                        result.Add(surface, openings);
+                        result.Add(id, subResult);
+                    }
+                    catch
+                    {
+                        BH.Engine.Base.Compute.RecordError(String.Format("Geometrical processing of a Revit element failed due to an internal Revit error. Converted panel might be missing one or more of its surfaces. Revit ElementId: {0}", hostObject.Id));
+                        result.Add(id, null);
                     }
                 }
-            }
-            catch
-            {
-                BH.Engine.Base.Compute.RecordError(String.Format("Geometrical processing of a Revit element failed due to an internal Revit error. Converted panel might be missing one or more of its surfaces. Revit ElementId: {0}", hostObject.Id));
-            }
 
-            t.RollBack(failureHandlingOptions);
+                t.RollBack(failureHandlingOptions);
+            }
 
             return result;
         }
