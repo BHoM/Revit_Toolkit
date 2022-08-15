@@ -59,15 +59,22 @@ namespace BH.Revit.Engine.Core
             for (int i = 0; i < panels.Count; i++)
             {
                 FamilyInstance panel = panels[i] as FamilyInstance;
-                if (panel == null || panel.get_BoundingBox(null) == null)
+                if (panel == null)
                     continue;
+
+                if (panel.get_BoundingBox(null) == null)
+                {
+                    ElementId hostPanelId = (panel as Panel)?.FindHostPanel();
+                    if (hostPanelId == null || document.GetElement(hostPanelId)?.get_BoundingBox(null) == null)
+                        continue;
+                }
 
                 foreach (PolyCurve pc in cells[i].CurveLoops.FromRevit())
                 {
                     if (panel.Category.Id.IntegerValue == (int)Autodesk.Revit.DB.BuiltInCategory.OST_Doors)
-                        result.Add(panel.DoorFromRevit(settings, refObjects));
+                        result.Add(panel.DoorFromRevit(BH.Engine.Geometry.Create.PlanarSurface(pc), settings, refObjects));
                     else
-                        result.Add(panel.WindowFromRevit(settings, refObjects));
+                        result.Add(panel.WindowFromRevit(BH.Engine.Geometry.Create.PlanarSurface(pc), settings, refObjects));
                 }
             }
             

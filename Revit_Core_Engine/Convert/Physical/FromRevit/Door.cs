@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
         [Output("door", "BH.oM.Physical.Elements.Door resulting from converting the input Revit FamilyInstance.")]
         public static Door DoorFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            return familyInstance.DoorFromRevit(null, settings, refObjects);
+            return familyInstance.DoorFromRevit(null as HostObject, settings, refObjects);
         }
 
         /***************************************************/
@@ -94,7 +94,32 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        [Description("Converts a Revit FamilyInstance to BH.oM.Physical.Elements.Door using the provided location.")]
+        [Input("familyInstance", "Revit FamilyInstance to be converted.")]
+        [Input("location", "Location to be applied to the returned object (the location is not queried from the object itself.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("door", "BH.oM.Physical.Elements.Door resulting from converting the input Revit FamilyInstance and applying the provided location.")]
+        public static Door DoorFromRevit(this FamilyInstance familyInstance, BH.oM.Geometry.ISurface location = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            if (familyInstance == null || location == null)
+                return null;
+
+            settings = settings.DefaultIfNull();
+
+            Door door = new Door { Location = location, Name = familyInstance.FamilyTypeFullName() };
+            FamilySymbol familySymbol = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as FamilySymbol;
+            door.Construction = familySymbol?.ConstructionFromRevit(settings, refObjects);
+
+            //Set identifiers, parameters & custom data
+            door.SetIdentifiers(familyInstance);
+            door.CopyParameters(familyInstance, settings.MappingSettings);
+            door.SetProperties(familyInstance, settings.MappingSettings);
+
+            return door;
+        }
+
+        /***************************************************/
     }
 }
-
-
