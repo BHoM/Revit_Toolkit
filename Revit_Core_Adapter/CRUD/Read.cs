@@ -205,7 +205,7 @@ namespace BH.Revit.Adapter.Core
 
             Dictionary<string, List<IBHoMObject>> refObjects = new Dictionary<string, List<IBHoMObject>>();
 
-            // Extract panel geometry prior to running the converts (this is an optimisation aimed to reduce the number of view regenerations)
+            // Extract panel geometry of walls, floors, slabs and roofs prior to running the converts (this is an optimisation aimed to reduce the number of view regenerations)
             if (!document.IsLinked)
                 document.CachePanelGeometry(elementIds, discipline, settings, refObjects);
             
