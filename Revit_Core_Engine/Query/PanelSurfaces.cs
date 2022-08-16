@@ -40,7 +40,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts the BHoM-representative location surfaces from a given collection Revit host objects." +
+        [Description("Extracts the BHoM-representative location surfaces from a given collection of Revit host objects." +
                      "\nOptimised to regenerate the document only twice for all input elements, not twice per each.")]
         [Input("hostObjects", "Revit host objects to extract the location surfaces from.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
@@ -50,13 +50,13 @@ namespace BH.Revit.Engine.Core
         {
             settings = settings.DefaultIfNull();
 
-            Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>> result = new Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>>();
+            var result = new Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>>();
 
             List<HostObject> linked = hostObjects.Where(x => x.Document.IsLinked).ToList();
             List<HostObject> curtains = hostObjects.Where(x => !x.Document.IsLinked && x.ICurtainGrids().Count != 0).ToList();
             List<HostObject> solids = hostObjects.Except(linked.Union(curtains)).ToList();
 
-            // First process linked elements
+            // Process linked elements first
             foreach (HostObject hostObject in linked)
             {
                 if (hostObject.ICurtainGrids().Count != 0)
@@ -120,11 +120,11 @@ namespace BH.Revit.Engine.Core
 
         private static Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>> PanelSurfaces_HostDocument(this Document doc, List<(ElementId, IEnumerable<ElementId>)> hostsWithInsertsToIgnore, RevitSettings settings = null)
         {
-            Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>> result = new Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>>();
+            var result = new Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>>();
 
             // query panel surfaces from each of the panels and rule out the ones that do not have any
-            Dictionary<ElementId, List<Autodesk.Revit.DB.Plane>> planes = new Dictionary<ElementId, List<Autodesk.Revit.DB.Plane>>();
-            List<(ElementId, IEnumerable<ElementId>)> toProcess = new List<(ElementId, IEnumerable<ElementId>)>();
+            var planes = new Dictionary<ElementId, List<Autodesk.Revit.DB.Plane>>();
+            var toProcess = new List<(ElementId, IEnumerable<ElementId>)>();
             foreach ((ElementId, IEnumerable<ElementId>) tuple in hostsWithInsertsToIgnore)
             {
                 ElementId id = tuple.Item1;

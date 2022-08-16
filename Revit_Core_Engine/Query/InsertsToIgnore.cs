@@ -66,7 +66,7 @@ namespace BH.Revit.Engine.Core
                             inserts = new FilteredElementCollector(hostObject.Document, insertIds).WherePasses(bbif).ToList();
                         }
 
-                        return inserts.Where(x => x is FamilyInstance && (x.Category.Id.IntegerValue == (int)Autodesk.Revit.DB.BuiltInCategory.OST_Windows || x.Category.Id.IntegerValue == (int)Autodesk.Revit.DB.BuiltInCategory.OST_Windows)).Select(x => x.Id).ToList();
+                        return inserts.Where(x => x is FamilyInstance && (x.Category.Id.IntegerValue == (int)Autodesk.Revit.DB.BuiltInCategory.OST_Windows || x.Category.Id.IntegerValue == (int)Autodesk.Revit.DB.BuiltInCategory.OST_Doors)).Select(x => x.Id).ToList();
                     }
             }
 

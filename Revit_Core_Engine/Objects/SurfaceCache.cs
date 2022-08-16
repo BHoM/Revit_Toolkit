@@ -12,7 +12,7 @@ namespace BH.Revit.Engine.Core.Objects
         /****                 Properties                ****/
         /***************************************************/
 
-        [Description("Surface locations of panels to be used in converts.")]
+        [Description("Surface locations of panels and their openings to be used in converts. Key is the location surface of a panel, value is the list of opening locations.")]
         internal Dictionary<PlanarSurface, List<PlanarSurface>> Surfaces { get; set; } = null;
 
         /***************************************************/

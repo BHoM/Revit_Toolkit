@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using BH.Engine.Base;
 using BH.Revit.Engine.Core.Objects;
+using BH.oM.Adapters.Revit.Enums;
 
 namespace BH.Revit.Engine.Core
 {
@@ -123,7 +124,7 @@ namespace BH.Revit.Engine.Core
             if (cache != null)
                 surfaces = cache.Surfaces;
             else
-                surfaces = ceiling.PanelSurfaces(ceiling.FindInserts(true, true, true, true), settings);
+                surfaces = ceiling.PanelSurfaces(ceiling.InsertsToIgnore(Discipline.Environmental), settings);
 
             if (surfaces == null)
                 return panels;
@@ -197,7 +198,7 @@ namespace BH.Revit.Engine.Core
             if (cache != null)
                 surfaces = cache.Surfaces;
             else
-                surfaces = floor.PanelSurfaces(floor.FindInserts(true, true, true, true), settings);
+                surfaces = floor.PanelSurfaces(floor.InsertsToIgnore(Discipline.Environmental), settings);
 
             if (surfaces == null)
                 return panels;
@@ -272,7 +273,7 @@ namespace BH.Revit.Engine.Core
             if (cache != null)
                 surfaces = cache.Surfaces;
             else
-                surfaces = roofBase.PanelSurfaces(roofBase.FindInserts(true, true, true, true), settings);
+                surfaces = roofBase.PanelSurfaces(roofBase.InsertsToIgnore(Discipline.Environmental), settings);
             
             if (surfaces == null)
                 return panels;
@@ -349,7 +350,7 @@ namespace BH.Revit.Engine.Core
             if (cache != null)
                 surfaces = cache.Surfaces;
             else
-                surfaces = wall.PanelSurfaces(wall.FindInserts(true, true, true, true), settings);
+                surfaces = wall.PanelSurfaces(wall.InsertsToIgnore(Discipline.Environmental), settings);
 
             if (surfaces == null)
                 return panels;
