@@ -45,15 +45,19 @@ namespace BH.Revit.Engine.Core
         [Output("elementsEditablePerCheckoutStatus", "List of elements that are editable per the element's CheckoutStatus.")]
         public static List<Element> ElementsEditablePerCheckoutStatus(this List<Element> elements, bool recordWarnings)
         {
+            List<Element> elementsOwnedByOthers = elements.ElementsOwnedByOtherUsers().ToList();
+
+           List<Element> elementsNotOwnedByOthers = elements.Except(elementsOwnedByOthers).ToList();
+            
             if (recordWarnings)
             {
-                foreach (var element in elements.ElementsOwnedByOtherUsers())
+                foreach (var element in elementsOwnedByOthers)
                 {
                     Compute.ElementOwnedByOtherUserWarning(element);
                 }
             }
 
-            return elements.Where(e => !e.IsOwnedByOtherUser()).ToList();
+            return elementsNotOwnedByOthers;
         }
         /***************************************************/
     }
