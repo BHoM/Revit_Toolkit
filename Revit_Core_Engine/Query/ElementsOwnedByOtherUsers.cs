@@ -38,11 +38,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
         [Description("Returns a sublist of elements, from the given list of elements, that are owned by other users.")]
-        [Input("elements", "Revit elements.")]
+        [Input("elements", "Revit elements to query for its checkout status.")]
         [Output("elementsOwnedByUsers", "List of elements that are owned by other users.")]
         public static List<Element> ElementsOwnedByOtherUsers(this List<Element> elements)
         {
-            return elements.Where(e => e.CheckoutStatus()== Autodesk.Revit.DB.CheckoutStatus.OwnedByOtherUser).ToList();
+            return elements.Where(e =>  e.IsOwnedByOtherUser()).ToList();
         }
         /***************************************************/
     }

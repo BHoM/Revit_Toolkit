@@ -517,7 +517,7 @@ namespace BH.Revit.Engine.Core
 
         internal static void ElementOwnedByOtherUserWarning(Element element)
         {
-            BH.Engine.Base.Compute.RecordWarning($"Revit object could not be updated or modified due to it's CheckoutStatus. Revit ElementId: {element.Id} is owned by another user.");
+            BH.Engine.Base.Compute.RecordWarning($"Revit object could not be updated or modified due to its CheckoutStatus. Revit ElementId: {element.Id} is owned by another user.");
         }
 
         /***************************************************/

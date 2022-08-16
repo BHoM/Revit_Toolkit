@@ -34,16 +34,8 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-
-        [Description("Modifies element CheckoutStatus if element is not currently owned by the current user or others.")]
-        [Input("element", "Revit element.")]
-        public static void Checkout(this Element element)
-        {
-            Checkout(new List<Element>() { element });
-        }
-
         [Description("Modifies CheckoutStatus for each element selected if element is not currently owned by the current user or others.")]
-        [Input("elements", "Revit elements.")]
+        [Input("elements", "Revit elements to query for its checkout status.")]
         [Output("elementsCheckedOut", "List of elements checked out (ownership modified to be by current user) by this process.")]
         public static List<ElementId> Checkout(this List<Element> elements)
         {
