@@ -39,7 +39,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         
         [Description("Check if element is currently unowned.")]
-        [Input("element", "Revit element.")]
+        [Input("element", "Revit element to query for its checkout status.")]
         [Output("ownedByNone", "True if the input Revit element is not owned, otherwise false.")]
         public static bool IsOwnedByNone(this Element element)
         {

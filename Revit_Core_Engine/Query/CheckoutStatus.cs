@@ -39,7 +39,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
        
         [Description("Returns element CheckoutStatus.")]
-        [Input("element", "Revit element.")]
+        [Input("element", "Revit element to query for its checkout status.")]
         [Output("checkoutStatus", "The worksharing ownership/CheckoutStatus of the element.")]
         public static CheckoutStatus CheckoutStatus(this Element element)
         {

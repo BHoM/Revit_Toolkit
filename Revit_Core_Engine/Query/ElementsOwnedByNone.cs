@@ -38,7 +38,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
         [Description("Returns a sublist of elements, from the given list of elements, that are unowned.")]
-        [Input("elements", "Revit elements.")]
+        [Input("elements", "Revit elements to query for its checkout status.")]
         [Output("elementsOwnedByNone", "List of elements that are unowned.")]
         public static List<Element> ElementsOwnedByNone(this List<Element> elements)
         {

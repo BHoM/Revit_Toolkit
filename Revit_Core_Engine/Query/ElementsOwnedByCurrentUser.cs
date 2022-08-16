@@ -39,7 +39,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Returns a sublist of elements, from the given list of elements, that are owned by the current user.")]
-        [Input("elements", "Revit elements.")]
+        [Input("elements", "Revit elements to query for its checkout status.")]
         [Output("elementsOwnedByCurrentUser", "List of elements that are owned by the current user.")]
         public static List<Element> ElementsOwnedByCurrentUser(this List<Element> elements)
         {
