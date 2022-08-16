@@ -65,7 +65,7 @@ namespace BH.Revit.Engine.Core
                         break;
                 }
             }
-            
+
             WorksharingUtils.CheckoutElements(document, elementsToCheckout);
             return elementsToCheckout;
         }
