@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core.Objects
 {
-    [Description("Cache object to store the outlines of structural panels for convert purposes.")]
+    [Description("Cache object to store the outlines of structural panels for conversion purposes.")]
     internal class OutlineCache : BHoMObject
     {
         /***************************************************/
