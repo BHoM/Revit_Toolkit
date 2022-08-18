@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core.Objects
 {
-    [Description("Cache object to store the surface locations of panels for convert purposes.")]
+    [Description("Cache object to store the surface locations of panels for conversion purposes.")]
     internal class SurfaceCache : BHoMObject
     {
         /***************************************************/
