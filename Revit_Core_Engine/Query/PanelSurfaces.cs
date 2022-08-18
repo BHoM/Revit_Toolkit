@@ -51,6 +51,8 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             var result = new Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>>();
+            List<Document> inputDocs = hostObjects.Select(x => x.Document).ToList();
+            List<ElementId> inputIds = hostObjects.Select(x => x.Id).ToList();
 
             List<HostObject> linked = hostObjects.Where(x => x.Document.IsLinked).ToList();
             List<HostObject> curtains = hostObjects.Where(x => !x.Document.IsLinked && x.ICurtainGrids().Count != 0).ToList();
@@ -86,6 +88,12 @@ namespace BH.Revit.Engine.Core
                 {
                     result.Add(kvp.Key, kvp.Value);
                 }
+            }
+
+            // Recreate the input collection because some objects could have been invalidated due to the processing done in the temp transaction
+            for (int i = 0; i < hostObjects.Count; i++)
+            {
+                hostObjects[i] = inputDocs[i].GetElement(inputIds[i]) as HostObject;
             }
 
             return result;
