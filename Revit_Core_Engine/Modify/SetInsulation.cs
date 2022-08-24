@@ -36,7 +36,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Add or update existing insulation of the duct or pipe with given inuslation type and thickness.")]
+        [Description("Add or update existing insulation of the duct or pipe with given insulation type and thickness.")]
         [Input("host", "Host element to add or update the insulation on.")]
         [Input("insulationType", "Type of insulation to be added or updated on the host object. Null value removes insulation from the host if it exist.")]
         [Input("insulationThickness", "Thickness of insulation to be added or updated on the host object.")]
