@@ -35,7 +35,7 @@ namespace BH.Revit.Engine.Core
 
         internal static void MaterialNotInLibraryNote(this Material material)
         {
-            string message = "Material could not be found in BHoM Libary.";
+            string message = "Material could not be found in BHoM Library.";
 
             if (material != null)
                 message = string.Format("{0} Material Id: {1}", message, material.Id.IntegerValue);
@@ -49,6 +49,6 @@ namespace BH.Revit.Engine.Core
         }
         /***************************************************/
     }
-}
+}  
 
 
