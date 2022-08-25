@@ -34,6 +34,29 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Intersection result between curve and solid. For no intersection, an empty list is returned.")]
+        [Input("curve", "Curve to get the intersection for.")]
+        [Input("solid", "Solid to get the intersection for.")]
+        [Output("curves", "List of intersecting curves.")]
+        public static List<Curve> Intersections(this Curve curve, Solid solid)
+        {
+            if (curve == null || solid == null)
+            {
+                return null;
+            }
+
+            List<Curve> curves = new List<Curve>();
+            SolidCurveIntersection intersection = solid.IntersectWithCurve(curve, new SolidCurveIntersectionOptions());
+            foreach(Curve intersectionCurve in intersection)
+            {
+                curves.Add(intersectionCurve);
+            }
+
+            return curves;
+        }
+
+        /***************************************************/
+
         [Description("Intersection result of two curves. For no intersection, an empty list is returned.")]
         [Input("curve1", "First curve to check the intersection for.")]
         [Input("curve2", "Second curve to check the intersection for.")]
