@@ -33,7 +33,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
+
         [Description("Return elements from link instance located in given view. Method returns all instance elements in the view scope (including hidden elements)")]
         [Input("view", "ViewPlan to get the elements from.")]
         [Input("linkInstance", "Revit Link Instance to get the elements from.")]
