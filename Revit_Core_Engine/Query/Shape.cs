@@ -25,7 +25,9 @@ using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB.Plumbing;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -38,7 +40,7 @@ namespace BH.Revit.Engine.Core
         [Description("Determines whether a Revit MEPCurve is round, rectangular or oval.")]
         [Input("mEPCurve", "Revit MEPCurve to check in order to determine its shape.")]
         [Input("settings", "Revit adapter settings.")]
-        [Output("shape", "Shape of an MEPCurve, which can be eiher round, rectangular or oval. If the shape of the MEPCurve cannot be determined, an invalid connector shape is returned.")]
+        [Output("shape", "Shape of an MEPCurve, which can be either round, rectangular or oval. If the shape of the MEPCurve cannot be determined, an invalid connector shape is returned.")]
         public static Autodesk.Revit.DB.ConnectorProfileType Shape(this MEPCurve mEPCurve, RevitSettings settings = null)
         {
             // Input validation
@@ -68,6 +70,34 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        [Description("Determines whether a MEP Family Symbol is round, rectangular or oval.")]
+        [Input("familySymbol", "Family Symbol to check in order to determine its shape.")]
+        [Input("doc", "Document object of the Family Symbol.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Output("shape", "Shape of an Family Symbol, which can be round, rectangular or oval. If the shape cannot be determined, an invalid connector shape is returned.")]
+        public static ConnectorProfileType Shape(this FamilySymbol familySymbol, Document doc, RevitSettings settings = null)
+        {
+            if (familySymbol == null || doc == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Family Symbol or input document cannot be null.");
+                return ConnectorProfileType.Invalid;
+            }
+
+            Document familyDoc = doc.EditFamily(familySymbol.Family);
+            List<ConnectorElement> connectors = new FilteredElementCollector(familyDoc).OfClass(typeof(ConnectorElement)).Cast<ConnectorElement>().ToList();
+
+            if (connectors.Count == 0)
+            {
+                BH.Engine.Base.Compute.RecordWarning("Family of the Family Symbol has no connectors, shape cannot be determined.");
+                return ConnectorProfileType.Invalid;
+            }
+
+            ConnectorProfileType shape = connectors.Where(x => x.IsPrimary).Select(x => x.Shape).FirstOrDefault();
+
+            return shape;
+        }
+
     }
 }
 
