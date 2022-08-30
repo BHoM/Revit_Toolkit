@@ -155,24 +155,59 @@ namespace BH.Engine.Adapters.Revit
             DiffingConfig diffConfigClone = GetRevitDiffingConfig(rcc);
 
             // Check if input objects all have RevitIdentifiers assigned.
-            IEnumerable<IBHoMObject> revitBHoMObjects_past = pastObjects.OfType<IBHoMObject>().Where(obj => obj.GetRevitIdentifiers() != null);
-            IEnumerable<IBHoMObject> revitBHoMObjects_following = followingObjects.OfType<IBHoMObject>().Where(obj => obj.GetRevitIdentifiers() != null);
+            IEnumerable<RevitIdentifiers> pastIdFragments = pastObjects.OfType<IBHoMObject>().Select(obj => obj.GetRevitIdentifiers()).Where(x => x != null);
+            IEnumerable<RevitIdentifiers> followingIdFragments = followingObjects.OfType<IBHoMObject>().Select(obj => obj.GetRevitIdentifiers()).Where(x => x != null);
 
-            if (revitBHoMObjects_past.Count() != pastObjects.Count())
+            if (pastIdFragments.Count() != pastObjects.Count())
             {
                 BH.Engine.Base.Compute.RecordError($"Some of the {nameof(pastObjects)} do not have a {nameof(RevitIdentifiers)} fragment attached.");
                 return null;
             }
 
-            if (revitBHoMObjects_following.Count() != followingObjects.Count())
+            if (followingIdFragments.Count() != followingObjects.Count())
             {
                 BH.Engine.Base.Compute.RecordError($"Some of the {nameof(followingObjects)} do not have a {nameof(RevitIdentifiers)} fragment attached.");
                 return null;
             }
 
-            // Compute the diffing through DiffWithFragmentId(), which allows us to specify a Fragment and FragmentIdProperty where to find an ID to fragment by.
-            Diff revitDiff = BH.Engine.Diffing.Compute.DiffWithFragmentId(revitBHoMObjects_past, revitBHoMObjects_following, typeof(RevitIdentifiers), revitIdName, diffConfigClone);
+            List<string> pastIds, followingIds;
 
+            if (revitIdName == nameof(RevitIdentifiers.ElementId))
+            {
+                pastIds = pastIdFragments.Select(x => x.ElementId.ToString()).ToList();
+                followingIds = followingIdFragments.Select(x => x.ElementId.ToString()).ToList();
+            }
+            else
+            {
+                pastIds = pastIdFragments.Select(x => x.PersistentId.ToString()).ToList();
+                followingIds = followingIdFragments.Select(x => x.PersistentId.ToString()).ToList();
+            }
+
+            //Check for duplicate ids
+            if (pastIds.Count != pastIds.Distinct().Count())
+            {
+                string message = $"Some of the {nameof(pastObjects)} contain duplicate {revitIdName}s.";
+
+                if(pastObjects.Any(x => x.GetType().Namespace.Contains("Structure")))
+                    message+= " If trying to diff structural objects, try pulling using the Phsyical discipline rather than Structural discipline, as models containing disjointed floors and walls and/or curved beams lead to one Revit element being converted into multiple structural BHoM elements.";
+
+                BH.Engine.Base.Compute.RecordError(message);
+                return null;
+            }
+
+            if (followingIds.Count != followingIds.Distinct().Count())
+            {
+                string message = $"Some of the {nameof(followingIds)} contain duplicate {revitIdName}s.";
+
+                if (pastObjects.Any(x => x.GetType().Namespace.Contains("Structure")))
+                    message += " If trying to diff structural objects, try pulling using the Phsyical discipline rather than Structural discipline, as models containing disjointed floors and walls and/or curved beams lead to one Revit element being converted into multiple structural BHoM elements.";
+
+                BH.Engine.Base.Compute.RecordError(message);
+                return null;
+            }
+
+            //Compute the diffing through DIffWIthCUstomIds making use of the ids extracted from the objects
+            Diff revitDiff = BH.Engine.Diffing.Compute.DiffWithCustomIds(pastObjects.ToList(), pastIds, followingObjects.ToList(), followingIds, diffConfigClone);
             return revitDiff;
         }
 
