@@ -71,8 +71,8 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Determines whether a MEP Family Symbol is round, rectangular or oval.")]
-        [Input("familySymbol", "Family Symbol to check in order to determine its shape.")]
+        [Description("Determines shape of the MEP Family Symbol based on its primary connector.")]
+        [Input("familySymbol", "Family Symbol to determine the shape of.")]
         [Input("doc", "Document object of the Family Symbol.")]
         [Input("settings", "Revit adapter settings.")]
         [Output("shape", "Shape of an Family Symbol, which can be round, rectangular or oval. If the shape cannot be determined, an invalid connector shape is returned.")]
@@ -85,17 +85,15 @@ namespace BH.Revit.Engine.Core
             }
 
             Document familyDoc = doc.EditFamily(familySymbol.Family);
-            List<ConnectorElement> connectors = new FilteredElementCollector(familyDoc).OfClass(typeof(ConnectorElement)).Cast<ConnectorElement>().ToList();
+            ConnectorProfileType? shape = new FilteredElementCollector(familyDoc).OfClass(typeof(ConnectorElement)).Cast<ConnectorElement>().FirstOrDefault(x => x.IsPrimary)?.Shape;
 
-            if (connectors.Count == 0)
+            if (shape == null)
             {
                 BH.Engine.Base.Compute.RecordWarning("Family of the Family Symbol has no connectors, shape cannot be determined.");
                 return ConnectorProfileType.Invalid;
             }
 
-            ConnectorProfileType shape = connectors.Where(x => x.IsPrimary).Select(x => x.Shape).FirstOrDefault();
-
-            return shape;
+            return shape.Value;
         }
 
     }

@@ -24,6 +24,7 @@ using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -43,34 +44,36 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Base.Compute.RecordError("Input element cannot be null.");
                 return null;
             }
-
-            List<Element> connectedElements = new List<Element>();
-            ConnectorSet connSet;
+            
+            ConnectorSet connSet = null;
             if (element is FamilyInstance)
             {
-                connSet = (element as FamilyInstance).MEPModel.ConnectorManager.Connectors;
+                connSet = (element as FamilyInstance).MEPModel?.ConnectorManager?.Connectors;
             }
             else if (element is MEPCurve)
             {
-                connSet = (element as MEPCurve).ConnectorManager.Connectors;
+                connSet = (element as MEPCurve).ConnectorManager?.Connectors;
             }
-            else
+            
+            if (connSet == null)
             {
                 BH.Engine.Base.Compute.RecordError("Input element is not supported by the method. Check if element is MEP object.");
                 return null;
             }
 
+            HashSet<Element> connectedElements = new HashSet<Element>();
             foreach (Connector conn in connSet)
             {
                 ConnectorSet allRefs = conn.AllRefs;
                 foreach (Connector refConn in allRefs)
                 {
-                    Element el = refConn.Owner;
-                    connectedElements.Add(el);
+                    Element el = refConn?.Owner;
+                    if (el != null && !connectedElements.Contains(el))
+                        connectedElements.Add(el);
                 }
             }
 
-            return connectedElements;
+            return connectedElements.ToList();
         }
 
         /***************************************************/
