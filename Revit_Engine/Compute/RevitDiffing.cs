@@ -183,24 +183,20 @@ namespace BH.Engine.Adapters.Revit
                 followingIds = followingIdFragments.Select(x => x.PersistentId.ToString()).ToList();
             }
 
-            //Check for duplicate ids
-            if (pastIds.Count != pastIds.Distinct().Count())
+             //Check for duplicate ids
+            bool dupsInPastIds = pastIds.Count != pastIds.Distinct().Count();
+            bool dupsInFollIds = followingIds.Count != followingIds.Distinct().Count();
+
+            if (dupsInPastIds || dupsInFollIds)
             {
-                string message = $"Some of the {nameof(pastObjects)} contain duplicate {revitIdName}s.";
+                List<string> messageSubjects = new List<string>();
+                if (dupsInPastIds) messageSubjects.Add(nameof(pastObjects));
+                if (dupsInFollIds) messageSubjects.Add(nameof(followingIds));
+                string message = $"Some of the {string.Join(" and ", messageSubjects)} contain duplicate {revitIdName}s. ";
 
-                if(pastObjects.Any(x => x.GetType().Namespace.Contains("Structure")))
-                    message+= " If trying to diff structural objects, try pulling using the Phsyical discipline rather than Structural discipline, as models containing disjointed floors and walls and/or curved beams lead to one Revit element being converted into multiple structural BHoM elements.";
-
-                BH.Engine.Base.Compute.RecordError(message);
-                return null;
-            }
-
-            if (followingIds.Count != followingIds.Distinct().Count())
-            {
-                string message = $"Some of the {nameof(followingIds)} contain duplicate {revitIdName}s.";
-
-                if (pastObjects.Any(x => x.GetType().Namespace.Contains("Structure")))
-                    message += " If trying to diff structural objects, try pulling using the Phsyical discipline rather than Structural discipline, as models containing disjointed floors and walls and/or curved beams lead to one Revit element being converted into multiple structural BHoM elements.";
+                if((dupsInPastIds && pastObjects.Any(x => x.GetType().Namespace.Contains("Structure"))) || 
+                    (dupsInFollIds && followingObjects.Any(x => x.GetType().Namespace.Contains("Structure"))))
+                    message += "\nIf trying to diff structural objects, try pulling using the Phsyical discipline rather than Structural discipline, as models containing disjointed floors and walls and/or curved beams lead to one Revit element being converted into multiple structural BHoM elements.";
 
                 BH.Engine.Base.Compute.RecordError(message);
                 return null;
