@@ -39,6 +39,12 @@ namespace BH.Revit.Engine.Core
         [Output("elementsCheckedOut", "List of elements checked out (ownership modified to be by current user) by this process.")]
         public static List<ElementId> Checkout(this List<Element> elements)
         {
+            if (elements == null || elements.Count <= 0)
+            {
+                BH.Engine.Base.Compute.RecordError("Element list cannot be null or empty.");
+                return null;
+            }
+            
             Document document = elements.First().Document;
             List<ElementId> elementsToCheckout = new List<ElementId>();
 
