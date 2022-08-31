@@ -191,7 +191,7 @@ namespace BH.Engine.Adapters.Revit
             {
                 List<string> messageSubjects = new List<string>();
                 if (dupsInPastIds) messageSubjects.Add(nameof(pastObjects));
-                if (dupsInFollIds) messageSubjects.Add(nameof(followingIds));
+                if (dupsInFollIds) messageSubjects.Add(nameof(followingObjects));
                 string message = $"Some of the {string.Join(" and ", messageSubjects)} contain duplicate {revitIdName}s. ";
 
                 if((dupsInPastIds && pastObjects.Any(x => x.GetType().Namespace.Contains("Structure"))) || 
