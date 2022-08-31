@@ -202,7 +202,7 @@ namespace BH.Engine.Adapters.Revit
                 return null;
             }
 
-            //Compute the diffing through DIffWIthCUstomIds making use of the ids extracted from the objects
+            //Compute the diffing through DiffWithCustomIds making use of the ids extracted from the objects
             Diff revitDiff = BH.Engine.Diffing.Compute.DiffWithCustomIds(pastObjects.ToList(), pastIds, followingObjects.ToList(), followingIds, diffConfigClone);
             return revitDiff;
         }
