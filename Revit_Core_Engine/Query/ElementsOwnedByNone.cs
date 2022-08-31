@@ -42,7 +42,13 @@ namespace BH.Revit.Engine.Core
         [Output("elementsOwnedByNone", "List of elements that are unowned.")]
         public static List<Element> ElementsOwnedByNone(this List<Element> elements)
         {
-            return elements.Where(e => e.IsOwnedByNone()).ToList();
+            if (elements == null || elements.Count <= 0)
+            {
+                BH.Engine.Base.Compute.RecordError("Element list cannot be null or empty.");
+                return null;
+            }
+
+            return elements.Where(e => e.IsOwnedByNone() == true).ToList();
         }
         /***************************************************/
     }

@@ -37,18 +37,24 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        [Description("Returns a sublist of elements, from the given list of elements, that are editable per the element's CheckoutStatus." +
+        [Description("Returns a sublist of elements, from the given list of elements, that are editable per the element's CheckoutStatus. " +
             "Return warnings option, if true, alerts the user of which elements are uneditable due to ownership by other users.")]
         [Input("elements", "Revit elements to query for its checkout status.")]
-        [Input("recordWarnings", "If it is desired, a value of 'True' will raise warnings on which elements"
-            +"in the list are uneditable due to ownership by other users.")]
+        [Input("recordWarnings", "If it is desired, a value of 'True' will raise warnings on which elements "
+            + "in the list are uneditable due to ownership by other users.")]
         [Output("elementsEditablePerCheckoutStatus", "List of elements that are editable per the element's CheckoutStatus.")]
         public static List<Element> ElementsEditablePerCheckoutStatus(this List<Element> elements, bool recordWarnings)
         {
+            if (elements == null || elements.Count <= 0)
+            {
+                BH.Engine.Base.Compute.RecordError("Element list cannot be null or empty.");
+                return null;
+            }
+            
             List<Element> elementsOwnedByOthers = elements.ElementsOwnedByOtherUsers().ToList();
 
-           List<Element> elementsNotOwnedByOthers = elements.Except(elementsOwnedByOthers).ToList();
-            
+            List<Element> editableElements = elements.Except(elementsOwnedByOthers).ToList();
+
             if (recordWarnings)
             {
                 foreach (var element in elementsOwnedByOthers)
@@ -57,7 +63,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            return elementsNotOwnedByOthers;
+            return editableElements;
         }
         /***************************************************/
     }

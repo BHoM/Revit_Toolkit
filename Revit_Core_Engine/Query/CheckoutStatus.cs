@@ -41,8 +41,13 @@ namespace BH.Revit.Engine.Core
         [Description("Returns element CheckoutStatus.")]
         [Input("element", "Revit element to query for its checkout status.")]
         [Output("checkoutStatus", "The worksharing ownership/CheckoutStatus of the element.")]
-        public static CheckoutStatus CheckoutStatus(this Element element)
+        public static CheckoutStatus? CheckoutStatus(this Element element)
         {
+            if (element == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Element cannot be null or empty.");
+                return null;
+            }
             return WorksharingUtils.GetCheckoutStatus(element.Document, element.Id);
         }
         /***************************************************/

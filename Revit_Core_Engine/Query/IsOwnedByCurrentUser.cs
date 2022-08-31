@@ -43,6 +43,12 @@ namespace BH.Revit.Engine.Core
         [Output("ownedByCurrentUser", "True if the input Revit element is owned by current user, otherwise false.")]
         public static bool IsOwnedByCurrentUser(this Element element)
         {
+            if (element == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Element cannot be null or empty.");
+                return false;
+            }
+            
             return element.CheckoutStatus() == Autodesk.Revit.DB.CheckoutStatus.OwnedByCurrentUser;
         }
         /***************************************************/
