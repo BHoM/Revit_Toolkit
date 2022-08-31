@@ -154,7 +154,7 @@ namespace BH.Engine.Adapters.Revit
             }
             DiffingConfig diffConfigClone = GetRevitDiffingConfig(rcc);
 
-            // Check if input objects all have RevitIdentifiers assigned.
+            // Get the past and following RevitIdentifiers fragments.
             IEnumerable<RevitIdentifiers> pastIdFragments = pastObjects.OfType<IBHoMObject>().Select(obj => obj.GetRevitIdentifiers()).Where(x => x != null);
             IEnumerable<RevitIdentifiers> followingIdFragments = followingObjects.OfType<IBHoMObject>().Select(obj => obj.GetRevitIdentifiers()).Where(x => x != null);
 
