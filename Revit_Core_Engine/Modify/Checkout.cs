@@ -44,7 +44,15 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Base.Compute.RecordError("Element list cannot be null or empty.");
                 return null;
             }
-            
+
+            bool elementsOfSameDocument = elements.Select(x => x.Document).Distinct().Count() == 1;
+
+            if (!elementsOfSameDocument)
+            {
+                BH.Engine.Base.Compute.RecordError("Elements cannot be from different Revit documents.");
+                return null;
+            }
+
             Document document = elements.First().Document;
             List<ElementId> elementsToCheckout = new List<ElementId>();
 
