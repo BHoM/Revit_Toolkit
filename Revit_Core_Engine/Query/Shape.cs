@@ -73,7 +73,6 @@ namespace BH.Revit.Engine.Core
 
         [Description("Determines shape of the MEP Family Symbol based on its primary connector.")]
         [Input("familySymbol", "Family Symbol to determine the shape of.")]
-        [Input("doc", "Document object of the Family Symbol.")]
         [Input("settings", "Revit adapter settings.")]
         [Output("shape", "Shape of an Family Symbol, which can be round, rectangular or oval. If the shape cannot be determined, an invalid connector shape is returned.")]
         public static ConnectorProfileType Shape(this FamilySymbol familySymbol, RevitSettings settings = null)
