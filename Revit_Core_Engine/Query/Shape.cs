@@ -76,26 +76,26 @@ namespace BH.Revit.Engine.Core
         [Input("doc", "Document object of the Family Symbol.")]
         [Input("settings", "Revit adapter settings.")]
         [Output("shape", "Shape of an Family Symbol, which can be round, rectangular or oval. If the shape cannot be determined, an invalid connector shape is returned.")]
-        public static ConnectorProfileType Shape(this FamilySymbol familySymbol, Document doc, RevitSettings settings = null)
+        public static ConnectorProfileType Shape(this FamilySymbol familySymbol, RevitSettings settings = null)
         {
-            if (familySymbol == null || doc == null)
+            if (familySymbol == null)
             {
-                BH.Engine.Base.Compute.RecordError("Family Symbol or input document cannot be null.");
+                BH.Engine.Base.Compute.RecordError("Querying MEP shape of an element failed because the queried family symbol cannot be null.");
                 return ConnectorProfileType.Invalid;
             }
 
+            Document doc = familySymbol.Document;
             Document familyDoc = doc.EditFamily(familySymbol.Family);
             ConnectorProfileType? shape = new FilteredElementCollector(familyDoc).OfClass(typeof(ConnectorElement)).Cast<ConnectorElement>().FirstOrDefault(x => x.IsPrimary)?.Shape;
 
             if (shape == null)
             {
-                BH.Engine.Base.Compute.RecordWarning("Family of the Family Symbol has no connectors, shape cannot be determined.");
+                BH.Engine.Base.Compute.RecordWarning($"Family of the Family Symbol has no primary connectors, so its MEP shape cannot be determined. ElementId: {familySymbol.Id}");
                 return ConnectorProfileType.Invalid;
             }
 
             return shape.Value;
         }
-
     }
 }
 

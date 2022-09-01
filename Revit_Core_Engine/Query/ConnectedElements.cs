@@ -1,4 +1,4 @@
-﻿﻿/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2022, the respective contributors. All rights reserved.
  *
@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
         {
             if (element == null)
             {
-                BH.Engine.Base.Compute.RecordError("Input element cannot be null.");
+                BH.Engine.Base.Compute.RecordError("Querying the connected elements failed because the input element cannot be null.");
                 return null;
             }
             
@@ -57,7 +57,7 @@ namespace BH.Revit.Engine.Core
             
             if (connSet == null)
             {
-                BH.Engine.Base.Compute.RecordError("Input element is not supported by the method. Check if element is MEP object.");
+                BH.Engine.Base.Compute.RecordError("Input element is not supported by the method. Check if element is a valid MEP object.");
                 return null;
             }
 
@@ -68,7 +68,7 @@ namespace BH.Revit.Engine.Core
                 foreach (Connector refConn in allRefs)
                 {
                     Element el = refConn?.Owner;
-                    if (el != null && !connectedElements.Contains(el))
+                    if (el != null)
                         connectedElements.Add(el);
                 }
             }
