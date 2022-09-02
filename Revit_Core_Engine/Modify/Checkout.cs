@@ -45,15 +45,16 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            bool elementsOfSameDocument = elements.Select(x => x.Document).Distinct().Count() == 1;
+            var elementsOfSameDocument = elements.Select(x => x.Document);
 
-            if (!elementsOfSameDocument)
+            if (elementsOfSameDocument.Distinct().Count() > 1)
             {
                 BH.Engine.Base.Compute.RecordError("Elements cannot be from different Revit documents.");
                 return null;
             }
 
-            Document document = elements.First().Document;
+            Document document = elementsOfSameDocument.Distinct().First();
+            
             List<ElementId> elementsToCheckout = new List<ElementId>();
 
             foreach (Element element in elements)
