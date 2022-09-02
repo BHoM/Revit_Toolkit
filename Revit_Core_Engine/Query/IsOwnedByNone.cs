@@ -49,7 +49,7 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
-            return element.CheckoutStatus() == Autodesk.Revit.DB.CheckoutStatus.NotOwned;
+            return element?.CheckoutStatus() == Autodesk.Revit.DB.CheckoutStatus.NotOwned;
         }
         /***************************************************/
     }

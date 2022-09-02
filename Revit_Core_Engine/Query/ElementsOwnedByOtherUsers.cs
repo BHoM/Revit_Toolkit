@@ -48,7 +48,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            return elements.Where(e =>  e.IsOwnedByOtherUser()).ToList();
+            return elements?.Where(e =>  e.IsOwnedByOtherUser()).ToList();
         }
         /***************************************************/
     }
