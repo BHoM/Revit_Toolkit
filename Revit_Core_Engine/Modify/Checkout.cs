@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
         {
             if (elements == null)
             {
-                BH.Engine.Base.Compute.RecordError("Element list cannot be null.");
+                BH.Engine.Base.Compute.RecordError("Check out process of list of elements failed because the list of elements provided was null.");
                 return null;
             }
 

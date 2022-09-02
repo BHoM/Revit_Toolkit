@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
         {
             if (element == null)
             {
-                BH.Engine.Base.Compute.RecordError("Element cannot be null.");
+                BH.Engine.Base.Compute.RecordError("Querying checkout status of element for ownership by none failed because the element provided was null.");
                 return false;
             }
 
