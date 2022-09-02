@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
         {
             if (element == null)
             {
-                BH.Engine.Base.Compute.RecordError("Element cannot be null or empty.");
+                BH.Engine.Base.Compute.RecordError("Element cannot be null.");
                 return false;
             }
 
