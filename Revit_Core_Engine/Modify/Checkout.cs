@@ -45,16 +45,6 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            var elementsOfSameDocument = elements.Select(x => x.Document);
-
-            if (elementsOfSameDocument.Distinct().Count() > 1)
-            {
-                BH.Engine.Base.Compute.RecordError("Elements cannot be from different Revit documents.");
-                return null;
-            }
-
-            Document document = elementsOfSameDocument.First();
-            
             List<Element> elementsToCheckout = new List<Element>();
 
             foreach (Element element in elements)
@@ -73,10 +63,13 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            WorksharingUtils.CheckoutElements(document, elementsToCheckout.Select(x => x.Id).ToList());
+            foreach (var group in elementsToCheckout.GroupBy(x => x.Document))
+            {
+                WorksharingUtils.CheckoutElements(group.Key, group.Select(x => x.Id).ToList());
+            }
+
             return elementsToCheckout;
         }
-
         /***************************************************/
     }
 }
