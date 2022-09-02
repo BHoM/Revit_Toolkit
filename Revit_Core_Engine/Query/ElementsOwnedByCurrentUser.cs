@@ -45,11 +45,11 @@ namespace BH.Revit.Engine.Core
         {
             if (elements == null)
             {
-                BH.Engine.Base.Compute.RecordError("Element list cannot be null.");
+                BH.Engine.Base.Compute.RecordError("Querying checkout status of list of elements for ownership by current user failed because the list of elements provided was null.");
                 return null;
             }
             
-            return elements?.Where(e => e.IsOwnedByCurrentUser()).ToList();
+            return elements.Where(e => e.IsOwnedByCurrentUser()).ToList();
         }
         /***************************************************/
     }

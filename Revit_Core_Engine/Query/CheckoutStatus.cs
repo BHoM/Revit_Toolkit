@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
         {
             if (element == null)
             {
-                BH.Engine.Base.Compute.RecordError("Element cannot be null.");
+                BH.Engine.Base.Compute.RecordError("Querying checkout status of element failed because the element provided was null.");
                 return null;
             }
             return WorksharingUtils.GetCheckoutStatus(element.Document, element.Id);

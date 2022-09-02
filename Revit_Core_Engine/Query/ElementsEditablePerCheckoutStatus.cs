@@ -47,7 +47,7 @@ namespace BH.Revit.Engine.Core
         {
             if (elements == null)
             {
-                BH.Engine.Base.Compute.RecordError("Element list cannot be null.");
+                BH.Engine.Base.Compute.RecordError("Querying checkout status of list of elements for editable status failed because the list of elements provided was null.");
                 return null;
             }
             
