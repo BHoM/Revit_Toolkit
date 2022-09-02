@@ -53,7 +53,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            Document document = elementsOfSameDocument.Distinct().First();
+            Document document = elementsOfSameDocument.First();
             
             List<ElementId> elementsToCheckout = new List<ElementId>();
 
