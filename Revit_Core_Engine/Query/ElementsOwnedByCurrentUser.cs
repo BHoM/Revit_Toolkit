@@ -49,7 +49,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
             
-            return elements.Where(e => e.IsOwnedByCurrentUser()).ToList();
+            return elements?.Where(e => e.IsOwnedByCurrentUser()).ToList();
         }
         /***************************************************/
     }
