@@ -42,9 +42,9 @@ namespace BH.Revit.Engine.Core
         [Output("elementsOwnedByUsers", "List of elements that are owned by other users.")]
         public static List<Element> ElementsOwnedByOtherUsers(this List<Element> elements)
         {
-            if (elements == null || elements.Count <= 0)
+            if (elements == null)
             {
-                BH.Engine.Base.Compute.RecordError("Element list cannot be null or empty.");
+                BH.Engine.Base.Compute.RecordError("Element list cannot be null.");
                 return null;
             }
 
