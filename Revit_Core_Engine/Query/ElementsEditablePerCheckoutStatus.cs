@@ -45,9 +45,9 @@ namespace BH.Revit.Engine.Core
         [Output("elementsEditablePerCheckoutStatus", "List of elements that are editable per the element's CheckoutStatus.")]
         public static List<Element> ElementsEditablePerCheckoutStatus(this List<Element> elements, bool recordWarnings)
         {
-            if (elements == null || elements.Count <= 0)
+            if (elements == null)
             {
-                BH.Engine.Base.Compute.RecordError("Element list cannot be null or empty.");
+                BH.Engine.Base.Compute.RecordError("Element list cannot be null.");
                 return null;
             }
             

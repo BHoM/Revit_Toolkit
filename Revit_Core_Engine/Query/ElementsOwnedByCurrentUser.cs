@@ -43,9 +43,9 @@ namespace BH.Revit.Engine.Core
         [Output("elementsOwnedByCurrentUser", "List of elements that are owned by the current user.")]
         public static List<Element> ElementsOwnedByCurrentUser(this List<Element> elements)
         {
-            if (elements == null || elements.Count <= 0)
+            if (elements == null)
             {
-                BH.Engine.Base.Compute.RecordError("Element list cannot be null or empty.");
+                BH.Engine.Base.Compute.RecordError("Element list cannot be null.");
                 return null;
             }
             
