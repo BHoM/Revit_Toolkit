@@ -243,6 +243,81 @@ namespace BH.Revit.Engine.Core
             dlg.MainContent = s;
             dlg.Show();
         }
+
+        
+        public static List<int> ReturnDifferences(Document doc, Dictionary<int, string> start_state, Dictionary<int, string> end_state)
+        {
+            int n1 = start_state.Keys.Count;
+            int n2 = end_state.Keys.Count;
+
+            List<int> keys = new List<int>(start_state.Keys);
+
+            foreach (int id in end_state.Keys)
+            {
+                if (!keys.Contains(id))
+                {
+                    keys.Add(id);
+                }
+            }
+
+            keys.Sort();
+
+            int n = keys.Count;
+
+            Debug.Print(
+              "{0} elements before, {1} elements after, {2} total",
+              n1, n2, n);
+
+            int nAdded = 0;
+            int nDeleted = 0;
+            int nModified = 0;
+            List<int> modified = new List<int>();
+            int nIdentical = 0;
+
+            List<string> report = new List<string>();
+
+            foreach (int id in keys)
+            {
+                if (!start_state.ContainsKey(id))
+                {
+                    ++nAdded;
+                    report.Add(id.ToString() + " added "
+                      + ElementDescription(doc, id));
+                }
+                else if (!end_state.ContainsKey(id))
+                {
+                    ++nDeleted;
+                    report.Add(id.ToString() + " deleted");
+                }
+                else if (start_state[id] != end_state[id])
+                {
+                    ++nModified;
+                    report.Add(id.ToString() + " modified "
+                      + ElementDescription(doc, id));
+                    modified.Add(id);
+                }
+                else
+                {
+                    ++nIdentical;
+                }
+            }
+
+            string msg = string.Format(
+              "Stopped tracking changes now.\r\n"
+              + "{0} deleted, {1} added, {2} modified, "
+              + "{3} identical elements:",
+              nDeleted, nAdded, nModified, nIdentical);
+
+            string s = string.Join("\r\n", report);
+
+            Debug.Print(msg + "\r\n" + s);
+            TaskDialog dlg = new TaskDialog("Track Changes");
+            dlg.MainInstruction = msg;
+            dlg.MainContent = s;
+            dlg.Show();
+
+            return modified;
+        }
     }
 }
 
