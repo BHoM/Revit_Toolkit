@@ -21,14 +21,7 @@
  */
 
 using System.Collections.Generic;
-using System.ComponentModel;
 using Autodesk.Revit.DB;
-using BH.Engine.Geometry;
-using BH.Engine.Spatial;
-using BH.oM.Geometry;
-using BH.oM.Base.Attributes;
-using Line = BH.oM.Geometry.Line;
-using Point = BH.oM.Geometry.Point;
 using BH.oM.Adapters.Revit.Elements;
 using System;
 
@@ -44,6 +37,7 @@ namespace BH.Revit.Engine.Core
         {
             changeManager.StartState = changeManager.Initiate(elements);
             changeManager.StartState.State = Query.GetSnapshot(elements);
+            changeManager.IsChangeExpected = true;
         }
 
         public static void Start(this ChangeManager changeManager, Document document)
@@ -51,12 +45,14 @@ namespace BH.Revit.Engine.Core
             List<Element> elements = Query.GetTrackedElements(document);
             changeManager.StartState = changeManager.Initiate(elements);
             changeManager.StartState.State = Query.GetSnapshot(elements);
+            changeManager.IsChangeExpected = true;
         }
 
-        public static void End(this ChangeManager changeManager, List<Element> elements)
+        public static void End(this ChangeManager changeManager, List<Element> elements, Document document)
         {
             changeManager.EndState = changeManager.Initiate(elements);
             changeManager.EndState.State = Query.GetSnapshot(elements);
+            changeManager.Report = changeManager.Report(document);
         }
 
         public static void End(this ChangeManager changeManager, Document document)
@@ -64,19 +60,24 @@ namespace BH.Revit.Engine.Core
             List<Element> elements = Query.GetTrackedElements(document);
             changeManager.EndState = changeManager.Initiate(elements);
             changeManager.EndState.State = Query.GetSnapshot(elements);
+            changeManager.Report = changeManager.Report(document);
         }
 
-        public static void Report(this ChangeManager changeManager, Document document)
+/*        public static void Report(this ChangeManager changeManager, Document document)
         {
             changeManager.Report = changeManager.GenerateReport(document);
+        }*/
 
+        public static Report Report(this ChangeManager changeManager, Document document)
+        {
+            return changeManager.GenerateReport(document);
         }
 
         public static bool IsChanged(this ChangeManager changeManager)
         {
             return changeManager.Report.Additions.Count > 0
-                || changeManager.Report.Deletions.Count > 0 
-                || changeManager.Report.Modifications.Count >0;
+                || changeManager.Report.Deletions.Count > 0
+                || changeManager.Report.Modifications.Count > 0;
         }
 
         public static Report GenerateReport(this ChangeManager changeManager, Document document)
@@ -87,7 +88,7 @@ namespace BH.Revit.Engine.Core
             List<int> modified;
             List<int> identical;
 
-            Query.GenerateChangeReport(document,changeManager.StartState, changeManager.EndState, out added, out deleted, out modified, out identical);
+            Query.GenerateChangeReport(document, changeManager.StartState, changeManager.EndState, out added, out deleted, out modified, out identical);
 
             report.Additions = added;
             report.Deletions = deleted;
@@ -104,7 +105,7 @@ namespace BH.Revit.Engine.Core
             foreach (Element element in elements)
             {
                 //create elementState from GetElementState()
-                ElementState elementState = new ElementState() { Id = element.Id.IntegerValue, Properties = Query.GetElementState(element)};
+                ElementState elementState = new ElementState() { Id = element.Id.IntegerValue, Properties = Query.GetElementState(element) };
                 state.Elements.Add(elementState);
             }
 
