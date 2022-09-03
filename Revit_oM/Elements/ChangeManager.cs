@@ -28,11 +28,11 @@ namespace BH.oM.Adapters.Revit.Elements
 {
 	public class ChangeManager
 	{
-		public DocumentSnapshot StartState { get; set; }
+        public DocumentSnapshot StartState { get; set; } = null;
 
-        public DocumentSnapshot EndState { get; set; }
-        
-        public Report Report { get; set; }
+        public DocumentSnapshot EndState { get; set; } = null;
+
+        public Report Report { get; set; } = null;
 
     }
 }
