@@ -38,6 +38,7 @@ namespace BH.Revit.Engine.Core
             changeManager.StartState = changeManager.Initiate(elements);
             changeManager.StartState.State = Query.GetSnapshot(elements);
             changeManager.IsChangeExpected = true;
+            changeManager.Elements = elements;
         }
 
         public static void Start(this ChangeManager changeManager, Document document)
@@ -46,6 +47,7 @@ namespace BH.Revit.Engine.Core
             changeManager.StartState = changeManager.Initiate(elements);
             changeManager.StartState.State = Query.GetSnapshot(elements);
             changeManager.IsChangeExpected = true;
+            changeManager.Elements = elements;
         }
 
         public static void End(this ChangeManager changeManager, List<Element> elements, Document document)
