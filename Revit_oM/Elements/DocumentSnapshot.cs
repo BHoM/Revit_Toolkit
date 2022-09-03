@@ -28,7 +28,9 @@ namespace BH.oM.Adapters.Revit.Elements
 {
 	public class DocumentSnapshot
 	{
-		public List<ElementState> Elements { get; set; } = new List<ElementState>();
+        public Dictionary<int, string> State = new Dictionary<int, string>();
+
+        public List<ElementState> Elements { get; set; } = new List<ElementState>();
 
 	}
 }

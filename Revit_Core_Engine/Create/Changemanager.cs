@@ -43,17 +43,27 @@ namespace BH.Revit.Engine.Core
         public static void Start(this ChangeManager changeManager, List<Element> elements)
         {
             changeManager.StartState = changeManager.Initiate(elements);
+            changeManager.StartState.State = Query.GetSnapshot(elements);
         }
 
         public static void Start(this ChangeManager changeManager, Document document)
         {
             List<Element> elements = Query.GetTrackedElements(document);
             changeManager.StartState = changeManager.Initiate(elements);
+            changeManager.StartState.State = Query.GetSnapshot(elements);
         }
 
         public static void End(this ChangeManager changeManager, List<Element> elements)
         {
-            changeManager.StartState = changeManager.Initiate(elements);
+            changeManager.EndState = changeManager.Initiate(elements);
+            changeManager.EndState.State = Query.GetSnapshot(elements);
+        }
+
+        public static void End(this ChangeManager changeManager, Document document)
+        {
+            List<Element> elements = Query.GetTrackedElements(document);
+            changeManager.EndState = changeManager.Initiate(elements);
+            changeManager.EndState.State = Query.GetSnapshot(elements);
         }
 
         public static void Report(this ChangeManager changeManager, Document document)
