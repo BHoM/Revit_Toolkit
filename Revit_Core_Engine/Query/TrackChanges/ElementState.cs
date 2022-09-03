@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Gets element state for use in tracking changes.")]
-        static string GetElementState(Element element)
+        public static string GetElementState(Element element)
         {
             string elementState = null;
 
@@ -64,7 +64,7 @@ namespace BH.Revit.Engine.Core
         }
         /***************************************************/
 
-        public static IEnumerable<Element> GetTrackedElements(Document doc)
+        public static List<Element> GetTrackedElements(Document doc)
         {
             Categories documentCategories = doc.Settings.Categories;
 
@@ -84,7 +84,7 @@ namespace BH.Revit.Engine.Core
             Options opt = new Options();
 
             return new FilteredElementCollector(doc)
-              .WherePasses(isModelCategory);
+              .WherePasses(isModelCategory).ToList();
         }
     }
 }

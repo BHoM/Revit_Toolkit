@@ -90,6 +90,10 @@
     <Compile Include="Config\PullGeometryConfig.cs" />
     <Compile Include="Config\PullRepresentationConfig.cs" />
     <Compile Include="Config\RevitRemoveConfig.cs" />
+    <Compile Include="Elements\Report.cs" />
+    <Compile Include="Elements\ElementState.cs" />
+    <Compile Include="Elements\DocumentSnapshot.cs" />
+    <Compile Include="Elements\ChangeManager.cs" />
     <Compile Include="Elements\Assembly.cs" />
     <Compile Include="Elements\DraftingInstance.cs" />
     <Compile Include="Elements\Family.cs" />

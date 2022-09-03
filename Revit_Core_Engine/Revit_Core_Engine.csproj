@@ -367,6 +367,7 @@
     <Compile Include="Convert\Revit\ToRevit\AssemblyInstance.cs" />
     <Compile Include="Convert\Revit\ToRevit\Color.cs" />
     <Compile Include="Convert\Revit\ToRevit\ParameterElement.cs" />
+    <Compile Include="Create\ClassManager.cs" />
     <Compile Include="Modify\CopySpatialElementTypeToFragment.cs" />
     <Compile Include="Modify\CopyTypeToFragment.cs" />
     <Compile Include="Modify\SetInsulation.cs" />

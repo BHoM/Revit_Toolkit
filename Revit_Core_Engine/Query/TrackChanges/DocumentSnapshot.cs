@@ -35,6 +35,7 @@ using System.Security.Cryptography;
 using Autodesk.Revit.ApplicationServices;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.UI;
+using BH.oM.Adapters.Revit.Elements;
 
 namespace BH.Revit.Engine.Core
 {
@@ -318,6 +319,97 @@ namespace BH.Revit.Engine.Core
 
             return modified;
         }
+
+        public static void GenerateChangeReport(Document doc, DocumentSnapshot startstate, DocumentSnapshot endstate, out List<int> added, out List<int> deleted, out List<int> modified, out List<int> identical )
+        {
+            added = new List<int>();
+            deleted = new List<int>();
+            modified = new List<int>();
+            identical = new List<int>();
+
+            Dictionary<int, string> start_state = new Dictionary<int, string>();
+            start_state = startstate.Elements.ToDictionary(e => e.Id, e=>  e.Properties);
+
+            Dictionary<int, string> end_state = new Dictionary<int, string>();
+            end_state = endstate.Elements.ToDictionary(e => e.Id, e => e.Properties);
+
+            int n1 = start_state.Keys.Count;
+            int n2 = end_state.Keys.Count;
+
+            List<int> keys = new List<int>(start_state.Keys);
+
+            foreach (int id in end_state.Keys)
+            {
+                if (!keys.Contains(id))
+                {
+                    keys.Add(id);
+                }
+            }
+
+            keys.Sort();
+
+            int n = keys.Count;
+
+            Debug.Print(
+              "{0} elements before, {1} elements after, {2} total",
+              n1, n2, n);
+
+            int nAdded = 0;
+          
+            int nDeleted = 0;
+            
+            int nModified = 0;
+            
+            int nIdentical = 0;
+            
+
+            List<string> report = new List<string>();
+
+            foreach (int id in keys)
+            {
+                if (!start_state.ContainsKey(id))
+                {
+                    ++nAdded;
+                    report.Add(id.ToString() + " added "
+                      + ElementDescription(doc, id));
+                    added.Add(id);
+                }
+                else if (!end_state.ContainsKey(id))
+                {
+                    ++nDeleted;
+                    report.Add(id.ToString() + " deleted");
+                    deleted.Add(id);
+                }
+                else if (start_state[id] != end_state[id])
+                {
+                    ++nModified;
+                    report.Add(id.ToString() + " modified "
+                      + ElementDescription(doc, id));
+                    modified.Add(id);
+                }
+                else
+                {
+                    ++nIdentical;
+                    identical.Add(id);
+                }
+            }
+
+            string msg = string.Format(
+              "Stopped tracking changes now.\r\n"
+              + "{0} deleted, {1} added, {2} modified, "
+              + "{3} identical elements:",
+              nDeleted, nAdded, nModified, nIdentical);
+
+            string s = string.Join("\r\n", report);
+
+            Debug.Print(msg + "\r\n" + s);
+            TaskDialog dlg = new TaskDialog("Track Changes");
+            dlg.MainInstruction = msg;
+            dlg.MainContent = s;
+            dlg.Show();
+
+        }
+
     }
 }
 
