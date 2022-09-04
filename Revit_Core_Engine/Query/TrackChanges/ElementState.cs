@@ -68,9 +68,8 @@ namespace BH.Revit.Engine.Core
                     properties.Add("Parameters="
                   + GetPropertiesJson(element.GetOrderedParameters().Where(p => changeManagerConfig.Properties.Contains(p.StringValue())).ToList()));
                 }
-                elementState = string.Join(", ", properties);
             }
-            
+            elementState = string.Join(", ", properties);
             return elementState;
         }
         /***************************************************/

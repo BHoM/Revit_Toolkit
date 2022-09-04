@@ -37,10 +37,10 @@ namespace BH.oM.Adapters.Revit
         /***************************************************/
 
         [Description("Categories of which the change manager should use in the change comparison.")]
-        public virtual List<BuiltInCategory> Categories { get; set; } = null;
+        public virtual List<BuiltInCategory> Categories { get; set; } = new List<BuiltInCategory>();
 
         [Description("Properties of which the change manager should use in the change comparison.")]
-        public virtual List<string> Properties { get; set; } = null;
+        public virtual List<string> Properties { get; set; } = new List<string>();
 
         [Description("If true, change manager will compare only existing element ids against new element ids. ")]
         public virtual bool IsAdditions { get; set; }
