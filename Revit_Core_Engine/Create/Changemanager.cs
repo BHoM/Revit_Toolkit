@@ -82,7 +82,6 @@ namespace BH.Revit.Engine.Core
             return changeManager.GenerateReport(document);
         }
 
-        //Todo: Figure out what to do when no changes are made because scenarios were met, but logs want to show that...
         public static bool IsChanged(this ChangeManager changeManager)
         {
             return changeManager.Report.Additions.Count > 0
