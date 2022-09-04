@@ -89,6 +89,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\ChangeManagerConfig.cs" />
     <Compile Include="Config\RevitComparisonConfig.cs" />
     <Compile Include="Config\PullGeometryConfig.cs" />
     <Compile Include="Config\PullRepresentationConfig.cs" />

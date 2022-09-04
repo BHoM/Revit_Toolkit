@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Takes a snapshot of the document with given elements")]
-        public static Dictionary<int, string> GetSnapshot(IEnumerable<Element> elements)
+        public static void GetSnapshot(this DocumentSnapshot documentSnapshot, List<Element> elements)
         {
             Dictionary<int, string> snapshot = new Dictionary<int, string>();
 
@@ -58,16 +58,19 @@ namespace BH.Revit.Engine.Core
                 //  + " " + e.GetType().Name );
 
                 string elementState = GetElementState(element);
+                
 
                 if (null != elementState)
                 {
+                    documentSnapshot.ElementState.Add(new ElementState { Id = element.Id.IntegerValue, Properties = elementState });
                     string hashb64 = System.Convert.ToBase64String(
                       hasher.ComputeHash(GetBytes(elementState)));
 
                     snapshot.Add(element.Id.IntegerValue, hashb64);
                 }
             }
-            return snapshot;
+            documentSnapshot.State = snapshot;
+            documentSnapshot.Elements = elements;
         }
 
         private static byte[] GetBytes(string str)
@@ -320,25 +323,19 @@ namespace BH.Revit.Engine.Core
             return modified;
         }
 
-        public static void GenerateChangeReport(Document doc, DocumentSnapshot startstate, DocumentSnapshot endstate, out List<int> added, out List<int> deleted, out List<int> modified, out List<int> identical )
+        public static void GenerateChangeReport(Document doc, DocumentSnapshot startState, DocumentSnapshot endState, out List<int> added, out List<int> deleted, out List<int> modified, out List<int> identical )
         {
             added = new List<int>();
             deleted = new List<int>();
             modified = new List<int>();
             identical = new List<int>();
 
-            Dictionary<int, string> start_state = new Dictionary<int, string>();
-            start_state = startstate.ElementsState.ToDictionary(e => e.Id, e=>  e.Properties);
+            int n1 = startState.State.Keys.Count;
+            int n2 = endState.State.Keys.Count;
 
-            Dictionary<int, string> end_state = new Dictionary<int, string>();
-            end_state = endstate.ElementsState.ToDictionary(e => e.Id, e => e.Properties);
+            List<int> keys = new List<int>(startState.State.Keys);
 
-            int n1 = start_state.Keys.Count;
-            int n2 = end_state.Keys.Count;
-
-            List<int> keys = new List<int>(start_state.Keys);
-
-            foreach (int id in end_state.Keys)
+            foreach (int id in endState.State.Keys)
             {
                 if (!keys.Contains(id))
                 {
@@ -367,20 +364,20 @@ namespace BH.Revit.Engine.Core
 
             foreach (int id in keys)
             {
-                if (!start_state.ContainsKey(id))
+                if (!startState.State.ContainsKey(id))
                 {
                     ++nAdded;
                     report.Add(id.ToString() + " added "
                       + ElementDescription(doc, id));
                     added.Add(id);
                 }
-                else if (!end_state.ContainsKey(id))
+                else if (!endState.State.ContainsKey(id))
                 {
                     ++nDeleted;
                     report.Add(id.ToString() + " deleted");
                     deleted.Add(id);
                 }
-                else if (start_state[id] != end_state[id])
+                else if (startState.State[id] != endState.State[id])
                 {
                     ++nModified;
                     report.Add(id.ToString() + " modified "

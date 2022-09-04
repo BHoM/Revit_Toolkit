@@ -35,15 +35,15 @@ namespace BH.Revit.Engine.Core
 
         public static void Start(this ChangeManager changeManager, List<Element> elements)
         {
-            changeManager.StartState = changeManager.Initiate(elements);
-            changeManager.StartState.State = Query.GetSnapshot(elements);
+            changeManager.StartState.GetSnapshot(elements);
             changeManager.IsChangeExpected = true;
-            changeManager.StartState.Elements = elements;
         }
 
-        public static void Start(this ChangeManager changeManager, Document document, List<BuiltInCategory> categories = null)
+        public static void Start(this ChangeManager changeManager, Document document)
         {
             List<Element> elements;
+
+            List<BuiltInCategory> categories = changeManager.ChangeManagerConfig.Categories;
             if (categories == null)
             {
                 elements = Query.GetTrackedElements(document);
@@ -52,23 +52,20 @@ namespace BH.Revit.Engine.Core
             {
                 elements = Query.GetTrackedElements(document, categories);
             }
-            changeManager.StartState = changeManager.Initiate(elements);
-            changeManager.StartState.State = Query.GetSnapshot(elements);
+            changeManager.StartState.GetSnapshot(elements);
             changeManager.IsChangeExpected = true;
-            changeManager.StartState.Elements = elements;
         }
 
         public static void End(this ChangeManager changeManager, List<Element> elements, Document document)
         {
-            changeManager.EndState = changeManager.Initiate(elements);
-            changeManager.EndState.State = Query.GetSnapshot(elements);
-            changeManager.EndState.Elements = elements;
+            changeManager.EndState.GetSnapshot(elements);
             changeManager.Report = changeManager.Report(document);
         }
 
-        public static void End(this ChangeManager changeManager, Document document, List<BuiltInCategory> categories = null)
+        public static void End(this ChangeManager changeManager, Document document)
         {
             List<Element> elements;
+            List<BuiltInCategory> categories = changeManager.ChangeManagerConfig.Categories;
             if (categories == null)
             {
                 elements = Query.GetTrackedElements(document);
@@ -77,17 +74,9 @@ namespace BH.Revit.Engine.Core
             {
                 elements = Query.GetTrackedElements(document, categories);
             }
-            changeManager.EndState = changeManager.Initiate(elements);
-            changeManager.EndState.State = Query.GetSnapshot(elements);
-            changeManager.EndState.Elements = elements;
+            changeManager.EndState.GetSnapshot(elements);
             changeManager.Report = changeManager.Report(document);
         }
-
-        /*        public static void Report(this ChangeManager changeManager, Document document)
-                {
-                    changeManager.Report = changeManager.GenerateReport(document);
-                }*/
-
         public static Report Report(this ChangeManager changeManager, Document document)
         {
             return changeManager.GenerateReport(document);
@@ -118,22 +107,6 @@ namespace BH.Revit.Engine.Core
 
             return report;
         }
-
-        private static DocumentSnapshot Initiate(this ChangeManager changeManager, List<Element> elements)
-        {
-            DocumentSnapshot state = new DocumentSnapshot();
-
-            foreach (Element element in elements)
-            {
-                //create elementState from GetElementState()
-                ElementState elementState = new ElementState() { Id = element.Id.IntegerValue, Properties = Query.GetElementState(element) };
-                state.ElementsState.Add(elementState);
-            }
-
-            return state;
-        }
-
-
         /***************************************************/
 
     }

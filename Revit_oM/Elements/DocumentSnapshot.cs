@@ -33,7 +33,6 @@ namespace BH.oM.Adapters.Revit.Elements
         
         public Dictionary<int, string> State = new Dictionary<int, string>();
 
-        public List<ElementState> ElementsState { get; set; } = new List<ElementState>();
-
+		public List<ElementState> ElementState = new List<ElementState>();
 	}
 }
