@@ -35,6 +35,8 @@ using System.Security.Cryptography;
 using Autodesk.Revit.ApplicationServices;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.UI;
+using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit;
 
 namespace BH.Revit.Engine.Core
 {
@@ -45,7 +47,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Gets element state for use in tracking changes.")]
-        public static string GetElementState(Element element)
+        public static string GetElementState(Element element, ChangeManagerConfig changeManagerConfig)
         {
             string elementState = null;
 
@@ -54,12 +56,21 @@ namespace BH.Revit.Engine.Core
             properties.Add(ElementDescription(element)
               + " at " + LocationString(element.Location));
 
-            properties.Add("Parameters="
-              + GetPropertiesJson(element.GetOrderedParameters()));
-
-            elementState = string.Join(", ", properties);
-
-
+            if (changeManagerConfig.IsModifications)
+            {
+                if (changeManagerConfig.Properties == null)
+                {
+                    properties.Add("Parameters="
+                      + GetPropertiesJson(element.GetOrderedParameters()));
+                }
+                else
+                {
+                    properties.Add("Parameters="
+                  + GetPropertiesJson(element.GetOrderedParameters().Where(p => changeManagerConfig.Properties.Contains(p.StringValue())).ToList()));
+                }
+                elementState = string.Join(", ", properties);
+            }
+            
             return elementState;
         }
         /***************************************************/

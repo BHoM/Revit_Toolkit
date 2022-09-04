@@ -36,6 +36,7 @@ using Autodesk.Revit.ApplicationServices;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.UI;
 using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit;
 
 namespace BH.Revit.Engine.Core
 {
@@ -46,7 +47,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Takes a snapshot of the document with given elements")]
-        public static void GetSnapshot(this DocumentSnapshot documentSnapshot, List<Element> elements)
+        public static void GetSnapshot(this DocumentSnapshot documentSnapshot, List<Element> elements, ChangeManagerConfig changeManagerConfig)
         {
             Dictionary<int, string> snapshot = new Dictionary<int, string>();
 
@@ -57,7 +58,7 @@ namespace BH.Revit.Engine.Core
                 //Debug.Print( e.Id.IntegerValue.ToString() 
                 //  + " " + e.GetType().Name );
 
-                string elementState = GetElementState(element);
+                string elementState = GetElementState(element, changeManagerConfig);
                 
 
                 if (null != elementState)

@@ -35,7 +35,7 @@ namespace BH.Revit.Engine.Core
 
         public static void Start(this ChangeManager changeManager, List<Element> elements)
         {
-            changeManager.StartState.GetSnapshot(elements);
+            changeManager.StartState.GetSnapshot(elements, changeManager.ChangeManagerConfig);
             changeManager.IsChangeExpected = true;
         }
 
@@ -52,13 +52,13 @@ namespace BH.Revit.Engine.Core
             {
                 elements = Query.GetTrackedElements(document, categories);
             }
-            changeManager.StartState.GetSnapshot(elements);
+            changeManager.StartState.GetSnapshot(elements, changeManager.ChangeManagerConfig);
             changeManager.IsChangeExpected = true;
         }
 
         public static void End(this ChangeManager changeManager, List<Element> elements, Document document)
         {
-            changeManager.EndState.GetSnapshot(elements);
+            changeManager.EndState.GetSnapshot(elements, changeManager.ChangeManagerConfig);
             changeManager.Report = changeManager.Report(document);
         }
 
@@ -74,7 +74,7 @@ namespace BH.Revit.Engine.Core
             {
                 elements = Query.GetTrackedElements(document, categories);
             }
-            changeManager.EndState.GetSnapshot(elements);
+            changeManager.EndState.GetSnapshot(elements, changeManager.ChangeManagerConfig);
             changeManager.Report = changeManager.Report(document);
         }
         public static Report Report(this ChangeManager changeManager, Document document)
