@@ -29,10 +29,10 @@ namespace BH.oM.Adapters.Revit.Elements
 {
 	public class ChangeManager
 	{
-        public ChangeManagerConfig ChangeManagerConfig { get; set; }
-        public DocumentSnapshot StartState { get; set; } = null;
+        public ChangeManagerConfig ChangeManagerConfig { get; set; } = new ChangeManagerConfig();
+        public DocumentSnapshot StartState { get; set; } = new DocumentSnapshot();
 
-        public DocumentSnapshot EndState { get; set; } = null;
+        public DocumentSnapshot EndState { get; set; } = new DocumentSnapshot();
 
         public bool IsChangeExpected { get; set; } = false;
 
