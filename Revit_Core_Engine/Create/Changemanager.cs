@@ -41,9 +41,17 @@ namespace BH.Revit.Engine.Core
             changeManager.Elements = elements;
         }
 
-        public static void Start(this ChangeManager changeManager, Document document)
+        public static void Start(this ChangeManager changeManager, Document document, List<BuiltInCategory> categories = null)
         {
-            List<Element> elements = Query.GetTrackedElements(document);
+            List<Element> elements;
+            if (categories == null)
+            {
+                elements = Query.GetTrackedElements(document);
+            }
+            else
+            {
+                elements = Query.GetTrackedElements(document, categories);
+            }
             changeManager.StartState = changeManager.Initiate(elements);
             changeManager.StartState.State = Query.GetSnapshot(elements);
             changeManager.IsChangeExpected = true;
@@ -65,10 +73,10 @@ namespace BH.Revit.Engine.Core
             changeManager.Report = changeManager.Report(document);
         }
 
-/*        public static void Report(this ChangeManager changeManager, Document document)
-        {
-            changeManager.Report = changeManager.GenerateReport(document);
-        }*/
+        /*        public static void Report(this ChangeManager changeManager, Document document)
+                {
+                    changeManager.Report = changeManager.GenerateReport(document);
+                }*/
 
         public static Report Report(this ChangeManager changeManager, Document document)
         {
