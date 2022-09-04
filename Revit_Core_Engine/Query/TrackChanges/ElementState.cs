@@ -58,7 +58,7 @@ namespace BH.Revit.Engine.Core
 
             if (changeManagerConfig.IsModifications)
             {
-                if (changeManagerConfig.Properties == null)
+                if (changeManagerConfig.Properties.Count == 0)
                 {
                     properties.Add("Parameters="
                       + GetPropertiesJson(element.GetOrderedParameters()));
