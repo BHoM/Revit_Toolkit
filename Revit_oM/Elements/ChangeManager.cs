@@ -32,7 +32,6 @@ namespace BH.oM.Adapters.Revit.Elements
         public DocumentSnapshot StartState { get; set; } = null;
 
         public DocumentSnapshot EndState { get; set; } = null;
-        public List<Element> Elements { get; set; } = new List<Element>();
 
         public bool IsChangeExpected { get; set; } = false;
 

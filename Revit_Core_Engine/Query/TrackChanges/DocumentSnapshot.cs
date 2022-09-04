@@ -328,10 +328,10 @@ namespace BH.Revit.Engine.Core
             identical = new List<int>();
 
             Dictionary<int, string> start_state = new Dictionary<int, string>();
-            start_state = startstate.Elements.ToDictionary(e => e.Id, e=>  e.Properties);
+            start_state = startstate.ElementsState.ToDictionary(e => e.Id, e=>  e.Properties);
 
             Dictionary<int, string> end_state = new Dictionary<int, string>();
-            end_state = endstate.Elements.ToDictionary(e => e.Id, e => e.Properties);
+            end_state = endstate.ElementsState.ToDictionary(e => e.Id, e => e.Properties);
 
             int n1 = start_state.Keys.Count;
             int n2 = end_state.Keys.Count;

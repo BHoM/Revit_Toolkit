@@ -38,7 +38,7 @@ namespace BH.Revit.Engine.Core
             changeManager.StartState = changeManager.Initiate(elements);
             changeManager.StartState.State = Query.GetSnapshot(elements);
             changeManager.IsChangeExpected = true;
-            changeManager.Elements = elements;
+            changeManager.StartState.Elements = elements;
         }
 
         public static void Start(this ChangeManager changeManager, Document document, List<BuiltInCategory> categories = null)
@@ -55,21 +55,31 @@ namespace BH.Revit.Engine.Core
             changeManager.StartState = changeManager.Initiate(elements);
             changeManager.StartState.State = Query.GetSnapshot(elements);
             changeManager.IsChangeExpected = true;
-            changeManager.Elements = elements;
+            changeManager.StartState.Elements = elements;
         }
 
         public static void End(this ChangeManager changeManager, List<Element> elements, Document document)
         {
             changeManager.EndState = changeManager.Initiate(elements);
             changeManager.EndState.State = Query.GetSnapshot(elements);
+            changeManager.EndState.Elements = elements;
             changeManager.Report = changeManager.Report(document);
         }
 
-        public static void End(this ChangeManager changeManager, Document document)
+        public static void End(this ChangeManager changeManager, Document document, List<BuiltInCategory> categories = null)
         {
-            List<Element> elements = Query.GetTrackedElements(document);
+            List<Element> elements;
+            if (categories == null)
+            {
+                elements = Query.GetTrackedElements(document);
+            }
+            else
+            {
+                elements = Query.GetTrackedElements(document, categories);
+            }
             changeManager.EndState = changeManager.Initiate(elements);
             changeManager.EndState.State = Query.GetSnapshot(elements);
+            changeManager.EndState.Elements = elements;
             changeManager.Report = changeManager.Report(document);
         }
 
@@ -116,7 +126,7 @@ namespace BH.Revit.Engine.Core
             {
                 //create elementState from GetElementState()
                 ElementState elementState = new ElementState() { Id = element.Id.IntegerValue, Properties = Query.GetElementState(element) };
-                state.Elements.Add(elementState);
+                state.ElementsState.Add(elementState);
             }
 
             return state;

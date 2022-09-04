@@ -76,6 +76,14 @@ namespace BH.Revit.Engine.Core
                 {
                     elementFilters.Add(new ElementCategoryFilter(category.Id));
                 }
+                if (CategoryType.AnalyticalModel == category.CategoryType)
+                {
+                    elementFilters.Add(new ElementCategoryFilter(category.Id));
+                }
+                if (CategoryType.Annotation == category.CategoryType)
+                {
+                    elementFilters.Add(new ElementCategoryFilter(category.Id));
+                }
             }
 
             ElementFilter isModelCategory
@@ -89,27 +97,9 @@ namespace BH.Revit.Engine.Core
 
         public static List<Element> GetTrackedElements(Document doc, List<BuiltInCategory> categories)
         {
-            Categories documentCategories = doc.Settings.Categories;
-
-            List<ElementFilter> elementFilters = new List<ElementFilter>();
-
-            foreach (Category category in documentCategories)
-            {
-                if (CategoryType.Model == category.CategoryType)
-                {
-                    elementFilters.Add(new ElementCategoryFilter(category.Id));
-                }
-            }
-
             ElementMulticategoryFilter elementMulticategoryFilter = new ElementMulticategoryFilter(categories);
 
-            ElementFilter isModelCategory
-              = new LogicalOrFilter(elementFilters);
-
-            Options opt = new Options();
-
-            return new FilteredElementCollector(doc)
-              .WherePasses(isModelCategory).WherePasses(elementMulticategoryFilter).ToList();
+            return new FilteredElementCollector(doc).WherePasses(elementMulticategoryFilter).ToList();
         }
     }
 }

@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using Autodesk.Revit.DB;
 using BH.oM.Base;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -28,9 +29,11 @@ namespace BH.oM.Adapters.Revit.Elements
 {
 	public class DocumentSnapshot
 	{
+		public List<Element> Elements = new List<Element>();
+        
         public Dictionary<int, string> State = new Dictionary<int, string>();
 
-        public List<ElementState> Elements { get; set; } = new List<ElementState>();
+        public List<ElementState> ElementsState { get; set; } = new List<ElementState>();
 
 	}
 }
