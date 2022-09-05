@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
             List<Element> elements;
 
             List<BuiltInCategory> categories = changeManager.ChangeManagerConfig.Categories;
-            if (categories == null)
+            if (categories.Count == 0)
             {
                 elements = Query.GetTrackedElements(document);
             }
@@ -66,7 +66,7 @@ namespace BH.Revit.Engine.Core
         {
             List<Element> elements;
             List<BuiltInCategory> categories = changeManager.ChangeManagerConfig.Categories;
-            if (categories == null)
+            if (categories.Count == 0)
             {
                 elements = Query.GetTrackedElements(document);
             }
