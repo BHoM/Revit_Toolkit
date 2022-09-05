@@ -53,15 +53,15 @@ namespace BH.Revit.Engine.Core
 
             List<string> properties = new List<string>();
 
-            BoundingBoxXYZ bb = element.get_BoundingBox(null);
+            BoundingBoxXYZ boundingBox = element.get_BoundingBox(null);
 
             properties.Add(ElementDescription(element)
               + " at " + LocationString(element.Location));
             
-            if (!(element is FamilyInstance))
+            if (!(element is FamilyInstance) && boundingBox != null)
             {
                 properties.Add("Box="
-                  + BoundingBoxString(bb));
+                  + BoundingBoxString(boundingBox));
 
                 properties.Add("Vertices="
                   + PointArrayString(GetCanonicVertices(element)));
