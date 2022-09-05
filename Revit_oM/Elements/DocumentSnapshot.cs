@@ -32,7 +32,5 @@ namespace BH.oM.Adapters.Revit.Elements
 		public List<Element> Elements = new List<Element>();
         
         public Dictionary<int, string> State = new Dictionary<int, string>();
-
-		public List<ElementState> ElementState = new List<ElementState>();
 	}
 }

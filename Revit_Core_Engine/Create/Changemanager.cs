@@ -106,6 +106,10 @@ namespace BH.Revit.Engine.Core
 
             return report;
         }
+        public static void OverrideLogViewHide(this ChangeManager changeManager, bool isVisible)
+        {
+            changeManager.IsChangeExpected = isVisible == true ? false : true;
+        }
         /***************************************************/
 
     }

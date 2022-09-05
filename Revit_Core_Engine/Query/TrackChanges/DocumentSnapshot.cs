@@ -60,7 +60,6 @@ namespace BH.Revit.Engine.Core
 
                 if (null != elementState)
                 {
-                    documentSnapshot.ElementState.Add(new ElementState { Id = element.Id.IntegerValue, Properties = elementState });
                     string hashb64 = System.Convert.ToBase64String(
                       hasher.ComputeHash(GetBytes(elementState)));
 
@@ -179,9 +178,6 @@ namespace BH.Revit.Engine.Core
             modified = new List<int>();
             identical = new List<int>();
 
-            int n1 = startState.State.Keys.Count;
-            int n2 = endState.State.Keys.Count;
-
             List<int> keys = new List<int>(startState.State.Keys);
 
             foreach (int id in endState.State.Keys)
@@ -193,12 +189,6 @@ namespace BH.Revit.Engine.Core
             }
 
             keys.Sort();
-
-            int n = keys.Count;
-
-            Debug.Print(
-              "{0} elements before, {1} elements after, {2} total",
-              n1, n2, n);
 
             int nAdded = 0;
           
@@ -248,7 +238,6 @@ namespace BH.Revit.Engine.Core
 
             string s = string.Join("\r\n", report);
 
-            Debug.Print(msg + "\r\n" + s);
             TaskDialog dlg = new TaskDialog("Track Changes");
             dlg.MainInstruction = msg;
             dlg.MainContent = s;
