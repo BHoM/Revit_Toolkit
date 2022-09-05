@@ -37,6 +37,8 @@ using Autodesk.Revit.Attributes;
 using Autodesk.Revit.UI;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit;
+using Face = Autodesk.Revit.DB.Face;
+using Mesh = Autodesk.Revit.DB.Mesh;
 
 namespace BH.Revit.Engine.Core
 {
@@ -56,7 +58,7 @@ namespace BH.Revit.Engine.Core
             foreach (Element element in elements)
             {
                 string elementState = GetElementState(element, changeManagerConfig);
-                
+
 
                 if (null != elementState)
                 {
@@ -150,6 +152,18 @@ namespace BH.Revit.Engine.Core
             return PointArrayString(curve.Tessellate());
         }
 
+        /// <summary>
+        /// Return a string for this bounding box
+        /// with its coordinates formatted to two
+        /// decimal places.
+        /// </summary>
+        public static string BoundingBoxString(
+          BoundingBoxXYZ bb)
+        {
+            return string.Format("({0},{1})",
+              PointString(bb.Min),
+              PointString(bb.Max));
+        }
 
         private static string PointArrayString(IList<XYZ> pts)
         {
@@ -171,7 +185,183 @@ namespace BH.Revit.Engine.Core
             return a.ToString("0.##");
         }
 
-        public static void GenerateChangeReport(Document doc, DocumentSnapshot startState, DocumentSnapshot endState, out List<int> added, out List<int> deleted, out List<int> modified, out List<int> identical )
+        #region Geometrical Comparison
+        const double _eps = 1.0e-9;
+
+        public static double Eps
+        {
+            get
+            {
+                return _eps;
+            }
+        }
+
+        public static double MinLineLength
+        {
+            get
+            {
+                return _eps;
+            }
+        }
+
+        public static double TolPointOnPlane
+        {
+            get
+            {
+                return _eps;
+            }
+        }
+
+        public static bool IsZero(
+          double a,
+          double tolerance)
+        {
+            return tolerance > Math.Abs(a);
+        }
+
+        public static bool IsZero(double a)
+        {
+            return IsZero(a, _eps);
+        }
+
+        public static bool IsEqual(double a, double b)
+        {
+            return IsZero(b - a);
+        }
+
+        public static int Compare(double a, double b)
+        {
+            return IsEqual(a, b) ? 0 : (a < b ? -1 : 1);
+        }
+
+        public static int Compare(XYZ p, XYZ q)
+        {
+            int d = Compare(p.X, q.X);
+
+            if (0 == d)
+            {
+                d = Compare(p.Y, q.Y);
+
+                if (0 == d)
+                {
+                    d = Compare(p.Z, q.Z);
+                }
+            }
+            return d;
+        }
+        #endregion
+
+
+        /// <summary>
+        /// Add the vertices of the given solid to 
+        /// the vertex lookup dictionary.
+        /// </summary>
+        static void AddVertices(
+          Dictionary<XYZ, int> vertexLookup,
+          Transform t,
+          Solid s)
+        {
+            foreach (Face f in s.Faces)
+            {
+                Mesh m = f.Triangulate();
+
+                if (m != null)
+                {
+                    foreach (XYZ p in m.Vertices)
+                    {
+                        XYZ q = t.OfPoint(p);
+                        if (!vertexLookup.ContainsKey(q))
+                        {
+                            vertexLookup.Add(q, 1);
+                        }
+                        else
+                        {
+                            ++vertexLookup[q];
+                        }
+                    }
+                }
+            }
+        }
+
+        class XyzEqualityComparer : IEqualityComparer<XYZ>
+        {
+            public bool Equals(XYZ p, XYZ q)
+            {
+                return p.IsAlmostEqualTo(q);
+            }
+
+            public int GetHashCode(XYZ p)
+            {
+                return PointString(p).GetHashCode();
+            }
+        }
+
+        /// <summary>
+        /// Return a sorted list of all unique vertices 
+        /// of all solids in the given element's geometry
+        /// in lexicographical order.
+        /// </summary>
+        static List<XYZ> GetCanonicVertices(Element e)
+        {
+            GeometryElement geo = e.get_Geometry(new Options());
+            Transform t = Transform.Identity;
+
+            Dictionary<XYZ, int> vertexLookup
+              = new Dictionary<XYZ, int>(
+                new XyzEqualityComparer());
+
+            AddVertices(vertexLookup, t, geo);
+
+            List<XYZ> keys = new List<XYZ>(vertexLookup.Keys);
+
+            keys.Sort(Compare);
+
+            return keys;
+        }
+
+        static void AddVertices(
+    Dictionary<XYZ, int> vertexLookup,
+    Transform t,
+    GeometryElement geo)
+        {
+            if (null == geo)
+            {
+                throw new System.ArgumentException("null GeometryElement");
+            }
+
+            foreach (GeometryObject obj in geo)
+            {
+                Solid solid = obj as Solid;
+
+                if (null != solid)
+                {
+                    if (0 < solid.Faces.Size)
+                    {
+                        AddVertices(vertexLookup, t, solid);
+                    }
+                }
+                else
+                {
+                    GeometryInstance inst = obj as GeometryInstance;
+
+                    if (null != inst)
+                    {
+                        GeometryElement geos = inst.GetSymbolGeometry();
+
+                        if (null != geos)
+                        {
+                            AddVertices(vertexLookup,
+                              inst.Transform.Multiply(t),
+                              geos);
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+        public static void GenerateChangeReport(Document doc, DocumentSnapshot startState, DocumentSnapshot endState, out List<int> added, out List<int> deleted, out List<int> modified, out List<int> identical)
         {
             added = new List<int>();
             deleted = new List<int>();
@@ -191,13 +381,13 @@ namespace BH.Revit.Engine.Core
             keys.Sort();
 
             int nAdded = 0;
-          
+
             int nDeleted = 0;
-            
+
             int nModified = 0;
-            
+
             int nIdentical = 0;
-            
+
 
             List<string> report = new List<string>();
 

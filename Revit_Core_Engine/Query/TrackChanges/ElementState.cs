@@ -53,8 +53,19 @@ namespace BH.Revit.Engine.Core
 
             List<string> properties = new List<string>();
 
+            BoundingBoxXYZ bb = element.get_BoundingBox(null);
+
             properties.Add(ElementDescription(element)
               + " at " + LocationString(element.Location));
+            
+            if (!(element is FamilyInstance))
+            {
+                properties.Add("Box="
+                  + BoundingBoxString(bb));
+
+                properties.Add("Vertices="
+                  + PointArrayString(GetCanonicVertices(element)));
+            }
 
             if (changeManagerConfig.IsModifications)
             {
