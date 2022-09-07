@@ -24,12 +24,12 @@
 using Autodesk.Revit.DB;
 using System.ComponentModel;
 
-#if (REVIT2018 || REVIT2019 || REVIT2020)
+#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
 namespace BH.Revit.Engine.Core
 {
-    [Description("This class is defined by BHoM only for Revit Versions < 2021. Revit versions from 2021 onwards define an equivalent class with the same name as part of their API." +
+    [Description("This class is defined by BHoM only for Revit Versions < 2022. Revit versions from 2022 onwards define an equivalent class with the same name as part of their API." +
                  "This BHoM implementation eliminates breaking changes between different Revit API versions. It contains static properties that return the equivalents of UnitType.")]
-    public static class SpecTypeId
+    public static partial class SpecTypeId
     {
         /***************************************************/
         /****             Public properties             ****/
@@ -167,39 +167,71 @@ namespace BH.Revit.Engine.Core
         public static UnitType ElectricalTemperatureDifference { get { return UnitType.UT_Electrical_TemperatureDifference; } }
         public static UnitType Custom { get { return UnitType.UT_Custom; } }
 
-        public static UnitType Stationing { get { return NonExistent(nameof(Stationing), 2021); } }
-        public static UnitType ThermalGradientCoefficientForMoistureCapacity { get { return NonExistent(nameof(ThermalGradientCoefficientForMoistureCapacity), 2021); } }
-        public static UnitType StationingInterval { get { return NonExistent(nameof(StationingInterval), 2021); } }
-        public static UnitType RotationAngle { get { return NonExistent(nameof(RotationAngle), 2021); } }
-        public static UnitType PowerPerLength { get { return NonExistent(nameof(PowerPerLength), 2021); } }
-        public static UnitType PowerPerFlow { get { return NonExistent(nameof(PowerPerFlow), 2021); } }
-        public static UnitType PipingMassPerTime { get { return NonExistent(nameof(PipingMassPerTime), 2021); } }
-        public static UnitType IsothermalMoistureCapacity { get { return NonExistent(nameof(IsothermalMoistureCapacity), 2021); } }
-        public static UnitType HvacMassPerTime { get { return NonExistent(nameof(HvacMassPerTime), 2021); } }
-        public static UnitType FlowPerPower { get { return NonExistent(nameof(FlowPerPower), 2021); } }
-        public static UnitType Distance { get { return NonExistent(nameof(Distance), 2021); } }
-        public static UnitType Diffusivity { get { return NonExistent(nameof(Diffusivity), 2021); } }
-        public static UnitType CostRatePower { get { return NonExistent(nameof(CostRatePower), 2021); } }
-        public static UnitType CostRateEnergy { get { return NonExistent(nameof(CostRateEnergy), 2021); } }
-        public static UnitType CostPerArea { get { return NonExistent(nameof(CostPerArea), 2021); } }
-        public static UnitType AngularSpeed { get { return NonExistent(nameof(AngularSpeed), 2021); } }
+        public static UnitType Stationing { get { return NonExistentUnitType(nameof(Stationing), 2021); } }
+        public static UnitType ThermalGradientCoefficientForMoistureCapacity { get { return NonExistentUnitType(nameof(ThermalGradientCoefficientForMoistureCapacity), 2021); } }
+        public static UnitType StationingInterval { get { return NonExistentUnitType(nameof(StationingInterval), 2021); } }
+        public static UnitType RotationAngle { get { return NonExistentUnitType(nameof(RotationAngle), 2021); } }
+        public static UnitType PowerPerLength { get { return NonExistentUnitType(nameof(PowerPerLength), 2021); } }
+        public static UnitType PowerPerFlow { get { return NonExistentUnitType(nameof(PowerPerFlow), 2021); } }
+        public static UnitType PipingMassPerTime { get { return NonExistentUnitType(nameof(PipingMassPerTime), 2021); } }
+        public static UnitType IsothermalMoistureCapacity { get { return NonExistentUnitType(nameof(IsothermalMoistureCapacity), 2021); } }
+        public static UnitType HvacMassPerTime { get { return NonExistentUnitType(nameof(HvacMassPerTime), 2021); } }
+        public static UnitType FlowPerPower { get { return NonExistentUnitType(nameof(FlowPerPower), 2021); } }
+        public static UnitType Distance { get { return NonExistentUnitType(nameof(Distance), 2021); } }
+        public static UnitType Diffusivity { get { return NonExistentUnitType(nameof(Diffusivity), 2021); } }
+        public static UnitType CostRatePower { get { return NonExistentUnitType(nameof(CostRatePower), 2021); } }
+        public static UnitType CostRateEnergy { get { return NonExistentUnitType(nameof(CostRateEnergy), 2021); } }
+        public static UnitType CostPerArea { get { return NonExistentUnitType(nameof(CostPerArea), 2021); } }
+        public static UnitType AngularSpeed { get { return NonExistentUnitType(nameof(AngularSpeed), 2021); } }
         
 #if (REVIT2018 || REVIT2019)
-        public static UnitType Time { get { return NonExistent(nameof(Time), 2020); } }
-        public static UnitType Speed { get { return NonExistent(nameof(Speed), 2020); } }
+        public static UnitType Time { get { return NonExistentUnitType(nameof(Time), 2020); } }
+        public static UnitType Speed { get { return NonExistentUnitType(nameof(Speed), 2020); } }
 #else
         public static UnitType Time { get { return UnitType.UT_TimeInterval; } }
         public static UnitType Speed { get { return UnitType.UT_Speed; } }
 #endif
 
+        public static class Boolean
+        {
+            public static ParameterType YesNo { get { return ParameterType.YesNo; } }
+        }
+
+        public static class Int
+        {
+            public static ParameterType NumberOfPoles { get { return ParameterType.NumberOfPoles; } }
+            public static ParameterType Integer { get { return ParameterType.Integer; } }
+        }
+
+        public static class Reference
+        {
+            public static ParameterType Material { get { return ParameterType.Material; } }
+            public static ParameterType LoadClassification { get { return ParameterType.LoadClassification; } }
+            public static ParameterType Image { get { return ParameterType.Image; } }
+            public static ParameterType FillPattern { get { return NonExistentParameterType(nameof(FillPattern), 2022); } }
+        }
+
+        public static class String
+        {
+            public static ParameterType Url { get { return ParameterType.URL; } }
+            public static ParameterType Text { get { return ParameterType.Text; } }
+            public static ParameterType MultilineText { get { return ParameterType.MultilineText; } }
+        }
+
         /***************************************************/
         /****              Private methods              ****/
         /***************************************************/
 
-        private static UnitType NonExistent(string name, int version)
+        private static UnitType NonExistentUnitType(string name, int version)
         {
             BH.Engine.Base.Compute.RecordWarning($"SpecTypeId.{name} does not have a UnitType equivalent in Revit versions older than {version}. UnitType.UT_Undefined has been used which may cause unit conversion issues.");
             return UnitType.UT_Undefined;
+        }
+
+        private static ParameterType NonExistentParameterType(string name, int version)
+        {
+            BH.Engine.Base.Compute.RecordWarning($"SpecTypeId.{name} does not have a UnitType equivalent in Revit versions older than {version}. ParameterType.Invalid has been used which may cause conversion issues.");
+            return ParameterType.Invalid;
         }
 
         /***************************************************/

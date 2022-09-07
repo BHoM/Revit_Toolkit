@@ -47,7 +47,7 @@ namespace BH.Revit.Engine.Core
             if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Double)
             {
                 if (convertUnits)
-                    value = value.FromSI(parameter.Definition.GetSpecTypeId());
+                    value = value.FromSI(parameter.Definition.GetDataType());
 
                 return parameter.Set(value);
             }
@@ -69,7 +69,7 @@ namespace BH.Revit.Engine.Core
             if (parameter != null && !parameter.IsReadOnly && parameter.StorageType == StorageType.Double)
             {
                 if (convertUnits)
-                    value = value.FromSI(parameter.Definition.GetSpecTypeId());
+                    value = value.FromSI(parameter.Definition.GetDataType());
 
                 return parameter.Set(value);
             }
@@ -236,7 +236,7 @@ namespace BH.Revit.Engine.Core
                         {
                             try
                             {
-                                dbl = Convert.FromSI(dbl, parameter.Definition.GetSpecTypeId());
+                                dbl = Convert.FromSI(dbl, parameter.Definition.GetDataType());
                             }
                             catch
                             {
@@ -319,7 +319,7 @@ namespace BH.Revit.Engine.Core
                             if (int.TryParse(valueString, out num))
                                 return parameter.Set(num);
 
-                            if (parameter.HasValue && parameter.Definition.ParameterType == ParameterType.Invalid)
+                            if (parameter.HasValue && parameter.Definition.GetDataType() == null)
                             {
                                 string val = parameter.AsValueString();
                                 if (val == valueString)

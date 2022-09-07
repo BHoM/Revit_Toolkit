@@ -101,7 +101,7 @@ namespace BH.Revit.Engine.Core
             {
                 value = p.AsDouble();
                 if (convertUnits)
-                    value = value.ToSI(p.Definition.GetSpecTypeId());
+                    value = value.ToSI(p.Definition.GetDataType());
             }
 
             return value;
@@ -143,7 +143,7 @@ namespace BH.Revit.Engine.Core
             {
                 value = p.AsDouble();
                 if (convertUnits)
-                    value = value.ToSI(p.Definition.GetSpecTypeId());
+                    value = value.ToSI(p.Definition.GetDataType());
             }
 
             return value;
@@ -165,7 +165,7 @@ namespace BH.Revit.Engine.Core
             {
                 value = p.AsDouble();
                 if (convertUnits)
-                    value = value.ToSI(p.Definition.GetSpecTypeId());
+                    value = value.ToSI(p.Definition.GetDataType());
             }
 
             return value;

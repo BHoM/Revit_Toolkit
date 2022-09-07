@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
                         return parameter.AsValueString();
                     case (StorageType.Integer):
                         {
-                            if (parameter.Definition.ParameterType == ParameterType.YesNo || parameter.Definition.ParameterType == ParameterType.Invalid)
+                            if (parameter.Definition.ParameterType() == SpecTypeId.Boolean.YesNo || parameter.Definition.ParameterType() == null)
                                 return parameter.AsValueString();
                             else
                                 return parameter.AsInteger().ToString();

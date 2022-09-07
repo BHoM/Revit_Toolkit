@@ -66,7 +66,7 @@ namespace BH.Revit.Engine.Core
             Parameter diameterParam = instance.LookupParameter(settings.MappingSettings, typeof(oM.Architecture.BuildersWork.Opening), $"{nameof(oM.Architecture.BuildersWork.Opening.Profile)}.{nameof(CircleProfile.Diameter)}");
             if (diameterParam != null)
             {
-                double diameter = diameterParam.AsDouble().ToSI(diameterParam.Definition.GetSpecTypeId());
+                double diameter = diameterParam.AsDouble().ToSI(diameterParam.Definition.GetDataType());
                 profile = BH.Engine.Spatial.Create.CircleProfile(diameter);
             }
 
@@ -76,8 +76,8 @@ namespace BH.Revit.Engine.Core
                 Parameter heightParam = instance.LookupParameter(settings.MappingSettings, typeof(oM.Architecture.BuildersWork.Opening), $"{nameof(oM.Architecture.BuildersWork.Opening.Profile)}.{nameof(RectangleProfile.Height)}");
                 if (widthParam != null && heightParam != null)
                 {
-                    double width = widthParam.AsDouble().ToSI(widthParam.Definition.GetSpecTypeId());
-                    double height = heightParam.AsDouble().ToSI(heightParam.Definition.GetSpecTypeId());
+                    double width = widthParam.AsDouble().ToSI(widthParam.Definition.GetDataType());
+                    double height = heightParam.AsDouble().ToSI(heightParam.Definition.GetDataType());
                     profile = BH.Engine.Spatial.Create.RectangleProfile(height, width);
                 }
             }
@@ -91,7 +91,7 @@ namespace BH.Revit.Engine.Core
             Parameter depthParam = instance.LookupParameter(settings.MappingSettings, typeof(oM.Architecture.BuildersWork.Opening), nameof(BH.oM.Architecture.BuildersWork.Opening.Depth));
             if (depthParam != null)
             {
-                double depth = depthParam.AsDouble().ToSI(depthParam.Definition.GetSpecTypeId());
+                double depth = depthParam.AsDouble().ToSI(depthParam.Definition.GetDataType());
                 opening.Depth = depth;
             }
             else

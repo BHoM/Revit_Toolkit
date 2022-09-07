@@ -103,7 +103,7 @@ namespace BH.Revit.Engine.Core
             }
             else if (typePropertyInfo == typeof(double))
             {
-                double value = parameter.AsDouble().ToSI(parameter.Definition.GetSpecTypeId());
+                double value = parameter.AsDouble().ToSI(parameter.Definition.GetDataType());
                 propertyInfo.SetValue(iObject, value);
             }
 

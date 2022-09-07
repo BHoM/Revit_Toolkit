@@ -71,15 +71,18 @@ namespace BH.Revit.Engine.Core
 
             oM.Geometry.Plane sketchPlane = new oM.Geometry.Plane { Origin = new BH.oM.Geometry.Point { Z = bottomElevation }, Normal = Vector.ZAxis };
             ICurve curve = planarSurface.ExternalBoundary.IProject(sketchPlane);
-            CurveArray curveArray = Create.CurveArray(curve.IToRevitCurves());
 
             BH.oM.Geometry.Plane slabPlane = planarSurface.FitPlane();
             if (1 - Math.Abs(Vector.ZAxis.DotProduct(slabPlane.Normal)) <= settings.AngleTolerance)
             {
+#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
                 if (floorType.Category.Id.IntegerValue == (int)BuiltInCategory.OST_StructuralFoundation)
-                    revitFloor = document.Create.NewFoundationSlab(curveArray, floorType, level, true, XYZ.BasisZ);
+                    revitFloor = document.Create.NewFoundationSlab(curve.ToRevitCurveArray(), floorType, level, true, XYZ.BasisZ);
                 else
-                    revitFloor = document.Create.NewFloor(curveArray, floorType, level, true);
+                    revitFloor = document.Create.NewFloor(curve.ToRevitCurveArray(), floorType, level, true);
+#else
+                revitFloor = Floor.Create(document, new List<CurveLoop> { curve.ToRevitCurveLoop() }, floorType.Id, level.Id);
+#endif
             }
             else
             {
@@ -92,10 +95,14 @@ namespace BH.Revit.Engine.Core
 
                 XYZ dir = normal.Project(oM.Geometry.Plane.XY).ToRevit().Normalize();
                 BH.oM.Geometry.Line ln = slabPlane.PlaneIntersection(sketchPlane);
-                XYZ start = ln.ClosestPoint(curveArray.get_Item(0).GetEndPoint(0).PointFromRevit(), true).ToRevit();
+                XYZ start = ln.ClosestPoint(curve.IStartPoint(), true).ToRevit();
                 Autodesk.Revit.DB.Line line = Autodesk.Revit.DB.Line.CreateBound(start, start + dir);
 
-                revitFloor = document.Create.NewSlab(curveArray, level, line, -tan, true);
+#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
+                revitFloor = document.Create.NewSlab(curve.ToRevitCurveArray(), level, line, -tan, true);
+#else
+                revitFloor = Floor.Create(document, new List<CurveLoop> { curve.ToRevitCurveLoop() }, floorType.Id, level.Id, true, line, -tan);
+#endif
                 revitFloor.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, floorType.Id);
             }
 
