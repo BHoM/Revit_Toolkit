@@ -199,7 +199,7 @@ namespace BH.Revit.Engine.Core
             if (!CheckIfNotNull(parameter, request))
                 return false;
 
-            if (parameter.StorageType == StorageType.Integer && parameter.Definition.ParameterType() == SpecTypeId.Boolean.YesNo)
+            if (parameter.StorageType == StorageType.Integer && parameter.IsBooleanParameter())
             {
                 int paramValue = parameter.AsInteger();
                 return (request.Value && paramValue == 1) || (!request.Value && paramValue == 0);
@@ -219,7 +219,7 @@ namespace BH.Revit.Engine.Core
             if (!CheckIfNotNull(parameter, request))
                 return false;
 
-            if (parameter.HasValue && parameter.StorageType == StorageType.Integer && parameter.Definition.ParameterType() != SpecTypeId.Boolean.YesNo)
+            if (parameter.HasValue && parameter.StorageType == StorageType.Integer && !parameter.IsBooleanParameter())
             {
                 int paramValue = parameter.AsInteger();
                 switch (request.NumberComparisonType)
@@ -319,7 +319,7 @@ namespace BH.Revit.Engine.Core
                 if (paramValue == null)
                     paramValue = "";
             }
-            else if (parameter.StorageType == StorageType.ElementId || (parameter.StorageType == StorageType.Integer && parameter.Definition.ParameterType() != SpecTypeId.Boolean.YesNo))
+            else if (parameter.StorageType == StorageType.ElementId || (parameter.StorageType == StorageType.Integer && !parameter.IsBooleanParameter()))
                 paramValue = parameter.AsValueString();
             else
                 return false;

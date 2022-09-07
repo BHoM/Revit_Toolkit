@@ -16,7 +16,7 @@ namespace BH.Revit.Engine.Core
         //[Description("Returns the human-readable label of a given Revit unit type.")]
         //[Input("parameterType", "Unit type to get the label for.")]
         //[Output("label", "Human-readable label of the input Revit unit type.")]
-#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
+#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021 || REVIT2022)
         public static string Label(this ParameterType parameterType)
         {
             return LabelUtils.GetLabelFor(parameterType);

@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
         [Input("instance", "If true, the created parameter will be an instance parameter, otherwise it will be a type parameter.")]
         [Input("categories", "Categories, to which the created parameter is bound. It will get bound to all categories if this value is null.")]
         [Output("definition", "Revit shared parameter Definition created based on the input properties.")]
-#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
+#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021 || REVIT2022)
         public static Definition SharedParameter(Document document, string parameterName, ParameterType parameterType, string parameterGroup, bool instance, IEnumerable<Category> categories)
 #else
         public static Definition SharedParameter(Document document, string parameterName, ForgeTypeId parameterType, string parameterGroup, bool instance, IEnumerable<Category> categories)

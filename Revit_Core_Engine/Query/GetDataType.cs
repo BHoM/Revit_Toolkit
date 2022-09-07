@@ -28,13 +28,13 @@ namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
-#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
+#if (REVIT2018 || REVIT2019 || REVIT2020)
 
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("This method is defined by BHoM only for Revit Versions < 2022. Revit versions from 2022 onwards define an equivalent method with the same name as part of their API." +
+        [Description("This method is defined by BHoM only for Revit Versions < 2021. Revit versions from 2021 onwards define an equivalent method with the same name as part of their API." +
                      "This BHoM implementation eliminates breaking changes between different Revit API versions. It returns the equivalent of UnitType from a Revit parameter Definition.")]
         [Input("definition", "Revit parameter Definition to extract the UnitType from.")]
         [Output("unitType", "UnitType extracted from the input Revit parameter Definition.")]
@@ -44,6 +44,11 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+#elif (REVIT2021)
+        public static ForgeTypeId GetDataType(this Definition definition)
+        {
+            return definition.GetSpecTypeId();
+        }
 #endif
     }
 }
