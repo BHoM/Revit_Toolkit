@@ -45,6 +45,7 @@ namespace BH.Revit.Engine.Core
         [Output("outlines", "The analytical outlines of the host object.")]
         public static List<ICurve> AnalyticalOutlines(this HostObject hostObject, RevitSettings settings = null)
         {
+#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021 || REVIT2022)
             AnalyticalModel analyticalModel = hostObject.GetAnalyticalModel();
             if (analyticalModel == null)
             {
@@ -62,6 +63,21 @@ namespace BH.Revit.Engine.Core
             }
 
             List<ICurve> result = BH.Engine.Geometry.Compute.IJoin(wallCurves, settings.DistanceTolerance).ConvertAll(c => c as ICurve);
+            
+#else
+            Document doc = hostObject.Document;
+            AnalyticalToPhysicalAssociationManager manager = AnalyticalToPhysicalAssociationManager.GetAnalyticalToPhysicalAssociationManager(doc);
+            AnalyticalPanel analyticalModel = doc.GetElement(manager.GetAssociatedElementId(hostObject.Id)) as AnalyticalPanel;
+
+            List<ICurve> result = new List<ICurve> { analyticalModel.GetOuterContour().FromRevit() };
+            result.AddRange(analyticalModel.GetAnalyticalOpeningsIds().Select(x => (doc.GetElement(x) as AnalyticalOpening).GetOuterContour().FromRevit()));
+
+            if (result.Any(x => x == null))
+            {
+                hostObject.UnsupportedOutlineCurveWarning();
+                return null;
+            }
+#endif
             if (result.Any(x => !x.IIsClosed(settings.DistanceTolerance)))
             {
                 hostObject.NonClosedOutlineWarning();

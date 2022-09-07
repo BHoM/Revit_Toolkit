@@ -30,7 +30,7 @@ namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
-#if (REVIT2018 || REVIT2019 || REVIT2020)
+#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
 
         /***************************************************/
         /****              Public methods               ****/
@@ -149,7 +149,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-            
+
         [Description("Finds a BHoM-specific Revit unit type for a given quantity.")]
         [Input("quantity", "Quantity to find a BHoM-specific Revit unit type for.")]
         [Output("unitType", "BHoM-specific Revit unit type for the input quantity.")]

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2022, the respective contributors. All rights reserved.
  *
@@ -28,23 +28,29 @@ namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
-#if (REVIT2018 || REVIT2019 || REVIT2020)
-
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("This method is defined by BHoM only for Revit Versions < 2021. Revit versions from 2021 onwards define an equivalent method with the same name as part of their API." +
-                     "This BHoM implementation eliminates breaking changes between different Revit API versions. It returns the equivalent of UnitType from a Revit parameter Definition.")]
-        [Input("definition", "Revit parameter Definition to extract the UnitType from.")]
-        [Output("unitType", "UnitType extracted from the input Revit parameter Definition.")]
-        public static UnitType GetSpecTypeId(this Definition definition)
+        //[Description("This method is defined by BHoM only for Revit Versions < 2021. Revit versions from 2021 onwards define an equivalent method with the same name as part of their API." +
+        //             "This BHoM implementation eliminates breaking changes between different Revit API versions. It returns the equivalent of UnitType from a Revit parameter Definition.")]
+        //[Input("definition", "Revit parameter Definition to extract the UnitType from.")]
+        //[Output("unitType", "UnitType extracted from the input Revit parameter Definition.")]
+#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
+        public static ParameterType? ParameterType(this Definition definition)
         {
-            return definition.UnitType;
+            if (definition.ParameterType == Autodesk.Revit.DB.ParameterType.Invalid)
+                return null;
+            else
+                return definition.ParameterType;
+        }
+#else
+        public static ForgeTypeId ParameterType(this Definition definition)
+        {
+            return definition.GetDataType();
         }
 
         /***************************************************/
-
 #endif
     }
 }

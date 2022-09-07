@@ -42,13 +42,17 @@ namespace BH.Revit.Engine.Core
         [Input("instance", "If true, the created parameter will be an instance parameter, otherwise it will be a type parameter.")]
         [Input("categories", "Categories, to which the created parameter is bound. It will get bound to all categories if this value is null.")]
         [Output("definition", "Revit project parameter Definition created based on the input properties.")]
+#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
         public static Definition ProjectParameter(Document document, string parameterName, ParameterType parameterType, BuiltInParameterGroup parameterGroup, bool instance, IEnumerable<Category> categories)
+#else
+        public static Definition ProjectParameter(Document document, string parameterName, ForgeTypeId parameterType, BuiltInParameterGroup parameterGroup, bool instance, IEnumerable<Category> categories)
+#endif
         {
             // Inspired by https://github.com/DynamoDS/DynamoRevit/blob/master/src/Libraries/RevitNodes/Elements/Parameter.cs
 
             if (categories != null && !categories.Any())
             {
-                BH.Engine.Base.Compute.RecordError($"Parameter {parameterName} of type {LabelUtils.GetLabelFor(parameterType)} could not be created because no category bindings were provided.");
+                BH.Engine.Base.Compute.RecordError($"Parameter {parameterName} of type {parameterType.Label()} could not be created because no category bindings were provided.");
                 return null;
             }
 

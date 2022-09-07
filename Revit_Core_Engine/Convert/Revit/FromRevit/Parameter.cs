@@ -57,7 +57,7 @@ namespace BH.Revit.Engine.Core
             switch (parameter.StorageType)
             {
                 case StorageType.Double:
-                    value = parameter.AsDouble().ToSI(parameter.Definition.GetSpecTypeId());
+                    value = parameter.AsDouble().ToSI(parameter.Definition.GetDataType());
                     break;
                 case StorageType.ElementId:
                     ElementId elementID = parameter.AsElementId();
@@ -65,9 +65,9 @@ namespace BH.Revit.Engine.Core
                         value = elementID.IntegerValue;
                     break;
                 case StorageType.Integer:
-                    if (parameter.Definition.ParameterType == ParameterType.YesNo)
+                    if (parameter.Definition.ParameterType() == SpecTypeId.Boolean.YesNo)
                         value = parameter.AsInteger() == 1;
-                    else if (parameter.Definition.ParameterType == ParameterType.Invalid)
+                    else if (parameter.Definition.ParameterType() == null)
                         value = parameter.AsValueString();
                     else
                         value = parameter.AsInteger();

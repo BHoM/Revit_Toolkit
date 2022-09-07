@@ -453,9 +453,11 @@
     <Compile Include="Query\ElementIds\ElementIdsOfEverything.cs" />
     <Compile Include="Query\InsertsToIgnore.cs" />
     <Compile Include="Query\Insulation.cs" />
+    <Compile Include="Query\Label.cs" />
     <Compile Include="Query\LinkedElementsInView.cs" />
     <Compile Include="Query\LinkName.cs" />
     <Compile Include="Query\OutlineCacheKey.cs" />
+    <Compile Include="Query\ParameterType.cs" />
     <Compile Include="Query\SpatialBoundCondition.cs" />
     <Compile Include="Query\SurfaceCacheKey.cs" />
     <Compile Include="Query\Tessellate.cs" />
@@ -464,7 +466,7 @@
     <Compile Include="Query\CurtainWallMullions.cs" />
     <Compile Include="Compute\FindHost.cs" />
     <Compile Include="Query\FrameEdgeProperty.cs" />
-    <Compile Include="Query\GetSpecTypeId.cs" />
+    <Compile Include="Query\GetDataType.cs" />
     <Compile Include="Query\GetUnitTypeId.cs" />
     <Compile Include="Query\HasLocation.cs" />
     <Compile Include="Query\HostElement.cs" />

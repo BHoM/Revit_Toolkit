@@ -26,29 +26,27 @@ using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Convert
+    public static partial class Query
     {
+#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
+
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        [Description("Converts a numerical value from internal Revit units to BHoM-specific unit for a given quantity type.")]
-        [Input("value", "Numerical value to be converted to BHoM-specific units.")]
-        [Input("quantity", "Quantity type to use when converting from Revit internal units to BHoM-specific units.")]
-        [Output("converted", "Input value converted from internal Revit units to BHoM-specific units for the input quantity type.")]
-#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
-        public static double FromSI(this double value, UnitType quantity)
-#else
-        public static double FromSI(this double value, ForgeTypeId quantity)
-#endif
-        {
-            if (double.IsNaN(value) || value == double.MaxValue || value == double.MinValue || double.IsNegativeInfinity(value) || double.IsPositiveInfinity(value))
-                return value;
 
-            return UnitUtils.ConvertToInternalUnits(value, quantity.BHoMUnitType());
+        [Description("This method is defined by BHoM only for Revit Versions < 2022. Revit versions from 2022 onwards define an equivalent method with the same name as part of their API." +
+                     "This BHoM implementation eliminates breaking changes between different Revit API versions. It returns the equivalent of UnitType from a Revit parameter Definition.")]
+        [Input("definition", "Revit parameter Definition to extract the UnitType from.")]
+        [Output("unitType", "UnitType extracted from the input Revit parameter Definition.")]
+        public static UnitType GetDataType(this Definition definition)
+        {
+            return definition.UnitType;
         }
-        
+
         /***************************************************/
+#endif
     }
 }
+
+
 

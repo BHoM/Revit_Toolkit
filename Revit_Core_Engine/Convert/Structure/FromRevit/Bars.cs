@@ -59,7 +59,13 @@ namespace BH.Revit.Engine.Core
             
             // Get bar curve
             oM.Geometry.ICurve locationCurve = null;
+#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021 || REVIT2022)
             AnalyticalModelStick analyticalModel = familyInstance.GetAnalyticalModel() as AnalyticalModelStick;
+#else
+            Document doc = familyInstance.Document;
+            AnalyticalToPhysicalAssociationManager manager = AnalyticalToPhysicalAssociationManager.GetAnalyticalToPhysicalAssociationManager(doc);
+            AnalyticalMember analyticalModel = doc.GetElement(manager.GetAssociatedElementId(familyInstance.Id)) as AnalyticalMember;
+#endif
             if (analyticalModel != null)
             {
                 Curve curve = analyticalModel.GetCurve();

@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 
 namespace BH.Revit.Engine.Core
 {
@@ -48,6 +49,7 @@ namespace BH.Revit.Engine.Core
         [Output("definition", "Revit parameter Definition created based on the input properties.")]
         public static Definition Parameter(Document document, string parameterName, string typeName, string groupName, bool instance, IEnumerable<string> categoryNames, bool shared, string discipline = "")
         {
+#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
             List<ParameterType> parameterTypes = new List<ParameterType>();
             foreach (ParameterType pt in Enum.GetValues(typeof(ParameterType)))
             {
@@ -63,6 +65,7 @@ namespace BH.Revit.Engine.Core
             }
             
             ParameterType parameterType = ParameterType.Invalid;
+            
             if (parameterTypes.Count == 0)
             {
                 BH.Engine.Base.Compute.RecordError($"Parameter type named {typeName} does not exist.");
@@ -86,6 +89,15 @@ namespace BH.Revit.Engine.Core
                     return null;
                 }
             }
+#else
+            List<ForgeTypeId> parameterTypes = new List<ForgeTypeId>();
+            ForgeTypeId parameterType = typeof(SpecTypeId).GetProperties().FirstOrDefault(x => x.Name == parameterName).GetValue(null) as ForgeTypeId;
+            if (parameterType == null)
+            {
+                BH.Engine.Base.Compute.RecordError($"Parameter type named {typeName} does not exist.");
+                return null;
+            }
+#endif
 
             List<string> distinctCategoryNames = categoryNames.Distinct().ToList();
             List<Category> categories = new List<Category>();
