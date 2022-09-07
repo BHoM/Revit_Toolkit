@@ -65,7 +65,7 @@ namespace BH.Revit.Engine.Core
                         value = elementID.IntegerValue;
                     break;
                 case StorageType.Integer:
-                    if (parameter.Definition.ParameterType() == SpecTypeId.Boolean.YesNo)
+                    if (parameter.IsBooleanParameter())
                         value = parameter.AsInteger() == 1;
                     else if (parameter.Definition.ParameterType() == null)
                         value = parameter.AsValueString();

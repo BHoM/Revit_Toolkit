@@ -36,7 +36,7 @@ namespace BH.Revit.Engine.Core
         //             "This BHoM implementation eliminates breaking changes between different Revit API versions. It returns the equivalent of UnitType from a Revit parameter Definition.")]
         //[Input("definition", "Revit parameter Definition to extract the UnitType from.")]
         //[Output("unitType", "UnitType extracted from the input Revit parameter Definition.")]
-#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
+#if (REVIT2018 || REVIT2019 || REVIT2020)
         public static ParameterType? ParameterType(this Definition definition)
         {
             if (definition.ParameterType == Autodesk.Revit.DB.ParameterType.Invalid)

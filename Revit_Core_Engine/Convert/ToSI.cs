@@ -37,7 +37,7 @@ namespace BH.Revit.Engine.Core
         [Input("value", "Numerical value to be converted to internal Revit units.")]
         [Input("quantity", "Quantity type to use when converting from BHoM-specific units to Revit internal units.")]
         [Output("converted", "Input value converted from BHoM-specific units to internal Revit units for the input quantity type.")]
-#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
+#if (REVIT2018 || REVIT2019 || REVIT2020)
         public static double ToSI(this double value, UnitType quantity)
 #else
         public static double ToSI(this double value, ForgeTypeId quantity)

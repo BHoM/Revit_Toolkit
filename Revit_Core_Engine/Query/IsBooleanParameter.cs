@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2022, the respective contributors. All rights reserved.
  *
@@ -19,9 +19,10 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
- 
+
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
@@ -32,36 +33,18 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts a string value from a given Revit Parameter.")]
-        [Input("parameter", "Revit Parameter to extract the string value from.")]
-        [Output("value", "String value extracted from the input Revit Parameter.")]
-        public static string StringValue(this Parameter parameter)
+        //[Description("Returns the workset Ids of all worksets in a given Revit document.")]
+        //[Input("document", "Revit document to be queried for worksets.")]
+        //[Output("ids", "Workset Ids of all worksets in the input Revit document.")]
+        public static bool IsBooleanParameter(this Parameter parameter)
         {
-            if (parameter != null && parameter.HasValue)
-            {
-                switch (parameter.StorageType)
-                {
-                    case (StorageType.Double):
-                        return parameter.AsValueString();
-                    case (StorageType.Integer):
-                        {
-                            if (parameter.IsBooleanParameter() || parameter.Definition.ParameterType() == null)
-                                return parameter.AsValueString();
-                            else
-                                return parameter.AsInteger().ToString();
-                        }
-                    case (StorageType.String):
-                        return parameter.AsString();
-                    case (StorageType.ElementId):
-                        return parameter.AsValueString();
-                }
-            }
-
-            return null;
+#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
+            return parameter.Definition.ParameterType == Autodesk.Revit.DB.ParameterType.YesNo;
+#else
+            return parameter.Definition.GetDataType() == SpecTypeId.Boolean.YesNo;
+#endif
         }
 
         /***************************************************/
     }
 }
-
-

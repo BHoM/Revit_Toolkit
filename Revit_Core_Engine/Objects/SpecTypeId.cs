@@ -24,7 +24,7 @@
 using Autodesk.Revit.DB;
 using System.ComponentModel;
 
-#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
+#if (REVIT2018 || REVIT2019 || REVIT2020)
 namespace BH.Revit.Engine.Core
 {
     [Description("This class is defined by BHoM only for Revit Versions < 2022. Revit versions from 2022 onwards define an equivalent class with the same name as part of their API." +
@@ -238,3 +238,42 @@ namespace BH.Revit.Engine.Core
     }
 }
 #endif
+
+
+//#if (REVIT2021)
+//namespace SpecTypeId
+//{
+//    public static class Boolean
+//    {
+//        public static ParameterType YesNo { get { return ParameterType.YesNo; } }
+//    }
+
+//    public static class Int
+//    {
+//        public static ParameterType NumberOfPoles { get { return ParameterType.NumberOfPoles; } }
+//        public static ParameterType Integer { get { return ParameterType.Integer; } }
+//    }
+
+//    public static class Reference
+//    {
+//        public static ParameterType Material { get { return ParameterType.Material; } }
+//        public static ParameterType LoadClassification { get { return ParameterType.LoadClassification; } }
+//        public static ParameterType Image { get { return ParameterType.Image; } }
+//        public static ParameterType FillPattern { get { return NonExistentParameterType(nameof(FillPattern), 2022); } }
+
+
+//        private static ParameterType NonExistentParameterType(string name, int version)
+//        {
+//            BH.Engine.Base.Compute.RecordWarning($"SpecTypeId.{name} does not have a UnitType equivalent in Revit versions older than {version}. ParameterType.Invalid has been used which may cause conversion issues.");
+//            return ParameterType.Invalid;
+//        }
+//    }
+
+//    public static class String
+//    {
+//        public static ParameterType Url { get { return ParameterType.URL; } }
+//        public static ParameterType Text { get { return ParameterType.Text; } }
+//        public static ParameterType MultilineText { get { return ParameterType.MultilineText; } }
+//    }
+//}
+//#endif
