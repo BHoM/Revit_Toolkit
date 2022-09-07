@@ -151,6 +151,31 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <AssemblyName>Revit_Core_Engine_2022</AssemblyName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2023|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;REVIT2023</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <AssemblyName>Revit_Core_Engine_2023</AssemblyName>
+    <DebugEngines>{351668CC-8477-4fbf-BFE3-5F1006E4DB1F}</DebugEngines>
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Program Files\Autodesk\Revit 2023\Revit.exe</StartProgram>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2023|AnyCPU'">
+    <OutputPath>..\Build\</OutputPath>
+    <DefineConstants>TRACE;REVIT2023</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <AssemblyName>Revit_Core_Engine_2023</AssemblyName>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytical_oM">
       <SpecificVersion>False</SpecificVersion>
@@ -300,6 +325,14 @@
     </Reference>
     <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2022' Or '$(Configuration)'=='Release2022'">
       <HintPath>..\libs\2022\RevitAPIUI.dll</HintPath>
+      <private>False</private>
+    </Reference>
+    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2023' Or '$(Configuration)'=='Release2023'">
+      <HintPath>..\libs\2023\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2023' Or '$(Configuration)'=='Release2023'">
+      <HintPath>..\libs\2023\RevitAPIUI.dll</HintPath>
       <private>False</private>
     </Reference>
     <Reference Include="Spatial_Engine">
