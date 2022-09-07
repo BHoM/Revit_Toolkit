@@ -45,15 +45,15 @@ namespace BH.Revit.Engine.Core
             IEnumerable<DisplayUnitType> duts = UnitUtils.GetValidDisplayUnits(quantity);
             foreach (DisplayUnitType dut in duts)
             {
-                if (BHoMUnits.Contains(dut))
+                if (BHoMUnitsOld.Contains(dut))
                     return dut;
             }
 
             // Check if any display unit type applicable to given unit type has acceptable BHoM equivalent unit type.
             foreach (DisplayUnitType dut in duts)
             {
-                if (BHoMEquivalents.ContainsKey(dut))
-                    return BHoMEquivalents[dut];
+                if (BHoMEquivalentsOld.ContainsKey(dut))
+                    return BHoMEquivalentsOld[dut];
             }
 
             // Find any SI display unit types.
@@ -82,7 +82,7 @@ namespace BH.Revit.Engine.Core
         /****            Private collections            ****/
         /***************************************************/
 
-        private static readonly DisplayUnitType[] BHoMUnits = new DisplayUnitType[]
+        private static readonly DisplayUnitType[] BHoMUnitsOld = new DisplayUnitType[]
         {
             DisplayUnitType.DUT_METERS,
             DisplayUnitType.DUT_SQUARE_METERS,
@@ -133,7 +133,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static readonly Dictionary<DisplayUnitType, DisplayUnitType> BHoMEquivalents = new Dictionary<DisplayUnitType, DisplayUnitType>
+        private static readonly Dictionary<DisplayUnitType, DisplayUnitType> BHoMEquivalentsOld = new Dictionary<DisplayUnitType, DisplayUnitType>
         {
             { DisplayUnitType.DUT_CURRENCY,  DisplayUnitType.DUT_GENERAL },
             { DisplayUnitType.DUT_KELVIN,  DisplayUnitType.DUT_CELSIUS },
@@ -144,7 +144,8 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-#else
+#endif
+#if (!REVIT2018 && !REVIT2019 && !REVIT2020)
 
         /***************************************************/
         /****              Public methods               ****/
@@ -159,15 +160,15 @@ namespace BH.Revit.Engine.Core
             IEnumerable<ForgeTypeId> duts = UnitUtils.GetValidUnits(quantity);
             foreach (ForgeTypeId dut in duts)
             {
-                if (BHoMUnits.Contains(dut))
+                if (BHoMUnitsNew.Contains(dut))
                     return dut;
             }
 
             // Check if any display unit type applicable to given unit type has acceptable BHoM equivalent unit type.
             foreach (ForgeTypeId dut in duts)
             {
-                if (BHoMEquivalents.ContainsKey(dut))
-                    return BHoMEquivalents[dut];
+                if (BHoMEquivalentsNew.ContainsKey(dut))
+                    return BHoMEquivalentsNew[dut];
             }
 
             // Find any SI display unit types.
@@ -196,7 +197,7 @@ namespace BH.Revit.Engine.Core
         /****            Private collections            ****/
         /***************************************************/
 
-        private static readonly ForgeTypeId[] BHoMUnits = new ForgeTypeId[]
+        private static readonly ForgeTypeId[] BHoMUnitsNew = new ForgeTypeId[]
         {
             UnitTypeId.Meters,
             UnitTypeId.SquareMeters,
@@ -247,7 +248,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static readonly Dictionary<ForgeTypeId, ForgeTypeId> BHoMEquivalents = new Dictionary<ForgeTypeId, ForgeTypeId>
+        private static readonly Dictionary<ForgeTypeId, ForgeTypeId> BHoMEquivalentsNew = new Dictionary<ForgeTypeId, ForgeTypeId>
         {
             { UnitTypeId.Currency,  UnitTypeId.General },
             { UnitTypeId.Kelvin,  UnitTypeId.Celsius },
