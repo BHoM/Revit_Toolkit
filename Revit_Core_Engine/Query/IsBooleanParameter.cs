@@ -22,7 +22,6 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
@@ -33,9 +32,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Returns the workset Ids of all worksets in a given Revit document.")]
-        //[Input("document", "Revit document to be queried for worksets.")]
-        //[Output("ids", "Workset Ids of all worksets in the input Revit document.")]
+        [Description("Checks whether the Revit parameter is of type Boolean (checkbox in Revit).")]
+        [Input("parameter", "Revit parameter to check whether it is Boolean.")]
+        [Output("boolean", "True if the Revit parameter is of type Boolean, otherwise false.")]
         public static bool IsBooleanParameter(this Parameter parameter)
         {
 #if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
