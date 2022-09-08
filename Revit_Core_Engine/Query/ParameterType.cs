@@ -32,10 +32,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("This method is defined by BHoM only for Revit Versions < 2021. Revit versions from 2021 onwards define an equivalent method with the same name as part of their API." +
-        //             "This BHoM implementation eliminates breaking changes between different Revit API versions. It returns the equivalent of UnitType from a Revit parameter Definition.")]
-        //[Input("definition", "Revit parameter Definition to extract the UnitType from.")]
-        //[Output("unitType", "UnitType extracted from the input Revit parameter Definition.")]
+        [Description("Gets the parameter type of a Revit parameter definition.")]
+        [Input("definition", "Revit parameter definition to extract the parameter type from.")]
+        [Output("parameterType", "Parameter type extracted from the input Revit parameter definition.")]
 #if (REVIT2018 || REVIT2019 || REVIT2020)
         public static ParameterType? ParameterType(this Definition definition)
         {
