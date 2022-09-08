@@ -91,7 +91,7 @@ namespace BH.Revit.Engine.Core
             }
 #else
             List<ForgeTypeId> parameterTypes = new List<ForgeTypeId>();
-            ForgeTypeId parameterType = typeof(SpecTypeId).GetProperties().FirstOrDefault(x => x.Name == parameterName).GetValue(null) as ForgeTypeId;
+            ForgeTypeId parameterType = typeof(SpecTypeId).GetProperties().FirstOrDefault(x => x.Name == typeName)?.GetValue(null) as ForgeTypeId;
             if (parameterType == null)
             {
                 BH.Engine.Base.Compute.RecordError($"Parameter type named {typeName} does not exist.");
