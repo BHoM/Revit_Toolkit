@@ -307,10 +307,8 @@ namespace BH.Revit.Engine.Core
                             return parameter.Set(System.Convert.ToInt32(value));
                         else if (value is bool)
                         {
-                            if ((bool)value)
-                                return parameter.Set(1);
-                            else
-                                return parameter.Set(0);
+                            if (parameter.IsBooleanParameter())
+                                return parameter.Set((bool)value ? 1 : 0);
                         }
                         else if (value is string)
                         {
@@ -318,6 +316,13 @@ namespace BH.Revit.Engine.Core
                             int num = 0;
                             if (int.TryParse(valueString, out num))
                                 return parameter.Set(num);
+
+                            if (parameter.IsBooleanParameter())
+                            {
+                                bool boolValue;
+                                if (bool.TryParse(valueString, out boolValue))
+                                    return parameter.Set(boolValue ? 1 : 0);
+                            }
 
                             if (parameter.HasValue && parameter.Definition.GetDataType() == null)
                             {
