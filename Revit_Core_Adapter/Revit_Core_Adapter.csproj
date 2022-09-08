@@ -365,6 +365,7 @@
     <None Include="Listener\Files\BHoM_2022.Addin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Listener\Files\BHoM_2023.Addin" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Listener\Forms\UpdatePortsForm.resx">
