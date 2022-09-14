@@ -324,7 +324,7 @@ namespace BH.Revit.Engine.Core
                                     return parameter.Set(boolValue ? 1 : 0);
                             }
 
-                            if (parameter.HasValue && parameter.Definition.GetDataType() == null)
+                            if (parameter.HasValue && parameter.Definition.ParameterType() == null)
                             {
                                 string val = parameter.AsValueString();
                                 if (val == valueString)
