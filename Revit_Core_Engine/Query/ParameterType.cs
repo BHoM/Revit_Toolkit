@@ -46,7 +46,11 @@ namespace BH.Revit.Engine.Core
 #else
         public static ForgeTypeId ParameterType(this Definition definition)
         {
-            return definition.GetDataType();
+            ForgeTypeId result = definition?.GetDataType();
+            if (string.IsNullOrWhiteSpace(result?.TypeId))
+                result = null;
+
+            return null;
         }
 
         /***************************************************/
