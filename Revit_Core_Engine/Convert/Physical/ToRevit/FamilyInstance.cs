@@ -125,6 +125,9 @@ namespace BH.Revit.Engine.Core
             familyInstance.get_Parameter((BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM)).Set(-1e+3);
             familyInstance.get_Parameter((BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM)).Set(1e+3);
 
+            if (locationLine.IsVertical())
+                familyInstance.SetParameter(BuiltInParameter.SLANTED_COLUMN_TYPE_PARAM, 0);
+
             familyInstance.CopyParameters(framingElement, settings);
             familyInstance.SetLocation(framingElement, settings);
             
