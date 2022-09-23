@@ -46,6 +46,12 @@ namespace BH.Revit.Engine.Core
             if (transform == null || transform.IsIdentity)
                 return bbox;
 
+            if (!bbox.Transform.IsIdentity)
+            {
+                bbox.Min += bbox.Transform.Origin;
+                bbox.Max += bbox.Transform.Origin;
+            }
+
             double minX = bbox.Min.X;
             double minY = bbox.Min.Y;
             double minZ = bbox.Min.Z;
@@ -75,7 +81,7 @@ namespace BH.Revit.Engine.Core
             XYZ transMin = new XYZ(transMinX, transMinY, transMinZ);
             XYZ transMax = new XYZ(transMaxX, transMaxY, transMaxZ);
 
-            return new BoundingBoxXYZ() { Min = transMin, Max = transMax, Transform = bbox.Transform };
+            return new BoundingBoxXYZ() { Min = transMin, Max = transMax };
         }
 
         /***************************************************/
