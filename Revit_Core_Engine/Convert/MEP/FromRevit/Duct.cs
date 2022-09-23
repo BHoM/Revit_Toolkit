@@ -24,6 +24,7 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
@@ -44,7 +45,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("ducts", "List of BHoM duct objects converted from a Revit duct elements.")]
-        public static List<BH.oM.MEP.System.Duct> DuctFromRevit(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<BH.oM.MEP.System.Duct> DuctFromRevit(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null, Discipline discipline = Discipline.Physical)
         {
             settings = settings.DefaultIfNull();
 
@@ -59,7 +60,7 @@ namespace BH.Revit.Engine.Core
                 bhomDucts = new List<BH.oM.MEP.System.Duct>();
             }
             
-            List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitDuct, settings);
+            List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitDuct, settings, discipline);
             
             // Flow rate
             double flowRate = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_DUCT_FLOW_PARAM); 
