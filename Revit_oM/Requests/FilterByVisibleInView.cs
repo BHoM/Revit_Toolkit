@@ -25,7 +25,7 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters all elements visible in a given Revit view.")]
+    [Description("IRequest that filters all elements visible in a given Revit view. Works only for querying the host document (will not return valid results if combined with " + nameof(FilterByLink) + ").")]
     public class FilterByVisibleInView : IRequest
     {
         /***************************************************/

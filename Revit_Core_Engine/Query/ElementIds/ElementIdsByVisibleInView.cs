@@ -35,7 +35,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Filters ElementIds of elements that are visible in a view.")]
+        [Description("Filters ElementIds of elements that are visible in a view. Works only for querying the document that owns the view under the input viewId.")]
         [Input("document", "Revit document to be processed.")]
         [Input("viewId", "ElementId of the Revit view in which the filtered elements are visible.")]
         [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
@@ -68,4 +68,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
