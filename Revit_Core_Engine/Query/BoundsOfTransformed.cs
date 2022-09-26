@@ -28,31 +28,31 @@ using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Compute
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Return transformed bounding box that is created from transformed corner points.")]
-        [Input("bbox", "Bounding box to transform.")]
-        [Input("transform", "Transformation of the bounding box.")]
-        [Output("bbox", "Transformed bounding box.")]
-        public static BoundingBoxXYZ CreateTransformed(this BoundingBoxXYZ bbox, Transform transform)
+        [Description("Return bounding box in global coordinate system that is created from transformed corner points.")]
+        [Input("bbox", "Bounding box of control points to transform.")]
+        [Input("transform", "Transformation of the bounding box points.")]
+        [Output("newBBox", "Bounding box created from transformed points.")]
+        public static BoundingBoxXYZ BoundsOfTransformed(this BoundingBoxXYZ bbox, Transform transform)
         {
             if (bbox == null)
                 return null;
 
             BoundingBoxXYZ newBBox = new BoundingBoxXYZ() { Min = bbox.Min, Max = bbox.Max };
 
-            if (transform == null || transform.IsIdentity)
-                return newBBox;
-
             if (!bbox.Transform.IsIdentity)
             {
-                newBBox.Min += bbox.Transform.Origin;
-                newBBox.Max += bbox.Transform.Origin;
+                newBBox.Min = bbox.Transform.OfPoint(newBBox.Min);
+                newBBox.Max = bbox.Transform.OfPoint(newBBox.Max);
             }
+
+            if (transform == null || transform.IsIdentity)
+                return newBBox;
 
             double minX = newBBox.Min.X;
             double minY = newBBox.Min.Y;
@@ -73,12 +73,12 @@ namespace BH.Revit.Engine.Core
             List<XYZ> points = new List<XYZ>() { pt1, pt2, pt3, pt4, pt5, pt6, pt7, pt8 };
             List<XYZ> transPoints = points.Select(x => transform.OfPoint(x)).ToList();
 
-            double transMinX = transPoints.OrderBy(x => x.X).Select(x => x.X).FirstOrDefault();
-            double transMinY = transPoints.OrderBy(x => x.Y).Select(x => x.Y).FirstOrDefault();
-            double transMinZ = transPoints.OrderBy(x => x.Z).Select(x => x.Z).FirstOrDefault();
-            double transMaxX = transPoints.OrderBy(x => x.X).Reverse().Select(x => x.X).FirstOrDefault();
-            double transMaxY = transPoints.OrderBy(x => x.Y).Reverse().Select(x => x.Y).FirstOrDefault();
-            double transMaxZ = transPoints.OrderBy(x => x.Z).Reverse().Select(x => x.Z).FirstOrDefault();
+            double transMinX = transPoints.OrderBy(x => x.X).First().X;
+            double transMinY = transPoints.OrderBy(x => x.Y).First().Y;
+            double transMinZ = transPoints.OrderBy(x => x.Z).First().Z;
+            double transMaxX = transPoints.OrderByDescending(x => x.X).First().X;
+            double transMaxY = transPoints.OrderByDescending(x => x.Y).First().Y;
+            double transMaxZ = transPoints.OrderByDescending(x => x.Z).First().Z;
 
             newBBox.Min = new XYZ(transMinX, transMinY, transMinZ);
             newBBox.Max = new XYZ(transMaxX, transMaxY, transMaxZ);
