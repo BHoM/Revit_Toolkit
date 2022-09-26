@@ -265,7 +265,11 @@ namespace BH.Revit.Engine.Core
             //Place family instance
             FamilyInstance familyInstance = document.Create.NewUnionFitting(conn1, conn2);
             if (familyInstance == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Element could not be created due to unexpected errors.");
                 return null;
+            }
+                
 
             if (!familyInstance.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, familySymbol.Id))
                 BH.Engine.Base.Compute.RecordWarning("The input family type could not be assigned to the created instance, possibly because it is not applicable to the host element.");
