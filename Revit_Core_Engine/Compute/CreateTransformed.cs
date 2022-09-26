@@ -43,21 +43,23 @@ namespace BH.Revit.Engine.Core
             if (bbox == null)
                 return null;
 
+            BoundingBoxXYZ newBBox = new BoundingBoxXYZ() { Min = bbox.Min, Max = bbox.Max };
+
             if (transform == null || transform.IsIdentity)
-                return bbox;
+                return newBBox;
 
             if (!bbox.Transform.IsIdentity)
             {
-                bbox.Min += bbox.Transform.Origin;
-                bbox.Max += bbox.Transform.Origin;
+                newBBox.Min += bbox.Transform.Origin;
+                newBBox.Max += bbox.Transform.Origin;
             }
 
-            double minX = bbox.Min.X;
-            double minY = bbox.Min.Y;
-            double minZ = bbox.Min.Z;
-            double maxX = bbox.Max.X;
-            double maxY = bbox.Max.Y;
-            double maxZ = bbox.Max.Z;
+            double minX = newBBox.Min.X;
+            double minY = newBBox.Min.Y;
+            double minZ = newBBox.Min.Z;
+            double maxX = newBBox.Max.X;
+            double maxY = newBBox.Max.Y;
+            double maxZ = newBBox.Max.Z;
 
             XYZ pt1 = new XYZ(minX, minY, minZ);
             XYZ pt2 = new XYZ(minX, maxY, minZ);
@@ -78,10 +80,10 @@ namespace BH.Revit.Engine.Core
             double transMaxY = transPoints.OrderBy(x => x.Y).Reverse().Select(x => x.Y).FirstOrDefault();
             double transMaxZ = transPoints.OrderBy(x => x.Z).Reverse().Select(x => x.Z).FirstOrDefault();
 
-            XYZ transMin = new XYZ(transMinX, transMinY, transMinZ);
-            XYZ transMax = new XYZ(transMaxX, transMaxY, transMaxZ);
+            newBBox.Min = new XYZ(transMinX, transMinY, transMinZ);
+            newBBox.Max = new XYZ(transMaxX, transMaxY, transMaxZ);
 
-            return new BoundingBoxXYZ() { Min = transMin, Max = transMax };
+            return newBBox;
         }
 
         /***************************************************/
