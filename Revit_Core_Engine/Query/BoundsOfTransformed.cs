@@ -44,11 +44,12 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             BoundingBoxXYZ newBBox = new BoundingBoxXYZ() { Min = bbox.Min, Max = bbox.Max };
+            Transform bboxTransform = bbox.Transform ?? Transform.Identity;
 
-            if (!bbox.Transform.IsIdentity)
+            if (!bboxTransform.IsIdentity)
             {
-                newBBox.Min = bbox.Transform.OfPoint(newBBox.Min);
-                newBBox.Max = bbox.Transform.OfPoint(newBBox.Max);
+                newBBox.Min = bboxTransform.OfPoint(newBBox.Min);
+                newBBox.Max = bboxTransform.OfPoint(newBBox.Max);
             }
 
             if (transform == null || transform.IsIdentity)
