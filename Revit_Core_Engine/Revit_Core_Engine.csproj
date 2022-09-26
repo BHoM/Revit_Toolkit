@@ -423,6 +423,7 @@
     <Compile Include="Modify\SetProperty.cs" />
     <Compile Include="Modify\SetViewDetailLevel.cs" />
     <Compile Include="Modify\SetViewScale.cs" />
+    <Compile Include="Objects\ActiveViewVisibilityContext.cs" />
     <Compile Include="Objects\OutlineCache.cs" />
     <Compile Include="Objects\SpecTypeId.cs" />
     <Compile Include="Objects\SurfaceCache.cs" />
@@ -435,6 +436,7 @@
     <Compile Include="Query\CableTraySectionProfile.cs" />
     <Compile Include="Query\CableTraySectionProperty.cs" />
     <Compile Include="Query\CategoriesWithBoundParameters.cs" />
+    <Compile Include="Query\ElementIds\ElementIdsByVisibleInActiveView.cs" />
     <Compile Include="Query\IsBooleanParameter.cs" />
     <Compile Include="Query\IsOwnedByNone.cs" />
     <Compile Include="Query\IsOwnedByCurrentUser.cs" />
