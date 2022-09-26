@@ -35,10 +35,11 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("6.0", "BH.Engine.Adapters.Revit.Query.MaterialTakeoff(BH.oM.Base.IBHoMObject)")]
         [Description("Queries the material take off information extracted from a Revit element on Pull and stored in RevitMaterialTakeOff fragment attached to a given BHoMObject.")]
         [Input("bHoMObject", "BHoMObject to be queried for the material take off information extracted from a Revit element on Pull.")]
         [Output("takeOff", "Material take off information in a form of an ExplicitBulk.")]
-        public static ExplicitBulk MaterialTakeoff(this IBHoMObject bHoMObject)
+        public static ExplicitBulk RevitMaterialTakeoff(this IBHoMObject bHoMObject)
         {
             RevitMaterialTakeOff takeOff = bHoMObject?.Fragments?.FirstOrDefault(x => x is RevitMaterialTakeOff) as RevitMaterialTakeOff;
             if (takeOff == null)
