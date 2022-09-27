@@ -51,7 +51,7 @@ namespace BH.Revit.Engine.Core
 
             try
             {
-                exporter.Export(hostDocument.ActiveView);
+                exporter.Export(new List<ElementId> { hostDocument.ActiveView.Id });
             }
             catch (Exception ex)
             {
