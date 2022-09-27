@@ -34,9 +34,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Return bounding box in global coordinate system that is created from transformed corner points.")]
-        [Input("bbox", "Bounding box of control points to transform.")]
-        [Input("transform", "Transformation of the bounding box points.")]
+        [Description("Return bounding box in global coordinate system that is created from corner points of the input bounding box transformed by the input transform.")]
+        [Input("bbox", "Bounding box with control points to transform.")]
+        [Input("transform", "Transformation to apply to the corners of the input bounding box.")]
         [Output("newBBox", "Bounding box created from transformed points.")]
         public static BoundingBoxXYZ BoundsOfTransformed(this BoundingBoxXYZ bbox, Transform transform)
         {
