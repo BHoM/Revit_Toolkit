@@ -266,7 +266,7 @@ namespace BH.Revit.Engine.Core
             FamilyInstance familyInstance = document.Create.NewUnionFitting(conn1, conn2);
             if (familyInstance == null)
             {
-                BH.Engine.Base.Compute.RecordError("Element could not be created due to unexpected errors.");
+                BH.Engine.Base.Compute.RecordError("Element could not be created due to an internal error.");
                 return null;
             }
                 
