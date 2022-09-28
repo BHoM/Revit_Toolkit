@@ -52,7 +52,7 @@ namespace BH.Revit.Engine.Core
             foreach (ElementId id in elementIds)
             {
                 HostObject hostObject = document.GetElement(id) as HostObject;
-                if (hostObject == null || hostObject is MEPCurve)
+                if (hostObject == null || hostObject is MEPCurve || hostObject is CurtainGridLine || hostObject is CurtainSystemBase || hostObject is HostedSweep)
                     continue;
 
                 bool outlinesFound = false;
