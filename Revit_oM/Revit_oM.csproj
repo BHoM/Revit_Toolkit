@@ -107,7 +107,6 @@
     <Compile Include="Misc\ClonedType.cs" />
     <Compile Include="Misc\RevitGeometry.cs" />
     <Compile Include="Misc\RevitHostFragment.cs" />
-    <Compile Include="Misc\RevitMaterialTakeOff.cs" />
     <Compile Include="Misc\RevitRepresentation.cs" />
     <Compile Include="Misc\RevitTypeFragment.cs" />
     <Compile Include="Misc\RevitParameterDifference.cs" />
