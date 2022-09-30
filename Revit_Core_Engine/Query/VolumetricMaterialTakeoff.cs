@@ -43,11 +43,11 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the extraction.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("takeoff", "Material takeoff extracted from the input Revit Element.")]
-        public static RevitMaterialTakeOff MaterialTakeoff(this Element element, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static oM.Physical.Materials.VolumetricMaterialTakeoff VolumetricMaterialTakeoff(this Element element, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
-            Dictionary<BH.oM.Physical.Materials.Material, double> takeoff = new Dictionary<BH.oM.Physical.Materials.Material, double>();
+            Dictionary<oM.Physical.Materials.Material, double> takeoff = new Dictionary<BH.oM.Physical.Materials.Material, double>();
             double totalVolume = 0;
             string grade = element.MaterialGrade(settings);
             foreach (ElementId materialId in element.GetMaterialIds(false))
@@ -67,7 +67,7 @@ namespace BH.Revit.Engine.Core
             }
 
             if (takeoff.Count != 0)
-                return new RevitMaterialTakeOff(totalVolume, BH.Engine.Matter.Create.MaterialComposition(takeoff.Keys, takeoff.Values.Select(x => x / totalVolume)));
+                return new oM.Physical.Materials.VolumetricMaterialTakeoff(takeoff.Keys.ToList(), takeoff.Values.ToList());
             else
                 return null;
         }

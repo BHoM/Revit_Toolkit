@@ -224,7 +224,7 @@ namespace BH.Revit.Adapter.Core
                     {
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
                         {
-                            RevitMaterialTakeOff takeoff = element.MaterialTakeoff(settings, refObjects);
+                            oM.Physical.Materials.VolumetricMaterialTakeoff takeoff = element.VolumetricMaterialTakeoff(settings, refObjects);
                             if (takeoff != null)
                                 iBHoMObject.Fragments.AddOrReplace(takeoff);
                         }

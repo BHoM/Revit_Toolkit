@@ -491,7 +491,7 @@
     <Compile Include="Query\Passes.cs" />
     <Compile Include="Query\PhysicalBounds.cs" />
     <Compile Include="Query\Shape.cs" />
-    <Compile Include="Query\MaterialTakeoff.cs" />
+    <Compile Include="Query\VolumetricMaterialTakeoff.cs" />
     <Compile Include="Query\PipeSectionProperty.cs" />
     <Compile Include="Query\Profile.cs" />
     <Compile Include="Convert\MEP\FromRevit\Wire.cs" />
