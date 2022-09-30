@@ -161,6 +161,7 @@
     <Compile Include="Requests\FilterViewTemplateByName.cs" />
     <Compile Include="Requests\FilterMemberElements.cs" />
     <Compile Include="Requests\IParameterValueRequest.cs" />
+    <None Include="Versioning_60.json" />
     <Compile Include="_Properties\AssemblyInfo.cs" />
     <Compile Include="Misc\RevitFilePreview.cs" />
     <Compile Include="Settings\FamilyLoadSettings.cs" />
