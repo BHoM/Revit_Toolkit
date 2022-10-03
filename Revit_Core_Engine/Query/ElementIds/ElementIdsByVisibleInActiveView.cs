@@ -53,10 +53,15 @@ namespace BH.Revit.Engine.Core
             {
                 exporter.Export(new List<ElementId> { hostDocument.ActiveView.Id });
             }
-            catch (Exception ex)
+            catch (Autodesk.Revit.Exceptions.ArgumentException ex)
             {
-                BH.Engine.Base.Compute.RecordError($"Visible elements could not be queried from the active view because views of type {hostDocument.ActiveView.ViewType} are not queryable in this version of Revit.");
-                return null;
+                if (ex.ParamName == "viewIds")
+                {
+                    BH.Engine.Base.Compute.RecordError($"Visible elements could not be queried from the active view because views of type {hostDocument.ActiveView.ViewType} are not queryable in this version of Revit.");
+                    return null;
+                }
+                else
+                    throw;
             }
 
             HashSet<ElementId> result = context.GetElementsVisibleInActiveView(document);
