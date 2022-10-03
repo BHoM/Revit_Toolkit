@@ -44,9 +44,16 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             Document hostDocument = document.IsLinked ? document.HostDocument() : document;
-            ActiveViewVisibilityContext context = new ActiveViewVisibilityContext(hostDocument, document);
+
+            ActiveViewVisibilityContext context;
+            if (hostDocument.ActiveView is View3D)
+                context = new ActiveViewVisibilityContext(hostDocument, document);
+            else
+                context = new Active2dViewVisibilityContext(hostDocument, document);
+
             CustomExporter exporter = new CustomExporter(hostDocument, context);
             exporter.IncludeGeometricObjects = false;
+            exporter.Export2DIncludingAnnotationObjects = true;
             exporter.ShouldStopOnError = false;
 
             try
