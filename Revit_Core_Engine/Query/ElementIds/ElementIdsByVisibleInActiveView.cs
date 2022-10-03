@@ -55,7 +55,7 @@ namespace BH.Revit.Engine.Core
             }
             catch (Exception ex)
             {
-                BH.Engine.Base.Compute.RecordError("Visible elements could not be queried from the active view because it is not queryable (it is drafting, template etc.).");
+                BH.Engine.Base.Compute.RecordError($"Visible elements could not be queried from the active view because views of type {hostDocument.ActiveView.ViewType} are not queryable in this version of Revit.");
                 return null;
             }
 
