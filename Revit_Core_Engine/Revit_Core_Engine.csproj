@@ -425,6 +425,7 @@
     <Compile Include="Modify\SetViewDetailLevel.cs" />
     <Compile Include="Modify\SetViewScale.cs" />
     <Compile Include="Objects\ActiveViewVisibilityContext.cs" />
+    <Compile Include="Objects\Active2dViewVisibilityContext.cs" />
     <Compile Include="Objects\OutlineCache.cs" />
     <Compile Include="Objects\SpecTypeId.cs" />
     <Compile Include="Objects\SurfaceCache.cs" />

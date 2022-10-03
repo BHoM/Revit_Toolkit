@@ -27,7 +27,7 @@ using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
-    [Description("Class used to extract elements visible in the active view of the host document. See " + nameof(Query.ElementIdsByVisibleInActiveView) + " for usage example.")]
+    [Description("Class used to extract elements visible in the active view of the host document if that view is of 3d type. See " + nameof(Query.ElementIdsByVisibleInActiveView) + " for usage example.")]
     public class ActiveViewVisibilityContext : IExportContext
     {
         /***************************************************/
@@ -40,9 +40,10 @@ namespace BH.Revit.Engine.Core
                      "\n- null - all elements of all documents, host and links, are then collected")]
         public ActiveViewVisibilityContext(Document hostDocument, Document targetDocument)
         {
+            m_HostDocument = hostDocument;
+            m_TargetDocument = targetDocument;
             m_Documents.Push(hostDocument);
             m_DocumentLookup[hostDocument.PathName] = hostDocument;
-            m_TargetDocument = targetDocument;
             m_Elements.Add(hostDocument.PathName, new HashSet<ElementId>());
         }
 
@@ -143,8 +144,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        /***************************************************/
-
         public void OnLight(LightNode node)
         {
         }
@@ -182,8 +181,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        /***************************************************/
-
         public void OnRPC(RPCNode node)
         {
         }
@@ -192,7 +189,10 @@ namespace BH.Revit.Engine.Core
 
         public RenderNodeAction OnViewBegin(ViewNode node)
         {
-            return RenderNodeAction.Proceed;
+            if (node.ViewId == m_HostDocument.ActiveView.Id)
+                return RenderNodeAction.Proceed;
+            else
+                return RenderNodeAction.Skip;
         }
 
         /***************************************************/
@@ -213,6 +213,7 @@ namespace BH.Revit.Engine.Core
         /****              Private fields               ****/
         /***************************************************/
 
+        private Document m_HostDocument;
         private Document m_TargetDocument;
         private Stack<Document> m_Documents = new Stack<Document>();
         private Dictionary<string, Document> m_DocumentLookup = new Dictionary<string, Document>();
