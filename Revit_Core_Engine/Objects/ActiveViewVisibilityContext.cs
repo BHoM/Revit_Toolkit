@@ -41,8 +41,8 @@ namespace BH.Revit.Engine.Core
         public ActiveViewVisibilityContext(Document hostDocument, Document targetDocument)
         {
             m_Documents.Push(hostDocument);
-            m_documentLookup[hostDocument.PathName] = hostDocument;
-            m_targetDocument = targetDocument;
+            m_DocumentLookup[hostDocument.PathName] = hostDocument;
+            m_TargetDocument = targetDocument;
             m_Elements.Add(hostDocument.PathName, new HashSet<ElementId>());
         }
 
@@ -54,13 +54,13 @@ namespace BH.Revit.Engine.Core
         [Description("Returns ids of all elements visible in the active view of the host document. The ids are grouped by document they belong to.")]
         public Dictionary<Document, HashSet<ElementId>> GetAllElementsVisibleInActiveView()
         {
-            if (m_targetDocument != null)
+            if (m_TargetDocument != null)
             {
                 BH.Engine.Base.Compute.RecordError($"The context has been processed with a single target document. Please run again making sure that the target document parameter in the context constructor is null.");
                 return null;
             }
             else
-                return m_documentLookup.ToDictionary(x => x.Value, x => m_Elements[x.Key]);
+                return m_DocumentLookup.ToDictionary(x => x.Value, x => m_Elements[x.Key]);
         }
 
         /***************************************************/
@@ -99,9 +99,9 @@ namespace BH.Revit.Engine.Core
             if (element is RevitLinkInstance)
             {
                 RevitLinkInstance linkInstance = (RevitLinkInstance)element;
-                if (m_targetDocument == null || m_targetDocument.PathName == linkInstance.GetLinkDocument().PathName)
+                if (m_TargetDocument == null || m_TargetDocument.PathName == linkInstance.GetLinkDocument().PathName)
                 {
-                    m_documentLookup[linkInstance.Document.PathName] = linkInstance.Document;
+                    m_DocumentLookup[linkInstance.Document.PathName] = linkInstance.Document;
                     return RenderNodeAction.Proceed;
                 }
             }
@@ -213,9 +213,9 @@ namespace BH.Revit.Engine.Core
         /****              Private fields               ****/
         /***************************************************/
 
-        private Document m_targetDocument;
+        private Document m_TargetDocument;
         private Stack<Document> m_Documents = new Stack<Document>();
-        private Dictionary<string, Document> m_documentLookup = new Dictionary<string, Document>();
+        private Dictionary<string, Document> m_DocumentLookup = new Dictionary<string, Document>();
         private Dictionary<string, HashSet<ElementId>> m_Elements = new Dictionary<string, HashSet<ElementId>>();
 
         /***************************************************/
