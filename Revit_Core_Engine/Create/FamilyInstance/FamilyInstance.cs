@@ -249,15 +249,17 @@ namespace BH.Revit.Engine.Core
             ConnectorSet newElConnSet = newElementMEPCurve.ConnectorManager.Connectors;
             Connector conn1 = null;
             Connector conn2 = null;
+            double minDistance = double.MaxValue;
             foreach (Connector hostConn in hostConnSet)
             {
                 foreach (Connector newElConn in newElConnSet)
                 {
-                    if (hostConn.Origin.IsAlmostEqualTo(newElConn.Origin))
+                    double dist = hostConn.Origin.DistanceTo(newElConn.Origin);
+                    if (dist < minDistance)
                     {
                         conn1 = hostConn;
                         conn2 = newElConn;
-                        break;
+                        minDistance = dist;
                     }
                 }
             }
