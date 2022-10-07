@@ -22,7 +22,6 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -49,12 +48,22 @@ namespace BH.Revit.Engine.Core
             if (hostDocument.ActiveView is View3D)
                 context = new ActiveViewVisibilityContext(hostDocument, document);
             else
+            {
+#if (REVIT2018 || REVIT2019)
+                BH.Engine.Base.Compute.RecordError($"Querying visible elements from the active view failed because only 3d views are supported in Revit 2019 or older. In later versions also 2d views can be queried.");
+                return null;
+#else
                 context = new Active2dViewVisibilityContext(hostDocument, document);
+#endif
+            }
 
             CustomExporter exporter = new CustomExporter(hostDocument, context);
             exporter.IncludeGeometricObjects = false;
-            exporter.Export2DIncludingAnnotationObjects = true;
             exporter.ShouldStopOnError = false;
+
+#if (!REVIT2018 && !REVIT2019)
+            exporter.Export2DIncludingAnnotationObjects = true;
+#endif
 
             try
             {
@@ -79,7 +88,5 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-    }
-
-   
+    }   
 }
