@@ -82,6 +82,8 @@ namespace BH.Revit.Engine.Core
                     revitFloor = document.Create.NewFloor(curve.ToRevitCurveArray(), floorType, level, true);
 #else
                 revitFloor = Floor.Create(document, new List<CurveLoop> { curve.ToRevitCurveLoop() }, floorType.Id, level.Id);
+                revitFloor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, slabPlane.Origin.Z.FromSI(SpecTypeId.Length) - level.ProjectElevation, false);
+                document.Regenerate();
 #endif
             }
             else
@@ -102,6 +104,7 @@ namespace BH.Revit.Engine.Core
                 revitFloor = document.Create.NewSlab(curve.ToRevitCurveArray(), level, line, -tan, true);
 #else
                 revitFloor = Floor.Create(document, new List<CurveLoop> { curve.ToRevitCurveLoop() }, floorType.Id, level.Id, true, line, -tan);
+                revitFloor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, ln.Start.Z.FromSI(SpecTypeId.Length) - level.ProjectElevation, false);
 #endif
                 revitFloor.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, floorType.Id);
             }
