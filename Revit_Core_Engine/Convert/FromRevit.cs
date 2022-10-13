@@ -138,7 +138,7 @@ namespace BH.Revit.Engine.Core
             }
 
             object converted;
-
+            
             Type targetBHoMType = element.IBHoMType(discipline, settings);
             if (targetBHoMType == null)
             {
@@ -148,17 +148,7 @@ namespace BH.Revit.Engine.Core
             else
             {
                 MethodInfo convertMethod = element.ConvertMethod(targetBHoMType);
-                ParameterInfo[] parameterInfo = convertMethod?.GetParameters();
-                if (parameterInfo != null && parameterInfo.Where(x => x.ParameterType == typeof(Discipline)).Any())
-                {
-                    converted = convertMethod.Invoke(null, new object[] { element, settings, refObjects, discipline });
-                }
-                else
-                {
-                    converted = convertMethod.Invoke(null, new object[] { element, settings, refObjects });
-
-                }
-
+                converted = convertMethod.Invoke(null, new object[] { element, settings, refObjects });
 
                 if (converted == null || (typeof(IEnumerable<object>).IsAssignableFrom(converted.GetType()) && ((IEnumerable<object>)converted).Count(x => x != null) == 0))
                 {
@@ -172,7 +162,7 @@ namespace BH.Revit.Engine.Core
                 result = new List<IBHoMObject> { ((IBHoMObject)converted).IPostprocess(transform, settings) };
             else if (converted is IEnumerable<IBHoMObject>)
                 result = new List<IBHoMObject>(((IEnumerable<IBHoMObject>)converted).Select(x => x.IPostprocess(transform, settings)));
-
+            
             return result;
         }
 

@@ -58,9 +58,9 @@ namespace BH.Revit.Engine.Core
                         Type to = mi.ReturnType;
                         if (!typeof(IBHoMObject).IsAssignableFrom(to) && !typeof(IEnumerable<IBHoMObject>).IsAssignableFrom(to))
                             continue;
-                        
+
                         ParameterInfo[] parameters = mi.GetParameters();
-                        if (parameters?.Length < 3 || parameters?.Length > 4)
+                        if (parameters?.Length != 3)
                             continue;
 
                         Type from = parameters[0].ParameterType;
