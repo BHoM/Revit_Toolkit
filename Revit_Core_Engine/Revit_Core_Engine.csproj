@@ -366,6 +366,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Convert\Physical\FromRevit\Duct.cs" />
+    <Compile Include="Convert\Physical\ToRevit\Duct.cs" />
     <Compile Include="Modify\Checkout.cs" />
     <Compile Include="Compute\Activate.cs" />
     <Compile Include="Compute\CachePanelGeometry.cs" />

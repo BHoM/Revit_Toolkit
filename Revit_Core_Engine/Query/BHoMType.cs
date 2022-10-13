@@ -304,6 +304,7 @@ namespace BH.Revit.Engine.Core
             {
                 case Discipline.Architecture:
                 case Discipline.Physical:
+                    return typeof(BH.oM.Physical.Elements.Duct);
                 case Discipline.Environmental:
                     return typeof(BH.oM.MEP.System.Duct);
             }

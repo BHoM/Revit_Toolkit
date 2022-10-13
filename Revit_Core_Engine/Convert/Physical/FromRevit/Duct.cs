@@ -28,6 +28,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.MEP.System;
+using BH.oM.MEP.System.SectionProperties;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -44,26 +45,26 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("ducts", "List of BHoM duct objects converted from a Revit duct elements.")]
-        public static List<BH.oM.MEP.System.Duct> DuctFromRevit(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<BH.oM.Physical.Elements.Duct> PhysicalDuctFromRevit(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
             // Reuse a BHoM duct from refObjects if it has been converted before
-            List<BH.oM.MEP.System.Duct> bhomDucts = refObjects.GetValues<BH.oM.MEP.System.Duct>(revitDuct.Id);
+            List<BH.oM.Physical.Elements.Duct> bhomDucts = refObjects.GetValues<BH.oM.Physical.Elements.Duct>(revitDuct.Id);
             if (bhomDucts != null)
             {
                 return bhomDucts;
             }
             else
             {
-                bhomDucts = new List<BH.oM.MEP.System.Duct>();
+                bhomDucts = new List<BH.oM.Physical.Elements.Duct>();
             }
             
-            List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitDuct, settings);
+            List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitDuct, settings,oM.Adapters.Revit.Enums.Discipline.Physical);
             
             // Flow rate
             double flowRate = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_DUCT_FLOW_PARAM); 
-            BH.oM.MEP.System.SectionProperties.DuctSectionProperty sectionProperty = BH.Revit.Engine.Core.Query.DuctSectionProperty(revitDuct, settings);
+            DuctSectionProperty sectionProperty = BH.Revit.Engine.Core.Query.DuctSectionProperty(revitDuct, settings);
             // Orientation angle
             double orientationAngle = revitDuct.OrientationAngle(settings); //ToDo - resolve in next issue, specific issue being raised
 
@@ -76,7 +77,7 @@ namespace BH.Revit.Engine.Core
             for (int i = 0; i < queried.Count; i++)
             {
                 BH.oM.Geometry.Line segment = queried[i];
-                BH.oM.MEP.System.Duct thisSegment = new Duct
+                BH.oM.Physical.Elements.Duct thisSegment = new BH.oM.Physical.Elements.Duct
                 {
                     StartPoint = segment.StartPoint(),
                     EndPoint = segment.EndPoint(),
