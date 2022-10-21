@@ -32,6 +32,7 @@ using System.ComponentModel;
 using System.Linq;
 using BH.oM.Base.Attributes;
 using BH.oM.Base;
+using BH.oM.Adapters.Revit.Enums;
 
 namespace BH.Revit.Engine.Core
 {
@@ -160,7 +161,7 @@ namespace BH.Revit.Engine.Core
         [Input("mepCurve", "Revit MEPCurve to be queried.")]
         [Input("settings", "Optional, the RevitSettings to be used.")]
         [Output("locationCurveMEP", "BHoM lines list queried from the MEPCurve.")]
-        public static List<BH.oM.Geometry.Line> LocationCurveMEP(this MEPCurve mepCurve, RevitSettings settings = null)
+        public static List<BH.oM.Geometry.Line> LocationCurveMEP(this MEPCurve mepCurve, RevitSettings settings = null, Discipline discipline = Discipline.Physical)
         {            
             //sometimes an mepcurve will be connected without fittings
             //causing connections to occur in the middle of the locationcurve

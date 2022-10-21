@@ -284,6 +284,7 @@ namespace BH.Revit.Engine.Core
             {
                 case Discipline.Architecture:
                 case Discipline.Physical:
+                    return typeof(BH.oM.Physical.Elements.CableTray);
                 case Discipline.Environmental:
                     return typeof(BH.oM.MEP.System.CableTray);
             }
@@ -304,6 +305,7 @@ namespace BH.Revit.Engine.Core
             {
                 case Discipline.Architecture:
                 case Discipline.Physical:
+                    return typeof(BH.oM.Physical.Elements.Duct);
                 case Discipline.Environmental:
                     return typeof(BH.oM.MEP.System.Duct);
             }
@@ -324,6 +326,7 @@ namespace BH.Revit.Engine.Core
             {
                 case Discipline.Architecture:
                 case Discipline.Physical:
+                    return typeof(BH.oM.Physical.Elements.Pipe);
                 case Discipline.Environmental:
                     return typeof(BH.oM.MEP.System.Pipe);
             }
@@ -344,6 +347,7 @@ namespace BH.Revit.Engine.Core
             {
                 case Discipline.Architecture:
                 case Discipline.Physical:
+                    return typeof(BH.oM.Physical.Elements.Wire);
                 case Discipline.Environmental:
                     return typeof(BH.oM.MEP.System.Wire);
             }

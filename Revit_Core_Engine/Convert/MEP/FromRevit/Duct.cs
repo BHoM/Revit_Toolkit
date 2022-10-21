@@ -30,6 +30,7 @@ using BH.oM.Base.Attributes;
 using BH.oM.MEP.System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -98,6 +99,72 @@ namespace BH.Revit.Engine.Core
 
             refObjects.AddOrReplace(revitDuct.Id, bhomDucts);
             return bhomDucts;
+        }
+
+        /***************************************************/
+
+        [Description("Convert a Revit duct to BHoM ducts.")]
+        [Input("revitDuct", "Revit duct to be converted.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("ducts", "List of BHoM duct objects converted from a Revit duct elements.")]
+        public static BH.oM.Physical.Elements.Duct PhysicalDuctFromRevit(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            settings = settings.DefaultIfNull();
+
+            // Reuse a BHoM duct from refObjects if it has been converted before
+            BH.oM.Physical.Elements.Duct bhomDuct = refObjects.GetValues<BH.oM.Physical.Elements.Duct>(revitDuct.Id).FirstOrDefault();
+            if (bhomDuct != null)
+            {
+                return bhomDuct;
+            }
+            else
+            {
+                bhomDuct = new BH.oM.Physical.Elements.Duct();
+            }
+
+            BH.oM.Geometry.Line locationCurve = Query.LocationCurveMEP(revitDuct, settings, oM.Adapters.Revit.Enums.Discipline.Physical).FirstOrDefault();
+
+            // Flow rate
+            double flowRate = revitDuct.LookupParameterDouble(BuiltInParameter.RBS_DUCT_FLOW_PARAM);
+            BH.oM.Physical.ConduitProperties.DuctSectionProperty sectionProperty = BH.Revit.Engine.Core.Query.DuctSectionProperty(revitDuct, settings);
+            // Orientation angle
+            double orientationAngle = revitDuct.OrientationAngle(settings); //ToDo - resolve in next issue, specific issue being raised
+
+            // Revit element type proxy
+            RevitTypeFragment typeFragment = null;
+            ElementType type = revitDuct.Document.GetElement(revitDuct.GetTypeId()) as ElementType;
+            if (type != null)
+                typeFragment = type.TypeFragmentFromRevit(settings, refObjects);
+
+            bhomDuct.FlowRate = flowRate;
+            bhomDuct.SectionProperty = sectionProperty;
+            bhomDuct.OrientationAngle = orientationAngle;
+
+                // Set the type fragment
+                if (typeFragment != null)
+                    thisSegment.Fragments.Add(typeFragment);
+
+                //Set identifiers, parameters & custom data
+                thisSegment.SetIdentifiers(revitDuct);
+                thisSegment.CopyParameters(revitDuct, settings.MappingSettings);
+                thisSegment.SetProperties(revitDuct, settings.MappingSettings);
+           
+
+            refObjects.AddOrReplace(revitDuct.Id, bhomDuct);
+            return bhomDuct;
+        }
+
+        /***************************************************/
+
+        [Description("Convert a Revit duct to BHoM ducts.")]
+        [Input("revitDuct", "Revit duct to be converted.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("ducts", "List of BHoM duct objects converted from a Revit duct elements.")]
+        public static List<BH.oM.MEP.System.Duct> AnalyticalDuctFromRevit(this Autodesk.Revit.DB.Mechanical.Duct revitDuct, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+
         }
 
         /***************************************************/
