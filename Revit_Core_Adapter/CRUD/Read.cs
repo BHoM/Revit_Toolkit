@@ -235,7 +235,7 @@ namespace BH.Revit.Adapter.Core
                     {
                         edges = element.Curves(geometryOptions, settings, true).FromRevit();
                         if (bHoMTransform != null)
-                            edges = edges.Select(x => x.ITransform(bHoMTransform)).ToList();
+                            edges = edges.Select(x => x?.ITransform(bHoMTransform)).ToList();
                     }
 
                     List<ISurface> surfaces = null;
@@ -243,7 +243,7 @@ namespace BH.Revit.Adapter.Core
                     {
                         surfaces = element.Faces(geometryOptions, settings).Select(x => x.IFromRevit()).ToList();
                         if (bHoMTransform != null)
-                            surfaces = surfaces.Select(x => x.ITransform(bHoMTransform)).ToList();
+                            surfaces = surfaces.Select(x => x?.ITransform(bHoMTransform)).ToList();
                     }
 
                     List<oM.Geometry.Mesh> meshes = null;
@@ -251,7 +251,7 @@ namespace BH.Revit.Adapter.Core
                     {
                         meshes = element.MeshedGeometry(meshOptions, settings);
                         if (bHoMTransform != null)
-                            meshes = meshes.Select(x => x.Transform(bHoMTransform)).ToList();
+                            meshes = meshes.Select(x => x?.Transform(bHoMTransform)).ToList();
                     }
 
                     if (geometryConfig.PullEdges || geometryConfig.PullSurfaces || geometryConfig.PullMeshes)
@@ -267,7 +267,7 @@ namespace BH.Revit.Adapter.Core
                     {
                         List<RenderMesh> renderMeshes = element.RenderMeshes(renderMeshOptions, settings);
                         if (bHoMTransform != null)
-                            renderMeshes = renderMeshes.Select(x => x.Transform(bHoMTransform)).ToList();
+                            renderMeshes = renderMeshes.Select(x => x?.Transform(bHoMTransform)).ToList();
 
                         RevitRepresentation representation = new RevitRepresentation(renderMeshes);
                         foreach (IBHoMObject iBHoMObject in iBHoMObjects)
