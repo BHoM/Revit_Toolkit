@@ -42,9 +42,10 @@ namespace BH.Revit.Engine.Core
         [Input("originalElement", "The original element to find the closest element from.")]
         [Input("searchRadius", "Optional, search radius in Revit internal unit (ft) to exclude elements outside the range.")]
         [Input("category", "Optional, the Revit BuiltInCategory to filter elements in the closest elements search.")]
-        [Input("includeLinks", "Optional: if true, elements from linked documents will also be taken into account.")]
+        [Input("includeLinks", "If true, elements from linked documents will also be taken into account.")]
+        [Input("includeCurtainSubelements", "If true, individual curtain panels and mullions nested in curtain systems will be included in search.")]
         [Output("closestElement", "The closest element from the input element.")]
-        public static Element ClosestElement(this Document document, Element originalElement, double searchRadius = Double.MaxValue, BuiltInCategory category = default, bool includeLinks = false)
+        public static Element ClosestElement(this Document document, Element originalElement, double searchRadius = Double.MaxValue, BuiltInCategory category = default, bool includeLinks = false, bool includeCurtainSubelements = false)
         {
             if (document == null || originalElement == null || searchRadius == 0)
                 return null;
@@ -86,7 +87,24 @@ namespace BH.Revit.Engine.Core
                     filteredElementCollector.OfCategory(category);
                 }
                 
-                IEnumerable<Element> elements = filteredElementCollector.Where(x=>x.HasLocation(true,false));
+                List<Element> elements = filteredElementCollector.ToList();
+
+                // If include curtain subelements, then include all curtain panels and mullions in search
+                if (includeCurtainSubelements)
+                {
+                    FilteredElementCollector hostObjCollector = new FilteredElementCollector(doc).OfClass(typeof(HostObject));
+                    HashSet<ElementId> subelementIds = new HashSet<ElementId>();
+                    foreach (CurtainGrid grid in hostObjCollector.Cast<HostObject>().SelectMany(x => x.ICurtainGrids()))
+                    {
+                        subelementIds.UnionWith(grid.GetMullionIds().Union(grid.GetPanelIds()));
+                    }
+
+                    List<Element> subelements = subelementIds.Select(x => doc.GetElement(x)).ToList();
+                    if (category != default)
+                        subelements = subelements.Where(x => x.Category.Id.IntegerValue == (int)category).ToList();
+
+                    elements.AddRange(subelements);
+                }
 
                 //if document is from linked file we need to make sure location is corrected
                 Transform transform = null;
@@ -98,8 +116,23 @@ namespace BH.Revit.Engine.Core
                 // check distances to each element from category 
                 foreach (Element searchedElement in elements)
                 {
+                    XYZ searchedPoint = null;
                     Location searchedLocation = searchedElement.Location;
-                    XYZ searchedPoint = (searchedLocation as LocationPoint).Point;
+
+                    if (searchedLocation is LocationPoint)
+                        searchedPoint = (searchedLocation as LocationPoint).Point;
+                    else
+                    {
+                        BoundingBoxXYZ searchedBoundingBox = searchedElement.get_BoundingBox(null);
+                        if (searchedBoundingBox != null)
+                        {
+                            searchedPoint = (searchedBoundingBox.Min + searchedBoundingBox.Max) / 2;
+                            BH.Engine.Base.Compute.RecordNote($"Element {searchedElement.Id} {searchedElement.Name} did not have location point, centre of its bounding box has been used instead to calculate distance.");
+                        }
+                    }
+
+                    if (searchedPoint == null)
+                        continue;
 
                     // fix location if from linked file
                     if (transform != null)
