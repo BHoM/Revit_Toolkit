@@ -168,7 +168,22 @@ namespace BH.Revit.Engine.Core
                 foreach (HostObject host in hosts)
                 {
                     List<Autodesk.Revit.DB.Face> panelFaces = host.ILinkPanelFaces(settings);
-                    List<Autodesk.Revit.DB.Face> edgeFaces = host.Faces(new Options(), settings).Where(x => host.GetGeneratingElementIds(x).Any(y => y.IntegerValue == familyInstance.Id.IntegerValue)).ToList();
+                    List<Autodesk.Revit.DB.Face> hostFacesAll = host.Faces(new Options(), settings);
+                    List<Autodesk.Revit.DB.Face> hostFaces = new List<Autodesk.Revit.DB.Face>();
+
+                    foreach (Autodesk.Revit.DB.Face face in hostFacesAll)
+                    {
+                        try
+                        {
+                            host.GetGeneratingElementIds(face);
+                            hostFaces.Add(face);
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    List<Autodesk.Revit.DB.Face> edgeFaces = hostFaces.Where(x => host.GetGeneratingElementIds(x).Any(y => y.IntegerValue == familyInstance.Id.IntegerValue)).ToList();
                     List<Curve> edgeCurves = new List<Curve>();
                     foreach (Autodesk.Revit.DB.Face face in panelFaces)
                     {

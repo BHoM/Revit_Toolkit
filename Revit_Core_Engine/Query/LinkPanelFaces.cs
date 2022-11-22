@@ -69,19 +69,22 @@ namespace BH.Revit.Engine.Core
             List<Face> result = new List<Face>();
             foreach (Solid s in halfSolids)
             {
-                foreach (Face f in s.Faces)
+                if (s != null)
                 {
-                    PlanarFace pf = f as PlanarFace;
-                    if (pf == null)
-                        continue;
+                    foreach (Face f in s.Faces)
+                    {
+                        PlanarFace pf = f as PlanarFace;
+                        if (pf == null)
+                            continue;
 
-                    if (1 - Math.Abs(pf.FaceNormal.DotProduct(normal)) > settings.AngleTolerance)
-                        continue;
+                        if (1 - Math.Abs(pf.FaceNormal.DotProduct(normal)) > settings.AngleTolerance)
+                            continue;
 
-                    if (Math.Abs(normal.DotProduct(pf.Origin - p.Origin)) > settings.DistanceTolerance)
-                        continue;
+                        if (Math.Abs(normal.DotProduct(pf.Origin - p.Origin)) > settings.DistanceTolerance)
+                            continue;
 
-                    result.Add(pf);
+                        result.Add(pf);
+                    }
                 }
             }
 
