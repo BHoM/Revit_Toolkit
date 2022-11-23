@@ -48,6 +48,7 @@ namespace BH.Revit.Engine.Core
             if (document == null || originalElement == null || searchRadius == 0)
                 return null;
             
+            // Find documents to search through
             List<Document> documentsToSearch = new List<Document>(){document};
             if (includeLinks)
             {
@@ -59,13 +60,13 @@ namespace BH.Revit.Engine.Core
                         RevitLinkInstance linkInstance = document.GetElement(id) as RevitLinkInstance;
                         Document doc = linkInstance?.GetLinkDocument();
                         // Linked files that are not loaded will be null
-                        if(doc != null)
+                        if (doc != null)
                             documentsToSearch.Add(doc);
                     }
                 }
             }
 
-            // get original element location
+            // Get original element location
             object location = Location(originalElement);
             if (location == null)
             {
@@ -73,37 +74,39 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
+            // Transform the location to host document coordinate system if element comes from link
+            if (originalElement.Document.IsLinked)
+                location = TransformLocation(location, originalElement.Document.LinkTransform());
+
             double smallestDistance = searchRadius;
             Element result = null;
-
             foreach (Document doc in documentsToSearch)
             {
-                //if document is from linked file we need to make sure location is corrected
+                // If document is from linked file we need to make sure location is corrected
                 Transform transform = null;
                 if (doc.IsLinked && doc != document)
-                {
                     transform = doc.LinkTransform();
-                }
 
+                // Find elements from category
                 FilteredElementCollector filteredElementCollector = new FilteredElementCollector(doc).WhereElementIsNotElementType();
                 if (category != default)
-                {
                     filteredElementCollector.OfCategory(category);
-                }
 
-                // check distances to each element from category 
-                foreach (Element searchedElement in filteredElementCollector)
+                // Check distances to each element from category 
+                foreach (Element checkedElement in filteredElementCollector)
                 {
-                    object searchedLocation = Location(searchedElement);
-                    if (searchedLocation == null)
+                    object checkedLocation = Location(checkedElement);
+                    if (checkedLocation == null)
                         continue;
 
-                    searchedLocation = TransformLocation(searchedLocation, transform);
+                    // Transform the location to host document coordinate system
+                    checkedLocation = TransformLocation(checkedLocation, transform);
 
-                    double distance = Distance(location, searchedLocation);
+                    // Calculate the distance
+                    double distance = Distance(location, checkedLocation);
                     if (!double.IsNaN(distance) && distance < smallestDistance)
                     {
-                        result = searchedElement;
+                        result = checkedElement;
                         smallestDistance = distance;
                     }
                 }
@@ -112,20 +115,23 @@ namespace BH.Revit.Engine.Core
             return result;
         }
 
+
+        /***************************************************/
+        /****              Private methods              ****/
         /***************************************************/
 
         private static object Location(Element element)
         {
             if (element?.Location is LocationPoint)
-                return (element.Location as LocationPoint).Point;
+                return ((LocationPoint)element.Location).Point;
             else if (element?.Location is LocationCurve)
-                return (element.Location as LocationCurve).Curve;
+                return ((LocationCurve)element.Location).Curve;
             else
             {
                 BoundingBoxXYZ bbox = element?.get_BoundingBox(null);
                 if (bbox != null)
                 {
-                    BH.Engine.Base.Compute.RecordNote($"Element {element.Id} {element.Name} did not have location point, centre of its bounding box has been used instead to calculate distance.");
+                    BH.Engine.Base.Compute.RecordNote($"Element {element.Id} {element.Name} did not have location point or curve, centre of its bounding box has been used instead to calculate distance.");
                     return (bbox.Min + bbox.Max) / 2;
                 }
             }
@@ -169,5 +175,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
