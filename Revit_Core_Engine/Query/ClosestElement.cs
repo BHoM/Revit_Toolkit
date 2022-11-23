@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
         [Input("includeLinks", "If true, elements from linked documents will also be taken into account.")]
         [Input("includeCurtainSubelements", "If true, individual curtain panels and mullions nested in curtain systems will be included in search.")]
         [Output("closestElement", "The closest element from the input element.")]
-        public static Element ClosestElement(this Document document, Element originalElement, double searchRadius = Double.MaxValue, BuiltInCategory category = default, bool includeLinks = false, bool includeCurtainSubelements = false)
+        public static Element ClosestElement(this Document document, Element originalElement, double searchRadius = Double.MaxValue, BuiltInCategory category = default, bool includeLinks = false)
         {
             if (document == null || originalElement == null || searchRadius == 0)
                 return null;
@@ -78,31 +78,6 @@ namespace BH.Revit.Engine.Core
 
             foreach (Document doc in documentsToSearch)
             {
-                FilteredElementCollector filteredElementCollector = new FilteredElementCollector(doc).WhereElementIsNotElementType();
-                if (category != default)
-                {
-                    filteredElementCollector.OfCategory(category);
-                }
-                
-                List<Element> elements = filteredElementCollector.ToList();
-
-                // If include curtain subelements, then include all curtain panels and mullions in search
-                if (includeCurtainSubelements)
-                {
-                    FilteredElementCollector hostObjCollector = new FilteredElementCollector(doc).OfClass(typeof(HostObject));
-                    HashSet<ElementId> subelementIds = new HashSet<ElementId>();
-                    foreach (CurtainGrid grid in hostObjCollector.Cast<HostObject>().SelectMany(x => x.ICurtainGrids()))
-                    {
-                        subelementIds.UnionWith(grid.GetMullionIds().Union(grid.GetPanelIds()));
-                    }
-
-                    List<Element> subelements = subelementIds.Select(x => doc.GetElement(x)).ToList();
-                    if (category != default)
-                        subelements = subelements.Where(x => x.Category.Id.IntegerValue == (int)category).ToList();
-
-                    elements.AddRange(subelements);
-                }
-
                 //if document is from linked file we need to make sure location is corrected
                 Transform transform = null;
                 if (doc.IsLinked && doc != document)
@@ -110,8 +85,14 @@ namespace BH.Revit.Engine.Core
                     transform = doc.LinkTransform();
                 }
 
+                FilteredElementCollector filteredElementCollector = new FilteredElementCollector(doc).WhereElementIsNotElementType();
+                if (category != default)
+                {
+                    filteredElementCollector.OfCategory(category);
+                }
+
                 // check distances to each element from category 
-                foreach (Element searchedElement in elements)
+                foreach (Element searchedElement in filteredElementCollector)
                 {
                     object searchedLocation = Location(searchedElement);
                     if (searchedLocation == null)
