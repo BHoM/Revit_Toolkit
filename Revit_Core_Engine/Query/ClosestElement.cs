@@ -84,7 +84,7 @@ namespace BH.Revit.Engine.Core
             {
                 // If document is from linked file we need to make sure location is corrected
                 Transform transform = null;
-                if (doc.IsLinked && doc != document)
+                if (doc.IsLinked)
                     transform = doc.LinkTransform();
 
                 // Find elements from category
@@ -162,9 +162,11 @@ namespace BH.Revit.Engine.Core
                 return ((XYZ)location1).DistanceTo((XYZ)location2);
             else if (location1 is Curve && location2 is XYZ)
                 return ((Curve)location1).Distance((XYZ)location2);
+            else if (location1 is XYZ && location2 is Curve)
+                return ((Curve)location2).Distance((XYZ)location1);
             else if (location1 is Curve && location2 is Curve)
             {
-                IList<ClosestPointsPairBetweenTwoCurves> pairs;
+                IList<ClosestPointsPairBetweenTwoCurves> pairs = new List<ClosestPointsPairBetweenTwoCurves>();
                 ((Curve)location1).ComputeClosestPoints((Curve)location2, true, true, false, out pairs);
                 return pairs.OrderBy(x => x.Distance).First().Distance;
             }
