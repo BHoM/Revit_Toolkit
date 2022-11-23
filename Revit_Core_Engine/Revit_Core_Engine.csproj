@@ -367,6 +367,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Convert\Geometry\FromRevit\BoundingBox.cs" />
+    <Compile Include="Convert\Physical\FromRevit\MeshElement.cs" />
     <Compile Include="Query\BoundsOfTransformed.cs" />
     <Compile Include="Modify\Checkout.cs" />
     <Compile Include="Compute\Activate.cs" />
