@@ -21,8 +21,6 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Physical.Constructions;
 using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
@@ -68,17 +66,16 @@ namespace BH.Revit.Engine.Core
             }
 
             // get original element location
-            Location location = originalElement.Location;
-            if (!(location is LocationPoint))
+            object location = Location(originalElement);
+            if (location == null)
             {
-                BH.Engine.Base.Compute.RecordError(String.Format("Original element to search for closest element is not point XYZ based. Location of type {0} is not implemented in this search.",location.GetType()));
+                BH.Engine.Base.Compute.RecordError($"Element {originalElement.Id} {originalElement.Name} does not have a valid location.");
                 return null;
             }
-            XYZ point = (location as LocationPoint).Point;
-            
+
             double smallestDistance = searchRadius;
             Element result = null;
-            
+
             foreach (Document doc in documentsToSearch)
             {
                 FilteredElementCollector filteredElementCollector = new FilteredElementCollector(doc).WhereElementIsNotElementType();
@@ -116,30 +113,14 @@ namespace BH.Revit.Engine.Core
                 // check distances to each element from category 
                 foreach (Element searchedElement in elements)
                 {
-                    XYZ searchedPoint = null;
-                    Location searchedLocation = searchedElement.Location;
-
-                    if (searchedLocation is LocationPoint)
-                        searchedPoint = (searchedLocation as LocationPoint).Point;
-                    else
-                    {
-                        BoundingBoxXYZ searchedBoundingBox = searchedElement.get_BoundingBox(null);
-                        if (searchedBoundingBox != null)
-                        {
-                            searchedPoint = (searchedBoundingBox.Min + searchedBoundingBox.Max) / 2;
-                            BH.Engine.Base.Compute.RecordNote($"Element {searchedElement.Id} {searchedElement.Name} did not have location point, centre of its bounding box has been used instead to calculate distance.");
-                        }
-                    }
-
-                    if (searchedPoint == null)
+                    object searchedLocation = Location(searchedElement);
+                    if (searchedLocation == null)
                         continue;
 
-                    // fix location if from linked file
-                    if (transform != null)
-                        searchedPoint = transform.OfPoint(searchedPoint);
-                    
-                    double distance = searchedPoint.DistanceTo(point);
-                    if (distance < smallestDistance)
+                    searchedLocation = TransformLocation(searchedLocation, transform);
+
+                    double distance = Distance(location, searchedLocation);
+                    if (!double.IsNaN(distance) && distance < smallestDistance)
                     {
                         result = searchedElement;
                         smallestDistance = distance;
@@ -149,7 +130,61 @@ namespace BH.Revit.Engine.Core
              
             return result;
         }
-        
+
+        /***************************************************/
+
+        private static object Location(Element element)
+        {
+            if (element?.Location is LocationPoint)
+                return (element.Location as LocationPoint).Point;
+            else if (element?.Location is LocationCurve)
+                return (element.Location as LocationCurve).Curve;
+            else
+            {
+                BoundingBoxXYZ bbox = element?.get_BoundingBox(null);
+                if (bbox != null)
+                {
+                    BH.Engine.Base.Compute.RecordNote($"Element {element.Id} {element.Name} did not have location point, centre of its bounding box has been used instead to calculate distance.");
+                    return (bbox.Min + bbox.Max) / 2;
+                }
+            }
+
+            return null;
+        }
+
+        /***************************************************/
+
+        private static object TransformLocation(object location, Transform transform)
+        {
+            if (transform == null)
+                return location;
+
+            if (location is XYZ)
+                return transform.OfPoint((XYZ)location);
+            else if (location is Curve)
+                return ((Curve)location).CreateTransformed(transform);
+            else
+                return null;
+        }
+
+        /***************************************************/
+
+        private static double Distance(object location1, object location2)
+        {
+            if (location1 is XYZ && location2 is XYZ)
+                return ((XYZ)location1).DistanceTo((XYZ)location2);
+            else if (location1 is Curve && location2 is XYZ)
+                return ((Curve)location1).Distance((XYZ)location2);
+            else if (location1 is Curve && location2 is Curve)
+            {
+                IList<ClosestPointsPairBetweenTwoCurves> pairs;
+                ((Curve)location1).ComputeClosestPoints((Curve)location2, true, true, false, out pairs);
+                return pairs.OrderBy(x => x.Distance).First().Distance;
+            }
+            else
+                return double.NaN;
+        }
+
         /***************************************************/
     }
 }
