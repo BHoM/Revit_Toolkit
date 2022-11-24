@@ -64,7 +64,7 @@ namespace BH.Revit.Engine.Core
             Plane p = Plane.CreateByNormalAndOrigin(normal, line.Origin);
 
             List<Solid> solids = wall.Solids(new Options());
-            List<Solid> halfSolids = solids.Select(x => BooleanOperationsUtils.CutWithHalfSpace(x, p)).ToList();
+            List<Solid> halfSolids = solids.Select(x => BooleanOperationsUtils.CutWithHalfSpace(x, p)).Where(x => x != null).ToList();
 
             List<Face> result = new List<Face>();
             foreach (Solid s in halfSolids)
