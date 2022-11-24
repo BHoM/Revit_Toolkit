@@ -45,7 +45,8 @@ namespace BH.Revit.Engine.Core
             if (geometryElement == null)
                 return null;
 
-            List<GeometryObject> result = new List<GeometryObject>();
+            List<GeometryObject> geometry = new List<GeometryObject>();
+            List<GeometryObject> instanceGeometry = new List<GeometryObject>();
             foreach (GeometryObject geometryObject in geometryElement)
             {
                 if (geometryObject is GeometryInstance)
@@ -62,13 +63,16 @@ namespace BH.Revit.Engine.Core
 
                     List<GeometryObject> instanceGeometries = geomElement.GeometryPrimitives(null, settings);
                     if (instanceGeometries != null)
-                        result.AddRange(instanceGeometries);
+                        instanceGeometry.AddRange(instanceGeometries);
                 }
                 else
-                    result.Add(geometryObject);
+                    geometry.Add(geometryObject);
             }
 
-            return result;
+            instanceGeometry = instanceGeometry.Where(x => !(x is Solid && ((Solid)x).Faces.IsEmpty)).ToList();
+            geometry = geometry.Where(x => !(x is Solid && ((Solid)x).Faces.IsEmpty)).ToList();
+
+            return geometry.Any() ? geometry : instanceGeometry;
         }
 
         /***************************************************/
