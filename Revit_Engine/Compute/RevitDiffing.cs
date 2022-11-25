@@ -154,6 +154,10 @@ namespace BH.Engine.Adapters.Revit
             }
             DiffingConfig diffConfigClone = GetRevitDiffingConfig(rcc);
 
+            //Add any custom object difference compares on the provided diff config
+            if (diffConfig.CustomObjectDifferencesComparers != null && diffConfig.CustomObjectDifferencesComparers.Any())
+                diffConfigClone.CustomObjectDifferencesComparers.AddRange(diffConfig.CustomObjectDifferencesComparers);
+
             // Get the past and following RevitIdentifiers fragments.
             IEnumerable<RevitIdentifiers> pastIdFragments = pastObjects.OfType<IBHoMObject>().Select(obj => obj.GetRevitIdentifiers()).Where(x => x != null);
             IEnumerable<RevitIdentifiers> followingIdFragments = followingObjects.OfType<IBHoMObject>().Select(obj => obj.GetRevitIdentifiers()).Where(x => x != null);
