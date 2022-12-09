@@ -29,6 +29,7 @@ using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -49,13 +50,16 @@ namespace BH.Revit.Engine.Core
             if (wall == null || wall.Location == null || document == null)
                 return null;
 
-            PlanarSurface planarSurface = wall.Location as PlanarSurface;
-            if (planarSurface == null)
-                return null;
-
             Wall revitWall = refObjects.GetValue<Wall>(document, wall.BHoM_Guid);
             if (revitWall != null)
                 return revitWall;
+
+            PlanarSurface planarSurface = wall.Location as PlanarSurface;
+            if (planarSurface == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Conversion from BHoM to Revit failed because only planar, non-disjoint walls are currently supported.");
+                return null;
+            }
 
             settings = settings.DefaultIfNull();
 
@@ -81,6 +85,12 @@ namespace BH.Revit.Engine.Core
             revitWall.CheckIfNullPush(wall);
             if (revitWall == null)
                 return null;
+
+            document.Regenerate();
+
+            if (planarSurface.InternalBoundaries?.Any() == true || wall.Openings?.Any() == true)
+                BH.Engine.Base.Compute.RecordWarning("BHoM currently does not support implicit conversion of wall openings to Revit, so they have been ignored." +
+                                                     "\nIn order to push openings to Revit, please push them as individual ModelInstances with this wall as host.");
 
             // Copy parameters from BHoM object to Revit element
             revitWall.CopyParameters(wall, settings);

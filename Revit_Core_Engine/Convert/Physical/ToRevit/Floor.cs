@@ -55,7 +55,10 @@ namespace BH.Revit.Engine.Core
 
             PlanarSurface planarSurface = floor.Location as PlanarSurface;
             if (planarSurface == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Conversion from BHoM to Revit failed because only planar, non-disjoint floors are currently supported.");
                 return null;
+            }
 
             settings = settings.DefaultIfNull();
 
