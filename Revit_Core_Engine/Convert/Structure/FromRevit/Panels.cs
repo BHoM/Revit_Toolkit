@@ -133,6 +133,9 @@ namespace BH.Revit.Engine.Core
 
                     foreach (PlanarSurface planarSurface in surfaces.Keys)
                     {
+                        if (planarSurface.ExternalBoundary == null)
+                            continue;
+
                         List<ICurve> internalBoundaries = new List<ICurve>();
                         if (surfaces[planarSurface] != null)
                             internalBoundaries.AddRange(surfaces[planarSurface].Select(x => x.ExternalBoundary.ITranslate(translation)));
@@ -144,7 +147,7 @@ namespace BH.Revit.Engine.Core
 
             if (result.Count == 0)
             {
-                result.Add(new oM.Structure.Elements.Panel { Property = property2D });
+                result.Add(new oM.Structure.Elements.Panel { Name = hostObject.Name, Property = property2D });
                 BH.Engine.Base.Compute.RecordError(String.Format("Conversion of Revit panel's location to BHoM failed. A panel without location is returned. Revit ElementId : {0}", hostObject.Id));
             }
 

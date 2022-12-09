@@ -234,7 +234,7 @@ namespace BH.Revit.Engine.Core
                 }
                 catch (Exception ex)
                 {
-                    BH.Engine.Base.Compute.RecordError($"Creation of a freeform Revit profile geometry failed because the family could not be temporarily saved in {m_TempFolder}. Please make sure the folder exists and you have access to it, then try to clean it up in case the issue persists.");
+                    BH.Engine.Base.Compute.RecordError($"Creation of a freeform Revit profile geometry failed because the family could not be temporarily saved in {m_TempFolder}. Please make sure the folder exists and you have access to it, then try to empty it in case the issue persists.");
                     familyDocument.Close(false);
                     return null;
                 }
