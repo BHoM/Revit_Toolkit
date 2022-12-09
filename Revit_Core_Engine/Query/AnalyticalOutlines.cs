@@ -45,37 +45,52 @@ namespace BH.Revit.Engine.Core
         [Output("outlines", "The analytical outlines of the host object.")]
         public static List<ICurve> AnalyticalOutlines(this HostObject hostObject, RevitSettings settings = null)
         {
+            List<ICurve> result = new List<ICurve>();
+
 #if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021 || REVIT2022)
             AnalyticalModel analyticalModel = hostObject.GetAnalyticalModel();
             if (analyticalModel == null)
-            {
-                //TODO: appropriate warning or not - physical preferred?
                 return null;
+
+            foreach (Curve curve in analyticalModel.GetCurves(AnalyticalCurveType.ActiveCurves))
+            {
+                ICurve converted = curve.IFromRevit();
+                if (converted is NurbsCurve)
+                {
+                    BH.Engine.Base.Compute.RecordWarning("At least one of the analytical outline curves has a nurbs form - it has been simplified to a polyline.");
+                    converted = new Polyline { ControlPoints = curve.Tessellate().Select(x => x.PointFromRevit()).ToList() };
+                }
+
+                result.Add(converted);
             }
 
             settings = settings.DefaultIfNull();
-            
-            List<ICurve> wallCurves = analyticalModel.GetCurves(AnalyticalCurveType.ActiveCurves).ToList().FromRevit();
-            if (wallCurves.Any(x => x == null))
-            {
-                hostObject.UnsupportedOutlineCurveWarning();
-                return null;
-            }
-
-            List<ICurve> result = BH.Engine.Geometry.Compute.IJoin(wallCurves, settings.DistanceTolerance).ConvertAll(c => c as ICurve);
+            result = BH.Engine.Geometry.Compute.IJoin(result, settings.DistanceTolerance).ConvertAll(c => c as ICurve);
             
 #else
             Document doc = hostObject.Document;
             AnalyticalToPhysicalAssociationManager manager = AnalyticalToPhysicalAssociationManager.GetAnalyticalToPhysicalAssociationManager(doc);
             AnalyticalPanel analyticalModel = doc.GetElement(manager.GetAssociatedElementId(hostObject.Id)) as AnalyticalPanel;
 
-            List<ICurve> result = new List<ICurve> { analyticalModel.GetOuterContour().FromRevit() };
-            result.AddRange(analyticalModel.GetAnalyticalOpeningsIds().Select(x => (doc.GetElement(x) as AnalyticalOpening).GetOuterContour().FromRevit()));
+            List<CurveLoop> loops = new List<CurveLoop> { analyticalModel.GetOuterContour() };
+            loops.AddRange(analyticalModel.GetAnalyticalOpeningsIds().Select(x => (doc.GetElement(x) as AnalyticalOpening).GetOuterContour()));
 
-            if (result.Any(x => x == null))
+            foreach (CurveLoop loop in loops)
             {
-                hostObject.UnsupportedOutlineCurveWarning();
-                return null;
+                PolyCurve convertedLoop = new PolyCurve();
+                foreach (Curve curve in loop)
+                {
+                    ICurve converted = curve.IFromRevit();
+                    if (converted is NurbsCurve)
+                    {
+                        BH.Engine.Base.Compute.RecordWarning("At least one of the analytical outline curves has a nurbs form - it has been simplified to a polyline.");
+                        converted = new Polyline { ControlPoints = curve.Tessellate().Select(x => x.PointFromRevit()).ToList() };
+                    }
+
+                    convertedLoop.Curves.Add(converted);
+                }
+
+                result.Add(convertedLoop);
             }
 #endif
             if (result.Any(x => !x.IIsClosed(settings.DistanceTolerance)))
