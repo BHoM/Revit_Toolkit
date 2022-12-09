@@ -71,6 +71,8 @@ namespace BH.Revit.Engine.Core
             Document doc = hostObject.Document;
             AnalyticalToPhysicalAssociationManager manager = AnalyticalToPhysicalAssociationManager.GetAnalyticalToPhysicalAssociationManager(doc);
             AnalyticalPanel analyticalModel = doc.GetElement(manager.GetAssociatedElementId(hostObject.Id)) as AnalyticalPanel;
+            if (analyticalModel == null)
+                return null;
 
             List<CurveLoop> loops = new List<CurveLoop> { analyticalModel.GetOuterContour() };
             loops.AddRange(analyticalModel.GetAnalyticalOpeningsIds().Select(x => (doc.GetElement(x) as AnalyticalOpening).GetOuterContour()));
