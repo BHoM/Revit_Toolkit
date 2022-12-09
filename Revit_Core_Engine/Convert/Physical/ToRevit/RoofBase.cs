@@ -29,6 +29,7 @@ using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -49,13 +50,16 @@ namespace BH.Revit.Engine.Core
             if (roof == null || roof.Location == null || document == null)
                 return null;
 
-            PlanarSurface planarSurface = roof.Location as PlanarSurface;
-            if (planarSurface == null)
-                return null;
-
             RoofBase roofBase = refObjects.GetValue<RoofBase>(document, roof.BHoM_Guid);
             if (roofBase != null)
                 return roofBase;
+
+            PlanarSurface planarSurface = roof.Location as PlanarSurface;
+            if (planarSurface == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Conversion from BHoM to Revit failed because only planar, non-disjoint roofs are currently supported.");
+                return null;
+            }
 
             settings = settings.DefaultIfNull();
 
@@ -108,6 +112,20 @@ namespace BH.Revit.Engine.Core
             roofBase.CheckIfNullPush(roof);
             if (roofBase == null)
                 return null;
+
+            document.Regenerate();
+
+            if (planarSurface.InternalBoundaries != null)
+            {
+                foreach (ICurve hole in planarSurface.InternalBoundaries)
+                {
+                    document.Create.NewOpening(roofBase, Create.CurveArray(hole.IProject(plane).IToRevitCurves()), true);
+                }
+            }
+
+            if (roof.Openings?.Any() == true)
+                BH.Engine.Base.Compute.RecordWarning("BHoM currently does not support implicit conversion of roof openings to Revit, so they have been ignored." +
+                                                     "\nIn order to push openings to Revit, please push them as individual ModelInstances with this roof as host.");
 
             // Copy parameters from BHoM object to Revit element
             roofBase.CopyParameters(roof, settings);
