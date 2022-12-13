@@ -28,6 +28,7 @@ using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
 using BH.oM.Spatial.ShapeProfiles;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.MaterialFragments;
@@ -137,6 +138,12 @@ namespace BH.Revit.Engine.Core
             bars = new List<Bar>();
             if (locationCurve != null)
             {
+                if (locationCurve is NurbsCurve)
+                {
+                    BH.Engine.Base.Compute.RecordWarning("A the location curves is of the unsupported type: Nurbs. It has been simplified to a polyline.");
+                    locationCurve = new Polyline { ControlPoints = locationCurve.IControlPoints() };
+                }
+
                 //TODO: check category of familyInstance to recognize which rotation query to use
                 double rotation = familyInstance.OrientationAngle(settings);
                 foreach (BH.oM.Geometry.Line line in locationCurve.ICollapseToPolyline(Math.PI / 12).SubParts())
