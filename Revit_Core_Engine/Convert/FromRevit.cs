@@ -161,8 +161,12 @@ namespace BH.Revit.Engine.Core
             if (converted is IBHoMObject)
                 result = new List<IBHoMObject> { ((IBHoMObject)converted).IPostprocess(transform, settings) };
             else if (converted is IEnumerable<IBHoMObject>)
-                result = new List<IBHoMObject>(((IEnumerable<IBHoMObject>)converted).Select(x => x.IPostprocess(transform, settings)));
-            
+            {
+                result = new List<IBHoMObject>(((IEnumerable<IBHoMObject>)converted)
+                    .Where(x => x != null)
+                    .Select(x => x.IPostprocess(transform, settings)));
+            }
+
             return result;
         }
 
