@@ -49,7 +49,7 @@ namespace BH.Revit.Engine.Core
 
             foreach (Element element in elements)
             {
-                switch (element.CheckoutStatus())
+                switch (element.CheckoutStatus(out string owner))
                 {
                     case CheckoutStatus.NotOwned:
                         elementsToCheckout.Add(element);
