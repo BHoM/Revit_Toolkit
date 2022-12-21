@@ -446,8 +446,9 @@ namespace BH.Revit.Adapter.Core
 
             PushButtonData bHoMInfoButton = new PushButtonData("BHoM Wiki", "BHoM Wiki", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".BHoMWiki");
             PushButtonData bHoMWebsiteButton = new PushButtonData("bhom.xyz", "bhom.xyz", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".BHoMWebsite");
-
-            List<PushButton> infoButtons = panel.AddStackedItems(bHoMInfoButton, bHoMWebsiteButton).Cast<PushButton>().ToList();
+            PushButtonData bHoMVersionButton = new PushButtonData("BHoM Version", "BHoM Version", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".BHoMVersion");
+            
+            List<PushButton> infoButtons = panel.AddStackedItems(bHoMInfoButton, bHoMWebsiteButton, bHoMVersionButton).Cast<PushButton>().ToList();
             infoButtons[0].ToolTip = "Visit the BHoM Wiki page.";
             infoButtons[0].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info16.png")));
             infoButtons[0].Enabled = true;
@@ -458,6 +459,11 @@ namespace BH.Revit.Adapter.Core
             infoButtons[1].Enabled = true;
             infoButtons[1].Visible = true;
             infoButtons[1].AvailabilityClassName = alwaysAvailable;
+            infoButtons[2].ToolTip = "Get current installed BHoM version.";
+            infoButtons[2].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info16.png")));
+            infoButtons[2].Enabled = true;
+            infoButtons[2].Visible = true;
+            infoButtons[2].AvailabilityClassName = alwaysAvailable;
         }
 
         /***************************************************/
