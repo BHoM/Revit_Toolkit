@@ -308,6 +308,7 @@
     <Compile Include="Listener\AvailabilityClasses\AlwaysAvailable.cs" />
     <Compile Include="Listener\Buttons\Activate.cs" />
     <Compile Include="Listener\Buttons\BHoMWebsite.cs" />
+    <Compile Include="Listener\Buttons\BHoMVersion.cs" />
     <Compile Include="Listener\Buttons\BHoMWiki.cs" />
     <Compile Include="Listener\Buttons\Deactivate.cs" />
     <Compile Include="Listener\Buttons\RevitToolkitWiki.cs" />
