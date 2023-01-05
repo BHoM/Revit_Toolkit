@@ -58,7 +58,7 @@ namespace BH.Revit.Engine.Core
             if (profile != null)
                 return profile;
 
-            IGeometricalSection property = BH.Engine.Library.Query.Match("SectionProperties", familySymbol.Name) as IGeometricalSection;
+            IGeometricalSection property = BH.Engine.Library.Query.Match("Structure\\SectionProperties", familySymbol.Name) as IGeometricalSection;
             if (property != null)
                 profile = property.SectionProfile.DeepClone();
 
