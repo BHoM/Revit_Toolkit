@@ -49,28 +49,28 @@ namespace BH.Revit.Engine.Core
             {
                 case Autodesk.Revit.DB.Structure.StructuralMaterialType.PrecastConcrete:
                 case Autodesk.Revit.DB.Structure.StructuralMaterialType.Concrete:
-                    foreach (IBHoMObject concrete in BH.Engine.Library.Query.Library("Materials").Where(x => x is Concrete))
+                    foreach (IBHoMObject concrete in BH.Engine.Library.Query.Library("Structure\\Materials").Where(x => x is Concrete))
                     {
                         if (materialGrade.Contains(concrete.Name))
                             return concrete as IMaterialFragment;
                     }
                     break;
                 case Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel:
-                    foreach (IBHoMObject steel in BH.Engine.Library.Query.Library("Materials").Where(x => x is Steel))
+                    foreach (IBHoMObject steel in BH.Engine.Library.Query.Library("Structure\\Materials").Where(x => x is Steel))
                     {
                         if (materialGrade.Contains(steel.Name))
                             return steel as IMaterialFragment;
                     }
                     break;
                 case Autodesk.Revit.DB.Structure.StructuralMaterialType.Aluminum:
-                    foreach (IBHoMObject aluminium in BH.Engine.Library.Query.Library("Materials").Where(x => x is Aluminium))
+                    foreach (IBHoMObject aluminium in BH.Engine.Library.Query.Library("Structure\\Materials").Where(x => x is Aluminium))
                     {
                         if (materialGrade.Contains(aluminium.Name))
                             return aluminium as IMaterialFragment;
                     }
                     break;
                 case Autodesk.Revit.DB.Structure.StructuralMaterialType.Wood:
-                    foreach (IBHoMObject timber in BH.Engine.Library.Query.Library("Materials").Where(x => x is Timber))
+                    foreach (IBHoMObject timber in BH.Engine.Library.Query.Library("Structure\\Materials").Where(x => x is Timber))
                     {
                         if (materialGrade.Contains(timber.Name))
                             return timber as IMaterialFragment;
