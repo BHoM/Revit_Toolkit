@@ -103,7 +103,7 @@ namespace BH.Revit.Engine.Core
 
             // Get bar profile and create property
             string profileName = familyInstance.Symbol.Name;
-            ISectionProperty property = BH.Engine.Library.Query.Match("SectionProperties", profileName) as ISectionProperty;
+            ISectionProperty property = BH.Engine.Library.Query.Match("Structure\\SectionProperties", profileName) as ISectionProperty;
 
             if (property == null)
             {
