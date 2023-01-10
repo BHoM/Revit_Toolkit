@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Converts a Revit Element to BHoM.Physical.Elements.MeshElement.")]
-        [Input("Element", "Revit Element to be converted.")]
+        [Input("element", "Revit Element to be converted.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("meshElement", "BH.oM.Physical.Elements.MeshElement resulting from converting the input Revit Element.")]
