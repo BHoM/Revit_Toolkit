@@ -1,34 +1,29 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{75A99AC5-FE80-45A4-B456-1AA3B1C4BB74}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyVersion>6.0.0.0</AssemblyVersion>
+    <Description>https://github.com/BHoM/Revit_Toolkit</Description>
+    <Version>6.0.0</Version>
+    <Authors>BHoM</Authors>
+    <Copyright>Copyright © https://github.com/BHoM</Copyright>
     <RootNamespace>BH.Engine.Revit</RootNamespace>
-    <AssemblyName>Revit_Engine</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <FileVersion>6.1.0.0</FileVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+
+  <PropertyGroup>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <OutputPath>..\Build\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\Build\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot;  &quot;C:\ProgramData\BHoM\Assemblies&quot; /Y" />
+  </Target>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Revit_oM\Revit_oM.csproj" />
+  </ItemGroup>
+  
   <ItemGroup>
     <Reference Include="Adapter_oM">
       <SpecificVersion>False</SpecificVersion>
@@ -150,129 +145,8 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Structure_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Compute\CloneType.cs" />
-    <Compile Include="Compute\SortByPerformance.cs" />
-    <Compile Include="Compute\RevitDiffing.cs" />
-    <Compile Include="Query\DifferenceType.cs" />
-    <Compile Include="Create\Config\RevitPushConfig.cs" />
-    <Compile Include="Create\Config\RevitPullConfig.cs" />
-    <Compile Include="Create\Config\RevitComparisonConfig.cs" />
-    <Compile Include="Create\Config\RevitRemoveConfig.cs" />
-    <Compile Include="Create\Elements\DraftingInstance.cs" />
-    <Compile Include="Create\Elements\ViewPlan.cs" />
-    <Compile Include="Create\Elements\ModelInstance.cs" />
-    <Compile Include="Create\IParameterLink\ElementParameterLink.cs" />
-    <Compile Include="Create\IParameterLink\ElementTypeParameterLink.cs" />
-    <Compile Include="Create\Requests\FilterByLink.cs" />
-    <Compile Include="Create\IParameterLink\ParameterLinks.cs" />
-    <Compile Include="Create\Properties\InstanceProperties.cs" />
-    <Compile Include="Create\Requests\FilterByFamilyType.cs" />
-    <Compile Include="Create\Requests\FilterMemberElements.cs" />
-    <Compile Include="Create\Requests\FilterRequest.cs" />
-    <Compile Include="Create\Requests\FilterByElementIds.cs" />
-    <Compile Include="Create\Requests\FilterByParameterElementId.cs" />
-    <Compile Include="Create\Requests\FilterTypesOfFamily.cs" />
-    <Compile Include="Create\Requests\SelectionRequest.cs" />
-    <Compile Include="Create\Requests\FilterByViewSpecific.cs" />
-    <Compile Include="Create\Requests\FilterByVisibleInView.cs" />
-    <Compile Include="Create\Requests\FilterViewsByTemplate.cs" />
-    <Compile Include="Create\Settings\MappingSettings.cs" />
-    <Compile Include="Create\Generic\FamilyLibrary.cs" />
-    <Compile Include="Create\Generic\ParameterMap.cs" />
-    <Compile Include="Create\Generic\RevitFilePreview.cs" />
-    <Compile Include="Create\Settings\FamilyLoadSettings.cs" />
-    <Compile Include="Create\Settings\ConnectionSettings.cs" />
-    <Compile Include="Create\Settings\RevitSettings.cs" />
-    <Compile Include="Create\Elements\Viewport.cs" />
-    <Compile Include="Create\Elements\Sheet.cs" />
-    <Compile Include="Modify\AddParameterMaps.cs" />
-    <Compile Include="Modify\AddParameterLinks.cs" />
-    <Compile Include="Modify\DefaultIfNull.cs" />
-    <Compile Include="Modify\RemoveParameterLinks.cs" />
-    <Compile Include="Modify\RemoveParameterMaps.cs" />
-    <Compile Include="Modify\SetHost.cs" />
-    <Compile Include="Modify\SetRevitParameter.cs" />
-    <Compile Include="Modify\SetTag.cs" />
-    <Compile Include="Modify\Move.cs" />
-    <Compile Include="Modify\Transform.cs" />
-    <Compile Include="Query\GetRevitElementType.cs" />
-    <Compile Include="Query\GetRevitTypeParameterValue.cs" />
-    <Compile Include="Query\HashString.cs" />
-    <Compile Include="Query\ComparisonInclusion.cs" />
-    <Compile Include="Query\FilterDescription.cs" />
-    <Compile Include="Query\HostInformation.cs" />
-    <Compile Include="Query\LinkDocument.cs" />
-    <Compile Include="Query\MappedFamilyNames.cs" />
-    <Compile Include="Query\RenderMeshes.cs" />
-    <Compile Include="Query\OfType.cs" />
-    <Compile Include="Query\RevitParametersDifferences.cs" />
-    <Compile Include="Query\RevitParametersToPushDifferences.cs" />
-    <Compile Include="Query\RevitPulledParametersDifferences.cs" />
-    <Compile Include="Query\Workset.cs" />
-    <Compile Include="Query\ZJustifiedCurve.cs" />
-    <Compile Include="Query\DefaultMappingSettings.cs" />
-    <Compile Include="Query\GetRevitParameters.cs" />
-    <Compile Include="Query\GetRevitParameterValue.cs" />
-    <Compile Include="Query\Family.cs" />
-    <Compile Include="Query\ParameterLinks.cs" />
-    <Compile Include="Query\GetRevitIdentifiers.cs" />
-    <Compile Include="Query\RevitEdges.cs" />
-    <Compile Include="Query\RevitMeshes.cs" />
-    <Compile Include="Query\RevitSurfaces.cs" />
-    <Compile Include="Query\XDocument.cs" />
-    <Compile Include="Query\RevitFilePreviews.cs" />
-    <Compile Include="Query\CurrentDomainAssembly.cs" />
-    <Compile Include="Query\FamilyTypeFullName.cs" />
-    <Compile Include="Query\MapPropertyInfos.cs" />
-    <Compile Include="Query\ParameterNames.cs" />
-    <Compile Include="Query\ParameterMap.cs" />
-    <Compile Include="Query\FamilyTypeName.cs" />
-    <Compile Include="Modify\Append.cs" />
-    <Compile Include="Modify\RemoveIdentifiers.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Query\FamilyName.cs" />
-    <Compile Include="Query\CategoryName.cs" />
-    <Compile Include="Query\ElementId.cs" />
-    <Compile Include="Query\Discipline.cs" />
-    <Compile Include="Query\Paths.cs" />
-    <Compile Include="Query\OmniClass.cs" />
-    <Compile Include="Query\FamilyTypeNames.cs" />
-    <Compile Include="Query\UniqueId.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Revit_oM\Revit_oM.csproj">
-      <Project>{b97dbf34-761d-4ab7-b122-d05408b34d0f}</Project>
-      <Name>Revit_oM</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Convert\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Versioning_51.json" />
-    <None Include="Versioning_50.json" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\\ProgramData\\BHoM\\Assemblies" /Y</PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  
 </Project>
