@@ -14,7 +14,6 @@
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <OutputPath>..\Build\</OutputPath>
     <Configurations>Debug;Release;Debug2018;Release2018;Debug2019;Release2019;Debug2020;Release2020;Debug2021;Release2021;Debug2022;Release2022;Debug2023;Release2023</Configurations>
-    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
@@ -54,22 +53,22 @@
   </PropertyGroup>
   
   <Target Name="PostBuild2018" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018'">
-    <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2018.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2018\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E&#xD;&#xA;del /F /Q $(ProjectDir)obj\project.assets.json" />
+    <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2018.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2018\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E" />
   </Target>
   <Target Name="PostBuild2019" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
-    <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2019.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2019\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E&#xD;&#xA;del /F /Q $(ProjectDir)obj\project.assets.json" />
+    <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2019.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2019\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E" />
   </Target>
   <Target Name="PostBuild2020" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
-    <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2020.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2020\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E&#xD;&#xA;del /F /Q $(ProjectDir)obj\project.assets.json" />
+    <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2020.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2020\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E" />
   </Target>
   <Target Name="PostBuild2021" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
-    <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2021.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2021\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E&#xD;&#xA;del /F /Q $(ProjectDir)obj\project.assets.json" />
+    <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2021.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2021\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E" />
   </Target>
   <Target Name="PostBuild2022" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Debug2022' Or '$(Configuration)'=='Release2022'">
-    <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2022.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2022\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E&#xD;&#xA;del /F /Q $(ProjectDir)obj\project.assets.json" />
+    <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2022.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2022\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E" />
   </Target>
   <Target Name="PostBuild2023" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Debug2023' Or '$(Configuration)'=='Release2023'">
-    <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2023.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2023\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E&#xD;&#xA;del /F /Q $(ProjectDir)obj\project.assets.json" />
+    <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2023.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2023\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E" />
   </Target>
 
   <ItemGroup>
