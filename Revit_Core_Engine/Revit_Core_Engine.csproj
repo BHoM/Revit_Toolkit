@@ -14,40 +14,34 @@
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <OutputPath>..\Build\</OutputPath>
     <Configurations>Debug;Release;Debug2018;Release2018;Debug2019;Release2019;Debug2020;Release2020;Debug2021;Release2021;Debug2022;Release2022;Debug2023;Release2023</Configurations>
+	<TargetFramework>net480</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
-    <TargetFramework>net472</TargetFramework>
     <AssemblyName>Revit_Core_Engine_2018</AssemblyName>
 	<DefineConstants>REVIT2018</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018'">
-    <TargetFramework>net472</TargetFramework>
     <AssemblyName>Revit_Core_Engine_2018</AssemblyName>
 	<DefineConstants>REVIT2018</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
-    <TargetFramework>net472</TargetFramework>
     <AssemblyName>Revit_Core_Engine_2019</AssemblyName>
 	<DefineConstants>REVIT2019</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
-    <TargetFramework>net472</TargetFramework>
     <AssemblyName>Revit_Core_Engine_2020</AssemblyName>
 	<DefineConstants>REVIT2020</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
-    <TargetFramework>net480</TargetFramework>
     <AssemblyName>Revit_Core_Engine_2021</AssemblyName>
 	<DefineConstants>REVIT2021</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug2022' Or '$(Configuration)'=='Release2022'">
-    <TargetFramework>net480</TargetFramework>
     <AssemblyName>Revit_Core_Engine_2022</AssemblyName>
 	<DefineConstants>REVIT2022</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug2023' Or '$(Configuration)'=='Release2023'">
-    <TargetFramework>net480</TargetFramework>
     <AssemblyName>Revit_Core_Engine_2023</AssemblyName>
 	<DefineConstants>REVIT2023</DefineConstants>
   </PropertyGroup>
