@@ -46,6 +46,9 @@
 	<DefineConstants>REVIT2023</DefineConstants>
   </PropertyGroup>
   
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
+    <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2018.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2018\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E" />
+  </Target>
   <Target Name="PostBuild2018" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018'">
     <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2018.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2018\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E" />
   </Target>
