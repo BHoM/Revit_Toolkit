@@ -227,6 +227,8 @@ namespace BH.Revit.Engine.Core
             else
                 familyInstance = document.Create.NewFamilyInstance(revitCurve, familySymbol, level, StructuralType.UnknownFraming);
 
+            // Try enforcing reference level to the element (something Create.NewFamilyInstance does not set it without a reason).
+            familyInstance.SetParameter(BuiltInParameter.INSTANCE_REFERENCE_LEVEL_PARAM, level.Id);
             document.Regenerate();
 
             familyInstance.CheckIfNullPush(framingElement);
