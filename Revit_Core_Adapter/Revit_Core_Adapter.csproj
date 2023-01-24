@@ -215,37 +215,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdapterActions\Pull.cs" />
-    <Compile Include="AdapterActions\Remove.cs" />
-    <Compile Include="CRUD\Create.cs" />
-    <Compile Include="CRUD\Delete.cs" />
-    <Compile Include="AdapterActions\Push.cs" />
-    <Compile Include="CRUD\Read.cs" />
-    <Compile Include="CRUD\Update.cs" />
-    <Compile Include="Listener\AvailabilityClasses\AlwaysAvailable.cs" />
-    <Compile Include="Listener\Buttons\Activate.cs" />
-    <Compile Include="Listener\Buttons\BHoMWebsite.cs" />
-    <Compile Include="Listener\Buttons\BHoMVersion.cs" />
-    <Compile Include="Listener\Buttons\BHoMWiki.cs" />
-    <Compile Include="Listener\Buttons\Deactivate.cs" />
-    <Compile Include="Listener\Buttons\RevitToolkitWiki.cs" />
-    <Compile Include="Listener\Buttons\SetPorts.cs" />
-    <Compile Include="Listener\EventHandlers\PullEvent.cs" />
-    <Compile Include="Listener\EventHandlers\PushEvent.cs" />
-    <Compile Include="Listener\EventHandlers\RemoveEvent.cs" />
-    <Compile Include="FailuresProcessing.cs" />
-    <Compile Include="Listener\Forms\UpdatePortsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Listener\Forms\UpdatePortsForm.Designer.cs">
-      <DependentUpon>UpdatePortsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Messages\Errors.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Listener\RevitListener.cs" />
-    <Compile Include="RevitListenerAdapter.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj">
       <Project>{3eb6d37d-8720-495a-8feb-e826f0e69af8}</Project>
       <Name>Revit_Adapter</Name>
