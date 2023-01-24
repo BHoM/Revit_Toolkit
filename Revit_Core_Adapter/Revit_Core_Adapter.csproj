@@ -209,29 +209,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj">
-      <Project>{3eb6d37d-8720-495a-8feb-e826f0e69af8}</Project>
-      <Name>Revit_Adapter</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Revit_Core_Engine\Revit_Core_Engine.csproj">
-      <Project>{4dfaf9c8-9770-4e5a-818d-eb4dab665145}</Project>
-      <Name>Revit_Core_Engine</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Revit_Engine\Revit_Engine.csproj">
-      <Project>{75a99ac5-fe80-45a4-b456-1aa3b1c4bb74}</Project>
-      <Name>Revit_Engine</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Revit_oM\Revit_oM.csproj">
-      <Project>{b97dbf34-761d-4ab7-b122-d05408b34d0f}</Project>
-      <Name>Revit_oM</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  
-  <ItemGroup>
     <None Include="Listener\Files\BHoM_2018.Addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
