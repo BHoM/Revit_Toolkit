@@ -23,6 +23,7 @@
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using BH.Engine.UI;
 
 namespace BH.Revit.Adapter.Core
 {
@@ -36,7 +37,9 @@ namespace BH.Revit.Adapter.Core
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            TaskDialog.Show("BHoM Version", $"The current BHoM Version is: {BH.Engine.Base.Query.BHoMVersion()}");
+            var bHoMInformation = Query.Information();
+
+            TaskDialog.Show("BHoM Version", $"The current BHoM Version is: {bHoMInformation.Version}.");
             return Result.Succeeded;
         }
 

@@ -23,6 +23,7 @@
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using BH.Engine.UI;
 
 namespace BH.Revit.Adapter.Core
 {
@@ -36,7 +37,8 @@ namespace BH.Revit.Adapter.Core
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            System.Diagnostics.Process.Start("https://bhom.xyz/");
+            var bHoMInformation = Query.Information();
+            System.Diagnostics.Process.Start($"{bHoMInformation.BHoMWebsite}");
             return Result.Succeeded;
         }
 
