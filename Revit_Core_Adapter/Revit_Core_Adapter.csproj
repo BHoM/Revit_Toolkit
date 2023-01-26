@@ -203,9 +203,13 @@
     <Reference Include="PresentationCore" />
     <Reference Include="UI_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\UI_Engine.dll</HintPath>
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UI_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\UI_oM.dll</HintPath>
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
   </ItemGroup>
   <ItemGroup>
