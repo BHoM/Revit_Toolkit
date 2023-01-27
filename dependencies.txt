@@ -2,3 +2,5 @@ BHoM/BHoM
 BHoM/BHoM_Engine
 BHoM/BHoM_Adapter
 BHoM/Socket_Toolkit
+BHoM/UI_Engine
+BHoM/UI_oM
