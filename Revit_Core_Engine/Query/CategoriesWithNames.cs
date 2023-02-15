@@ -7,7 +7,7 @@ namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
-        public static Dictionary<string, BuiltInCategory> CategoriesWithNames()
+        public static Dictionary<BuiltInCategory, string> CategoriesWithNames()
         {
             if (m_CategoriesWithNames == null)
                 CollectCategories();
@@ -22,10 +22,10 @@ namespace BH.Revit.Engine.Core
 
         private static void CollectCategories()
         {
-            m_CategoriesWithNames = new Dictionary<string, BuiltInCategory>();
+            m_CategoriesWithNames = new Dictionary<BuiltInCategory, string>();
             foreach (BH.oM.Revit.Enums.Category category in Enum.GetValues(typeof(BH.oM.Revit.Enums.Category)))
             {
-                m_CategoriesWithNames.Add(category.ToText(), (BuiltInCategory)((int)category));
+                m_CategoriesWithNames.Add((BuiltInCategory)((int)category), category.ToText());
             }
         }
 
@@ -34,7 +34,7 @@ namespace BH.Revit.Engine.Core
         /****              Private fields               ****/
         /***************************************************/
 
-        private static Dictionary<string, BuiltInCategory> m_CategoriesWithNames = null;
+        private static Dictionary<BuiltInCategory, string> m_CategoriesWithNames = null;
 
         /***************************************************/
     }
