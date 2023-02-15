@@ -21,9 +21,11 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Base;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Base.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -36,21 +38,28 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the Revit built-in category matching a given category name.")]
+        [Description("Returns the Revit built-in category matching a given category name." +
+                     "\nImportant! Only the categories contained in BH.oM.Revit.Enums.Category enum can be queried using this method.")]
         [Input("document", "Revit document to query the categories from.")]
         [Input("categoryName", "Name of the sought built-in Revit category.")]
         [Input("caseSensitive", "If true, the category name matching is case sensitive, otherwise not.")]
         [Output("Revit built-in category matching the input name.")]
         public static BuiltInCategory BuiltInCategory(this Document document, string categoryName, bool caseSensitive = true)
         {
-            if (string.IsNullOrEmpty(categoryName) || document?.Settings?.Categories == null)
-                return Autodesk.Revit.DB.BuiltInCategory.INVALID;
-
-            //TODO: use LabelUtils?
-            foreach (Category category in document.Settings.Categories)
+            Dictionary<string, BuiltInCategory> categoriesWithNames = CategoriesWithNames();
+            if (caseSensitive)
             {
-                if ((caseSensitive && category.Name == categoryName) || (!caseSensitive && category.Name.ToUpper() == categoryName.ToUpper()))
-                    return (BuiltInCategory)category.Id.IntegerValue;
+                if (categoriesWithNames.ContainsKey(categoryName))
+                    return categoriesWithNames[categoryName];
+            }
+            else
+            {
+                string lower = categoryName.ToLower();
+                foreach (var kvp in categoriesWithNames)
+                {
+                    if (kvp.Key.ToLower() == lower)
+                        return kvp.Value;
+                }
             }
 
             return Autodesk.Revit.DB.BuiltInCategory.INVALID;

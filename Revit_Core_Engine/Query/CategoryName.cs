@@ -41,12 +41,11 @@ namespace BH.Revit.Engine.Core
         [Output("name", "Name of the input Revit category.")]
         public static string CategoryName(this BuiltInCategory builtInCategory, Document document)
         {
-            if (document == null || document.Settings == null || document.Settings.Categories == null)
-                return null;
-
-            foreach (Category category in document.Settings.Categories)
-                if (category.Id.IntegerValue == (int)builtInCategory)
-                    return category.Name;
+            foreach (var kvp in CategoriesWithNames())
+            {
+                if (kvp.Value == builtInCategory)
+                    return kvp.Key;
+            }
 
             return null;
         }
