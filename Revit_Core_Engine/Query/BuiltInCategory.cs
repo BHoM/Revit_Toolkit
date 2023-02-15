@@ -46,19 +46,19 @@ namespace BH.Revit.Engine.Core
         [Output("Revit built-in category matching the input name.")]
         public static BuiltInCategory BuiltInCategory(this Document document, string categoryName, bool caseSensitive = true)
         {
-            Dictionary<string, BuiltInCategory> categoriesWithNames = CategoriesWithNames();
+            Dictionary<BuiltInCategory, string> categoriesWithNames = CategoriesWithNames();
             if (caseSensitive)
             {
-                if (categoriesWithNames.ContainsKey(categoryName))
-                    return categoriesWithNames[categoryName];
+                if (categoriesWithNames.ContainsValue(categoryName))
+                    return categoriesWithNames.FirstOrDefault(x => x.Value == categoryName).Key;
             }
             else
             {
                 string lower = categoryName.ToLower();
                 foreach (var kvp in categoriesWithNames)
                 {
-                    if (kvp.Key.ToLower() == lower)
-                        return kvp.Value;
+                    if (kvp.Value.ToLower() == lower)
+                        return kvp.Key;
                 }
             }
 
