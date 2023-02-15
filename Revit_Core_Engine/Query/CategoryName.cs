@@ -43,8 +43,8 @@ namespace BH.Revit.Engine.Core
         {
             foreach (var kvp in CategoriesWithNames())
             {
-                if (kvp.Value == builtInCategory)
-                    return kvp.Key;
+                if (kvp.Key == builtInCategory)
+                    return kvp.Value;
             }
 
             return null;
