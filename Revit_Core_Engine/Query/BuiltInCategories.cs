@@ -45,12 +45,12 @@ namespace BH.Revit.Engine.Core
         [Input("document", "Revit current document to be processed.")]
         [Input("caseSensitive", "Optional, whether the lookup is case sensitive or not.")]
         [Output("builtInCategories", "Resulted collection of Revit BuiltInCategory.")]
-        public static HashSet<BuiltInCategory> BuiltInCategories(this oM.Adapters.Revit.Elements.Family family, Document document, bool caseSensitive = true)
+        public static HashSet<BuiltInCategory> BuiltInCategories(this oM.Adapters.Revit.Elements.Family family, bool caseSensitive = true)
         {
             if (family?.PropertiesList == null)
                 return null;
             
-            return new HashSet<BuiltInCategory>(family.PropertiesList.Select(x => x.BuiltInCategory(document, caseSensitive)));
+            return new HashSet<BuiltInCategory>(family.PropertiesList.Select(x => x.BuiltInCategory(caseSensitive)));
         }
 
         /***************************************************/
@@ -60,9 +60,9 @@ namespace BH.Revit.Engine.Core
         [Input("document", "Revit current document to be processed.")]
         [Input("caseSensitive", "Optional, whether the lookup is case sensitive or not.")]
         [Output("builtInCategories", "Resulted collection of Revit BuiltInCategory.")]
-        public static HashSet<BuiltInCategory> BuiltInCategories(this IBHoMObject bHoMObject, Document document, bool caseSensitive = true)
+        public static HashSet<BuiltInCategory> BuiltInCategories(this IBHoMObject bHoMObject, bool caseSensitive = true)
         {
-            BuiltInCategory category = document.BuiltInCategory(bHoMObject.CategoryName(), caseSensitive);
+            BuiltInCategory category = BuiltInCategory(bHoMObject.CategoryName(), caseSensitive);
             if (category != Autodesk.Revit.DB.BuiltInCategory.INVALID)
                 return new HashSet<BuiltInCategory> { category };
 

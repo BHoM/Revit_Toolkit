@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
         [Input("categoryName", "Name of the sought built-in Revit category.")]
         [Input("caseSensitive", "If true, the category name matching is case sensitive, otherwise not.")]
         [Output("Revit built-in category matching the input name.")]
-        public static BuiltInCategory BuiltInCategory(this Document document, string categoryName, bool caseSensitive = true)
+        public static BuiltInCategory BuiltInCategory(this string categoryName, bool caseSensitive = true)
         {
             Dictionary<BuiltInCategory, string> categoriesWithNames = CategoriesWithNames();
             if (caseSensitive)
@@ -72,9 +72,9 @@ namespace BH.Revit.Engine.Core
         [Input("document", "Revit document to query the categories from.")]
         [Input("caseSensitive", "If true, the category name matching is case sensitive, otherwise not.")]
         [Output("Revit built-in category, to which the input BHoM IInstance belongs.")]
-        public static BuiltInCategory BuiltInCategory(this IInstance instance, Document document, bool caseSensitive = true)
+        public static BuiltInCategory BuiltInCategory(this IInstance instance, bool caseSensitive = true)
         {
-            return (instance?.Properties).BuiltInCategory(document, caseSensitive);
+            return (instance?.Properties).BuiltInCategory(caseSensitive);
         }
 
         /***************************************************/
@@ -84,9 +84,9 @@ namespace BH.Revit.Engine.Core
         [Input("document", "Revit document to query the categories from.")]
         [Input("caseSensitive", "If true, the category name matching is case sensitive, otherwise not.")]
         [Output("Revit built-in category, reference to which is stored in the input BHoM InstanceProperties.")]
-        public static BuiltInCategory BuiltInCategory(this InstanceProperties properties, Document document, bool caseSensitive = true)
+        public static BuiltInCategory BuiltInCategory(this InstanceProperties properties, bool caseSensitive = true)
         {
-            return document.BuiltInCategory(properties?.CategoryName, caseSensitive);
+            return BuiltInCategory(properties?.CategoryName, caseSensitive);
         }
 
         /***************************************************/

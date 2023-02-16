@@ -113,7 +113,7 @@ namespace BH.Revit.Engine.Core
         [Output("element", "Revit Element resulting from converting the input BH.oM.Adapters.Revit.Elements.ModelInstance.")]
         public static Element ToRevit(this ModelInstance modelInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            switch (modelInstance.BuiltInCategory(document))
+            switch (modelInstance.BuiltInCategory())
             {
                 case BuiltInCategory.OST_Lines:
                     return modelInstance.ToCurveElement(document, settings, refObjects);
@@ -132,7 +132,7 @@ namespace BH.Revit.Engine.Core
         [Output("element", "Revit Element resulting from converting the input BH.oM.Adapters.Revit.Elements.DraftingInstance.")]
         public static Element ToRevit(this DraftingInstance draftingInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            switch (draftingInstance.BuiltInCategory(document))
+            switch (draftingInstance.BuiltInCategory())
             {
                 case BuiltInCategory.OST_Lines:
                     return draftingInstance.ToCurveElement(document, settings, refObjects);

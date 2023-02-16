@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
         [Output("framingType", "Revit element type to be used when converting the input BHoM object to Revit.")]
         public static FamilySymbol ElementType(this BH.oM.Physical.Elements.IFramingElement framingElement, Document document, RevitSettings settings = null)
         {
-            HashSet<BuiltInCategory> categories = framingElement.BuiltInCategories(document);
+            HashSet<BuiltInCategory> categories = framingElement.BuiltInCategories();
 
             // Adding StructuralFraming to be included for braces and others (non-columns) - most of families belong to this category.
             if (!(framingElement is BH.oM.Physical.Elements.Column))
@@ -84,7 +84,7 @@ namespace BH.Revit.Engine.Core
         [Output("elementType", "Revit element type to be used when converting the input BHoM object to Revit.")]
         public static ElementType ElementType(this BH.oM.Adapters.Revit.Elements.IInstance instance, Document document, RevitSettings settings = null)
         {
-            return instance.ElementTypeInclProperty(instance.Properties, document, new HashSet<BuiltInCategory> { instance.BuiltInCategory(document) }, settings);
+            return instance.ElementTypeInclProperty(instance.Properties, document, new HashSet<BuiltInCategory> { instance.BuiltInCategory() }, settings);
         }
 
         /***************************************************/
@@ -163,7 +163,7 @@ namespace BH.Revit.Engine.Core
         [Output("elementType", "Revit element type to be used when converting the input BHoM object to Revit.")]
         public static ElementType ElementType(this IBHoMObject bHoMObject, Document document, RevitSettings settings = null)
         {
-            return bHoMObject.ElementType(document, bHoMObject.BuiltInCategories(document), settings);
+            return bHoMObject.ElementType(document, bHoMObject.BuiltInCategories(), settings);
         }
 
         /***************************************************/
@@ -218,7 +218,7 @@ namespace BH.Revit.Engine.Core
                         if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
                             continue;
 
-                        FamilySymbol familySymbol = settings.FamilyLoadSettings.LoadFamilySymbol(document, builtInCategory.CategoryName(document), familyName, familyTypeName);
+                        FamilySymbol familySymbol = settings.FamilyLoadSettings.LoadFamilySymbol(document, builtInCategory.CategoryName(), familyName, familyTypeName);
                         if (familySymbol != null)
                             return familySymbol;
                     }
