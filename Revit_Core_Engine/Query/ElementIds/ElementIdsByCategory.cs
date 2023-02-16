@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
             if (document == null)
                 return null;
 
-            BuiltInCategory builtInCategory = document.BuiltInCategory(categoryName, caseSensitive);
+            BuiltInCategory builtInCategory = BuiltInCategory(categoryName, caseSensitive);
             if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
             {
                 BH.Engine.Base.Compute.RecordError("Couldn't find a Category named " + categoryName + ".");

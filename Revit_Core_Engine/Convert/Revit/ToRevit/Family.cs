@@ -57,7 +57,7 @@ namespace BH.Revit.Engine.Core
                     instanceProperties.ToRevitElementType(document, settings, refObjects);
             }
 
-            HashSet<BuiltInCategory> categories = family.BuiltInCategories(document);
+            HashSet<BuiltInCategory> categories = family.BuiltInCategories();
 
             revitFamily = family.Family(document, categories, settings.FamilyLoadSettings);
 
