@@ -52,7 +52,9 @@ namespace BH.Revit.Engine.Core
             m_CategoriesWithNames = new Dictionary<BuiltInCategory, string>();
             foreach (BH.oM.Revit.Enums.Category category in Enum.GetValues(typeof(BH.oM.Revit.Enums.Category)))
             {
-                m_CategoriesWithNames.Add(BH.Engine.Base.Compute.ParseEnum<BuiltInCategory>(category.ToString()), category.ToText());
+                BuiltInCategory builtInCategory = BH.Engine.Base.Compute.ParseEnum<BuiltInCategory>(category.ToString());
+                if (builtInCategory != default(BuiltInCategory))
+                    m_CategoriesWithNames.Add(builtInCategory, category.ToText());
             }
         }
 
