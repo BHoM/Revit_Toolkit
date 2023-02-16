@@ -35,6 +35,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("6.1", "BH.Revit.Engine.Core.Query.CategoryName(Autodesk.Revit.DB.BuiltInCategory, Autodesk.Revit.DB.Document)")]
         [Description("Returns the name of a given Revit built-in category.")]
         [Input("builtInCategory", "Revit built-in category to get the name for.")]
         [Output("name", "Name of the input Revit category.")]
