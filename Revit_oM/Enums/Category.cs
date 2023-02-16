@@ -21,9 +21,11 @@
  */
 
 using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
 namespace BH.oM.Revit.Enums
 {
+    [Description("A collection of Revit categories supported by BHoM (UI, filtering etc.).")]
     public enum Category
     {
         [DisplayText("Abutment Foundation Tags")]
