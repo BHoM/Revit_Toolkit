@@ -38,6 +38,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("6.1", "BH.Revit.Engine.Core.Query.BuiltInCategory(Autodesk.Revit.DB.Document, System.String, System.Boolean)")]
         [Description("Returns the Revit built-in category matching a given category name." +
                      "\nImportant! Only the categories contained in BH.oM.Revit.Enums.Category enum can be queried using this method.")]
         [Input("categoryName", "Name of the sought built-in Revit category.")]
@@ -66,6 +67,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("6.1", "BH.Revit.Engine.Core.Query.BuiltInCategory(BH.oM.Adapters.Revit.Elements.IInstance, Autodesk.Revit.DB.Document, System.Boolean)")]
         [Description("Returns Revit category, to which a given BHoM IInstance belongs.")]
         [Input("instance", "BHoM IInstance to extract the category information from.")]
         [Input("caseSensitive", "If true, the category name matching is case sensitive, otherwise not.")]
@@ -77,6 +79,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("6.1", "BH.Revit.Engine.Core.Query.BuiltInCategory(BH.oM.Adapters.Revit.Properties.InstanceProperties, Autodesk.Revit.DB.Document, System.Boolean)")]
         [Description("Returns Revit category, reference to which is stored in a given BHoM InstanceProperties.")]
         [Input("properties", "BHoM InstanceProperties to extract the category information from.")]
         [Input("caseSensitive", "If true, the category name matching is case sensitive, otherwise not.")]
