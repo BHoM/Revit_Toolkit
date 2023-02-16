@@ -65,7 +65,7 @@ namespace BH.Revit.Engine.Core
                         if (builtInCategory == Autodesk.Revit.DB.BuiltInCategory.INVALID)
                             continue;
 
-                        revitFamily = familyLoadSettings.LoadFamily(document, builtInCategory.CategoryName(document), family.Name);
+                        revitFamily = familyLoadSettings.LoadFamily(document, builtInCategory.CategoryName(), family.Name);
                         if (revitFamily != null)
                             return revitFamily;
                     }

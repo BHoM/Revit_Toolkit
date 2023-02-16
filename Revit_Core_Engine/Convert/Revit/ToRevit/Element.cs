@@ -63,7 +63,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            BuiltInCategory builtInCategory = modelInstance.BuiltInCategory(document);
+            BuiltInCategory builtInCategory = modelInstance.BuiltInCategory();
 
             if (modelInstance.Location is ISurface || modelInstance.Location is ISolid)
             {

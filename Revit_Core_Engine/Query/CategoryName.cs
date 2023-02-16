@@ -39,7 +39,7 @@ namespace BH.Revit.Engine.Core
         [Input("builtInCategory", "Revit built-in category to get the name for.")]
         [Input("document", "Revit document to parse for the category name.")]
         [Output("name", "Name of the input Revit category.")]
-        public static string CategoryName(this BuiltInCategory builtInCategory, Document document)
+        public static string CategoryName(this BuiltInCategory builtInCategory)
         {
             foreach (var kvp in CategoriesWithNames())
             {
