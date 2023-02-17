@@ -157,9 +157,13 @@ namespace BH.Revit.Engine.Core
 
             if (cropRegionVisible)
                 result.get_Parameter(BuiltInParameter.VIEWER_CROP_REGION_VISIBLE).Set(1);
+            else
+                result.get_Parameter(BuiltInParameter.VIEWER_CROP_REGION_VISIBLE).Set(0);
 
             if (annotationCrop)
                 result.get_Parameter(BuiltInParameter.VIEWER_ANNOTATION_CROP_ACTIVE).Set(1);
+            else
+                result.get_Parameter(BuiltInParameter.VIEWER_ANNOTATION_CROP_ACTIVE).Set(0);
 
             return result;
         }
