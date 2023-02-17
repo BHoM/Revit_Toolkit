@@ -97,6 +97,73 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        [Description("Creates and returns a new Floor Plan view in the current Revit file.")]
+        [Input("document", "Revit current document to be processed.")]
+        [Input("level", "The level that the created Floor Plan refers to.")]
+        [Input("viewName", "Optional, name of the new view.")]
+        [Input("scopeBox", "Optional, the Scope Box to attempt to apply to the newly created view.")]
+        [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
+        [Input("cropRegionVisible", "True if enable crop region visibility.")]
+        [Input("annotationCrop", "True if enable annotation crop visibility.")]
+        [Output("viewPlan", "The new view.")]
+        public static View ViewPlan(this Document document, string viewName, Level level, ElementId scopeBoxId = null, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
+        {
+            View result = null;
+
+            ViewFamilyType vft = Query.ViewFamilyType(document, ViewFamily.FloorPlan);
+
+            result = Autodesk.Revit.DB.ViewPlan.Create(document, vft.Id, level.Id);
+
+            if (viewTemplateId != null)
+            {
+                try
+                {
+                    result.ViewTemplateId = viewTemplateId;
+                }
+                catch (Exception)
+                {
+                    BH.Engine.Base.Compute.RecordWarning("Could not apply the View Template of Id " + viewTemplateId + "'." + ". Please check if it's a valid ElementId.");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(viewName))
+            {
+                try
+                {
+#if (REVIT2018 || REVIT2019)
+                    result.ViewName = viewName;
+#else
+                    result.Name = viewName;
+#endif
+                }
+                catch
+                {
+                    BH.Engine.Base.Compute.RecordWarning("There is already a view named '" + viewName + "'." + " It has been named '" + result.Name + "' instead.");
+                }
+            }
+
+            if (scopeBoxId != null)
+            {
+                try
+                {
+                    result.get_Parameter(BuiltInParameter.VIEWER_VOLUME_OF_INTEREST_CROP).Set(scopeBoxId);
+                }
+                catch (Exception)
+                {
+                    BH.Engine.Base.Compute.RecordWarning("Could not apply the Scope Box of Id " + scopeBoxId + "'." + ". Please check if it's a valid ElementId.");
+                }
+                
+            }
+
+            if (cropRegionVisible)
+                result.get_Parameter(BuiltInParameter.VIEWER_CROP_REGION_VISIBLE).Set(1);
+
+            if (annotationCrop)
+                result.get_Parameter(BuiltInParameter.VIEWER_ANNOTATION_CROP_ACTIVE).Set(1);
+
+            return result;
+        }
     }
 }
 
