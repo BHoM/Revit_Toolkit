@@ -21,12 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Geometry;
 using BH.oM.Base.Attributes;
-using BH.oM.Geometry;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -36,18 +32,24 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Executes initial filtering of elements to rule out closed worksets. Returns a collection of ElementIds or a null to be passed on to IElementIds method) for further filtering.")]
-        [Input("document", "Revit document to be processed.")]
-        [Output("prefilter", "Collection of all ElementIds that exist in the open worksets of the input document.")]
+        [Description("Places view on sheet in specified position and rotation using the specified viewport type.")]
+        [Input("document", "Revit current document to be processed.")]
+        [Input("sheet", "Sheet to place the view on.")]
+        [Input("view", "View to be placed on sheet.")]
+        [Input("viewportTypeId", "Id of the viewport to be used.")]
+        [Input("viewportPlacementPoint", "Placement point of the viewport on the sheet.")]
+        [Input("viewportRotation", "Rotation property of the viewport. None as default.")]
+        [Output("viewPort", "The new viewport.")]
         public static Viewport PlaceViewOnSheet (this Document document, ViewSheet sheet, View view, ElementId viewportTypeId, XYZ viewportPlacementPoint = null, ViewportRotation viewportRotation = 0)
         {
-
             Viewport viewPort = Viewport.Create(document, sheet.Id, view.Id, viewportPlacementPoint);
             viewPort.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, viewportTypeId);
             viewPort.Rotation = viewportRotation;
 
             document.Regenerate();
-            viewPort.SetBoxCenter(viewportPlacementPoint);
+
+            if (viewportPlacementPoint != null)
+                viewPort.SetBoxCenter(viewportPlacementPoint);
 
             return viewPort;
         }
