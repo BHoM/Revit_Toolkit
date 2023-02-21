@@ -44,25 +44,31 @@ namespace BH.Revit.Engine.Core
 
             if (!string.IsNullOrEmpty(sheetName))
             {
-                try
-                {
-                    result.Name = sheetName;
-                }
-                catch (Autodesk.Revit.Exceptions.ArgumentException)
-                {
-                    BH.Engine.Base.Compute.RecordWarning("There is already a sheet named '" + sheetName + "'." + " It has been named '" + result.Name + "' instead.");
-                }
+                result.Name = sheetName;
             }
 
             if (!string.IsNullOrEmpty(sheetNumber))
             {
-                try
+                int number = 0;
+
+                while (true)
                 {
-                    result.SheetNumber = sheetNumber;
-                }
-                catch (Autodesk.Revit.Exceptions.ArgumentException)
-                {
-                    BH.Engine.Base.Compute.RecordWarning("There is already a sheet with number '" + sheetNumber + "'." + " It has been named '" + result.SheetNumber + "' instead.");
+                    try
+                    {
+                        if (number != 0)
+                        {
+                            result.SheetNumber = $"{sheetNumber} ({number})";
+                            BH.Engine.Base.Compute.RecordWarning("There is already a sheet named '" + sheetNumber + "'." + " It has been named '" + result.SheetNumber + "' instead.");
+                            break;
+                        }
+
+                        result.SheetNumber = sheetNumber;
+                        break;
+                    }
+                    catch
+                    {
+                        number++;
+                    }
                 }
             }
 
