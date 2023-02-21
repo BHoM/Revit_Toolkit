@@ -99,24 +99,37 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Creates and returns a new Floor Plan view in the current Revit file.")]
-        [Input("document", "Revit current document to be processed.")]
+        [Input("document", "The current Revit document to be processed.")]
         [Input("level", "The level that the created Floor Plan refers to.")]
-        [Input("viewName", "Optional, name of the new view.")]
-        [Input("scopeBox", "Optional, the Scope Box to attempt to apply to the newly created view.")]
-        [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
-        [Input("cropRegionVisible", "True if enable crop region visibility.")]
-        [Input("annotationCrop", "True if enable annotation crop visibility.")]
+        [Input("viewName", "Name of the new view.")]
+        [Input("viewFamily", "View Family of the View Type. The default is FloorPlan.")]
+        [Input("scopeBox", "(Optional) A Scope Box to attempt to apply to the newly created view.")]
+        [Input("viewTemplateId", "(Optional) A View Template Id to be applied in the view.")]
+        [Input("cropRegionVisible", "True if the crop region should be visible.")]
+        [Input("annotationCrop", "True if the annotation crop should be visible.")]
         [Output("viewPlan", "The new view.")]
-        public static View ViewPlan(this Document document, string viewName, Level level, ElementId scopeBoxId = null, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
+        public static View ViewPlan(this Document document, Level level, string viewName, ViewFamily viewFamily = ViewFamily.FloorPlan,  ElementId scopeBoxId = null, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
         {
             View result = null;
 
-            ViewFamilyType vft = Query.ViewFamilyType(document, ViewFamily.FloorPlan);
+            if (!(viewFamily == ViewFamily.FloorPlan || viewFamily == ViewFamily.CeilingPlan || viewFamily == ViewFamily.AreaPlan || viewFamily == ViewFamily.StructuralPlan))
+            {
+                BH.Engine.Base.Compute.RecordWarning("Could not create View of type " + viewFamily + "'." + ". It has to be a FloorPlan, CeilingPlan, AreaPlan, or StructuralPlan ViewType.");
+                return result;
+            }
 
-            result = Autodesk.Revit.DB.ViewPlan.Create(document, vft.Id, level.Id);
+            ViewFamilyType viewFamilyType = Query.ViewFamilyType(document, viewFamily);
+
+            result = Autodesk.Revit.DB.ViewPlan.Create(document, viewFamilyType.Id, level.Id);
 
             if (viewTemplateId != null)
             {
+                if (!(document.GetElement(viewTemplateId) as View).IsTemplate)
+                {
+                    BH.Engine.Base.Compute.RecordWarning("Could not apply the View Template of Id " + viewTemplateId + "'." + ". Please check if it's a valid View Template.");
+                    return result;
+                }
+
                 try
                 {
                     result.ViewTemplateId = viewTemplateId;
@@ -137,7 +150,7 @@ namespace BH.Revit.Engine.Core
                     result.Name = viewName;
 #endif
                 }
-                catch
+                catch (Autodesk.Revit.Exceptions.ArgumentException)
                 {
                     BH.Engine.Base.Compute.RecordWarning("There is already a view named '" + viewName + "'." + " It has been named '" + result.Name + "' instead.");
                 }
@@ -145,6 +158,14 @@ namespace BH.Revit.Engine.Core
 
             if (scopeBoxId != null)
             {
+                Element scopeBox = document.GetElement(scopeBoxId);
+
+                if (!((BuiltInCategory)scopeBox.Category.Id.IntegerValue == BuiltInCategory.OST_VolumeOfInterest))
+                {
+                    BH.Engine.Base.Compute.RecordWarning("Could not apply the Scope Box of Id " + scopeBoxId + "'." + ". Please check if it's a valid Scope Box element.");
+                    return result;
+                }
+
                 try
                 {
                     result.get_Parameter(BuiltInParameter.VIEWER_VOLUME_OF_INTEREST_CROP).Set(scopeBoxId);
@@ -153,18 +174,10 @@ namespace BH.Revit.Engine.Core
                 {
                     BH.Engine.Base.Compute.RecordWarning("Could not apply the Scope Box of Id " + scopeBoxId + "'." + ". Please check if it's a valid ElementId.");
                 }
-                
             }
 
-            if (cropRegionVisible)
-                result.get_Parameter(BuiltInParameter.VIEWER_CROP_REGION_VISIBLE).Set(1);
-            else
-                result.get_Parameter(BuiltInParameter.VIEWER_CROP_REGION_VISIBLE).Set(0);
-
-            if (annotationCrop)
-                result.get_Parameter(BuiltInParameter.VIEWER_ANNOTATION_CROP_ACTIVE).Set(1);
-            else
-                result.get_Parameter(BuiltInParameter.VIEWER_ANNOTATION_CROP_ACTIVE).Set(0);
+            result.get_Parameter(BuiltInParameter.VIEWER_CROP_REGION_VISIBLE).Set(cropRegionVisible? 1: 0);
+            result.get_Parameter(BuiltInParameter.VIEWER_ANNOTATION_CROP_ACTIVE).Set(annotationCrop? 1: 0);
 
             return result;
         }
