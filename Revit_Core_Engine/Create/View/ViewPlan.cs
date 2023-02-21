@@ -142,17 +142,34 @@ namespace BH.Revit.Engine.Core
 
             if (!string.IsNullOrEmpty(viewName))
             {
-                try
+                int number = 0;
+
+                while (true)
                 {
+                    try
+                    {
+                        if (number != 0)
+                        {
 #if (REVIT2018 || REVIT2019)
-                    result.ViewName = viewName;
+                            result.ViewName = $"{viewName} ({number})";
 #else
-                    result.Name = viewName;
+                            result.Name = $"{viewName} ({number})";
 #endif
-                }
-                catch (Autodesk.Revit.Exceptions.ArgumentException)
-                {
-                    BH.Engine.Base.Compute.RecordWarning("There is already a view named '" + viewName + "'." + " It has been named '" + result.Name + "' instead.");
+                            BH.Engine.Base.Compute.RecordWarning("There is already a view named '" + viewName + "'." + " It has been named '" + result.Name + "' instead.");
+                            break;
+                        }
+
+#if (REVIT2018 || REVIT2019)
+                        result.ViewName = viewName;
+#else
+                        result.Name = viewName;
+#endif
+                        break;
+                    }
+                    catch
+                    {
+                        number++;
+                    }
                 }
             }
 
