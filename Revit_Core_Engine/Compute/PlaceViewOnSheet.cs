@@ -32,18 +32,18 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Places view on sheet in specified position and rotation using the specified viewport type.")]
-        [Input("document", "Revit current document to be processed.")]
+        [Description("Places view on sheet at specified position and rotation using the specified viewport type.")]
+        [Input("document", "The current Revit document to be processed.")]
         [Input("sheet", "Sheet to place the view on.")]
         [Input("view", "View to be placed on sheet.")]
         [Input("viewportTypeId", "Id of the viewport to be used.")]
         [Input("viewportPlacementPoint", "Placement point of the viewport on the sheet.")]
-        [Input("viewportRotation", "Rotation property of the viewport. None as default.")]
+        [Input("viewportRotation", "Rotation type of the viewport. The default is None.")]
         [Output("viewPort", "The new viewport.")]
-        public static Viewport PlaceViewOnSheet (this Document document, ViewSheet sheet, View view, ElementId viewportTypeId, XYZ viewportPlacementPoint = null, ViewportRotation viewportRotation = 0)
+        public static Viewport PlaceViewOnSheet (this Document document, ViewSheet sheet, View view, ElementId viewportTypeId, XYZ viewportPlacementPoint = null, ViewportRotation viewportRotation = ViewportRotation.None)
         {
             Viewport viewPort = Viewport.Create(document, sheet.Id, view.Id, viewportPlacementPoint);
-            viewPort.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, viewportTypeId);
+            viewPort.ChangeTypeId(viewportTypeId);
             viewPort.Rotation = viewportRotation;
 
             document.Regenerate();

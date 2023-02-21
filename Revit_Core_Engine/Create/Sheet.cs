@@ -33,16 +33,14 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Creates and returns a new Floor Plan view in the current Revit file.")]
-        [Input("document", "Revit current document to be processed.")]
+        [Input("document", "The current Revit document to be processed.")]
         [Input("sheetName", "Name of the new sheet.")]
         [Input("sheetNumber", "Number of the new sheet.")]
-        [Input("viewTemplateId", "The Title Block Id to be applied in the sheet.")]
+        [Input("viewTemplateId", "The Title Block Id to be applied to the sheet.")]
         [Output("viewSheet", "The new sheet.")]
         public static ViewSheet Sheet(this Document document, string sheetName, string sheetNumber, ElementId titleBlockId)
         {
-            ViewSheet result = null;
-
-            result = ViewSheet.Create(document, titleBlockId);
+            ViewSheet result = ViewSheet.Create(document, titleBlockId);
 
             if (!string.IsNullOrEmpty(sheetName))
             {
@@ -50,7 +48,7 @@ namespace BH.Revit.Engine.Core
                 {
                     result.Name = sheetName;
                 }
-                catch
+                catch (Autodesk.Revit.Exceptions.ArgumentException)
                 {
                     BH.Engine.Base.Compute.RecordWarning("There is already a sheet named '" + sheetName + "'." + " It has been named '" + result.Name + "' instead.");
                 }
@@ -62,7 +60,7 @@ namespace BH.Revit.Engine.Core
                 {
                     result.SheetNumber = sheetNumber;
                 }
-                catch
+                catch (Autodesk.Revit.Exceptions.ArgumentException)
                 {
                     BH.Engine.Base.Compute.RecordWarning("There is already a sheet with number '" + sheetNumber + "'." + " It has been named '" + result.SheetNumber + "' instead.");
                 }
