@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
 using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
@@ -43,6 +44,13 @@ namespace BH.Revit.Engine.Core
         public static Viewport PlaceViewOnSheet (this Document document, ViewSheet sheet, View view, ElementId viewportTypeId, XYZ viewportPlacementPoint = null, ViewportRotation viewportRotation = ViewportRotation.None)
         {
             Viewport viewPort = Viewport.Create(document, sheet.Id, view.Id, viewportPlacementPoint);
+
+            if (viewPort == null)
+            {
+                BH.Engine.Base.Compute.RecordWarning($"Could not create Viewport of the view '{view.Name}'. Please check if view isn't empty.");
+                return viewPort;
+            }
+
             viewPort.ChangeTypeId(viewportTypeId);
             viewPort.Rotation = viewportRotation;
 

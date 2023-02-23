@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
         public static Outline DrawingArea(this Document document, FamilySymbol titleBlock)
         {
             Document familyDoc = document.EditFamily(titleBlock.Family);
-            List<DetailLine> lines = new FilteredElementCollector(familyDoc).OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Lines).WhereElementIsNotElementType().Cast<DetailLine>().ToList();
+            List<DetailLine> lines = new FilteredElementCollector(familyDoc).OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Lines).WhereElementIsNotElementType().Where(x => x is DetailLine).Cast<DetailLine>().ToList();
 
             var compositeGeom = new BH.oM.Geometry.CompositeGeometry();
 
