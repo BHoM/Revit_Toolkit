@@ -46,11 +46,11 @@ namespace BH.Revit.Engine.Core
             Document familyDoc = document.EditFamily(titleBlock.Family);
             List<DetailLine> lines = new FilteredElementCollector(familyDoc).OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Lines).WhereElementIsNotElementType().Where(x => x is DetailLine).Cast<DetailLine>().ToList();
 
-            var compositeGeom = new BH.oM.Geometry.CompositeGeometry();
+            var compositeGeom = new CompositeGeometry();
 
             foreach (DetailLine dLine in lines)
             {
-                var bhomLine = (dLine.Location as LocationCurve).Curve.IFromRevit() as BH.oM.Geometry.Line;
+                var bhomLine = dLine.GeometryCurve.IFromRevit() as BH.oM.Geometry.Line;
                 compositeGeom.Elements.Add(bhomLine);
             }
 

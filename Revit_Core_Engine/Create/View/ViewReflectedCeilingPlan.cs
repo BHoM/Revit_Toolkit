@@ -41,35 +41,41 @@ namespace BH.Revit.Engine.Core
         [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
         [Input("viewDetailLevel", "Optional, the Detail Level of the view.")]
         [Output("viewReflectedCeilingPlan", "The new view.")]
-        public static View ViewReflectedCeilingPlan(this Document document, Autodesk.Revit.DB.Level level, string viewName = null, CurveLoop cropBox = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse)
+        public static View ViewReflectedCeilingPlan(this Document document, Level level, string viewName = null, CurveLoop cropBox = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse)
         {
-            View result = null;
+            View newView = null;
 
-            ViewFamilyType vft = Query.ViewFamilyType(document, ViewFamily.CeilingPlan);
+            ViewFamilyType viewFamilyType = Query.ViewFamilyType(document, ViewFamily.CeilingPlan);
 
-            result = Autodesk.Revit.DB.ViewPlan.Create(document, vft.Id, level.Id);
+            newView = Autodesk.Revit.DB.ViewPlan.Create(document, viewFamilyType.Id, level.Id);
 
-            Modify.SetViewDetailLevel(result, viewDetailLevel);
+            Modify.SetViewDetailLevel(newView, viewDetailLevel);
 
             if (cropBox != null)
             {
                 try
                 {
-                    ViewCropRegionShapeManager vcrShapeMgr = result.GetCropRegionShapeManager();
-                    result.CropBoxVisible = true;
+                    ViewCropRegionShapeManager vcrShapeMgr = newView.GetCropRegionShapeManager();
+                    newView.CropBoxVisible = true;
                     vcrShapeMgr.SetCropShape(cropBox);
                 }
                 catch (Exception)
                 {
-                    BH.Engine.Base.Compute.RecordWarning("Could not create the Reflected Ceiling Plan with the provided crop box. Check if the crop box is a valid geometry and if the view's designated template accepts it to change.");
+                    BH.Engine.Base.Compute.RecordWarning("Could not create the Reflected Ceiling Plan with the provided crop box. Check if the crop box is a valid geometry.");
                 }
             }
 
             if (viewTemplateId != null)
             {
+                if (!(document.GetElement(viewTemplateId) as View).IsTemplate)
+                {
+                    BH.Engine.Base.Compute.RecordWarning("Could not apply the View Template of Id " + viewTemplateId + "'." + ". Please check if it's a valid View Template.");
+                    return newView;
+                }
+
                 try
                 {
-                    result.ViewTemplateId = viewTemplateId;
+                    newView.ViewTemplateId = viewTemplateId;
                 }
                 catch (Exception)
                 {
@@ -79,21 +85,23 @@ namespace BH.Revit.Engine.Core
 
             if (!string.IsNullOrEmpty(viewName))
             {
-                try
+                int number = 0;
+                string uniqueName = viewName;
+
+                while (uniqueName.IsExistingViewName(document))
                 {
-#if (REVIT2018 || REVIT2019)
-                    result.ViewName = viewName;
-#else
-                    result.Name = viewName;
-#endif
+                    number++;
+                    uniqueName = $"{viewName} ({number})";
                 }
-                catch
+
+                newView.get_Parameter(BuiltInParameter.VIEW_NAME).Set(uniqueName);
+                if (uniqueName != viewName)
                 {
-                    BH.Engine.Base.Compute.RecordWarning("There is already a view named '" + viewName + "'." + " It has been named '" + result.Name + "' instead.");
+                    BH.Engine.Base.Compute.RecordWarning($"There is already a view named '{viewName}'. It has been named '{uniqueName}' instead.");
                 }
             }
 
-            return result;
+            return newView;
         }
 
         /***************************************************/

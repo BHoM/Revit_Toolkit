@@ -27,7 +27,7 @@ using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Compute
+    public static partial class Create
     {
         /***************************************************/
         /****              Public methods               ****/
@@ -41,9 +41,9 @@ namespace BH.Revit.Engine.Core
         [Input("viewportPlacementPoint", "Placement point of the viewport on the sheet.")]
         [Input("viewportRotation", "Rotation type of the viewport. The default is None.")]
         [Output("viewPort", "The new viewport.")]
-        public static Viewport PlaceViewOnSheet (this Document document, ViewSheet sheet, View view, ElementId viewportTypeId, XYZ viewportPlacementPoint = null, ViewportRotation viewportRotation = ViewportRotation.None)
+        public static Viewport Viewport (this Document document, ViewSheet sheet, View view, ElementId viewportTypeId, XYZ viewportPlacementPoint = null, ViewportRotation viewportRotation = ViewportRotation.None)
         {
-            Viewport viewPort = Viewport.Create(document, sheet.Id, view.Id, viewportPlacementPoint);
+            Viewport viewPort = Autodesk.Revit.DB.Viewport.Create(document, sheet.Id, view.Id, viewportPlacementPoint);
 
             if (viewPort == null)
             {

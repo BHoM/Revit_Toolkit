@@ -24,6 +24,9 @@ using Autodesk.Revit.DB;
 using System;
 using System.ComponentModel;
 using BH.oM.Base.Attributes;
+using System.Collections.Generic;
+using System.Linq;
+using Autodesk.Revit.UI;
 
 namespace BH.Revit.Engine.Core
 {
@@ -40,36 +43,42 @@ namespace BH.Revit.Engine.Core
         [Input("cropBox", "Optional, the crop region to attempt to apply to the newly created view.")]
         [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
         [Input("viewDetailLevel", "Optional, the Detail Level of the view.")]        
-        [Output("viewPlan", "The new view.")]        
-        public static View ViewPlan(this Document document, Autodesk.Revit.DB.Level level, string viewName = null, CurveLoop cropBox = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse)
+        [Output("newView", "The new view.")]        
+        public static View ViewPlan(this Document document, Level level, string viewName = null, CurveLoop cropBox = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse)
         {
-            View result = null;
+            View newView = null;
 
-            ViewFamilyType vft = Query.ViewFamilyType(document, ViewFamily.FloorPlan);
+            ViewFamilyType viewFamilyType = Query.ViewFamilyType(document, ViewFamily.FloorPlan);
 
-            result = Autodesk.Revit.DB.ViewPlan.Create(document, vft.Id, level.Id);
+            newView = Autodesk.Revit.DB.ViewPlan.Create(document, viewFamilyType.Id, level.Id);
             
-            Modify.SetViewDetailLevel(result, viewDetailLevel);
+            Modify.SetViewDetailLevel(newView, viewDetailLevel);
             
             if (cropBox != null)
             {
                 try
                 {
-                    ViewCropRegionShapeManager vcrShapeMgr = result.GetCropRegionShapeManager();
-                    result.CropBoxVisible = true;
+                    ViewCropRegionShapeManager vcrShapeMgr = newView.GetCropRegionShapeManager();
+                    newView.CropBoxVisible = true;
                     vcrShapeMgr.SetCropShape(cropBox);
                 }
                 catch (Exception)
                 {
-                    BH.Engine.Base.Compute.RecordWarning("Could not create the Floor Plan with the provided crop box. Check if the crop box is a valid geometry and if the view's designated template accepts it to change.");
+                    BH.Engine.Base.Compute.RecordWarning("Could not create the Floor Plan with the provided crop box. Check if the crop box is a valid geometry.");
                 }
             }
 
             if (viewTemplateId != null)
             {
+                if (!(document.GetElement(viewTemplateId) as View).IsTemplate)
+                {
+                    BH.Engine.Base.Compute.RecordWarning("Could not apply the View Template of Id " + viewTemplateId + "'." + ". Please check if it's a valid View Template.");
+                    return newView;
+                }
+
                 try
                 {
-                    result.ViewTemplateId = viewTemplateId;
+                    newView.ViewTemplateId = viewTemplateId;
                 }
                 catch (Exception)
                 {
@@ -79,21 +88,27 @@ namespace BH.Revit.Engine.Core
             
             if (!string.IsNullOrEmpty(viewName))
             {
-                try
+                int number = 0;
+                string uniqueName = viewName;
+
+                while (uniqueName.IsExistingViewName(document))
                 {
-#if (REVIT2018 || REVIT2019)
-                    result.ViewName = viewName;
-#else
-                    result.Name = viewName;
-#endif
+                    number++;
+                    uniqueName = $"{viewName} ({number})";
                 }
-                catch
+
+#if (REVIT2018 || REVIT2019)
+                    newView.ViewName = uniqueName;
+#else
+                newView.Name = uniqueName;
+#endif
+                if (uniqueName != viewName)
                 {
-                    BH.Engine.Base.Compute.RecordWarning("There is already a view named '" + viewName + "'." + " It has been named '" + result.Name + "' instead.");
+                    BH.Engine.Base.Compute.RecordWarning($"There is already a view named '{viewName}'. It has been named '{uniqueName}' instead.");
                 }
             }
             
-            return result;
+            return newView;
         }
 
         /***************************************************/
@@ -107,32 +122,32 @@ namespace BH.Revit.Engine.Core
         [Input("viewTemplateId", "(Optional) A View Template Id to be applied in the view.")]
         [Input("cropRegionVisible", "True if the crop region should be visible.")]
         [Input("annotationCrop", "True if the annotation crop should be visible.")]
-        [Output("viewPlan", "The new view.")]
+        [Output("newView", "The new view.")]
         public static View ViewPlan(this Document document, Level level, string viewName, ViewFamily viewFamily = ViewFamily.FloorPlan,  ElementId scopeBoxId = null, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
         {
-            View result = null;
+            View newView = null;
 
             if (!(viewFamily == ViewFamily.FloorPlan || viewFamily == ViewFamily.CeilingPlan || viewFamily == ViewFamily.AreaPlan || viewFamily == ViewFamily.StructuralPlan))
             {
                 BH.Engine.Base.Compute.RecordWarning("Could not create View of type " + viewFamily + "'." + ". It has to be a FloorPlan, CeilingPlan, AreaPlan, or StructuralPlan ViewType.");
-                return result;
+                return newView;
             }
 
             ViewFamilyType viewFamilyType = Query.ViewFamilyType(document, viewFamily);
 
-            result = Autodesk.Revit.DB.ViewPlan.Create(document, viewFamilyType.Id, level.Id);
+            newView = Autodesk.Revit.DB.ViewPlan.Create(document, viewFamilyType.Id, level.Id);
 
             if (viewTemplateId != null)
             {
                 if (!(document.GetElement(viewTemplateId) as View).IsTemplate)
                 {
                     BH.Engine.Base.Compute.RecordWarning("Could not apply the View Template of Id " + viewTemplateId + "'." + ". Please check if it's a valid View Template.");
-                    return result;
+                    return newView;
                 }
 
                 try
                 {
-                    result.ViewTemplateId = viewTemplateId;
+                    newView.ViewTemplateId = viewTemplateId;
                 }
                 catch (Exception)
                 {
@@ -143,33 +158,22 @@ namespace BH.Revit.Engine.Core
             if (!string.IsNullOrEmpty(viewName))
             {
                 int number = 0;
+                string uniqueName = viewName;
 
-                while (true)
+                while (uniqueName.IsExistingViewName(document))
                 {
-                    try
-                    {
-                        if (number != 0)
-                        {
-#if (REVIT2018 || REVIT2019)
-                            result.ViewName = $"{viewName} ({number})";
-#else
-                            result.Name = $"{viewName} ({number})";
-#endif
-                            BH.Engine.Base.Compute.RecordWarning("There is already a view named '" + viewName + "'." + " It has been named '" + result.Name + "' instead.");
-                            break;
-                        }
+                    number++;
+                    uniqueName = $"{viewName} ({number})";
+                }
 
 #if (REVIT2018 || REVIT2019)
-                        result.ViewName = viewName;
+                    newView.ViewName = uniqueName;
 #else
-                        result.Name = viewName;
+                newView.Name = uniqueName;
 #endif
-                        break;
-                    }
-                    catch
-                    {
-                        number++;
-                    }
+                if (uniqueName != viewName)
+                {
+                    BH.Engine.Base.Compute.RecordWarning($"There is already a view named '{viewName}'. It has been named '{uniqueName}' instead.");
                 }
             }
 
@@ -180,12 +184,12 @@ namespace BH.Revit.Engine.Core
                 if (!((BuiltInCategory)scopeBox.Category.Id.IntegerValue == BuiltInCategory.OST_VolumeOfInterest))
                 {
                     BH.Engine.Base.Compute.RecordWarning("Could not apply the Scope Box of Id " + scopeBoxId + "'." + ". Please check if it's a valid Scope Box element.");
-                    return result;
+                    return newView;
                 }
 
                 try
                 {
-                    result.get_Parameter(BuiltInParameter.VIEWER_VOLUME_OF_INTEREST_CROP).Set(scopeBoxId);
+                    newView.get_Parameter(BuiltInParameter.VIEWER_VOLUME_OF_INTEREST_CROP).Set(scopeBoxId);
                 }
                 catch (Exception)
                 {
@@ -193,11 +197,26 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            result.get_Parameter(BuiltInParameter.VIEWER_CROP_REGION_VISIBLE).Set(cropRegionVisible? 1: 0);
-            result.get_Parameter(BuiltInParameter.VIEWER_ANNOTATION_CROP_ACTIVE).Set(annotationCrop? 1: 0);
+            newView.get_Parameter(BuiltInParameter.VIEWER_CROP_REGION_VISIBLE).Set(cropRegionVisible? 1: 0);
+            newView.get_Parameter(BuiltInParameter.VIEWER_ANNOTATION_CROP_ACTIVE).Set(annotationCrop? 1: 0);
 
-            return result;
+            return newView;
         }
+
+        /***************************************************/
+        /****              Private Methods              ****/
+        /***************************************************/
+
+        [Description("Check if given view name exists in the Revit model.")]
+        private static bool IsExistingViewName(this string viewName, Document document)
+        {
+            List<string> viewNamesInModel = new FilteredElementCollector(document).OfClass(typeof(ViewPlan)).WhereElementIsNotElementType().Select(x => x.Name).ToList();
+            
+            return viewNamesInModel.Contains(viewName);
+        }
+
+        /***************************************************/
+
     }
 }
 
