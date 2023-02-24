@@ -22,7 +22,9 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -37,42 +39,36 @@ namespace BH.Revit.Engine.Core
         [Input("sheetName", "Name of the new sheet.")]
         [Input("sheetNumber", "Number of the new sheet.")]
         [Input("viewTemplateId", "The Title Block Id to be applied to the sheet.")]
-        [Output("viewSheet", "The new sheet.")]
+        [Output("newSheet", "The new sheet.")]
         public static ViewSheet Sheet(this Document document, string sheetName, string sheetNumber, ElementId titleBlockId)
         {
-            ViewSheet result = ViewSheet.Create(document, titleBlockId);
+            List<string> sheetNumbersInModel = new FilteredElementCollector(document).OfClass(typeof(ViewSheet)).WhereElementIsNotElementType().Select(x => (x as ViewSheet).SheetNumber).ToList();
+            ViewSheet newSheet = ViewSheet.Create(document, titleBlockId);
 
             if (!string.IsNullOrEmpty(sheetName))
             {
-                result.Name = sheetName;
+                newSheet.Name = sheetName;
             }
 
             if (!string.IsNullOrEmpty(sheetNumber))
             {
                 int number = 0;
+                string uniqueNumber = sheetNumber;
 
-                while (true)
+                while (sheetNumbersInModel.Contains(uniqueNumber))
                 {
-                    try
-                    {
-                        if (number != 0)
-                        {
-                            result.SheetNumber = $"{sheetNumber} ({number})";
-                            BH.Engine.Base.Compute.RecordWarning("There is already a sheet named '" + sheetNumber + "'." + " It has been named '" + result.SheetNumber + "' instead.");
-                            break;
-                        }
+                    number++;
+                    uniqueNumber = $"{sheetNumber} ({number})";
+                }
 
-                        result.SheetNumber = sheetNumber;
-                        break;
-                    }
-                    catch
-                    {
-                        number++;
-                    }
+                newSheet.SheetNumber = uniqueNumber;
+                if (uniqueNumber != sheetNumber)
+                {
+                    BH.Engine.Base.Compute.RecordWarning($"There is already a sheet named '{sheetNumber}'. It has been named '{uniqueNumber}' instead.");
                 }
             }
 
-            return result;
+            return newSheet;
         }
 
         /***************************************************/
