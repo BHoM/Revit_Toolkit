@@ -85,10 +85,10 @@ namespace BH.Revit.Engine.Core
                     leftPoints.Add(leftPoint);
             }
 
-            var areaUpPoint = upPoints.OrderBy(x => x.Distance(centrePoint)).FirstOrDefault();
-            var areaRightPoint = rightPoints.OrderBy(x => x.Distance(centrePoint)).FirstOrDefault();
-            var areaDownPoint = downPoints.OrderBy(x => x.Distance(centrePoint)).FirstOrDefault();
-            var areaLeftPoint = leftPoints.OrderBy(x => x.Distance(centrePoint)).FirstOrDefault();
+            var areaUpPoint = upPoints.OrderBy(x => x.Y).FirstOrDefault();
+            var areaRightPoint = rightPoints.OrderBy(x => x.X).FirstOrDefault();
+            var areaDownPoint = downPoints.OrderByDescending(x => x.Y).FirstOrDefault();
+            var areaLeftPoint = leftPoints.OrderByDescending(x => x.X).FirstOrDefault();
 
             var areaPoints = new List<BH.oM.Geometry.Point> { areaUpPoint, areaRightPoint, areaDownPoint, areaLeftPoint };
             BoundingBox areaBox = areaPoints.Bounds();
