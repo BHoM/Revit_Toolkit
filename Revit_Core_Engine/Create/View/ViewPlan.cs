@@ -88,24 +88,7 @@ namespace BH.Revit.Engine.Core
             
             if (!string.IsNullOrEmpty(viewName))
             {
-                int number = 0;
-                string uniqueName = viewName;
-
-                while (uniqueName.IsExistingViewName(document))
-                {
-                    number++;
-                    uniqueName = $"{viewName} ({number})";
-                }
-
-#if (REVIT2018 || REVIT2019)
-                    newView.ViewName = uniqueName;
-#else
-                newView.Name = uniqueName;
-#endif
-                if (uniqueName != viewName)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"There is already a view named '{viewName}'. It has been named '{uniqueName}' instead.");
-                }
+                newView.SetViewName(viewName, document);
             }
             
             return newView;
@@ -157,24 +140,7 @@ namespace BH.Revit.Engine.Core
 
             if (!string.IsNullOrEmpty(viewName))
             {
-                int number = 0;
-                string uniqueName = viewName;
-
-                while (uniqueName.IsExistingViewName(document))
-                {
-                    number++;
-                    uniqueName = $"{viewName} ({number})";
-                }
-
-#if (REVIT2018 || REVIT2019)
-                    newView.ViewName = uniqueName;
-#else
-                newView.Name = uniqueName;
-#endif
-                if (uniqueName != viewName)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"There is already a view named '{viewName}'. It has been named '{uniqueName}' instead.");
-                }
+                newView.SetViewName(viewName, document);
             }
 
             if (scopeBoxId != null)
@@ -205,6 +171,31 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
         /****              Private Methods              ****/
+        /***************************************************/
+
+        [Description("Set View Name to the given value. If the view name already exists in the model, a number suffix is added.")]
+        private static void SetViewName(this View view, string viewName, Document document)
+        {
+            int number = 0;
+            string uniqueName = viewName;
+
+            while (uniqueName.IsExistingViewName(document))
+            {
+                number++;
+                uniqueName = $"{viewName} ({number})";
+            }
+
+#if (REVIT2018 || REVIT2019)
+                    view.ViewName = uniqueName;
+#else
+            view.Name = uniqueName;
+#endif
+            if (uniqueName != viewName)
+            {
+                BH.Engine.Base.Compute.RecordWarning($"There is already a view named '{viewName}'. It has been named '{uniqueName}' instead.");
+            }
+        }
+
         /***************************************************/
 
         [Description("Check if given view name exists in the Revit model.")]

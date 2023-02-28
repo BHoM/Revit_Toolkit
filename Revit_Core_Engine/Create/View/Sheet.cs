@@ -34,7 +34,7 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Creates and returns a new Floor Plan view in the current Revit file.")]
+        [Description("Creates and returns a new Sheet in the current Revit file.")]
         [Input("document", "The current Revit document to be processed.")]
         [Input("sheetName", "Name of the new sheet.")]
         [Input("sheetNumber", "Number of the new sheet.")]
@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
         [Output("newSheet", "The new sheet.")]
         public static ViewSheet Sheet(this Document document, string sheetName, string sheetNumber, ElementId titleBlockId)
         {
-            List<string> sheetNumbersInModel = new FilteredElementCollector(document).OfClass(typeof(ViewSheet)).WhereElementIsNotElementType().Select(x => (x as ViewSheet).SheetNumber).ToList();
+            List<string> sheetNumbersInModel = new FilteredElementCollector(document).OfClass(typeof(ViewSheet)).Cast<ViewSheet>().Select(x => x.SheetNumber).ToList();
             ViewSheet newSheet = ViewSheet.Create(document, titleBlockId);
 
             if (!string.IsNullOrEmpty(sheetName))
@@ -64,7 +64,7 @@ namespace BH.Revit.Engine.Core
                 newSheet.SheetNumber = uniqueNumber;
                 if (uniqueNumber != sheetNumber)
                 {
-                    BH.Engine.Base.Compute.RecordWarning($"There is already a sheet named '{sheetNumber}'. It has been named '{uniqueNumber}' instead.");
+                    BH.Engine.Base.Compute.RecordWarning($"Sheet named '{sheetNumber}' already exists in the document. Newly created has been named '{uniqueNumber}' instead.");
                 }
             }
 

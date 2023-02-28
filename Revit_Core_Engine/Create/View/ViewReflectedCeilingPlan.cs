@@ -85,20 +85,7 @@ namespace BH.Revit.Engine.Core
 
             if (!string.IsNullOrEmpty(viewName))
             {
-                int number = 0;
-                string uniqueName = viewName;
-
-                while (uniqueName.IsExistingViewName(document))
-                {
-                    number++;
-                    uniqueName = $"{viewName} ({number})";
-                }
-
-                newView.get_Parameter(BuiltInParameter.VIEW_NAME).Set(uniqueName);
-                if (uniqueName != viewName)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"There is already a view named '{viewName}'. It has been named '{uniqueName}' instead.");
-                }
+                newView.SetViewName(viewName, document);
             }
 
             return newView;
