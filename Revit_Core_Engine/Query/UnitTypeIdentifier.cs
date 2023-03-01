@@ -22,7 +22,6 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
@@ -34,7 +33,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        //TODO: proper description!
+        [Description("Returns name of SpecTypeId property that contains a given Revit unit type object (enum for Revit up to 2020 or ForgeTypeId for later versions).")]
+        [Input("unitType", "Unit type object to be queried for the correspondent SpecTypeId property name.")]
+        [Output("identifier", "Name of SpecTypeId property that contains the input unit type object.")]
 #if (REVIT2018 || REVIT2019 || REVIT2020)
         public static string UnitTypeIdentifier(this UnitType unitType)
 #else
@@ -45,8 +46,7 @@ namespace BH.Revit.Engine.Core
                 CollectUnitTypes();
 
             if (m_UnitTypesWithIdentifiers.ContainsValue(unitType))
-                //TODO: shouldn't be .Equals for ForgeTypeId?
-                return m_UnitTypesWithIdentifiers.FirstOrDefault(x => x.Value == unitType).Key;
+                return m_UnitTypesWithIdentifiers.FirstOrDefault(x => x.Value.Equals(unitType)).Key;
             else
                 return null;
         }
