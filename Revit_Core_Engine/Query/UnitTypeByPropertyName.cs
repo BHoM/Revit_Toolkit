@@ -47,19 +47,19 @@ namespace BH.Revit.Engine.Core
             if (m_UnitTypesWithIdentifiers == null)
                 CollectUnitTypes();
 
-            if (m_UnitTypesWithIdentifiers.ContainsKey(identifier))
-                return m_UnitTypesWithIdentifiers[identifier];
-            else
+            if (!string.IsNullOrWhiteSpace(identifier))
             {
-                if (!string.IsNullOrWhiteSpace(identifier))
+                if (m_UnitTypesWithIdentifiers.ContainsKey(identifier))
+                    return m_UnitTypesWithIdentifiers[identifier];
+                else
                     BH.Engine.Base.Compute.RecordWarning($"Unit type with identifier {identifier} not found.");
+            }
 
 #if (REVIT2018 || REVIT2019 || REVIT2020)
-                return UnitType.UT_Undefined;
+            return UnitType.UT_Undefined;
 #else
-                return null;
+            return null;
 #endif
-            }
         }
 
 
