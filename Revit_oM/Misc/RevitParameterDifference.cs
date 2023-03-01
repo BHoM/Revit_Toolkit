@@ -41,6 +41,9 @@ namespace BH.oM.Adapters.Revit
         [Description("The newer value of this RevitParameter (associated with the following version of the object).")]
         public virtual object FollowingValue { get; set; }
 
+        [Description("")]
+        public virtual string UnitType { get; set; }
+
         [Description("Full Name of the object's property that owns the RevitParameter that was different.")]
         public virtual string FullName { get; set; }
 
