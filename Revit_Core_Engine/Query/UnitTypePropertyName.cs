@@ -37,9 +37,9 @@ namespace BH.Revit.Engine.Core
         [Input("unitType", "Unit type object to be queried for the correspondent SpecTypeId property name.")]
         [Output("identifier", "Name of SpecTypeId property that contains the input unit type object.")]
 #if (REVIT2018 || REVIT2019 || REVIT2020)
-        public static string UnitTypeIdentifier(this UnitType unitType)
+        public static string UnitTypePropertyName(this UnitType unitType)
 #else
-        public static string UnitTypeIdentifier(this ForgeTypeId unitType)
+        public static string UnitTypePropertyName(this ForgeTypeId unitType)
 #endif
         {
             if (m_UnitTypesWithIdentifiers == null)
