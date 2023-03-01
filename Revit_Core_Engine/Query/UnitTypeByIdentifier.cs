@@ -35,7 +35,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        //TODO: proper description!
+        [Description("Returns Revit unit type object (enum for Revit up to 2020 or ForgeTypeId for later versions) based on SpecTypeId property name that represents it.")]
+        [Input("identifier", "Name of SpecTypeId property to be queried for the correspondent unit type.")]
+        [Output("unitType", "Unit type object under the input SpecTypeId property name.")]
 #if (REVIT2018 || REVIT2019 || REVIT2020)
         public static UnitType UnitTypeByIdentifier(this string identifier)
 #else
@@ -61,6 +63,10 @@ namespace BH.Revit.Engine.Core
         }
 
 
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
 #if (REVIT2018 || REVIT2019 || REVIT2020)
         private static void CollectUnitTypes()
         {
@@ -74,6 +80,8 @@ namespace BH.Revit.Engine.Core
         }
 
         private static Dictionary<string, UnitType> m_UnitTypesWithIdentifiers = null;
+
+        /***************************************************/
 #else
         private static void CollectUnitTypes()
         {
@@ -88,7 +96,6 @@ namespace BH.Revit.Engine.Core
 
         private static Dictionary<string, ForgeTypeId> m_UnitTypesWithIdentifiers = null;
 #endif
-
 
         /***************************************************/
     }
