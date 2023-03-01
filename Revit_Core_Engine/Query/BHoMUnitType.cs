@@ -156,8 +156,10 @@ namespace BH.Revit.Engine.Core
         [Output("unitType", "BHoM-specific Revit unit type for the input quantity.")]
         public static ForgeTypeId BHoMUnitType(this ForgeTypeId quantity)
         {
+#if (!REVIT2021)
             if (!UnitUtils.IsMeasurableSpec(quantity))
                 return null;
+#endif
 
             // Check if any display unit type applicable to given unit type is acceptable BHoM unit type.
             IEnumerable<ForgeTypeId> duts = UnitUtils.GetValidUnits(quantity);
