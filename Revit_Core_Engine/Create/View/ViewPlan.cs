@@ -43,12 +43,19 @@ namespace BH.Revit.Engine.Core
         [Input("cropBox", "Optional, the crop region to attempt to apply to the newly created view.")]
         [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
         [Input("viewDetailLevel", "Optional, the Detail Level of the view.")]        
-        [Output("newView", "The new view.")]        
-        public static View ViewPlan(this Document document, Level level, string viewName = null, CurveLoop cropBox = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse)
+        [Output("newView", "The new view.")]
+        [PreviousVersion("6.1", "BH.Revit.Engine.Core.Create.ViewPlan(Autodesk.Revit.DB.Document, Autodesk.Revit.DB.Level, System.String, Autodesk.Revit.DB.ViewFamily, Autodesk.Revit.DB.CurveLoop, Autodesk.Revit.DB.ElementId, Autodesk.Revit.DB.ViewDetailLevel)")]
+        public static View ViewPlan(this Document document, Level level, string viewName = null, ViewFamily viewFamily = ViewFamily.FloorPlan, CurveLoop cropBox = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse)
         {
             View newView = null;
 
-            ViewFamilyType viewFamilyType = Query.ViewFamilyType(document, ViewFamily.FloorPlan);
+            if (!(viewFamily == ViewFamily.FloorPlan || viewFamily == ViewFamily.CeilingPlan || viewFamily == ViewFamily.AreaPlan || viewFamily == ViewFamily.StructuralPlan))
+            {
+                BH.Engine.Base.Compute.RecordWarning($"Could not create View of type '{viewFamily}'. It has to be a FloorPlan, CeilingPlan, AreaPlan, or StructuralPlan ViewType.");
+                return newView;
+            }
+
+            ViewFamilyType viewFamilyType = Query.ViewFamilyType(document, viewFamily);
 
             newView = Autodesk.Revit.DB.ViewPlan.Create(document, viewFamilyType.Id, level.Id);
             
@@ -106,44 +113,9 @@ namespace BH.Revit.Engine.Core
         [Input("cropRegionVisible", "True if the crop region should be visible.")]
         [Input("annotationCrop", "True if the annotation crop should be visible.")]
         [Output("newView", "The new view.")]
-        public static View ViewPlan(this Document document, Level level, string viewName, ViewFamily viewFamily = ViewFamily.FloorPlan,  ElementId scopeBoxId = null, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
+        public static View ViewPlanWithScopeBox(this Document document, Level level, string viewName, ViewFamily viewFamily = ViewFamily.FloorPlan,  ElementId scopeBoxId = null, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
         {
-            View newView = null;
-
-            //
-
-            if (!(viewFamily == ViewFamily.FloorPlan || viewFamily == ViewFamily.CeilingPlan || viewFamily == ViewFamily.AreaPlan || viewFamily == ViewFamily.StructuralPlan))
-            {
-                BH.Engine.Base.Compute.RecordWarning($"Could not create View of type '{viewFamily}'. It has to be a FloorPlan, CeilingPlan, AreaPlan, or StructuralPlan ViewType.");
-                return newView;
-            }
-
-            ViewFamilyType viewFamilyType = Query.ViewFamilyType(document, viewFamily);
-
-            newView = Autodesk.Revit.DB.ViewPlan.Create(document, viewFamilyType.Id, level.Id);
-
-            if (viewTemplateId != null)
-            {
-                if (!(document.GetElement(viewTemplateId) as View).IsTemplate)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if it's a valid View Template.");
-                    return newView;
-                }
-
-                try
-                {
-                    newView.ViewTemplateId = viewTemplateId;
-                }
-                catch (Exception)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if it's a valid ElementId.");
-                }
-            }
-
-            if (!string.IsNullOrEmpty(viewName))
-            {
-                newView.SetViewName(viewName, document);
-            }
+            View newView = ViewPlan(document, level, viewName, viewFamily, null, viewTemplateId);
 
             if (scopeBoxId != null)
             {
