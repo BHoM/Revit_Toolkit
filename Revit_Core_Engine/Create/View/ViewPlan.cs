@@ -113,9 +113,9 @@ namespace BH.Revit.Engine.Core
         [Input("cropRegionVisible", "True if the crop region should be visible.")]
         [Input("annotationCrop", "True if the annotation crop should be visible.")]
         [Output("newView", "The new view.")]
-        public static View ViewPlanWithScopeBox(this Document document, Level level, string viewName, ViewFamily viewFamily = ViewFamily.FloorPlan,  ElementId scopeBoxId = null, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
+        public static View ViewPlan(this Document document, Level level, string viewName, ViewFamily viewFamily = ViewFamily.FloorPlan,  ElementId scopeBoxId = null, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
         {
-            View newView = ViewPlan(document, level, viewName, viewFamily, null, viewTemplateId);
+            View newView = ViewPlan(document, level, viewName, viewFamily, null as CurveLoop, viewTemplateId);
 
             if (scopeBoxId != null)
             {
