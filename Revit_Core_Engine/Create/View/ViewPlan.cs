@@ -198,16 +198,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Check if given view name exists in the Revit model.")]
-        private static bool IsExistingViewName(this string viewName, Document document)
-        {
-            List<string> viewNamesInModel = new FilteredElementCollector(document).OfClass(typeof(ViewPlan)).WhereElementIsNotElementType().Select(x => x.Name).ToList();
-            
-            return viewNamesInModel.Contains(viewName);
-        }
-
-        /***************************************************/
-
     }
 }
 
