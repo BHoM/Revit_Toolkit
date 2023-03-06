@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
@@ -28,53 +29,36 @@ using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Create
+    public static partial class Query
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates and returns a new Sheet in the current Revit file.")]
+        [Description("Check if given view name exists in the Revit model.")]
+        [Input("viewName", "Name of the view to check if already exists in the model.")]
         [Input("document", "The current Revit document to be processed.")]
-        [Input("sheetName", "Name of the new sheet.")]
-        [Input("sheetNumber", "Number of the new sheet.")]
-        [Input("viewTemplateId", "The Title Block Id to be applied to the sheet.")]
-        [Output("newSheet", "The new sheet.")]
-        public static ViewSheet Sheet(this Document document, string sheetName, string sheetNumber, ElementId titleBlockId)
+        [Output("bool", "True if given view name already exists in the model.")]
+        public static bool IsExistingViewName(this string viewName, Document document)
         {
-            ViewSheet newSheet = null;
+            List<string> viewNamesInModel = new FilteredElementCollector(document).OfClass(typeof(ViewPlan)).WhereElementIsNotElementType().Select(x => x.Name).ToList();
 
-            if (!string.IsNullOrEmpty(sheetNumber))
-            {
-                int number = 0;
-                string uniqueNumber = sheetNumber;
+            return viewNamesInModel.Contains(viewName);
+        }
 
-                while (uniqueNumber.IsExistingSheetNumber(document))
-                {
-                    number++;
-                    uniqueNumber = $"{sheetNumber} ({number})";
-                }
+        /***************************************************/
 
-                newSheet = ViewSheet.Create(document, titleBlockId);
-                newSheet.SheetNumber = uniqueNumber;
+        [Description("Check if given sheet number exists in the Revit model.")]
+        [Input("sheetNumber", "Number of the sheet to check if already exists in the model.")]
+        [Input("document", "The current Revit document to be processed.")]
+        [Output("bool", "True if given sheet number already exists in the model.")]
+        public static bool IsExistingSheetNumber(this string sheetNumber, Document document)
+        {
+            List<string> sheetNumbersInModel = new FilteredElementCollector(document).OfClass(typeof(ViewSheet)).Cast<ViewSheet>().Select(x => x.SheetNumber).ToList();
 
-                if (uniqueNumber != sheetNumber)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"Sheet named '{sheetNumber}' already exists in the document. Newly created has been named '{uniqueNumber}' instead.");
-                }
-            }
-
-            if (!string.IsNullOrEmpty(sheetName))
-            {
-                newSheet.Name = sheetName;
-            }
-
-            return newSheet;
+            return sheetNumbersInModel.Contains(sheetNumber);
         }
 
         /***************************************************/
     }
 }
-
-
-
