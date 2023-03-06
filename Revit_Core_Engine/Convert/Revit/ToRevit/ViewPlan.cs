@@ -78,7 +78,7 @@ namespace BH.Revit.Engine.Core
                     viewTemplateId = viewPlanTemplate.Id;
             }
 
-            revitViewPlan = Create.ViewPlan(document, level, viewPlan.ViewName, ViewFamily.FloorPlan, null, viewTemplateId) as ViewPlan;
+            revitViewPlan = Create.ViewPlan(document, level, viewPlan.ViewName, ViewFamily.FloorPlan, null as CurveLoop, viewTemplateId) as ViewPlan;
 
             // Copy parameters from BHoM object to Revit element
             revitViewPlan.CopyParameters(viewPlan, settings);
