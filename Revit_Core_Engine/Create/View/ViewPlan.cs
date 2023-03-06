@@ -72,7 +72,7 @@ namespace BH.Revit.Engine.Core
             {
                 if (!(document.GetElement(viewTemplateId) as View).IsTemplate)
                 {
-                    BH.Engine.Base.Compute.RecordWarning("Could not apply the View Template of Id " + viewTemplateId + "'." + ". Please check if it's a valid View Template.");
+                    BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if it's a valid View Template.");
                     return newView;
                 }
 
@@ -82,7 +82,7 @@ namespace BH.Revit.Engine.Core
                 }
                 catch (Exception)
                 {
-                    BH.Engine.Base.Compute.RecordWarning("Could not apply the View Template of Id " + viewTemplateId + "'." + ". Please check if it's a valid ElementId.");
+                    BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if it's a valid ElementId.");
                 }
             }
             
@@ -110,9 +110,11 @@ namespace BH.Revit.Engine.Core
         {
             View newView = null;
 
+            //
+
             if (!(viewFamily == ViewFamily.FloorPlan || viewFamily == ViewFamily.CeilingPlan || viewFamily == ViewFamily.AreaPlan || viewFamily == ViewFamily.StructuralPlan))
             {
-                BH.Engine.Base.Compute.RecordWarning("Could not create View of type " + viewFamily + "'." + ". It has to be a FloorPlan, CeilingPlan, AreaPlan, or StructuralPlan ViewType.");
+                BH.Engine.Base.Compute.RecordWarning($"Could not create View of type '{viewFamily}'. It has to be a FloorPlan, CeilingPlan, AreaPlan, or StructuralPlan ViewType.");
                 return newView;
             }
 
@@ -124,7 +126,7 @@ namespace BH.Revit.Engine.Core
             {
                 if (!(document.GetElement(viewTemplateId) as View).IsTemplate)
                 {
-                    BH.Engine.Base.Compute.RecordWarning("Could not apply the View Template of Id " + viewTemplateId + "'." + ". Please check if it's a valid View Template.");
+                    BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if it's a valid View Template.");
                     return newView;
                 }
 
@@ -134,7 +136,7 @@ namespace BH.Revit.Engine.Core
                 }
                 catch (Exception)
                 {
-                    BH.Engine.Base.Compute.RecordWarning("Could not apply the View Template of Id " + viewTemplateId + "'." + ". Please check if it's a valid ElementId.");
+                    BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if it's a valid ElementId.");
                 }
             }
 
@@ -149,7 +151,7 @@ namespace BH.Revit.Engine.Core
 
                 if (!((BuiltInCategory)scopeBox.Category.Id.IntegerValue == BuiltInCategory.OST_VolumeOfInterest))
                 {
-                    BH.Engine.Base.Compute.RecordWarning("Could not apply the Scope Box of Id " + scopeBoxId + "'." + ". Please check if it's a valid Scope Box element.");
+                    BH.Engine.Base.Compute.RecordWarning($"Could not apply the Scope Box of Id '{scopeBoxId}'. Please check if it's a valid Scope Box element.");
                     return newView;
                 }
 
@@ -159,7 +161,7 @@ namespace BH.Revit.Engine.Core
                 }
                 catch (Exception)
                 {
-                    BH.Engine.Base.Compute.RecordWarning("Could not apply the Scope Box of Id " + scopeBoxId + "'." + ". Please check if it's a valid ElementId.");
+                    BH.Engine.Base.Compute.RecordWarning($"Could not apply the Scope Box of Id '{scopeBoxId}'. Please check if it's a valid ElementId.");
                 }
             }
 
