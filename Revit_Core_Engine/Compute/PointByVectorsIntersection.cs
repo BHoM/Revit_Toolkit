@@ -24,6 +24,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using BH.oM.Adapters.Revit;
 using BH.oM.Base.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -39,49 +40,35 @@ namespace BH.Revit.Engine.Core
         [Description("Project an XYZ point on the datum XY plane and return the result.")]
         [Input("point", "An XYZ point from which to get a projection on the XY plane.")]
         [Output("point", "The projection of an XYZ point on the XY plane.")]
-        public static XYZ OnXY(this XYZ point)
+        public static XYZ PointByVectorsIntersection(this XYZ startPoint, XYZ endPoint, XYZ startDir, XYZ endDir)
         {
-            return new XYZ(point.X, point.Y, 0);
-        }
+            double x;
+            double y;
 
-        /***************************************************/
-
-        [Description("Project a Line on the datum XY plane and return the result.")]
-        [Input("line", "A line from which to get a projection on the XY plane.")]
-        [Output("line", "The projection of a line on the XY plane.")]
-        public static Line OnXY(this Line line)
-        {
-            XYZ p0 = line.GetEndPoint(0).OnXY();
-            XYZ p1 = line.GetEndPoint(1).OnXY();
-
-            if (p0.DistanceTo(p1) <= Tolerance.ShortCurve)
+            if (Math.Abs(startDir.X) < Tolerance.Angle)
             {
-                return null;
+                x = startPoint.X;
+                y = endPoint.Y + (x - endPoint.X) * endDir.Y / endDir.X;
+            }
+            else if (Math.Abs(endDir.X) < Tolerance.Angle)
+            {
+                x = endPoint.X;
+                y = startPoint.Y + (x - startPoint.X) * startDir.Y / startDir.X;
+            }
+            else
+            {
+                double m1 = startDir.Y / startDir.X;
+                double A1 = -m1;
+                double C1 = m1 * startPoint.X - startPoint.Y;
+                double m2 = endDir.Y / endDir.X;
+                double A2 = -m2;
+                double C2 = m2 * endPoint.X - endPoint.Y;
+                double delta = A2 - A1;
+                x = (C1 - C2) / delta;
+                y = (A1 * C2 - A2 * C1) / delta;
             }
 
-            return Line.CreateBound(p0, p1);
-        }
-
-        /***************************************************/
-
-        [Description("Project a planar curve on the datum XY plane and return the result.")]
-        [Input("planarCurve", "A planar curve from which to get a projection on the XY plane.")]
-        [Output("planarCurve", "The projection of a planar curve on the XY plane.")]
-        public static Curve OnXY(this Curve planarCurve)
-        {
-            double zDiff = planarCurve.Evaluate(0.5, false).Z;
-            Transform tr = Transform.CreateTranslation(new XYZ(0, 0, -zDiff));
-            return planarCurve.CreateTransformed(tr);
-        }
-
-        /***************************************************/
-
-        [Description("Project a list of planar curves on the datum XY plane and return the result.")]
-        [Input("planarCurves", "A list of planar curves from which to get a projection on the XY plane.")]
-        [Output("planarCurves", "The projection of a list of planar curves on the XY plane.")]
-        public static List<Curve> OnXY(this List<Curve> planarCurves)
-        {
-            return planarCurves.Select(x => x.OnXY()).ToList();
+            return new XYZ(x, y, startPoint.Z);
         }
 
         /***************************************************/
