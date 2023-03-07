@@ -79,6 +79,11 @@ namespace BH.Revit.Engine.Core
             }
         }
 
+
+        /***************************************************/
+        /****               Private fields              ****/
+        /***************************************************/
+
         private static Dictionary<string, UnitType> m_UnitTypesWithIdentifiers = null;
 
         /***************************************************/
@@ -93,6 +98,11 @@ namespace BH.Revit.Engine.Core
                     m_UnitTypesWithIdentifiers.Add(info.Name, unitType);
             }
         }
+
+
+        /***************************************************/
+        /****               Private fields              ****/
+        /***************************************************/
 
         private static Dictionary<string, ForgeTypeId> m_UnitTypesWithIdentifiers = null;
 #endif
