@@ -40,7 +40,7 @@ namespace BH.Revit.Engine.Core
         [Input("viewportPlacementPoint", "Placement point of the viewport on the sheet.")]
         [Input("viewportRotation", "Rotation type of the viewport. The default is None.")]
         [Output("viewPort", "The new viewport.")]
-        public static Viewport Viewport (this ViewSheet sheet, View view, ElementId viewportTypeId, XYZ viewportPlacementPoint = null, ViewportRotation viewportRotation = ViewportRotation.None)
+        public static Viewport Viewport(this ViewSheet sheet, View view, ElementId viewportTypeId, XYZ viewportPlacementPoint = null, ViewportRotation viewportRotation = ViewportRotation.None)
         {
             Document document = sheet.Document;
 

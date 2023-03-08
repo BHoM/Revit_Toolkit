@@ -33,7 +33,7 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [ToBeRemoved("6.1")]
+        [ToBeRemoved("6.1","This method is to be replaced with Create.ViewPlan.")]
         [Description("Creates and returns a new Reflected Ceiling Plan view in the current Revit file.")]
         [Input("document", "Revit current document to be processed.")]
         [Input("level", "The level that the created Floor Plan refers to.")]
