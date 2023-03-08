@@ -61,7 +61,8 @@ namespace BH.Revit.Engine.Core
 
             newView = Autodesk.Revit.DB.ViewPlan.Create(document, viewFamilyType.Id, level.Id);
             
-            Modify.SetViewDetailLevel(newView, viewDetailLevel);
+            if (viewDetailLevel != ViewDetailLevel.Undefined)
+                Modify.SetViewDetailLevel(newView, viewDetailLevel);
             
             if (cropBox != null)
             {
