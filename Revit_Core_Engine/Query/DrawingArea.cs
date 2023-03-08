@@ -65,8 +65,8 @@ namespace BH.Revit.Engine.Core
 
             double leftBound = double.MinValue;
             double rightBound = double.MaxValue;
-            double downBound = double.MinValue;
-            double upBound = double.MaxValue;
+            double bottomBound = double.MinValue;
+            double topBound = double.MaxValue;
 
             foreach (BH.oM.Geometry.Line bhomLine in compositeGeom.Elements)
             {
@@ -79,16 +79,16 @@ namespace BH.Revit.Engine.Core
                     rightBound = rightPoint.X;
 
                 var downPoint = downLine.LineIntersection(bhomLine);
-                if (downPoint != null && downPoint.Y > downBound)
-                    downBound = downPoint.Y;
+                if (downPoint != null && downPoint.Y > bottomBound)
+                    bottomBound = downPoint.Y;
 
                 var upPoint = upLine.LineIntersection(bhomLine);
-                if (upPoint != null && upPoint.Y < upBound)
-                    upBound = upPoint.Y;
+                if (upPoint != null && upPoint.Y < topBound)
+                    topBound = upPoint.Y;
             }
 
-            var minPoint = BH.Engine.Geometry.Create.Point(leftBound, downBound);
-            var maxPoint = BH.Engine.Geometry.Create.Point(rightBound, upBound);
+            var minPoint = BH.Engine.Geometry.Create.Point(leftBound, bottomBound);
+            var maxPoint = BH.Engine.Geometry.Create.Point(rightBound, topBound);
 
             return new Outline(minPoint.ToRevit(), maxPoint.ToRevit());
         }
