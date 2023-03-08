@@ -34,20 +34,21 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Places view on sheet at specified position and rotation using the specified viewport type.")]
-        [Input("document", "The current Revit document to be processed.")]
         [Input("sheet", "Sheet to place the view on.")]
         [Input("view", "View to be placed on sheet.")]
-        [Input("viewportTypeId", "Id of the viewport to be used.")]
+        [Input("viewportTypeId", "Id of the viewport type to be used.")]
         [Input("viewportPlacementPoint", "Placement point of the viewport on the sheet.")]
         [Input("viewportRotation", "Rotation type of the viewport. The default is None.")]
         [Output("viewPort", "The new viewport.")]
-        public static Viewport Viewport (this Document document, ViewSheet sheet, View view, ElementId viewportTypeId, XYZ viewportPlacementPoint = null, ViewportRotation viewportRotation = ViewportRotation.None)
+        public static Viewport Viewport (this ViewSheet sheet, View view, ElementId viewportTypeId, XYZ viewportPlacementPoint = null, ViewportRotation viewportRotation = ViewportRotation.None)
         {
+            Document document = sheet.Document;
+
             Viewport viewPort = Autodesk.Revit.DB.Viewport.Create(document, sheet.Id, view.Id, viewportPlacementPoint);
 
             if (viewPort == null)
             {
-                BH.Engine.Base.Compute.RecordWarning($"Could not create Viewport of the view '{view.Name}'. Please check if view isn't empty.");
+                BH.Engine.Base.Compute.RecordError($"Could not create Viewport of the view '{view.Name}'. Please check if view isn't empty.");
                 return viewPort;
             }
 

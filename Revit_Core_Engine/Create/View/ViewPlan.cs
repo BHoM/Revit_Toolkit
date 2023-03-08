@@ -36,22 +36,24 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [PreviousVersion("6.1", "BH.Revit.Engine.Core.Create.ViewPlan(Autodesk.Revit.DB.Document, Autodesk.Revit.DB.Level, System.String, Autodesk.Revit.DB.ViewFamily, Autodesk.Revit.DB.CurveLoop, Autodesk.Revit.DB.ElementId, Autodesk.Revit.DB.ViewDetailLevel)")]
         [Description("Creates and returns a new Floor Plan view in the current Revit file.")]
         [Input("document", "Revit current document to be processed.")]
         [Input("level", "The level that the created Floor Plan refers to.")]
-        [Input("viewName", "Optional, name of the new view.")]
+        [Input("viewName", "Name of the new view.")]
         [Input("cropBox", "Optional, the crop region to attempt to apply to the newly created view.")]
         [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
-        [Input("viewDetailLevel", "Optional, the Detail Level of the view.")]        
+        [Input("viewDetailLevel", "Optional, the Detail Level of the view.")]
+        [Input("cropRegionVisible", "True if the crop region should be visible.")]
+        [Input("annotationCrop", "True if the annotation crop should be visible.")]
         [Output("newView", "The new view.")]
-        [PreviousVersion("6.1", "BH.Revit.Engine.Core.Create.ViewPlan(Autodesk.Revit.DB.Document, Autodesk.Revit.DB.Level, System.String, Autodesk.Revit.DB.ViewFamily, Autodesk.Revit.DB.CurveLoop, Autodesk.Revit.DB.ElementId, Autodesk.Revit.DB.ViewDetailLevel)")]
-        public static View ViewPlan(this Document document, Level level, string viewName = null, ViewFamily viewFamily = ViewFamily.FloorPlan, CurveLoop cropBox = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse)
+        public static View ViewPlan(this Document document, Level level, string viewName, ViewFamily viewFamily = ViewFamily.FloorPlan, CurveLoop cropBox = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse, bool cropRegionVisible = false, bool annotationCrop = false)
         {
             View newView = null;
 
             if (!(viewFamily == ViewFamily.FloorPlan || viewFamily == ViewFamily.CeilingPlan || viewFamily == ViewFamily.AreaPlan || viewFamily == ViewFamily.StructuralPlan))
             {
-                BH.Engine.Base.Compute.RecordWarning($"Could not create View of type '{viewFamily}'. It has to be a FloorPlan, CeilingPlan, AreaPlan, or StructuralPlan ViewType.");
+                BH.Engine.Base.Compute.RecordError($"Could not create View of type '{viewFamily}'. It has to be a FloorPlan, CeilingPlan, AreaPlan, or StructuralPlan ViewType.");
                 return newView;
             }
 
@@ -71,7 +73,7 @@ namespace BH.Revit.Engine.Core
                 }
                 catch (Exception)
                 {
-                    BH.Engine.Base.Compute.RecordWarning("Could not create the Floor Plan with the provided crop box. Check if the crop box is a valid geometry.");
+                    BH.Engine.Base.Compute.RecordWarning("Could not apply the provided crop box to newly created view. Check if the crop box is a valid geometry.");
                 }
             }
 
@@ -97,7 +99,13 @@ namespace BH.Revit.Engine.Core
             {
                 newView.SetViewName(viewName, document);
             }
-            
+
+            if (!newView.get_Parameter(BuiltInParameter.VIEWER_CROP_REGION_VISIBLE).Set(cropRegionVisible ? 1 : 0))
+                BH.Engine.Base.Compute.RecordWarning($"Could not set the crop region visibility in the view. Parameter is ready-only.");
+
+            if (!newView.get_Parameter(BuiltInParameter.VIEWER_ANNOTATION_CROP_ACTIVE).Set(annotationCrop ? 1 : 0))
+                BH.Engine.Base.Compute.RecordWarning($"Could not set the annotation crop in the view. Parameter is ready-only.");
+
             return newView;
         }
 
@@ -108,14 +116,15 @@ namespace BH.Revit.Engine.Core
         [Input("level", "The level that the created Floor Plan refers to.")]
         [Input("viewName", "Name of the new view.")]
         [Input("viewFamily", "View Family of the View Type. The default is FloorPlan.")]
-        [Input("scopeBox", "(Optional) A Scope Box to attempt to apply to the newly created view.")]
+        [Input("scopeBoxId", "(Optional) A Scope Box Id to attempt to apply to the newly created view.")]
         [Input("viewTemplateId", "(Optional) A View Template Id to be applied in the view.")]
+        [Input("viewDetailLevel", "Optional, the Detail Level of the view.")]
         [Input("cropRegionVisible", "True if the crop region should be visible.")]
         [Input("annotationCrop", "True if the annotation crop should be visible.")]
         [Output("newView", "The new view.")]
-        public static View ViewPlan(this Document document, Level level, string viewName, ViewFamily viewFamily = ViewFamily.FloorPlan,  ElementId scopeBoxId = null, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
+        public static View ViewPlan(this Document document, Level level, string viewName, ViewFamily viewFamily = ViewFamily.FloorPlan,  ElementId scopeBoxId = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse, bool cropRegionVisible = false, bool annotationCrop = false)
         {
-            View newView = ViewPlan(document, level, viewName, viewFamily, null as CurveLoop, viewTemplateId);
+            View newView = ViewPlan(document, level, viewName, viewFamily, null as CurveLoop, viewTemplateId, viewDetailLevel, cropRegionVisible, annotationCrop);
 
             if (scopeBoxId != null)
             {
@@ -137,18 +146,16 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            newView.get_Parameter(BuiltInParameter.VIEWER_CROP_REGION_VISIBLE).Set(cropRegionVisible? 1: 0);
-            newView.get_Parameter(BuiltInParameter.VIEWER_ANNOTATION_CROP_ACTIVE).Set(annotationCrop? 1: 0);
-
             return newView;
         }
 
         /***************************************************/
-        /****              Private Methods              ****/
-        /***************************************************/
 
         [Description("Set View Name to the given value. If the view name already exists in the model, a number suffix is added.")]
-        private static void SetViewName(this View view, string viewName, Document document)
+        [Input("view", "The View for which the name will be changed.")]
+        [Input("viewName", "New name of the view.")]
+        [Input("document", "The current Revit document to be processed.")]
+        public static void SetViewName(this View view, string viewName, Document document)
         {
             int number = 0;
             string uniqueName = viewName;
