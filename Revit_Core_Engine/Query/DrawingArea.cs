@@ -63,32 +63,32 @@ namespace BH.Revit.Engine.Core
             var upLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint + Vector.YAxis * 10);
             var downLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint - Vector.YAxis * 10);
 
-            double minX = double.MinValue;
-            double maxX = double.MaxValue;
-            double minY = double.MinValue;
-            double maxY = double.MaxValue;
+            double leftBound = double.MinValue;
+            double rightBound = double.MaxValue;
+            double downBound = double.MinValue;
+            double upBound = double.MaxValue;
 
             foreach (BH.oM.Geometry.Line bhomLine in compositeGeom.Elements)
             {
                 var leftPoint = leftLine.LineIntersection(bhomLine);
-                if (leftPoint != null && leftPoint.X > minX)
-                    minX = leftPoint.X;
+                if (leftPoint != null && leftPoint.X > leftBound)
+                    leftBound = leftPoint.X;
 
                 var rightPoint = rightLine.LineIntersection(bhomLine);
-                if (rightPoint != null && rightPoint.X < maxX)
-                    maxX = rightPoint.X;
+                if (rightPoint != null && rightPoint.X < rightBound)
+                    rightBound = rightPoint.X;
 
                 var downPoint = downLine.LineIntersection(bhomLine);
-                if (downPoint != null && downPoint.Y > minY)
-                    minY = downPoint.Y;
+                if (downPoint != null && downPoint.Y > downBound)
+                    downBound = downPoint.Y;
 
                 var upPoint = upLine.LineIntersection(bhomLine);
-                if (upPoint != null && upPoint.Y < maxY)
-                    maxY = upPoint.Y;
+                if (upPoint != null && upPoint.Y < upBound)
+                    upBound = upPoint.Y;
             }
 
-            var minPoint = BH.Engine.Geometry.Create.Point(minX, minY);
-            var maxPoint = BH.Engine.Geometry.Create.Point(maxX, maxY);
+            var minPoint = BH.Engine.Geometry.Create.Point(leftBound, downBound);
+            var maxPoint = BH.Engine.Geometry.Create.Point(rightBound, upBound);
 
             return new Outline(minPoint.ToRevit(), maxPoint.ToRevit());
         }
