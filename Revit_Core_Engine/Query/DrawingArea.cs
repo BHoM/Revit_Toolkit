@@ -38,11 +38,11 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Compute the outline of Title Block drawing area.")]
-        [Input("document", "The current Revit document to be processed.")]
         [Input("titleBlock", "Title Block symbol to get the drawing area outline from.")]
         [Output("outline", "The Title Block's drawing area.")]
-        public static Outline DrawingArea(this Document document, FamilySymbol titleBlock)
+        public static Outline DrawingArea(this FamilySymbol titleBlock)
         {
+            Document document = titleBlock.Document;
             Document familyDoc = document.EditFamily(titleBlock.Family);
             List<DetailLine> lines = new FilteredElementCollector(familyDoc).OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Lines).WhereElementIsNotElementType().Where(x => x is DetailLine).Cast<DetailLine>().ToList();
 
@@ -51,49 +51,46 @@ namespace BH.Revit.Engine.Core
             foreach (DetailLine dLine in lines)
             {
                 var bhomLine = dLine.GeometryCurve.IFromRevit() as BH.oM.Geometry.Line;
-                compositeGeom.Elements.Add(bhomLine);
+
+                if (bhomLine != null)
+                    compositeGeom.Elements.Add(bhomLine);
             }
 
             BH.oM.Geometry.Point centrePoint = compositeGeom.Bounds().Centre();
-
-            var upLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint + Vector.YAxis * 10);
-            var rightLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint + Vector.XAxis * 10);
-            var downLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint - Vector.YAxis * 10);
+            
             var leftLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint - Vector.XAxis * 10);
+            var rightLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint + Vector.XAxis * 10);
+            var upLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint + Vector.YAxis * 10);
+            var downLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint - Vector.YAxis * 10);
 
-            var upPoints = new List<BH.oM.Geometry.Point>();
-            var rightPoints = new List<BH.oM.Geometry.Point>();
-            var downPoints = new List<BH.oM.Geometry.Point>();
-            var leftPoints = new List<BH.oM.Geometry.Point>();
+            double minX = double.MinValue;
+            double maxX = double.MaxValue;
+            double minY = double.MinValue;
+            double maxY = double.MaxValue;
 
             foreach (BH.oM.Geometry.Line bhomLine in compositeGeom.Elements)
             {
-                var upPoint = upLine.LineIntersection(bhomLine);
-                if (upPoint != null)
-                    upPoints.Add(upPoint);
+                var leftPoint = leftLine.LineIntersection(bhomLine);
+                if (leftPoint != null && leftPoint.X > minX)
+                    minX = leftPoint.X;
 
                 var rightPoint = rightLine.LineIntersection(bhomLine);
-                if (rightPoint != null)
-                    rightPoints.Add(rightPoint);
+                if (rightPoint != null && rightPoint.X < maxX)
+                    maxX = rightPoint.X;
 
                 var downPoint = downLine.LineIntersection(bhomLine);
-                if (downPoint != null)
-                    downPoints.Add(downPoint);
+                if (downPoint != null && downPoint.Y > minY)
+                    minY = downPoint.Y;
 
-                var leftPoint = leftLine.LineIntersection(bhomLine);
-                if (leftPoint != null)
-                    leftPoints.Add(leftPoint);
+                var upPoint = upLine.LineIntersection(bhomLine);
+                if (upPoint != null && upPoint.Y < maxY)
+                    maxY = upPoint.Y;
             }
 
-            var areaUpPoint = upPoints.OrderBy(x => x.Y).FirstOrDefault();
-            var areaRightPoint = rightPoints.OrderBy(x => x.X).FirstOrDefault();
-            var areaDownPoint = downPoints.OrderByDescending(x => x.Y).FirstOrDefault();
-            var areaLeftPoint = leftPoints.OrderByDescending(x => x.X).FirstOrDefault();
+            var minPoint = BH.Engine.Geometry.Create.Point(minX, minY);
+            var maxPoint = BH.Engine.Geometry.Create.Point(maxX, maxY);
 
-            var areaPoints = new List<BH.oM.Geometry.Point> { areaUpPoint, areaRightPoint, areaDownPoint, areaLeftPoint };
-            BoundingBox areaBox = areaPoints.Bounds();
-
-            return new Outline(areaBox.Min.ToRevit(), areaBox.Max.ToRevit());
+            return new Outline(minPoint.ToRevit(), maxPoint.ToRevit());
         }
     }
 

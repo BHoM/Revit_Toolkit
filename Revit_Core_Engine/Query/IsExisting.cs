@@ -37,11 +37,11 @@ namespace BH.Revit.Engine.Core
 
         [Description("Check if given view name exists in the Revit model.")]
         [Input("viewName", "Name of the view to check if already exists in the model.")]
-        [Input("document", "The current Revit document to be processed.")]
+        [Input("document", "Revit document to be checked.")]
         [Output("bool", "True if given view name already exists in the model.")]
         public static bool IsExistingViewName(this string viewName, Document document)
         {
-            List<string> viewNamesInModel = new FilteredElementCollector(document).OfClass(typeof(ViewPlan)).WhereElementIsNotElementType().Select(x => x.Name).ToList();
+            List<string> viewNamesInModel = new FilteredElementCollector(document).OfClass(typeof(ViewPlan)).Select(x => x.Name).ToList();
 
             return viewNamesInModel.Contains(viewName);
         }
@@ -50,7 +50,7 @@ namespace BH.Revit.Engine.Core
 
         [Description("Check if given sheet number exists in the Revit model.")]
         [Input("sheetNumber", "Number of the sheet to check if already exists in the model.")]
-        [Input("document", "The current Revit document to be processed.")]
+        [Input("document", "Revit document to be checked.")]
         [Output("bool", "True if given sheet number already exists in the model.")]
         public static bool IsExistingSheetNumber(this string sheetNumber, Document document)
         {
