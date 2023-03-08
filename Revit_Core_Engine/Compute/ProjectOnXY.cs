@@ -39,7 +39,7 @@ namespace BH.Revit.Engine.Core
         [Description("Project an XYZ point on the datum XY plane and return the result.")]
         [Input("point", "An XYZ point from which to get a projection on the XY plane.")]
         [Output("point", "The projection of an XYZ point on the XY plane.")]
-        public static XYZ ProjectionOnXY(this XYZ point)
+        public static XYZ ProjectOnXY(this XYZ point)
         {
             return new XYZ(point.X, point.Y, 0);
         }
@@ -49,10 +49,10 @@ namespace BH.Revit.Engine.Core
         [Description("Project a Line on the datum XY plane and return the result.")]
         [Input("line", "A line from which to get a projection on the XY plane.")]
         [Output("line", "The projection of a line on the XY plane.")]
-        public static Line ProjectionOnXY(this Line line)
+        public static Line ProjectOnXY(this Line line)
         {
-            XYZ p0 = line.GetEndPoint(0).ProjectionOnXY();
-            XYZ p1 = line.GetEndPoint(1).ProjectionOnXY();
+            XYZ p0 = line.GetEndPoint(0).ProjectOnXY();
+            XYZ p1 = line.GetEndPoint(1).ProjectOnXY();
 
             if (p0.DistanceTo(p1) <= Tolerance.ShortCurve)
             {
@@ -67,7 +67,7 @@ namespace BH.Revit.Engine.Core
         [Description("Project a planar curve on the datum XY plane and return the result.")]
         [Input("planarCurve", "A planar curve from which to get a projection on the XY plane.")]
         [Output("planarCurve", "The projection of a planar curve on the XY plane.")]
-        public static Curve ProjectionOnXY(this Curve planarCurve)
+        public static Curve ProjectOnXY(this Curve planarCurve)
         {
             double zDiff = planarCurve.Evaluate(0.5, false).Z;
             Transform tr = Transform.CreateTranslation(new XYZ(0, 0, -zDiff));
@@ -79,9 +79,9 @@ namespace BH.Revit.Engine.Core
         [Description("Project a list of planar curves on the datum XY plane and return the result.")]
         [Input("planarCurves", "A list of planar curves from which to get a projection on the XY plane.")]
         [Output("planarCurves", "The projection of a list of planar curves on the XY plane.")]
-        public static List<Curve> ProjectionOnXY(this List<Curve> planarCurves)
+        public static List<Curve> ProjectOnXY(this List<Curve> planarCurves)
         {
-            return planarCurves.Select(x => x.ProjectionOnXY()).ToList();
+            return planarCurves.Select(x => x.ProjectOnXY()).ToList();
         }
 
         /***************************************************/
