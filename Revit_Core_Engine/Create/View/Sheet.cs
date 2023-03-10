@@ -38,7 +38,7 @@ namespace BH.Revit.Engine.Core
         [Input("document", "The current Revit document to be processed.")]
         [Input("sheetName", "Name of the new sheet.")]
         [Input("sheetNumber", "Number of the new sheet.")]
-        [Input("viewTemplateId", "The Title Block Id to be applied to the sheet.")]
+        [Input("titleBlockId", "The Title Block Id to be applied to the sheet.")]
         [Output("newSheet", "The new sheet.")]
         public static ViewSheet Sheet(this Document document, string sheetName, string sheetNumber, ElementId titleBlockId)
         {
