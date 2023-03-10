@@ -151,35 +151,6 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-
-        [Description("Set View Name to the given value. If the view name already exists in the model, a number suffix is added.")]
-        [Input("view", "The View for which the name will be changed.")]
-        [Input("viewName", "New name of the view.")]
-        [Input("document", "The current Revit document to be processed.")]
-        public static void SetViewName(this View view, string viewName, Document document)
-        {
-            int number = 0;
-            string uniqueName = viewName;
-
-            while (uniqueName.IsExistingViewName(document))
-            {
-                number++;
-                uniqueName = $"{viewName} ({number})";
-            }
-
-#if (REVIT2018 || REVIT2019)
-                    view.ViewName = uniqueName;
-#else
-            view.Name = uniqueName;
-#endif
-            if (uniqueName != viewName)
-            {
-                BH.Engine.Base.Compute.RecordWarning($"There is already a view named '{viewName}'. It has been named '{uniqueName}' instead.");
-            }
-        }
-
-        /***************************************************/
-
     }
 }
 
