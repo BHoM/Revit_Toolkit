@@ -56,11 +56,18 @@ namespace BH.Revit.Engine.Core
 
             Options meshOptions = Create.Options(ViewDetailLevel.Medium, false, false);
 
-            meshElement = new MeshElement()
+            meshElement = new MeshElement { Name = element.Name };
+            if (element.Location != null)
             {
-                Name = element.Name,
-                Mesh = element.MeshedGeometry(meshOptions, settings)?.Join(false)
-            };
+                try
+                {
+                    meshElement.Mesh = element.MeshedGeometry(meshOptions, settings)?.Join(false);
+                }
+                catch
+                {
+                    BH.Engine.Base.Compute.RecordWarning($"Mesh extraction from element {element.Name}, ElementId: {element.Id} failed.");
+                }
+            }
 
             //Set identifiers, parameters & custom data
             meshElement.SetIdentifiers(element);
