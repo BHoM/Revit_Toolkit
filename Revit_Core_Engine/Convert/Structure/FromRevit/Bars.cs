@@ -28,6 +28,7 @@ using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
 using BH.oM.Spatial.ShapeProfiles;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.MaterialFragments;
@@ -137,6 +138,12 @@ namespace BH.Revit.Engine.Core
             bars = new List<Bar>();
             if (locationCurve != null)
             {
+                if (locationCurve is NurbsCurve)
+                {
+                    BH.Engine.Base.Compute.RecordWarning($"Cannot pull Revit ElementID {familyInstance.Id.IntegerValue} because its location is of an unsupported type: NurbsCurve.");
+                    return bars;
+                }
+
                 //TODO: check category of familyInstance to recognize which rotation query to use
                 double rotation = familyInstance.OrientationAngle(settings);
                 foreach (BH.oM.Geometry.Line line in locationCurve.ICollapseToPolyline(Math.PI / 12).SubParts())
