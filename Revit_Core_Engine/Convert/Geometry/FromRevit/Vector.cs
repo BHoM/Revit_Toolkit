@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
             if (xyz == null)
                 return null;
 
-            return new Vector { X = xyz.X.ToSI(SpecTypeId.Length), Y = xyz.Y.ToSI(SpecTypeId.Length), Z = xyz.Z.ToSI(SpecTypeId.Length) };
+            return new Vector { X = xyz.X * m_LengthToSi, Y = xyz.Y * m_LengthToSi, Z = xyz.Z * m_LengthToSi };
         }
 
         /***************************************************/

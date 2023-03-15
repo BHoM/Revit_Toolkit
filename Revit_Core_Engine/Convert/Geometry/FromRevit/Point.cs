@@ -53,8 +53,16 @@ namespace BH.Revit.Engine.Core
             if (xyz == null)
                 return null;
 
-            return BH.Engine.Geometry.Create.Point(xyz.X.ToSI(SpecTypeId.Length), xyz.Y.ToSI(SpecTypeId.Length), xyz.Z.ToSI(SpecTypeId.Length));
+            return new oM.Geometry.Point { X = xyz.X * m_LengthToSi, Y = xyz.Y * m_LengthToSi, Z = xyz.Z * m_LengthToSi };
         }
+
+
+        /***************************************************/
+        /****              Private fields               ****/
+        /***************************************************/
+
+        // Optimisation to avoid calling ToSI(SpecTypeId.Length) every time as it causes massive overhead
+        private static double m_LengthToSi = 1.0.ToSI(SpecTypeId.Length);
 
         /***************************************************/
     }
