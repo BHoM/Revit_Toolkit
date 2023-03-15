@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
             if (xyz == null)
                 return null;
 
-            return new Vector { X = xyz.X * m_LengthToSi, Y = xyz.Y * m_LengthToSi, Z = xyz.Z * m_LengthToSi };
+            return new Vector { X = xyz.X * m_LengthToSI, Y = xyz.Y * m_LengthToSI, Z = xyz.Z * m_LengthToSI };
         }
 
         /***************************************************/
