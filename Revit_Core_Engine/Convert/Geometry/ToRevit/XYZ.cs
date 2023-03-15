@@ -37,7 +37,7 @@ namespace BH.Revit.Engine.Core
         [Output("xyz", "Revit XYZ resulting from converting the input BH.oM.Geometry.Point.")]
         public static XYZ ToRevit(this oM.Geometry.Point point)
         {
-            return new XYZ(point.X.FromSI(SpecTypeId.Length), point.Y.FromSI(SpecTypeId.Length), point.Z.FromSI(SpecTypeId.Length));
+            return new XYZ(point.X * m_LengthFromSi, point.Y * m_LengthFromSi, point.Z * m_LengthFromSi);
         }
 
         /***************************************************/
@@ -47,8 +47,16 @@ namespace BH.Revit.Engine.Core
         [Output("xyz", "Revit XYZ resulting from converting the input BH.oM.Geometry.Vector.")]
         public static XYZ ToRevit(this oM.Geometry.Vector vector)
         {
-            return new XYZ(vector.X.FromSI(SpecTypeId.Length), vector.Y.FromSI(SpecTypeId.Length), vector.Z.FromSI(SpecTypeId.Length));
+            return new XYZ(vector.X * m_LengthFromSi, vector.Y * m_LengthFromSi, vector.Z * m_LengthFromSi);
         }
+
+
+        /***************************************************/
+        /****              Private fields               ****/
+        /***************************************************/
+
+        // Optimisation to avoid calling FromSI(SpecTypeId.Length) every time as it causes massive overhead
+        private static double m_LengthFromSi = 1.0.FromSI(SpecTypeId.Length);
 
         /***************************************************/
     }
