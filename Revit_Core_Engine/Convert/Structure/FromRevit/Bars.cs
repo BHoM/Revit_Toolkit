@@ -36,6 +36,7 @@ using BH.oM.Structure.SectionProperties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -59,7 +60,7 @@ namespace BH.Revit.Engine.Core
                 return bars;
             
             // Get bar curve
-            oM.Geometry.ICurve locationCurve = null;
+            List<oM.Geometry.ICurve> locationCurves = null;
 #if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021 || REVIT2022)
             AnalyticalModelStick analyticalModel = familyInstance.GetAnalyticalModel() as AnalyticalModelStick;
 #else
@@ -69,15 +70,15 @@ namespace BH.Revit.Engine.Core
 #endif
             if (analyticalModel != null)
             {
-                Curve curve = analyticalModel.GetCurve();
-                if (curve != null)
-                    locationCurve = curve.IFromRevit();
+                IList<Curve> curves = analyticalModel.GetCurves(AnalyticalCurveType.ActiveCurves);
+                if (curves != null && curves.Count != 0)
+                    locationCurves = curves.Select(x => x.IFromRevit()).ToList();
             }
 
-            if (locationCurve != null)
+            if (locationCurves != null)
                 familyInstance.AnalyticalPullWarning();
             else
-                locationCurve = familyInstance.LocationCurve(settings);
+                locationCurves = new List<ICurve> { familyInstance.LocationCurve(settings) };
 
             // Get bar material
             ElementId structuralMaterialId = familyInstance.StructuralMaterialId;
@@ -136,19 +137,22 @@ namespace BH.Revit.Engine.Core
             
             // Create linear bars
             bars = new List<Bar>();
-            if (locationCurve != null)
+            if (locationCurves != null)
             {
-                if (locationCurve is NurbsCurve)
+                foreach (ICurve curve in locationCurves)
                 {
-                    BH.Engine.Base.Compute.RecordWarning($"Cannot pull Revit ElementID {familyInstance.Id.IntegerValue} because its location is of an unsupported type: NurbsCurve.");
-                    return bars;
-                }
+                    if (curve is NurbsCurve)
+                    {
+                        BH.Engine.Base.Compute.RecordWarning($"Could not pull location of at least part of an Element because its location type is not supported: NurbsCurve. ElementId: {familyInstance.Id}");
+                        bars.Add(new Bar { SectionProperty = property, OrientationAngle = 0 });
+                        continue;
+                    }
 
-                //TODO: check category of familyInstance to recognize which rotation query to use
-                double rotation = familyInstance.OrientationAngle(settings);
-                foreach (BH.oM.Geometry.Line line in locationCurve.ICollapseToPolyline(Math.PI / 12).SubParts())
-                {
-                    bars.Add(BH.Engine.Structure.Create.Bar(line, property, rotation));
+                    double rotation = familyInstance.OrientationAngle(settings);
+                    foreach (BH.oM.Geometry.Line line in curve.ICollapseToPolyline(Math.PI / 12).SubParts())
+                    {
+                        bars.Add(BH.Engine.Structure.Create.Bar(line, property, rotation));
+                    }
                 }
             }
             else
