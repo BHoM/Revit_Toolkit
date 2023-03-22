@@ -29,7 +29,7 @@ using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Compute
+    public static partial class Convert
     {
         /***************************************************/
         /****              Public methods               ****/
@@ -38,7 +38,7 @@ namespace BH.Revit.Engine.Core
         [Description("Project an XYZ point on the datum XY plane and return the result.")]
         [Input("point", "An XYZ point from which to get a projection on the XY plane.")]
         [Output("point", "The projection of an XYZ point on the XY plane.")]
-        public static XYZ ProjectOnXY(this XYZ point)
+        public static XYZ ToXY(this XYZ point)
         {
             return new XYZ(point.X, point.Y, 0);
         }
@@ -48,10 +48,10 @@ namespace BH.Revit.Engine.Core
         [Description("Project a Line on the datum XY plane and return the result.")]
         [Input("line", "A line from which to get a projection on the XY plane.")]
         [Output("line", "The projection of a line on the XY plane.")]
-        public static Line ProjectOnXY(this Line line)
+        public static Line ToXY(this Line line)
         {
-            XYZ p0 = line.GetEndPoint(0).ProjectOnXY();
-            XYZ p1 = line.GetEndPoint(1).ProjectOnXY();
+            XYZ p0 = line.GetEndPoint(0).ToXY();
+            XYZ p1 = line.GetEndPoint(1).ToXY();
 
             if (p0.DistanceTo(p1) <= Tolerance.ShortCurve)
             {
@@ -66,7 +66,7 @@ namespace BH.Revit.Engine.Core
         [Description("Project a planar curve on the datum XY plane and return the result.")]
         [Input("planarCurve", "A planar curve from which to get a projection on the XY plane.")]
         [Output("planarCurve", "The projection of a planar curve on the XY plane.")]
-        public static Curve ProjectOnXY(this Curve planarCurve)
+        public static Curve ToXY(this Curve planarCurve)
         {
             double zDiff = planarCurve.Evaluate(0.5, false).Z;
             Transform tr = Transform.CreateTranslation(new XYZ(0, 0, -zDiff));
@@ -78,15 +78,13 @@ namespace BH.Revit.Engine.Core
         [Description("Project a list of planar curves on the datum XY plane and return the result.")]
         [Input("planarCurves", "A list of planar curves from which to get a projection on the XY plane.")]
         [Output("planarCurves", "The projection of a list of planar curves on the XY plane.")]
-        public static List<Curve> ProjectOnXY(this List<Curve> planarCurves)
+        public static List<Curve> ToXY(this List<Curve> planarCurves)
         {
-            return planarCurves.Select(x => x.ProjectOnXY()).ToList();
+            return planarCurves.Select(x => x.ToXY()).ToList();
         }
 
         /***************************************************/
     }
 }
-
-
 
 
