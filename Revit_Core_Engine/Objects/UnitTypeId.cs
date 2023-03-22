@@ -21,6 +21,7 @@
  */
  
 using Autodesk.Revit.DB;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
 #if (REVIT2018 || REVIT2019 || REVIT2020)
@@ -282,51 +283,51 @@ namespace BH.Revit.Engine.Core
         public static DisplayUnitType RankineInterval { get { return DisplayUnitType.DUT_RANKINE_DIFFERENCE; } }
         public static DisplayUnitType Custom { get { return DisplayUnitType.DUT_CUSTOM; } }
         
-        public static DisplayUnitType StationingMeters { get { return NonExistent(nameof(StationingMeters), 2021); } }
-        public static DisplayUnitType StationingFeet { get { return NonExistent(nameof(StationingFeet), 2021); } }
-        public static DisplayUnitType CubicFeetPerHour { get { return NonExistent(nameof(CubicFeetPerHour), 2021); } }
-        public static DisplayUnitType LitersPerHour { get { return NonExistent(nameof(LitersPerHour), 2021); } }
-        public static DisplayUnitType RatioTo1 { get { return NonExistent(nameof(RatioTo1), 2021); } }
-        public static DisplayUnitType UsSurveyFeet { get { return NonExistent(nameof(UsSurveyFeet), 2021); } }
-        public static DisplayUnitType WattsPerMeter { get { return NonExistent(nameof(WattsPerMeter), 2021); } }
-        public static DisplayUnitType WattsPerFoot { get { return NonExistent(nameof(WattsPerFoot), 2021); } }
-        public static DisplayUnitType WattsPerCubicMeterPerSecond { get { return NonExistent(nameof(WattsPerCubicMeterPerSecond), 2021); } }
-        public static DisplayUnitType WattsPerCubicFootPerMinute { get { return NonExistent(nameof(WattsPerCubicFootPerMinute), 2021); } }
-        public static DisplayUnitType ThousandBritishThermalUnitsPerHour { get { return NonExistent(nameof(ThousandBritishThermalUnitsPerHour), 2021); } }
-        public static DisplayUnitType SquareMetersPerSecond { get { return NonExistent(nameof(SquareMetersPerSecond), 2021); } }
-        public static DisplayUnitType SquareFeetPerSecond { get { return NonExistent(nameof(SquareFeetPerSecond), 2021); } }
-        public static DisplayUnitType RevolutionsPerSecond { get { return NonExistent(nameof(RevolutionsPerSecond), 2021); } }
-        public static DisplayUnitType RevolutionsPerMinute { get { return NonExistent(nameof(RevolutionsPerMinute), 2021); } }
-        public static DisplayUnitType PoundsMassPerSecond { get { return NonExistent(nameof(PoundsMassPerSecond), 2021); } }
-        public static DisplayUnitType PoundsMassPerPoundDegreeFahrenheit { get { return NonExistent(nameof(PoundsMassPerPoundDegreeFahrenheit), 2021); } }
-        public static DisplayUnitType PoundsMassPerMinute { get { return NonExistent(nameof(PoundsMassPerMinute), 2021); } }
-        public static DisplayUnitType PoundsMassPerHour { get { return NonExistent(nameof(PoundsMassPerHour), 2021); } }
-        public static DisplayUnitType PoundForceSecondsPerSquareFoot { get { return NonExistent(nameof(PoundForceSecondsPerSquareFoot), 2021); } }
-        public static DisplayUnitType Pi { get { return NonExistent(nameof(Pi), 2021); } }
-        public static DisplayUnitType NewtonSecondsPerSquareMeter { get { return NonExistent(nameof(NewtonSecondsPerSquareMeter), 2021); } }
-        public static DisplayUnitType MillimetersOfWaterColumnPerMeter { get { return NonExistent(nameof(MillimetersOfWaterColumnPerMeter), 2021); } }
-        public static DisplayUnitType MillimetersOfWaterColumn { get { return NonExistent(nameof(MillimetersOfWaterColumn), 2021); } }
-        public static DisplayUnitType MetersOfWaterColumnPerMeter { get { return NonExistent(nameof(MetersOfWaterColumnPerMeter), 2021); } }
-        public static DisplayUnitType MetersOfWaterColumn { get { return NonExistent(nameof(MetersOfWaterColumn), 2021); } }
-        public static DisplayUnitType KilogramsPerSecond { get { return NonExistent(nameof(KilogramsPerSecond), 2021); } }
-        public static DisplayUnitType KilogramsPerMinute { get { return NonExistent(nameof(KilogramsPerMinute), 2021); } }
-        public static DisplayUnitType KilogramsPerMeterSecond { get { return NonExistent(nameof(KilogramsPerMeterSecond), 2021); } }
-        public static DisplayUnitType KilogramsPerMeterHour { get { return NonExistent(nameof(KilogramsPerMeterHour), 2021); } }
-        public static DisplayUnitType KilogramsPerKilogramKelvin { get { return NonExistent(nameof(KilogramsPerKilogramKelvin), 2021); } }
-        public static DisplayUnitType KilogramsPerHour { get { return NonExistent(nameof(KilogramsPerHour), 2021); } }
-        public static DisplayUnitType CurrencyPerWattHour { get { return NonExistent(nameof(CurrencyPerWattHour), 2021); } }
-        public static DisplayUnitType CurrencyPerWatt { get { return NonExistent(nameof(CurrencyPerWatt), 2021); } }
-        public static DisplayUnitType CurrencyPerSquareMeter { get { return NonExistent(nameof(CurrencyPerSquareMeter), 2021); } }
-        public static DisplayUnitType CurrencyPerSquareFoot { get { return NonExistent(nameof(CurrencyPerSquareFoot), 2021); } }
-        public static DisplayUnitType CurrencyPerBritishThermalUnitPerHour { get { return NonExistent(nameof(CurrencyPerBritishThermalUnitPerHour), 2021); } }
-        public static DisplayUnitType CurrencyPerBritishThermalUnit { get { return NonExistent(nameof(CurrencyPerBritishThermalUnit), 2021); } }
-        public static DisplayUnitType CubicMetersPerWattSecond { get { return NonExistent(nameof(CubicMetersPerWattSecond), 2021); } }
-        public static DisplayUnitType CubicMetersPerKilogram { get { return NonExistent(nameof(CubicMetersPerKilogram), 2021); } }
-        public static DisplayUnitType CubicMetersPerHourSquareMeter { get { return NonExistent(nameof(CubicMetersPerHourSquareMeter), 2021); } }
-        public static DisplayUnitType CubicMetersPerHourCubicMeter { get { return NonExistent(nameof(CubicMetersPerHourCubicMeter), 2021); } }
-        public static DisplayUnitType CubicFeetPerPoundMass { get { return NonExistent(nameof(CubicFeetPerPoundMass), 2021); } }
-        public static DisplayUnitType CubicFeetPerMinutePerBritishThermalUnitPerHour { get { return NonExistent(nameof(CubicFeetPerMinutePerBritishThermalUnitPerHour), 2021); } }
-        public static DisplayUnitType CandelasPerSquareFoot { get { return NonExistent(nameof(CandelasPerSquareFoot), 2021); } }
+        public static DisplayUnitType StationingMeters { [NotImplemented] get { return NonExistent(nameof(StationingMeters), 2021); } }
+        public static DisplayUnitType StationingFeet { [NotImplemented] get { return NonExistent(nameof(StationingFeet), 2021); } }
+        public static DisplayUnitType CubicFeetPerHour { [NotImplemented] get { return NonExistent(nameof(CubicFeetPerHour), 2021); } }
+        public static DisplayUnitType LitersPerHour { [NotImplemented] get { return NonExistent(nameof(LitersPerHour), 2021); } }
+        public static DisplayUnitType RatioTo1 { [NotImplemented] get { return NonExistent(nameof(RatioTo1), 2021); } }
+        public static DisplayUnitType UsSurveyFeet { [NotImplemented] get { return NonExistent(nameof(UsSurveyFeet), 2021); } }
+        public static DisplayUnitType WattsPerMeter { [NotImplemented] get { return NonExistent(nameof(WattsPerMeter), 2021); } }
+        public static DisplayUnitType WattsPerFoot { [NotImplemented] get { return NonExistent(nameof(WattsPerFoot), 2021); } }
+        public static DisplayUnitType WattsPerCubicMeterPerSecond { [NotImplemented] get { return NonExistent(nameof(WattsPerCubicMeterPerSecond), 2021); } }
+        public static DisplayUnitType WattsPerCubicFootPerMinute { [NotImplemented] get { return NonExistent(nameof(WattsPerCubicFootPerMinute), 2021); } }
+        public static DisplayUnitType ThousandBritishThermalUnitsPerHour { [NotImplemented] get { return NonExistent(nameof(ThousandBritishThermalUnitsPerHour), 2021); } }
+        public static DisplayUnitType SquareMetersPerSecond { [NotImplemented] get { return NonExistent(nameof(SquareMetersPerSecond), 2021); } }
+        public static DisplayUnitType SquareFeetPerSecond { [NotImplemented] get { return NonExistent(nameof(SquareFeetPerSecond), 2021); } }
+        public static DisplayUnitType RevolutionsPerSecond { [NotImplemented] get { return NonExistent(nameof(RevolutionsPerSecond), 2021); } }
+        public static DisplayUnitType RevolutionsPerMinute { [NotImplemented] get { return NonExistent(nameof(RevolutionsPerMinute), 2021); } }
+        public static DisplayUnitType PoundsMassPerSecond { [NotImplemented] get { return NonExistent(nameof(PoundsMassPerSecond), 2021); } }
+        public static DisplayUnitType PoundsMassPerPoundDegreeFahrenheit { [NotImplemented] get { return NonExistent(nameof(PoundsMassPerPoundDegreeFahrenheit), 2021); } }
+        public static DisplayUnitType PoundsMassPerMinute { [NotImplemented] get { return NonExistent(nameof(PoundsMassPerMinute), 2021); } }
+        public static DisplayUnitType PoundsMassPerHour { [NotImplemented] get { return NonExistent(nameof(PoundsMassPerHour), 2021); } }
+        public static DisplayUnitType PoundForceSecondsPerSquareFoot { [NotImplemented] get { return NonExistent(nameof(PoundForceSecondsPerSquareFoot), 2021); } }
+        public static DisplayUnitType Pi { [NotImplemented] get { return NonExistent(nameof(Pi), 2021); } }
+        public static DisplayUnitType NewtonSecondsPerSquareMeter { [NotImplemented] get { return NonExistent(nameof(NewtonSecondsPerSquareMeter), 2021); } }
+        public static DisplayUnitType MillimetersOfWaterColumnPerMeter { [NotImplemented] get { return NonExistent(nameof(MillimetersOfWaterColumnPerMeter), 2021); } }
+        public static DisplayUnitType MillimetersOfWaterColumn { [NotImplemented] get { return NonExistent(nameof(MillimetersOfWaterColumn), 2021); } }
+        public static DisplayUnitType MetersOfWaterColumnPerMeter { [NotImplemented] get { return NonExistent(nameof(MetersOfWaterColumnPerMeter), 2021); } }
+        public static DisplayUnitType MetersOfWaterColumn { [NotImplemented] get { return NonExistent(nameof(MetersOfWaterColumn), 2021); } }
+        public static DisplayUnitType KilogramsPerSecond { [NotImplemented] get { return NonExistent(nameof(KilogramsPerSecond), 2021); } }
+        public static DisplayUnitType KilogramsPerMinute { [NotImplemented] get { return NonExistent(nameof(KilogramsPerMinute), 2021); } }
+        public static DisplayUnitType KilogramsPerMeterSecond { [NotImplemented] get { return NonExistent(nameof(KilogramsPerMeterSecond), 2021); } }
+        public static DisplayUnitType KilogramsPerMeterHour { [NotImplemented] get { return NonExistent(nameof(KilogramsPerMeterHour), 2021); } }
+        public static DisplayUnitType KilogramsPerKilogramKelvin { [NotImplemented] get { return NonExistent(nameof(KilogramsPerKilogramKelvin), 2021); } }
+        public static DisplayUnitType KilogramsPerHour { [NotImplemented] get { return NonExistent(nameof(KilogramsPerHour), 2021); } }
+        public static DisplayUnitType CurrencyPerWattHour { [NotImplemented] get { return NonExistent(nameof(CurrencyPerWattHour), 2021); } }
+        public static DisplayUnitType CurrencyPerWatt { [NotImplemented] get { return NonExistent(nameof(CurrencyPerWatt), 2021); } }
+        public static DisplayUnitType CurrencyPerSquareMeter { [NotImplemented] get { return NonExistent(nameof(CurrencyPerSquareMeter), 2021); } }
+        public static DisplayUnitType CurrencyPerSquareFoot { [NotImplemented] get { return NonExistent(nameof(CurrencyPerSquareFoot), 2021); } }
+        public static DisplayUnitType CurrencyPerBritishThermalUnitPerHour { [NotImplemented] get { return NonExistent(nameof(CurrencyPerBritishThermalUnitPerHour), 2021); } }
+        public static DisplayUnitType CurrencyPerBritishThermalUnit { [NotImplemented] get { return NonExistent(nameof(CurrencyPerBritishThermalUnit), 2021); } }
+        public static DisplayUnitType CubicMetersPerWattSecond { [NotImplemented] get { return NonExistent(nameof(CubicMetersPerWattSecond), 2021); } }
+        public static DisplayUnitType CubicMetersPerKilogram { [NotImplemented] get { return NonExistent(nameof(CubicMetersPerKilogram), 2021); } }
+        public static DisplayUnitType CubicMetersPerHourSquareMeter { [NotImplemented] get { return NonExistent(nameof(CubicMetersPerHourSquareMeter), 2021); } }
+        public static DisplayUnitType CubicMetersPerHourCubicMeter { [NotImplemented] get { return NonExistent(nameof(CubicMetersPerHourCubicMeter), 2021); } }
+        public static DisplayUnitType CubicFeetPerPoundMass { [NotImplemented] get { return NonExistent(nameof(CubicFeetPerPoundMass), 2021); } }
+        public static DisplayUnitType CubicFeetPerMinutePerBritishThermalUnitPerHour { [NotImplemented] get { return NonExistent(nameof(CubicFeetPerMinutePerBritishThermalUnitPerHour), 2021); } }
+        public static DisplayUnitType CandelasPerSquareFoot { [NotImplemented] get { return NonExistent(nameof(CandelasPerSquareFoot), 2021); } }
 
 
         /***************************************************/
