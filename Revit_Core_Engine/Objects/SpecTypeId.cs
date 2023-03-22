@@ -22,6 +22,7 @@
 
 
 using Autodesk.Revit.DB;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
 #if (REVIT2018 || REVIT2019 || REVIT2020)
@@ -166,27 +167,27 @@ namespace BH.Revit.Engine.Core
         public static UnitType PipingTemperatureDifference { get { return UnitType.UT_Piping_TemperatureDifference; } }
         public static UnitType ElectricalTemperatureDifference { get { return UnitType.UT_Electrical_TemperatureDifference; } }
         public static UnitType Custom { get { return UnitType.UT_Custom; } }
-
-        public static UnitType Stationing { get { return NonExistentUnitType(nameof(Stationing), 2021); } }
-        public static UnitType ThermalGradientCoefficientForMoistureCapacity { get { return NonExistentUnitType(nameof(ThermalGradientCoefficientForMoistureCapacity), 2021); } }
-        public static UnitType StationingInterval { get { return NonExistentUnitType(nameof(StationingInterval), 2021); } }
-        public static UnitType RotationAngle { get { return NonExistentUnitType(nameof(RotationAngle), 2021); } }
-        public static UnitType PowerPerLength { get { return NonExistentUnitType(nameof(PowerPerLength), 2021); } }
-        public static UnitType PowerPerFlow { get { return NonExistentUnitType(nameof(PowerPerFlow), 2021); } }
-        public static UnitType PipingMassPerTime { get { return NonExistentUnitType(nameof(PipingMassPerTime), 2021); } }
-        public static UnitType IsothermalMoistureCapacity { get { return NonExistentUnitType(nameof(IsothermalMoistureCapacity), 2021); } }
-        public static UnitType HvacMassPerTime { get { return NonExistentUnitType(nameof(HvacMassPerTime), 2021); } }
-        public static UnitType FlowPerPower { get { return NonExistentUnitType(nameof(FlowPerPower), 2021); } }
-        public static UnitType Distance { get { return NonExistentUnitType(nameof(Distance), 2021); } }
-        public static UnitType Diffusivity { get { return NonExistentUnitType(nameof(Diffusivity), 2021); } }
-        public static UnitType CostRatePower { get { return NonExistentUnitType(nameof(CostRatePower), 2021); } }
-        public static UnitType CostRateEnergy { get { return NonExistentUnitType(nameof(CostRateEnergy), 2021); } }
-        public static UnitType CostPerArea { get { return NonExistentUnitType(nameof(CostPerArea), 2021); } }
-        public static UnitType AngularSpeed { get { return NonExistentUnitType(nameof(AngularSpeed), 2021); } }
+        
+        public static UnitType Stationing { [NotImplemented] get { return NonExistentUnitType(nameof(Stationing), 2021); } }
+        public static UnitType ThermalGradientCoefficientForMoistureCapacity { [NotImplemented] get { return NonExistentUnitType(nameof(ThermalGradientCoefficientForMoistureCapacity), 2021); } }
+        public static UnitType StationingInterval { [NotImplemented] get { return NonExistentUnitType(nameof(StationingInterval), 2021); } }
+        public static UnitType RotationAngle { [NotImplemented] get { return NonExistentUnitType(nameof(RotationAngle), 2021); } }
+        public static UnitType PowerPerLength { [NotImplemented] get { return NonExistentUnitType(nameof(PowerPerLength), 2021); } }
+        public static UnitType PowerPerFlow { [NotImplemented] get { return NonExistentUnitType(nameof(PowerPerFlow), 2021); } }
+        public static UnitType PipingMassPerTime { [NotImplemented] get { return NonExistentUnitType(nameof(PipingMassPerTime), 2021); } }
+        public static UnitType IsothermalMoistureCapacity { [NotImplemented] get { return NonExistentUnitType(nameof(IsothermalMoistureCapacity), 2021); } }
+        public static UnitType HvacMassPerTime { [NotImplemented] get { return NonExistentUnitType(nameof(HvacMassPerTime), 2021); } }
+        public static UnitType FlowPerPower { [NotImplemented] get { return NonExistentUnitType(nameof(FlowPerPower), 2021); } }
+        public static UnitType Distance { [NotImplemented] get { return NonExistentUnitType(nameof(Distance), 2021); } }
+        public static UnitType Diffusivity { [NotImplemented] get { return NonExistentUnitType(nameof(Diffusivity), 2021); } }
+        public static UnitType CostRatePower { [NotImplemented] get { return NonExistentUnitType(nameof(CostRatePower), 2021); } }
+        public static UnitType CostRateEnergy { [NotImplemented] get { return NonExistentUnitType(nameof(CostRateEnergy), 2021); } }
+        public static UnitType CostPerArea { [NotImplemented] get { return NonExistentUnitType(nameof(CostPerArea), 2021); } }
+        public static UnitType AngularSpeed { [NotImplemented] get { return NonExistentUnitType(nameof(AngularSpeed), 2021); } }
         
 #if (REVIT2018 || REVIT2019)
-        public static UnitType Time { get { return NonExistentUnitType(nameof(Time), 2020); } }
-        public static UnitType Speed { get { return NonExistentUnitType(nameof(Speed), 2020); } }
+        public static UnitType Time { [NotImplemented] get { return NonExistentUnitType(nameof(Time), 2020); } }
+        public static UnitType Speed { [NotImplemented] get { return NonExistentUnitType(nameof(Speed), 2020); } }
 #else
         public static UnitType Time { get { return UnitType.UT_TimeInterval; } }
         public static UnitType Speed { get { return UnitType.UT_Speed; } }
