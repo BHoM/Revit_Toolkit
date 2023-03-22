@@ -33,11 +33,11 @@ namespace BH.Revit.Engine.Core
         /****              Public Methods               ****/
         /***************************************************/
 
-        //[Description("Split a list into sub-lists by removing items at provided indexes.")]
-        //[Input("items", "The input list to be split by removing items at provided indexes.")]
-        //[Input("indexes", "Indexes of items to be removed when splitting the input list at their locations.")]
-        //[Output("subLists", "Sub-lists from the input list after removing its items at provided indexes.")]
-        public static List<T> RotateList<T>(this List<T> list, int offset)
+        [Description("Shift items in a list forward and move those falling off the end of it back to the start of the list.")]
+        [Input("list", "A list containing items to shift. For example, control points of a polyline which we want to traverse from a particular point.")]
+        [Input("offset", "The number of items to move from the start to the end of the input list.")]
+        [Output("list", "A list with items in the input list .")]
+        public static List<T> ShiftList<T>(this List<T> list, int offset)
         {
             return list.Skip(offset).Concat(list.Take(offset)).ToList();
         }

@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
 
             foreach (XYZ cand in pointCloud)
             {
-                double sqDistance = point.SquareDistance(cand);
+                double sqDistance = point.SquaredDistance(cand);
                 if (sqDistance < minDistance)
                 {
                     minDistance = sqDistance;

@@ -21,13 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-using BH.oM.Adapters.Revit;
 using BH.oM.Base.Attributes;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -37,14 +32,16 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Project an XYZ point on the datum XY plane and return the result.")]
-        [Input("point", "An XYZ point from which to get a projection on the XY plane.")]
-        [Output("point", "The projection of an XYZ point on the XY plane.")]
-        public static double SquareDistance(this XYZ point, XYZ refPoint)
+        [Description("Computes the squared distance between 2 points.")]
+        [Input("point1", "A point to calculate the squared distance from.")]
+        [Input("point2", "A point to calculate the squared distance to.")]
+        [Output("squaredDistance", "The squared distance between 2 points.")]
+        public static double SquaredDistance(this XYZ point1, XYZ point2)
         {
-            double dx = point.X - refPoint.X;
-            double dy = point.Y - refPoint.Y;
-            double dz = point.Z - refPoint.Z;
+            double dx = point1.X - point2.X;
+            double dy = point1.Y - point2.Y;
+            double dz = point1.Z - point2.Z;
+
             return dx * dx + dy * dy + dz * dz;
         }
 

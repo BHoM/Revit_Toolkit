@@ -21,7 +21,6 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
 using BH.oM.Adapters.Revit;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;

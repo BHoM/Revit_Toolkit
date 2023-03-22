@@ -23,9 +23,7 @@
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -35,14 +33,15 @@ namespace BH.Revit.Engine.Core
         /****              Public Methods               ****/
         /***************************************************/
 
-        //[Description("Split a list into sub-lists by removing items at provided indexes.")]
-        //[Input("items", "The input list to be split by removing items at provided indexes.")]
-        //[Input("indexes", "Indexes of items to be removed when splitting the input list at their locations.")]
-        //[Output("subLists", "Sub-lists from the input list after removing its items at provided indexes.")]
-        public static double DistanceAlongVector(this XYZ p1, XYZ p2, XYZ vect)
+        [Description("Gets the distance between a 2 points along an input vector's direction.")]
+        [Input("pnt1", "A point to compute distance from.")]
+        [Input("pnt2", "A point to compute distance to.")]
+        [Input("vector", "A vector along which we will measure the distance.")]
+        [Output("distance", "The distance between a 2 points along an input vector's direction.")]
+        public static double DistanceAlongVector(this XYZ pnt1, XYZ pnt2, XYZ vector)
         {
-            XYZ pVect = p2 - p1;
-            return Math.Abs(pVect.DotProduct(vect.Normalize()));
+            XYZ pointVector = pnt2 - pnt1;
+            return Math.Abs(pointVector.DotProduct(vector.Normalize()));
         }
 
         /***************************************************/

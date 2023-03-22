@@ -21,13 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
 using BH.oM.Adapters.Revit;
 using BH.oM.Base.Attributes;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -37,9 +34,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Project an XYZ point on the datum XY plane and return the result.")]
-        [Input("point", "An XYZ point from which to get a projection on the XY plane.")]
-        [Output("point", "The projection of an XYZ point on the XY plane.")]
+        [Description("Gets the intersection point of 2 vectors given their start/end points and directions.")]
+        [Input("startPoint", "A point on the first vector.")]
+        [Input("endPoint", "A point on the second vector.")]
+        [Input("startDir", "The direction of the first vector.")]
+        [Input("endDir", "The direction of the second vector.")]
+        [Output("xyz", "The intersection point of 2 vectors given their start/end points and directions.")]
         public static XYZ PointByVectorsIntersection(this XYZ startPoint, XYZ endPoint, XYZ startDir, XYZ endDir)
         {
             double x;
