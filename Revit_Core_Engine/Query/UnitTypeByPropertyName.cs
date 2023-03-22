@@ -73,9 +73,12 @@ namespace BH.Revit.Engine.Core
             m_UnitTypesWithIdentifiers = new Dictionary<string, UnitType>();
             foreach (PropertyInfo info in typeof(SpecTypeId).GetProperties())
             {
-                UnitType? unitType = info.GetValue(null) as UnitType?;
-                if (unitType != null && unitType != UnitType.UT_Undefined)
-                    m_UnitTypesWithIdentifiers.Add(info.Name, unitType.Value);
+                if (info.GetGetMethod().GetCustomAttribute<NotImplementedAttribute>() == null)
+                {
+                    UnitType? unitType = info.GetValue(null) as UnitType?;
+                    if (unitType != null && unitType != UnitType.UT_Undefined)
+                        m_UnitTypesWithIdentifiers.Add(info.Name, unitType.Value);
+                }
             }
         }
 
