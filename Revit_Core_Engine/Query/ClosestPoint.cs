@@ -35,18 +35,18 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts the perimeter curves from a given Revit spatial element and converts them to BHoM.")]
-        [Input("spatialElement", "Revit spatial element to extract the perimeter curves from.")]
-        [Input("settings", "Revit adapter settings to be used while performing the query.")]
-        [Output("curves", "BHoM perimeter curves extracted from the input Revit spatial element.")]
-        public static XYZ ClosestPoint(this XYZ point, IEnumerable<XYZ> pointCloud)
+        [Description("Find a point in the input point cloud that is closest to a reference point.")]
+        [Input("refPoint", "A reference point for which we need to find the closest point in the cloud.")]
+        [Input("pointCloud", "A set of points that contains one closest to the reference point.")]
+        [Output("closestPoint", "A point from the cloud that is closest to the reference point.")]
+        public static XYZ ClosestPoint(this XYZ refPoint, IEnumerable<XYZ> pointCloud)
         {
             XYZ result = null;
             double minDistance = double.MaxValue;
 
             foreach (XYZ cand in pointCloud)
             {
-                double sqDistance = point.SquaredDistance(cand);
+                double sqDistance = refPoint.SquaredDistance(cand);
                 if (sqDistance < minDistance)
                 {
                     minDistance = sqDistance;

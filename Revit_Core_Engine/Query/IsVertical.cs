@@ -21,12 +21,13 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using System;
 using System.ComponentModel;
-using Line = Autodesk.Revit.DB.Line;
 using Face = Autodesk.Revit.DB.Face;
+using Line = Autodesk.Revit.DB.Line;
 
 namespace BH.Revit.Engine.Core
 {
@@ -36,49 +37,38 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Checks whether a Revit point lies on a face of a Revit element.")]
-        [Input("point", "Revit point to be checked whether it lies on a face of an element.")]
-        [Input("face", "Face of a Revit element to check the point against.")]
-        [Input("tolerance", "Distance tolerance to be used in the query.")]
-        [Output("onFace", "True if the input point lies on the input face within the tolerance, otherwise false.")]
-        public static bool IsVertical(this Curve crv, double angleTolerance)
+        [Description("Checks whether a planar Revit curve is based on a vertical plane.")]
+        [Input("planarCurve", "A planar Revit curve.")]
+        [Input("angleToleranceInDegree", "If the angle between the Z axis and the base plane of the input curve is greater than this value, we will consider it a vertical curve.")]
+        [Output("isVertical", "True if the input Revit planar curve is based on a vertical plane.")]
+        public static bool IsVertical(this Curve planarCurve, double angleToleranceInDegree)
         {
-            if (crv is Line)
+            if (planarCurve is Line)
             {
-                XYZ dirVect = ((Line)crv).Direction;
+                XYZ dirVect = ((Line)planarCurve).Direction;
                 if (dirVect.IsAlmostEqualTo(XYZ.BasisZ) || dirVect.IsAlmostEqualTo(-XYZ.BasisZ))
                 {
                     return true;
                 }
             }
 
-            XYZ eVect = (crv.GetEndPoint(1) - crv.GetEndPoint(0)).Normalize();
+            XYZ eVect = (planarCurve.GetEndPoint(1) - planarCurve.GetEndPoint(0)).Normalize();
             double angle1 = eVect.AngleTo(XYZ.BasisZ);
             double angle2 = eVect.AngleTo(-XYZ.BasisZ);
 
-            if (Math.Min(angle1, angle2) < angleTolerance.ToRadians())
-            {
-                return true;
-            }
-
-            return false;
+            return Math.Min(angle1, angle2) < angleToleranceInDegree.ToRadians();
         }
 
         /***************************************************/
 
-        public static bool IsVertical(this Face face)
+        [Description("Checks whether a planar Revit face is based on a vertical plane.")]
+        [Input("planarFace", "A planar Revit face.")]
+        [Output("isVertical", "True if the input Revit planar face is based on a vertical plane.")]
+        public static bool IsVertical(this Face planarFace)
         {
-            XYZ fNormal = face.ComputeNormal(new UV(0.5, 0.5)).Normalize();
+            XYZ fNormal = planarFace.ComputeNormal(new UV(0.5, 0.5)).Normalize();
             return fNormal.Z < Tolerance.Distance;
         }
-
-        /***************************************************/
-
-        private static double ToRadians(this double degrees, double pi = Math.PI)
-        {
-            return degrees * (pi / 180);
-        }
-
 
         /***************************************************/
     }

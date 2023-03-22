@@ -32,7 +32,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get the location point of a Revit element.")]
+        [Description("Gets the location point of a Revit element.")]
         [Input("elem", "A generic Element instance.")]
         [Input("useCurveMidPoint", "If True, get the middle point of the element's LocationCurve if its location isn't of type LocationPoint.")]
         [Output("xyz", "The location point of a Revit element.")]

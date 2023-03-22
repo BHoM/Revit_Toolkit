@@ -66,24 +66,6 @@ namespace BH.Revit.Engine.Core
         private static double m_LengthToSI = 1.0.ToSI(SpecTypeId.Length);
 
         /***************************************************/
-
-        [Description("Converts a Revit XYZ to BH.oM.Geometry.Point.")]
-        [Input("xyz", "Revit XYZ to be converted.")]
-        [Output("point", "BH.oM.Geometry.Point resulting from converting the input Revit XYZ.")]
-        public static oM.Geometry.Point PointFromRevit(this XYZ xyz, ForgeTypeId unitType)
-        {
-            if (xyz == null)
-                return null;
-
-            //Faster than PointFromRevit(this XYZ xyz) above, most noticeable on heavy methods.
-            double x = UnitUtils.ConvertFromInternalUnits(xyz.X, unitType);
-            double y = UnitUtils.ConvertFromInternalUnits(xyz.Y, unitType);
-            double z = UnitUtils.ConvertFromInternalUnits(xyz.Z, unitType);
-
-            return BH.Engine.Geometry.Create.Point(x, y, z);
-        }
-
-        /***************************************************/
     }
 }
 
