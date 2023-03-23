@@ -137,7 +137,7 @@ namespace BH.Revit.Engine.Core
             
             // Create linear bars
             bars = new List<Bar>();
-            if (locationCurves != null)
+            if (locationCurves != null && locationCurves.Count != 0)
             {
                 foreach (ICurve curve in locationCurves)
                 {
