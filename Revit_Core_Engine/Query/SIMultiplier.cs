@@ -60,7 +60,7 @@ namespace BH.Revit.Engine.Core
         [Description("Returns multiplier to be applied to achieve the conversion between SI system used by BHoM and internal Revit units." +
                      "\nFor example, for Length it will be 1/0.3048 (conversion from meters to feet).")]
         [Input("quantity", "Quantity for which the multiplier is to be found.")]
-        [Output("multiplier", "Multiplier between internal Revit units and SI system used by BHoM for the input quantity.")]
+        [Output("multiplier", "Multiplier between SI system used by BHoM and internal Revit units for the input quantity.")]
 #if (REVIT2018 || REVIT2019 || REVIT2020)
         public static double FromSIMultiplier(this UnitType quantity)
 #else
