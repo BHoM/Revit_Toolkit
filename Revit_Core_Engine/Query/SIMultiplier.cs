@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
  *
@@ -22,34 +22,58 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Convert
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
-        [Description("Converts a numerical value from internal Revit units to BHoM-specific unit for a given quantity type.")]
-        [Input("value", "Numerical value to be converted to BHoM-specific units.")]
-        [Input("quantity", "Quantity type to use when converting from Revit internal units to BHoM-specific units.")]
-        [Output("converted", "Input value converted from internal Revit units to BHoM-specific units for the input quantity type.")]
+
+        //[Description("Get control points of CurveLoop with tessellation.")]
+        //[Input("curveLoop", "CurveLoop to get the points from.")]
+        //[Output("curveLoopPoints", "CurveLoop points.")]
 #if (REVIT2018 || REVIT2019 || REVIT2020)
-        public static double FromSI(this double value, UnitType quantity)
+        public static double ToSIMultiplier(this UnitType quantity)
 #else
-        public static double FromSI(this double value, ForgeTypeId quantity)
+        public static double ToSIMultiplier(this ForgeTypeId quantity)
 #endif
         {
-            if (double.IsNaN(value) || value == double.MaxValue || value == double.MinValue || double.IsNegativeInfinity(value) || double.IsPositiveInfinity(value))
-                return value;
+            if (!m_ToSIMultipliers.ContainsKey(quantity))
+                m_ToSIMultipliers.Add(quantity, UnitUtils.ConvertFromInternalUnits(1, quantity.BHoMUnitType()));
 
-            return value * quantity.FromSIMultiplier();
+            return m_ToSIMultipliers[quantity];
         }
-        
+
+
+        /***************************************************/
+
+#if (REVIT2018 || REVIT2019 || REVIT2020)
+        public static double FromSIMultiplier(this UnitType quantity)
+#else
+        public static double FromSIMultiplier(this ForgeTypeId quantity)
+#endif
+        {
+            if (!m_ToSIMultipliers.ContainsKey(quantity))
+                m_ToSIMultipliers.Add(quantity, UnitUtils.ConvertFromInternalUnits(1, quantity.BHoMUnitType()));
+
+            return 1 / m_ToSIMultipliers[quantity];
+        }
+
+
+        /***************************************************/
+        /****              Private fields               ****/
+        /***************************************************/
+
+#if (REVIT2018 || REVIT2019 || REVIT2020)
+        private static Dictionary<UnitType, double> m_ToSIMultipliers = new Dictionary<UnitType, double>();
+#else
+        private static Dictionary<ForgeTypeId, double> m_ToSIMultipliers = new Dictionary<ForgeTypeId, double>();
+#endif
+
         /***************************************************/
     }
 }
-
-
