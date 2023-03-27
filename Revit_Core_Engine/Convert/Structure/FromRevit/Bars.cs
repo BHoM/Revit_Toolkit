@@ -63,17 +63,20 @@ namespace BH.Revit.Engine.Core
             List<oM.Geometry.ICurve> locationCurves = null;
 #if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021 || REVIT2022)
             AnalyticalModelStick analyticalModel = familyInstance.GetAnalyticalModel() as AnalyticalModelStick;
-#else
-            Document doc = familyInstance.Document;
-            AnalyticalToPhysicalAssociationManager manager = AnalyticalToPhysicalAssociationManager.GetAnalyticalToPhysicalAssociationManager(doc);
-            AnalyticalMember analyticalModel = doc.GetElement(manager.GetAssociatedElementId(familyInstance.Id)) as AnalyticalMember;
-#endif
             if (analyticalModel != null)
             {
                 IList<Curve> curves = analyticalModel.GetCurves(AnalyticalCurveType.ActiveCurves);
                 if (curves != null && curves.Count != 0)
                     locationCurves = curves.Select(x => x.IFromRevit()).ToList();
             }
+#else
+            Document doc = familyInstance.Document;
+            AnalyticalToPhysicalAssociationManager manager = AnalyticalToPhysicalAssociationManager.GetAnalyticalToPhysicalAssociationManager(doc);
+            AnalyticalMember analyticalMember = doc.GetElement(manager.GetAssociatedElementId(familyInstance.Id)) as AnalyticalMember;
+            Curve curve = analyticalMember.GetCurve();
+            if (curve != null)
+                locationCurves = new List<ICurve> { curve.IFromRevit() };
+#endif
 
             if (locationCurves != null)
                 familyInstance.AnalyticalPullWarning();
@@ -139,9 +142,9 @@ namespace BH.Revit.Engine.Core
             bars = new List<Bar>();
             if (locationCurves != null && locationCurves.Count != 0)
             {
-                foreach (ICurve curve in locationCurves)
+                foreach (ICurve locationCurve in locationCurves)
                 {
-                    if (curve is NurbsCurve)
+                    if (locationCurve is NurbsCurve)
                     {
                         BH.Engine.Base.Compute.RecordWarning($"Could not pull location of at least part of an Element because its location type is not supported: NurbsCurve. ElementId: {familyInstance.Id}");
                         bars.Add(new Bar { SectionProperty = property, OrientationAngle = 0 });
@@ -149,7 +152,7 @@ namespace BH.Revit.Engine.Core
                     }
 
                     double rotation = familyInstance.OrientationAngle(settings);
-                    foreach (BH.oM.Geometry.Line line in curve.ICollapseToPolyline(Math.PI / 12).SubParts())
+                    foreach (BH.oM.Geometry.Line line in locationCurve.ICollapseToPolyline(Math.PI / 12).SubParts())
                     {
                         bars.Add(BH.Engine.Structure.Create.Bar(line, property, rotation));
                     }
