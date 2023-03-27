@@ -73,7 +73,7 @@ namespace BH.Revit.Engine.Core
             Document doc = familyInstance.Document;
             AnalyticalToPhysicalAssociationManager manager = AnalyticalToPhysicalAssociationManager.GetAnalyticalToPhysicalAssociationManager(doc);
             AnalyticalMember analyticalMember = doc.GetElement(manager.GetAssociatedElementId(familyInstance.Id)) as AnalyticalMember;
-            Curve curve = analyticalMember.GetCurve();
+            Curve curve = analyticalMember?.GetCurve();
             if (curve != null)
                 locationCurves = new List<ICurve> { curve.IFromRevit() };
 #endif
