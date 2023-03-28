@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <AssemblyVersion>6.0.0.0</AssemblyVersion>
@@ -7,7 +7,7 @@
     <Authors>BHoM</Authors>
     <Copyright>Copyright © https://github.com/BHoM</Copyright>
     <RootNamespace>BH.Revit.Adapter.Core</RootNamespace>
-    <FileVersion>6.1.0.0</FileVersion>
+    <FileVersion>6.2.0.0</FileVersion>
   </PropertyGroup>
   
   <PropertyGroup>
