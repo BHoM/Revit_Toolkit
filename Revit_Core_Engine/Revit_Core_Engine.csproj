@@ -59,112 +59,112 @@
   <ItemGroup>
     <Reference Include="Analytical_oM">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Analytical_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Analytical_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Architecture_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Architecture_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Architecture_Engine.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Architecture_oM">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Architecture_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Architecture_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="BHoM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\BHoM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="BHoM_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Data_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Data_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Data_Engine.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Data_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Data_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Data_oM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Dimensional_oM">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Dimensional_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Dimensional_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Environment_Engine">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Environment_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Environment_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Environment_oM">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Environment_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Environment_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Facade_Engine">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Facade_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Facade_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Facade_oM">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Facade_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Facade_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Geometry_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Geometry_Engine.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Geometry_oM">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Geometry_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Graphics_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Graphics_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Graphics_Engine.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Graphics_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Graphics_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Graphics_oM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Library_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Library_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Library_Engine.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Matter_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Matter_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Matter_Engine.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="MEP_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\MEP_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\MEP_Engine.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="MEP_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\MEP_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\MEP_oM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Physical_Engine">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Physical_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Physical_oM">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Physical_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018' Or '$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
@@ -216,22 +216,22 @@
       <private>False</private>
     </Reference>
     <Reference Include="Spatial_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Spatial_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Spatial_Engine.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Spatial_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Spatial_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Spatial_oM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Structure_Engine">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Structure_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Structure_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Structure_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Structure_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Structure_oM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
