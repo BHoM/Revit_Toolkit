@@ -77,67 +77,67 @@
   
   <ItemGroup>
     <Reference Include="Adapter_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Adapter_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Adapter_Engine.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Adapter_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Adapter_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Adapter_oM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="BHoM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\BHoM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="BHoM_Adapter">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Adapter.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\BHoM_Adapter.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="BHoM_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Data_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Data_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Data_Engine.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Data_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Data_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Data_oM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Dimensional_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Dimensional_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Dimensional_oM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Geometry_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Geometry_Engine.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Geometry_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Geometry_oM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Graphics_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Graphics_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Graphics_Engine.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Graphics_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Graphics_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Graphics_oM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Physical_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Physical_oM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -190,24 +190,24 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Socket_Adapter">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Socket_Adapter.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Socket_Adapter.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Socket_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Socket_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Socket_oM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="PresentationCore" />
     <Reference Include="UI_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\UI_Engine.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\UI_Engine.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="UI_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\UI_oM.dll</HintPath>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\UI_oM.dll</HintPath>
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
