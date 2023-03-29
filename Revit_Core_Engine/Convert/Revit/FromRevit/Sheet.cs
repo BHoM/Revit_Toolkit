@@ -28,6 +28,8 @@ using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using Revision = BH.oM.Adapters.Revit.Elements.Revision;
 
 namespace BH.Revit.Engine.Core
 {
@@ -58,6 +60,13 @@ namespace BH.Revit.Engine.Core
 
             sheet.Name = viewSheet.Name;
 
+            foreach (var revision in viewSheet.GetAllRevisionIds().Select(x => viewSheet.Document.GetElement(x) as Autodesk.Revit.DB.Revision))
+            {
+                Revision rev = revision.RevisionFromRevit(settings, refObjects);
+                if (rev != null)
+                    sheet.SheetRevisions.Add(rev);
+            }
+
             //Set identifiers, parameters & custom data
             sheet.SetIdentifiers(viewSheet);
             sheet.CopyParameters(viewSheet, settings.MappingSettings);
@@ -70,7 +79,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-
-

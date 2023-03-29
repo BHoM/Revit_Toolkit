@@ -1,6 +1,6 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2022, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -24,11 +24,11 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
 using BH.oM.Base.Attributes;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
+using Revision = BH.oM.Adapters.Revit.Elements.Revision;
 
 namespace BH.Revit.Engine.Core
 {
@@ -38,42 +38,34 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Converts BH.oM.Adapters.Revit.Elements.Sheet to a Revit ViewSheet.")]
-        [Input("sheet", "BH.oM.Adapters.Revit.Elements.Sheet to be converted.")]
-        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Description("Converts a Revit Revision to BH.oM.Adapters.Revit.Elements.Revision.")]
+        [Input("revision", "Revit Revision to be converted.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("viewSheet", "Revit ViewSheet resulting from converting the input BH.oM.Adapters.Revit.Elements.Sheet.")]
-        public static ViewSheet ToRevitSheet(this Sheet sheet, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        [Output("revision", "BH.oM.Adapters.Revit.Elements.Revision resulting from converting the input Revit Revision.")]
+        public static Revision RevisionFromRevit(this Autodesk.Revit.DB.Revision revision, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (sheet == null)
-                return null;
-
-            ViewSheet viewSheet = refObjects.GetValue<ViewSheet>(document, sheet.BHoM_Guid);
-            if (viewSheet != null)
-                return viewSheet;
-
             settings = settings.DefaultIfNull();
 
-            viewSheet = ViewSheet.Create(document, ElementId.InvalidElementId);
-            viewSheet.Name = sheet.SheetName;
-            viewSheet.SheetNumber = sheet.SheetNumber;
+            Revision rev = refObjects.GetValue<Revision>(revision.Id);
+            if (rev != null)
+                return rev;
 
-            var additionalRevisions = viewSheet.GetAdditionalRevisionIds();
-            foreach (var rev in sheet.SheetRevisions)
-            {
-                if (!additionalRevisions.Contains(rev.ElementId()))
-                    additionalRevisions.Add(rev.ElementId());
-            }
+            rev = BH.Engine.Adapters.Revit.Create.Revision(revision.RevisionDate, revision.Description);
 
-            if (additionalRevisions.Any())
-                viewSheet.SetAdditionalRevisionIds(additionalRevisions);
+            ElementType elementType = revision.Document.GetElement(revision.GetTypeId()) as ElementType;
+            if (elementType != null)
+                rev.InstanceProperties = elementType.InstancePropertiesFromRevit(settings, refObjects);
+            
+            rev.Name = revision.Description;
+            
+            //Set identifiers, parameters & custom data
+            rev.SetIdentifiers(element: revision);
+            rev.CopyParameters(revision, settings.MappingSettings);
+            rev.SetProperties(revision, settings.MappingSettings);
 
-            // Copy parameters from BHoM object to Revit element
-            viewSheet.CopyParameters(sheet, settings);
-
-            refObjects.AddOrReplace(sheet, viewSheet);
-            return viewSheet;
+            refObjects.AddOrReplace(revision.Id, rev);
+            return rev;
         }
 
         /***************************************************/

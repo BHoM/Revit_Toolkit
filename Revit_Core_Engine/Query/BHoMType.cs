@@ -550,6 +550,24 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Finds a suitable BHoM type to convert the given Revit Revision to, based on the requested engineering discipline and adapter settings.")]
+        [Input("revision", "Revit Revision to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit Revision to.")]
+        public static Type BHoMType(this Revision revision, Discipline discipline, RevitSettings settings = null)
+        {
+            switch (discipline)
+            {
+                default:
+                    return typeof(BH.oM.Adapters.Revit.Elements.Revision);
+            }
+        }
+
+        /***************************************************/
+
+        /***************************************************/
+
         [Description("Finds a suitable BHoM type to convert the given Revit ViewPlan to, based on the requested engineering discipline and adapter settings.")]
         [Input("viewPlan", "Revit ViewPlan to find a correspondent BHoM type.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]

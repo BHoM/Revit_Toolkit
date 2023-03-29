@@ -1,6 +1,6 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2022, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,31 +20,26 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Properties;
-using BH.oM.Base;
-using System.Collections.Generic;
+using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Elements
+namespace BH.Engine.Adapters.Revit
 {
-    [Description("A wrapper BHoM type for Revit sheet, used to create or update Revit sheets (on Push) and represent them as BHoMObjects (on Pull).")]
-    public class Sheet : BHoMObject
+    public static partial class Create
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("An entity storing the information about Revit sheet type.")]
-        public virtual InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();
-
-        [Description("Name of the Revit sheet.")]
-        public virtual string SheetName { get; set; } = null;
-
-        [Description("Number of the Revit sheet.")]
-        public virtual string SheetNumber { get; set; } = null;
-
-        [Description("Revisions of the Revit sheet.")]
-        public virtual List<Revision> SheetRevisions { get; set; } = new List<Revision>();
+        [Description("Creates BHoM Revision.")]
+        [InputFromProperty("revisionDate")]
+        [InputFromProperty("revisionDescription")]
+        [Output("revision", "BHoM object representing a revision within Revit.")]
+        public static Revision Revision(string revisionDate, string revisionDescription)
+        {
+            return new Revision { Date = revisionDate, Description = revisionDescription};
+        }
 
         /***************************************************/
     }

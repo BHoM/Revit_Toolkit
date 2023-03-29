@@ -1,6 +1,6 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2022, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -22,29 +22,25 @@
 
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Base;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Elements
 {
-    [Description("A wrapper BHoM type for Revit sheet, used to create or update Revit sheets (on Push) and represent them as BHoMObjects (on Pull).")]
-    public class Sheet : BHoMObject
+    [Description("A wrapper BHoM type for Revit Revision, used to create or update Revit Revisions (on Push) and represent them as BHoMObjects (on Pull).")]
+    public class Revision : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("An entity storing the information about Revit sheet type.")]
+        [Description("An entity storing the information about Revit Revision type.")]
         public virtual InstanceProperties InstanceProperties { get; set; } = new InstanceProperties();
 
-        [Description("Name of the Revit sheet.")]
-        public virtual string SheetName { get; set; } = null;
+        [Description("Date of the Revit Revision.")]
+        public virtual string Date { get; set; } = null;
 
-        [Description("Number of the Revit sheet.")]
-        public virtual string SheetNumber { get; set; } = null;
-
-        [Description("Revisions of the Revit sheet.")]
-        public virtual List<Revision> SheetRevisions { get; set; } = new List<Revision>();
+        [Description("Description of the Revit Revision.")]
+        public virtual string Description { get; set; } = null;
 
         /***************************************************/
     }

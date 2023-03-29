@@ -243,6 +243,54 @@ namespace BH.Revit.Engine.Core
             return true;
         }
 
+        /***************************************************/
+
+        [Description("Updates the existing Revit ViewSheet based on the given BHoM object.")]
+        [Input("viewSheet", "Revit Element to be updated.")]
+        [Input("bHoMObject", "BHoM object, based on which the Revit element will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Output("success", "True if the Revit element has been updated successfully based on the input BHoM object.")]
+        public static bool Update(this ViewSheet viewSheet, Sheet bHoMObject, RevitSettings settings)
+        {
+            bool isElement = new ElementIsElementTypeFilter(true).PassesFilter(viewSheet);
+            if (!(isElement && viewSheet.ISetType(bHoMObject, settings)))
+            {
+                return false;
+            }
+
+            viewSheet.Document.Regenerate();
+
+            //Copy all parameters from BHoMObject to Revit Element
+            viewSheet.CopyParameters(bHoMObject, settings);
+
+            //Rename Sheet if necessary
+            if (!string.IsNullOrWhiteSpace(bHoMObject.Name) && viewSheet.Name != bHoMObject.Name)
+            {
+                try
+                {
+                    viewSheet.Name = bHoMObject.Name;
+                }
+                catch
+                {
+
+                }
+            }
+
+            //If the Sheet Revisions on the BHomObject and ViewSheet do not match, update from BHoMObject
+            var additionalRevisions = viewSheet.GetAdditionalRevisionIds();
+            foreach (var rev in bHoMObject.SheetRevisions)
+            {
+                if (!additionalRevisions.Contains(rev.ElementId()))
+                    additionalRevisions.Add(rev.ElementId());
+            }
+
+            if (additionalRevisions.Any())
+                viewSheet.SetAdditionalRevisionIds(additionalRevisions);
+
+            return true;
+        }
+
+        /***************************************************/
 
         /***************************************************/
         /****             Disallowed Types              ****/
