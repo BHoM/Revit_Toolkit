@@ -20,30 +20,61 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
     public static partial class Compute
     {
         /***************************************************/
-        /****              Public Methods               ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Shift items in a list forward and move those falling off the end of it back to the start of the list.")]
-        [Input("list", "A list containing items to shift. For example, control points of a polyline which we want to traverse from a particular point.")]
-        [Input("offset", "The number of items to move from the start to the end of the input list.")]
-        [Output("list", "A list with items in the input list .")]
-        public static List<T> ShiftList<T>(this List<T> list, int offset)
+        [Description("Gets the intersection point of 2 vectors given their start/end points and directions.")]
+        [Input("startPoint", "A point on the first vector.")]
+        [Input("endPoint", "A point on the second vector.")]
+        [Input("startDir", "The direction of the first vector.")]
+        [Input("endDir", "The direction of the second vector.")]
+        [Output("xyz", "The intersection point of 2 vectors given their start/end points and directions.")]
+        public static XYZ VectorIntersection(this XYZ startPoint, XYZ endPoint, XYZ startDir, XYZ endDir)
         {
-            return list.Skip(offset).Concat(list.Take(offset)).ToList();
+            double x;
+            double y;
+
+            if (Math.Abs(startDir.X) < Tolerance.Angle)
+            {
+                x = startPoint.X;
+                y = endPoint.Y + (x - endPoint.X) * endDir.Y / endDir.X;
+            }
+            else if (Math.Abs(endDir.X) < Tolerance.Angle)
+            {
+                x = endPoint.X;
+                y = startPoint.Y + (x - startPoint.X) * startDir.Y / startDir.X;
+            }
+            else
+            {
+                double m1 = startDir.Y / startDir.X;
+                double A1 = -m1;
+                double C1 = m1 * startPoint.X - startPoint.Y;
+                double m2 = endDir.Y / endDir.X;
+                double A2 = -m2;
+                double C2 = m2 * endPoint.X - endPoint.Y;
+                double delta = A2 - A1;
+                x = (C1 - C2) / delta;
+                y = (A1 * C2 - A2 * C1) / delta;
+            }
+
+            return new XYZ(x, y, startPoint.Z);
         }
 
         /***************************************************/
     }
 }
+
+
 
 

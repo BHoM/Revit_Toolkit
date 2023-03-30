@@ -39,9 +39,9 @@ namespace BH.Revit.Engine.Core
 
         [Description("Checks whether a planar Revit curve is based on a vertical plane.")]
         [Input("planarCurve", "A planar Revit curve.")]
-        [Input("angleToleranceInDegree", "If the angle between the Z axis and the base plane of the input curve is greater than this value, we will consider it a vertical curve.")]
+        [Input("toleranceInDegree", "If the angle between the Z axis and the base plane of the input curve is greater than this value, consider it a vertical curve.")]
         [Output("isVertical", "True if the input Revit planar curve is based on a vertical plane.")]
-        public static bool IsVertical(this Curve planarCurve, double angleToleranceInDegree)
+        public static bool IsVertical(this Curve planarCurve, double toleranceInDegree)
         {
             if (planarCurve is Line)
             {
@@ -56,7 +56,7 @@ namespace BH.Revit.Engine.Core
             double angle1 = eVect.AngleTo(XYZ.BasisZ);
             double angle2 = eVect.AngleTo(-XYZ.BasisZ);
 
-            return Math.Min(angle1, angle2) < angleToleranceInDegree.ToRadians();
+            return Math.Min(angle1, angle2) < toleranceInDegree.ToRadians();
         }
 
         /***************************************************/

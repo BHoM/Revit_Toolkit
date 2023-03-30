@@ -36,7 +36,7 @@ namespace BH.Revit.Engine.Core
         [Description("Gets the distance between a 2 points along an input vector's direction.")]
         [Input("pnt1", "A point to compute distance from.")]
         [Input("pnt2", "A point to compute distance to.")]
-        [Input("vector", "A vector along which we will measure the distance.")]
+        [Input("vector", "A vector to measure point distance along.")]
         [Output("distance", "The distance between a 2 points along an input vector's direction.")]
         public static double DistanceAlongVector(this XYZ pnt1, XYZ pnt2, XYZ vector)
         {

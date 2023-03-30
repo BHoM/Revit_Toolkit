@@ -34,17 +34,19 @@ namespace BH.Revit.Engine.Core
 
         [Description("Gets the location point of a Revit element.")]
         [Input("elem", "A generic Element instance.")]
-        [Input("useCurveMidPoint", "If True, get the middle point of the element's LocationCurve if its location isn't of type LocationPoint.")]
+        [Input("useCurveMidPoint", "If True, get the middle point of the element's LocationCurve if the element isn't point-based.")]
         [Output("xyz", "The location point of a Revit element.")]
         public static XYZ LocationPoint(this Element elem, bool useCurveMidPoint = false)
         {
-            var eLoc = elem.Location;
+            var eLocation = elem.Location;
 
-            if (eLoc is LocationCurve)
+            if (eLocation is LocationCurve)
             {
-                if (useCurveMidPoint)
+                Curve eCurve = (eLocation as LocationCurve).Curve;
+
+                if (useCurveMidPoint && eCurve.IsBound)
                 {
-                    return ((LocationCurve)eLoc).Curve.Evaluate(0.5, true);
+                    return eCurve.Evaluate(0.5, true);
                 }
                 else
                 {
@@ -52,7 +54,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
             else
-                return ((LocationPoint)eLoc).Point;
+                return (eLocation as LocationPoint).Point;
         }
 
         /***************************************************/

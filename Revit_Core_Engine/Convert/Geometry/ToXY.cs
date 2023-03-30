@@ -35,7 +35,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Project an XYZ point on the datum XY plane and return the result.")]
+        [Description("Returns the projection of an XYZ point on the datum XY plane.")]
         [Input("point", "An XYZ point from which to get a projection on the XY plane.")]
         [Output("point", "The projection of an XYZ point on the XY plane.")]
         public static XYZ ToXY(this XYZ point)
@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Project a Line on the datum XY plane and return the result.")]
+        [Description("Returns the projection of a line on the datum XY plane.")]
         [Input("line", "A line from which to get a projection on the XY plane.")]
         [Output("line", "The projection of a line on the XY plane.")]
         public static Line ToXY(this Line line)
@@ -63,7 +63,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Project a planar curve on the datum XY plane and return the result.")]
+        [Description("Returns the projection of a planar curve on the datum XY plane.")]
         [Input("planarCurve", "A planar curve from which to get a projection on the XY plane.")]
         [Output("planarCurve", "The projection of a planar curve on the XY plane.")]
         public static Curve ToXY(this Curve planarCurve)
@@ -75,7 +75,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Project a list of planar curves on the datum XY plane and return the result.")]
+        [Description("Returns the projection of a list of planar curves on the datum XY plane.")]
         [Input("planarCurves", "A list of planar curves from which to get a projection on the XY plane.")]
         [Output("planarCurves", "The projection of a list of planar curves on the XY plane.")]
         public static List<Curve> ToXY(this List<Curve> planarCurves)

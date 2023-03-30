@@ -26,6 +26,8 @@ using BH.oM.Geometry;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using static Autodesk.Revit.DB.SpecTypeId;
 
 namespace BH.Revit.Engine.Core
 {
@@ -41,20 +43,7 @@ namespace BH.Revit.Engine.Core
         [Output("closestPoint", "A point from the cloud that is closest to the reference point.")]
         public static XYZ ClosestPoint(this XYZ refPoint, IEnumerable<XYZ> pointCloud)
         {
-            XYZ result = null;
-            double minDistance = double.MaxValue;
-
-            foreach (XYZ cand in pointCloud)
-            {
-                double sqDistance = refPoint.SquaredDistance(cand);
-                if (sqDistance < minDistance)
-                {
-                    minDistance = sqDistance;
-                    result = cand;
-                }
-            }
-
-            return result;
+            return pointCloud.ToList().OrderBy(x => refPoint.SquaredDistance(x)).FirstOrDefault();
         }
 
         /***************************************************/

@@ -34,10 +34,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Get the smallest acute angle between 2 vectors regardless of their directions.")]
+        [Description("Get the smallest possible angle between 2 vectors regardless of their directions.")]
         [Input("vector1", "The first vector.")]
         [Input("vector2", "The second vector.")]
-        [Output("angle", "The smallest acute angle between 2 vectors regardless of their directions.")]
+        [Output("angle", "The smallest possible angle between 2 vectors regardless of their directions.")]
         public static double AcuteAngle(this XYZ vector1, XYZ vector2)
         {
             double angle1 = vector1.AngleTo(vector2);
