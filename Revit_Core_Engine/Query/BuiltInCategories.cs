@@ -40,7 +40,6 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("6.1", "BH.Revit.Engine.Core.Query.BuiltInCategories(BH.oM.Adapters.Revit.Elements.Family, Autodesk.Revit.DB.Document, System.Boolean)")]
         [Description("Queries a BHoM Family for its Revit BuiltInCategory.")]
         [Input("family", "BHoM family to be queried.")]
         [Input("caseSensitive", "Optional, whether the lookup is case sensitive or not.")]
@@ -55,7 +54,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [PreviousVersion("6.1", "BH.Revit.Engine.Core.Query.BuiltInCategories(BH.oM.Base.IBHoMObject, Autodesk.Revit.DB.Document, System.Boolean)")]
         [Description("Queries a BHoM IBHoMObject for its Revit BuiltInCategory.")]
         [Input("bHoMObject", "BHoM object to be queried.")]
         [Input("caseSensitive", "Optional, whether the lookup is case sensitive or not.")]
