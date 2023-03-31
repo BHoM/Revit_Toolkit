@@ -34,7 +34,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public Methods               ****/
         /***************************************************/
 
-        [Description("Groups and sorts IRequests by their estimated execution time in order to execute fastest first. Order from slowest to fastest: IParameterRequest, IlogicalRequests, others. ")]
+        [Description("Groups and sorts IRequests by their estimated execution time in order to execute fastest first. Order from slowest to fastest: IParameterRequest, IlogicalRequests, others.")]
         [Input("requests", "A collection of IRequests to be sorted.")]
         [Output("sortedRequests")]
         public static List<IRequest> SortByPerformance(this List<IRequest> requests)

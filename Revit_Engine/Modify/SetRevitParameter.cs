@@ -38,7 +38,7 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Attaches parameter to a BHoM object, which will be applied to a correspondent Revit element on Push.")]
         [Input("bHoMObject", "BHoMObject to which the parameter will be attached.")]
-        [Input("name", "Name of the parameter to be attached.")]
+        [Input("paramName", "Name of the parameter to be attached.")]
         [Input("value", "Value of the parameter to be attached.")]
         [Output("bHoMObject")]
         public static IBHoMObject SetRevitParameter(this IBHoMObject bHoMObject, string paramName, object value)
@@ -70,7 +70,7 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Attaches parameters to a BHoM object, which will be applied to a correspondent Revit element on Push.")]
         [Input("bHoMObject", "BHoMObject to which the parameters will be attached.")]
-        [Input("names", "Names of the parameters to be attached.")]
+        [Input("paramNames", "Names of the parameters to be attached.")]
         [Input("values", "Values of the parameters to be attached.")]
         [Output("bHoMObject")]
         public static IBHoMObject SetRevitParameters(this IBHoMObject bHoMObject, List<string> paramNames, List<object> values)

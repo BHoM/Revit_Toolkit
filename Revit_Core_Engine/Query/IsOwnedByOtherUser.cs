@@ -61,6 +61,7 @@ namespace BH.Revit.Engine.Core
 
         [Description("Check if element is owned by another user.")]
         [Input("element", "Revit element to query for its checkout status.")]
+        [Input("owner", "Owner of the element, as an out parameter.")]
         [Output("ownedByOtherUser", "True if the input Revit element is owned by another user, otherwise false.")]
         public static bool IsOwnedByOtherUser(this Element element, out string owner)
         {

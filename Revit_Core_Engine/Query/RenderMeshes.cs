@@ -41,6 +41,7 @@ namespace BH.Revit.Engine.Core
         [Input("element", "Element to display thorugh RenderMeshes.")]
         [Input("options", "Revit API options for the retrieval, including e.g. `IncludeNonVisibleObjects`.")]
         [Input("settings", "Revit Adapter settings to be applied in retrieving the meshes corresponding to the element.")]
+        [Output("renderMeshes", "RenderMesh objects corresponding to the input Revit Element.")]
         public static List<RenderMesh> RenderMeshes(this Element element, Options options, RevitSettings settings = null)
         {
             if (element == null)

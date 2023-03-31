@@ -48,8 +48,8 @@ namespace BH.Adapter.Revit
 
         [Description("Adapter to connect to an open Revit file. Connection will be made to the active document (based on active view). Make sure to only have ONE Revit Window open, or connection will not work as intended.")]
         [Input("revitSettings", "General settings that are applicable to all actions performed by this adapter, e.g. connection settings, tolerances, parameter mapping settings etc.")]
-        [Input("active", "Establish connection with Revit by setting to 'True'")]
-        [Output("adapter", "Adapter to Revit")]
+        [Input("active", "Establish connection with Revit by setting to 'True'.")]
+        [Output("adapter", "Adapter to Revit.")]
         public RevitAdapter(RevitSettings revitSettings = null, bool active = false)
         {
             if (!active)

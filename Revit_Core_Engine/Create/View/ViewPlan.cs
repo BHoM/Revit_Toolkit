@@ -40,6 +40,7 @@ namespace BH.Revit.Engine.Core
         [Input("document", "Revit current document to be processed.")]
         [Input("level", "The level that the created Floor Plan refers to.")]
         [Input("viewName", "Name of the new view.")]
+        [Input("viewFamily", "View family type of the new view.")]
         [Input("cropBox", "Optional, the crop region to attempt to apply to the newly created view.")]
         [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
         [Input("viewDetailLevel", "Optional, the Detail Level of the view.")]
