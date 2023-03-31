@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -33,6 +34,7 @@ namespace BH.Revit.Adapter.Core.Forms
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Window for updating ports used in the Revit Listener.")]
         public UpdatePortsForm()
         {
             InitializeComponent();
