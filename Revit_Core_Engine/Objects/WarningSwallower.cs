@@ -33,7 +33,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
         [Description("Failure message swallower, used to continue the process without regard to errors.")]
-        [Input("failureAccessor", "Revit failure accessor object.")]
+        [Input("failuresAccessor", "Revit failures accessor object.")]
         [Output("failureProcessingResult", "The result of the failure processing.")]
         public FailureProcessingResult PreprocessFailures(FailuresAccessor failuresAccessor)
         {
