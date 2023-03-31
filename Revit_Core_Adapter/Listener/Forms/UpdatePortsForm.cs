@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
+using BH.oM.Base.Attributes;
 
 namespace BH.Revit.Adapter.Core.Forms
 {
@@ -35,6 +36,7 @@ namespace BH.Revit.Adapter.Core.Forms
         /***************************************************/
 
         [Description("Window for updating ports used in the Revit Listener.")]
+        [Output("updatePortsForm", "The form for updating ports.")]
         public UpdatePortsForm()
         {
             InitializeComponent();
