@@ -36,7 +36,7 @@ namespace BH.Revit.Engine.Core
         [Description("hostDocument refers to the document that owns the active view. targetDocument can take three values:" +
                      "\n- same as hostDocument - visible elements of the host document are then collected" +
                      "\n- document linked in the host document - elements of that linked document visible in the active view of the host document are then collected" +
-                     "\n- null - all elements of all documents, host and links, are then collected")]
+                     "\n- null - all elements of all documents, host and links, are then collected.")]
         public Active2dViewVisibilityContext(Document hostDocument, Document targetDocument) : base(hostDocument, targetDocument)
         {
         }

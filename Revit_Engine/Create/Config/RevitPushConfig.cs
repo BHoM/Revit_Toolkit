@@ -35,6 +35,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Creates a push action-specific configuration used for adapter interaction with Revit.")]
         [InputFromProperty("suppressFailureMessages")]
         [InputFromProperty("includeClosedWorksets")]
+        [InputFromProperty("setLocationOnUpdate")]
         [Output("revitPushConfig")]
         public static RevitPushConfig RevitPushConfig(bool suppressFailureMessages = false, bool includeClosedWorksets = false, bool setLocationOnUpdate = true)
         {
