@@ -36,7 +36,6 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [PreviousVersion("6.1", "BH.Revit.Engine.Core.Create.ViewPlan(Autodesk.Revit.DB.Document, Autodesk.Revit.DB.Level, System.String, Autodesk.Revit.DB.CurveLoop, Autodesk.Revit.DB.ElementId, Autodesk.Revit.DB.ViewDetailLevel)")]
         [Description("Creates and returns a new Plan view in the current Revit file.")]
         [Input("document", "Revit current document to be processed.")]
         [Input("level", "The level that the created Floor Plan refers to.")]
