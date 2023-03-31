@@ -111,7 +111,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Method used to return a RenderNodeAction.")] 
-        [Input("node", "LineSegment to be processed.")]
+        [Input("segment", "LineSegment to be processed.")]
         public void OnLineSegment(LineSegment segment)
         {
             throw new NotImplementedException();
@@ -120,7 +120,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Method used to return a RenderNodeAction.")] 
-        [Input("node", "PolylineSegments to be processed.")]
+        [Input("segments", "PolylineSegments to be processed.")]
         public void OnPolylineSegments(PolylineSegments segments)
         {
             throw new NotImplementedException();
