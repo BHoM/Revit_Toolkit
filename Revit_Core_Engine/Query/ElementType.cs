@@ -147,10 +147,13 @@ namespace BH.Revit.Engine.Core
         [Description("Returns the Revit host object attributes to be used when converting a given BHoM construction to Revit.")]
         [Input("construction", "BHoM construction to find a correspondent Revit element type for.")]
         [Input("document", "Revit document to parse in search for the element type.")]
+        [Input("builtInCategories", "List of built in categories to be considered when searching for the element type.")]
         [Input("settings", "Revit adapter settings to be used while performing the query.")]
         [Output("attributes", "Revit host object attributes to be used when converting the input BHoM object to Revit.")]
-        public static HostObjAttributes ElementType(this oM.Physical.Constructions.IConstruction construction, Document document, IEnumerable<BuiltInCategory> builtInCategories, RevitSettings settings = null)
-        {
+        public static HostObjAttributes ElementType(this
+        oM.Physical.Constructions.IConstruction construction, Document
+        document, IEnumerable<BuiltInCategory> builtInCategories, RevitSettings
+        settings = null) {
             return construction.ElementType<HostObjAttributes>(document, builtInCategories);
         }
 

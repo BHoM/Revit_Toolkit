@@ -34,8 +34,8 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Gets the name of Revit family correspondent to given BHoMObject. This value is stored in  RevitIdentifiers fragment.")]
-        [Input("bHoMObject", "BHoMObject")]
-        [Output("familyName")]
+        [Input("bHoMObject", "BHoMObject of which the name is requested.")]
+        [Output("familyName", "Name of the family correspondent to given BHoMObject.")]
         public static string FamilyName(this IBHoMObject bHoMObject)
         {
             return bHoMObject?.GetRevitIdentifiers()?.FamilyName;
