@@ -40,7 +40,6 @@ namespace BH.Revit.Engine.Core
         [Description("Query a Revit cable tray to extract a BHoM cable tray section property.")]
         [Input("revitCableTray", "Revit cable tray to be queried for information required for a BHoM section property.")]
         [Input("settings", "Revit adapter settings.")]
-        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("sectionProperty", "BHoM cable tray section property extracted from a Revit cable tray.")]
         public static BH.oM.MEP.System.SectionProperties.CableTraySectionProperty CableTraySectionProperty(this Autodesk.Revit.DB.Electrical.CableTray revitCableTray, RevitSettings settings = null)
         {

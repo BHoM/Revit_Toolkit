@@ -36,7 +36,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Filters ElementIds of currently selected elements and types in a Revit document.")]
-        [Input("UIdocument", "Revit UI document to be processed.")]
+        [Input("uIDocument", "Revit UI document to be processed.")]
         [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsBySelection(this UIDocument uIDocument, IEnumerable<ElementId> ids = null)

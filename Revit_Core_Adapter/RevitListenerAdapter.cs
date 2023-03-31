@@ -25,8 +25,10 @@ using Autodesk.Revit.UI;
 using BH.Adapter;
 using BH.Adapter.Revit;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Adapter.Core
 {
@@ -44,7 +46,10 @@ namespace BH.Revit.Adapter.Core
         /***************************************************/
         /****            Public Constructors            ****/
         /***************************************************/
-        
+        [Description("Revit listener adapter constructor.")]
+        [Input("uIControlledApplication","The Revit UI controlled application.")]
+        [Input("document", "The Revit document.")]
+        [Output("adapter", "The Revit listener adapter.")]
         public RevitListenerAdapter(UIControlledApplication uIControlledApplication, Document document)
             : base()
         {
