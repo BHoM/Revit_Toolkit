@@ -150,10 +150,8 @@ namespace BH.Revit.Engine.Core
         [Input("builtInCategories", "List of built in categories to be considered when searching for the element type.")]
         [Input("settings", "Revit adapter settings to be used while performing the query.")]
         [Output("attributes", "Revit host object attributes to be used when converting the input BHoM object to Revit.")]
-        public static HostObjAttributes ElementType(this
-        oM.Physical.Constructions.IConstruction construction, Document
-        document, IEnumerable<BuiltInCategory> builtInCategories, RevitSettings
-        settings = null) {
+        public static HostObjAttributes ElementType(this oM.Physical.Constructions.IConstruction construction, Document document, IEnumerable<BuiltInCategory> builtInCategories, RevitSettings settings = null)
+        {
             return construction.ElementType<HostObjAttributes>(document, builtInCategories);
         }
 

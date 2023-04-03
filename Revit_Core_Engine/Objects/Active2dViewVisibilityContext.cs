@@ -65,7 +65,6 @@ namespace BH.Revit.Engine.Core
         [Input("node", "ElementNode to be processed.")]
         public void OnElementEnd2D(ElementNode node)
         {
-            throw new NotImplementedException();
         }
 
         /***************************************************/
@@ -114,7 +113,6 @@ namespace BH.Revit.Engine.Core
         [Input("segment", "LineSegment to be processed.")]
         public void OnLineSegment(LineSegment segment)
         {
-            throw new NotImplementedException();
         }
 
         /***************************************************/
@@ -123,7 +121,6 @@ namespace BH.Revit.Engine.Core
         [Input("segments", "PolylineSegments to be processed.")]
         public void OnPolylineSegments(PolylineSegments segments)
         {
-            throw new NotImplementedException();
         }
 
         /***************************************************/
@@ -132,7 +129,6 @@ namespace BH.Revit.Engine.Core
         [Input("node", "TextNode to be processed.")]
         public void OnText(TextNode node)
         {
-            throw new NotImplementedException();
         }
 
         /***************************************************/
