@@ -54,9 +54,7 @@ namespace BH.Revit.Engine.Core
             XYZ p1 = line.GetEndPoint(1).ToXY();
 
             if (p0.DistanceTo(p1) <= Tolerance.ShortCurve)
-            {
                 return null;
-            }
 
             return Line.CreateBound(p0, p1);
         }
@@ -70,6 +68,7 @@ namespace BH.Revit.Engine.Core
         {
             double zDiff = planarCurve.Evaluate(0.5, false).Z;
             Transform tr = Transform.CreateTranslation(new XYZ(0, 0, -zDiff));
+
             return planarCurve.CreateTransformed(tr);
         }
 
