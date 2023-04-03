@@ -38,10 +38,10 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Attempts to retrieve Meshes corresponding to the input Revit Element. These meshes are returned as RenderMesh objects that can be used to visualise the input Revit Element.")]
-        [Input("element", "Element to display thorugh RenderMeshes.")]
+        [Input("element", "Element to display through RenderMeshes.")]
         [Input("options", "Revit API options for the retrieval, including e.g. `IncludeNonVisibleObjects`.")]
         [Input("settings", "Revit Adapter settings to be applied in retrieving the meshes corresponding to the element.")]
-        [Output("renderMeshes", "RenderMesh objects corresponding to the input Revit Element.")]
+        [Output("renderMeshes", "RenderMesh objects representing the input Revit Element.")]
         public static List<RenderMesh> RenderMeshes(this Element element, Options options, RevitSettings settings = null)
         {
             if (element == null)

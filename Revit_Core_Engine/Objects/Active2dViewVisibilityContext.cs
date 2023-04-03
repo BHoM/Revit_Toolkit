@@ -51,7 +51,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Method used to return a RenderNodeAction.")]
+        [Description("Method returning RenderNodeAction to be taken at the start of parsing an ElementNode.")]
         [Input("node", "ElementNode to be processed.")]
         [Output("action", "RenderNodeAction.")]
         public RenderNodeAction OnElementBegin2D(ElementNode node)
@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Method used to return a RenderNodeAction.")]
+        [Description("Method to be executed at the end of parsing an ElementNode.")]
         [Input("node", "ElementNode to be processed.")]
         public void OnElementEnd2D(ElementNode node)
         {
@@ -70,7 +70,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Method used to return a RenderNodeAction.")] 
+        [Description("Method returning RenderNodeAction to be taken against an edge of a face.")]
         [Input("node", "FaceEdgeNode to be processed.")]
         [Output("action", "RenderNodeAction.")]
         public RenderNodeAction OnFaceEdge2D(FaceEdgeNode node)
@@ -80,7 +80,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Method used to return a RenderNodeAction.")] 
+        [Description("Method returning RenderNodeAction to be taken against a face silhouette.")]
         [Input("node", "FaceSilhouetteNode to be processed.")]
         [Output("action", "RenderNodeAction.")]
         public RenderNodeAction OnFaceSilhouette2D(FaceSilhouetteNode node)
@@ -90,7 +90,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Method used to return a RenderNodeAction.")] 
+        [Description("Method returning RenderNodeAction to be taken against a curve.")]
         [Input("node", "CurveNode to be processed.")]
         [Output("action", "RenderNodeAction.")]
         public RenderNodeAction OnCurve(CurveNode node)
@@ -100,7 +100,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Method used to return a RenderNodeAction.")] 
+        [Description("Method returning RenderNodeAction to be taken against a polyline.")]
         [Input("node", "PolylineNode to be processed.")]
         [Output("action", "RenderNodeAction.")]
         public RenderNodeAction OnPolyline(PolylineNode node)
@@ -110,7 +110,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Method used to return a RenderNodeAction.")] 
+        [Description("Method to be executed against a line segment.")]
         [Input("segment", "LineSegment to be processed.")]
         public void OnLineSegment(LineSegment segment)
         {
@@ -119,7 +119,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Method used to return a RenderNodeAction.")] 
+        [Description("Method to be executed against a polyline segment.")]
         [Input("segments", "PolylineSegments to be processed.")]
         public void OnPolylineSegments(PolylineSegments segments)
         {
@@ -128,7 +128,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Method used to return a RenderNodeAction.")] 
+        [Description("Method to be executed against a text.")]
         [Input("node", "TextNode to be processed.")]
         public void OnText(TextNode node)
         {
