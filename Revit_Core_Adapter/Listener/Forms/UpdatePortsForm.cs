@@ -35,7 +35,7 @@ namespace BH.Revit.Adapter.Core.Forms
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Window for updating ports used in the Revit Listener.")]
+        [Description("Constructor of window for updating ports used by the Revit Listener.")]
         [Output("updatePortsForm", "The form for updating ports.")]
         public UpdatePortsForm()
         {
