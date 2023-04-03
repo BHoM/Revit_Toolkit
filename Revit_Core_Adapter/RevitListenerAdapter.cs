@@ -46,6 +46,7 @@ namespace BH.Revit.Adapter.Core
         /***************************************************/
         /****            Public Constructors            ****/
         /***************************************************/
+        
         [Description("Revit listener adapter constructor.")]
         [Input("uIControlledApplication","The Revit UI controlled application.")]
         [Input("document", "The Revit document.")]
