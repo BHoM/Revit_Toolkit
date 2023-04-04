@@ -224,6 +224,12 @@ namespace BH.Revit.Engine.Core
                 {
                     Autodesk.Revit.DB.BuiltInCategory.OST_Roofs,
                 }
+            },
+            {
+                typeof (BH.oM.Lighting.Elements.Luminaire), new BuiltInCategory[]
+                {
+                    Autodesk.Revit.DB.BuiltInCategory.OST_LightingFixtures,
+                }
             }
         };
 
