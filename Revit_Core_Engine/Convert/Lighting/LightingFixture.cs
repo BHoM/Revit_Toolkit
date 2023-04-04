@@ -36,11 +36,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Convert a Revit family instance that is a fitting or an accessory to a BHoM Fitting.")]
+        [Description("Convert a Revit family instance that is a lighting fixture.")]
         [Input("revitLightingFixture", "Revit family instance to be converted.")]
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("fitting", "BHoM fitting object converted from a Revit family instance element.")]
+        [Output("luminaire", "BHoM Luminaire object converted from a Revit lighting fixture element.")]
         public static BH.oM.Lighting.Elements.Luminaire LuminaireFromRevit (this FamilyInstance revitLightingFixture, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -53,7 +53,7 @@ namespace BH.Revit.Engine.Core
             bhomLight = new BH.oM.Lighting.Elements.Luminaire()
             {
                 Position = (revitLightingFixture.Location as LocationPoint)?.Point?.PointFromRevit(),
-                Direction = (revitLightingFixture.GetTransform().BasisZ.VectorFromRevit())
+                Direction = (revitLightingFixture.GetTotalTransform().BasisZ.VectorFromRevit())
             };
             bhomLight.LuminaireType = new oM.Lighting.Elements.LuminaireType()
             { Name = revitLightingFixture.FamilyTypeFullName() };
