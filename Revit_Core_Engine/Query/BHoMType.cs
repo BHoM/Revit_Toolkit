@@ -110,6 +110,8 @@ namespace BH.Revit.Engine.Core
                     else if (typeof(BH.oM.Architecture.BuildersWork.Opening).BuiltInCategories().Contains(category)
                             && settings.MappingSettings.MappedFamilyNames(typeof(BH.oM.Architecture.BuildersWork.Opening)).Contains(familyName))
                         return typeof(BH.oM.Architecture.BuildersWork.Opening);
+                    else if (typeof(BH.oM.Lighting.Elements.Luminaire).BuiltInCategories().Contains(category))
+                        return typeof(BH.oM.Lighting.Elements.Luminaire);
                     break;
                 case Discipline.Environmental:
                     if (typeof(BH.oM.MEP.System.Fittings.Fitting).BuiltInCategories().Contains(category))
