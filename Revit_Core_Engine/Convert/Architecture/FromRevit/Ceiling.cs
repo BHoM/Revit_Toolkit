@@ -70,7 +70,7 @@ namespace BH.Revit.Engine.Core
                 List<ISurface> locations = new List<ISurface>();
                 foreach (KeyValuePair<PlanarSurface, List<PlanarSurface>> kvp in surfaces)
                 {
-                    locations.Add(new PlanarSurface(kvp.Key.ExternalBoundary, kvp.Value.Select(x => x.ExternalBoundary).ToList()));
+                    locations.Add(BH.Engine.Geometry.Create.PlanarSurface(kvp.Key.ExternalBoundary, kvp.Value.Select(x => x.ExternalBoundary).ToList()));
                 }
 
                 if (locations.Count == 1)
