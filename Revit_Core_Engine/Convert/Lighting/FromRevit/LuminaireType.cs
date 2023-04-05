@@ -41,30 +41,30 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Extracts the LuminaireType from a Revit FamilyInstance.")]
-        [Input("familyInstance", "Revit FamilyInstance to be queried.")]
+        [Description("Converts Revit FamilySymbol to BHoM LuminaireType.")]
+        [Input("familySymbol", "Revit FamilySymbol to be queried.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("LuminaireType", "BH.oM.Elements.Lighting.LuminaireType extracted from the input Revit FamilyInstance.")]
-        public static LuminaireType LuminaireTypeFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("LuminaireType", "BH.oM.Elements.Lighting.LuminaireType extracted from the input Revit FamilySymbol.")]
+        public static LuminaireType LuminaireTypeFromRevit(this FamilySymbol familySymbol, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
-            LuminaireType luminaireType = refObjects.GetValue<LuminaireType>(familyInstance.Symbol.Id);
+            LuminaireType luminaireType = refObjects.GetValue<LuminaireType>(familySymbol.Id);
             if (luminaireType != null)
                 return luminaireType;
 
             luminaireType = new LuminaireType
             {
-                Name = familyInstance.Symbol.Name,
+                Name = familySymbol.Name,
             };
 
             //Set identifiers, parameters & custom data
-            luminaireType.SetIdentifiers(familyInstance.Symbol);
-            luminaireType.CopyParameters(familyInstance.Symbol, settings.MappingSettings);
-            luminaireType.SetProperties(familyInstance.Symbol, settings.MappingSettings);
+            luminaireType.SetIdentifiers(familySymbol);
+            luminaireType.CopyParameters(familySymbol, settings.MappingSettings);
+            luminaireType.SetProperties(familySymbol, settings.MappingSettings);
 
-            refObjects.AddOrReplace(familyInstance.Symbol.Id, luminaireType);
+            refObjects.AddOrReplace(familySymbol.Id, luminaireType);
             return luminaireType;
         }
 
