@@ -20,13 +20,18 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.ComponentModel;
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Mapping;
+using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
+using BH.oM.Lighting.Elements;
+using BH.oM.Physical.Elements;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -36,43 +41,34 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Convert a Revit family instance that is a lighting fixture.")]
-        [Input("revitLightingFixture", "Revit family instance to be converted.")]
-        [Input("settings", "Revit adapter settings.")]
-        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("luminaire", "BHoM Luminaire object converted from a Revit lighting fixture element.")]
-        public static BH.oM.Lighting.Elements.Luminaire LuminaireFromRevit (this FamilyInstance revitLightingFixture, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Description("Extracts the LuminaireType from a Revit FamilyInstance.")]
+        [Input("familyInstance", "Revit FamilyInstance to be queried.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("LuminaireType", "BH.oM.Elements.Lighting.LuminaireType extracted from the input Revit FamilyInstance.")]
+        public static LuminaireType LuminaireTypeFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
-            
-            // Reuse a BHoM fitting from refObjects it it has been converted before
-            BH.oM.Lighting.Elements.Luminaire bhomLight = refObjects.GetValue<BH.oM.Lighting.Elements.Luminaire>(revitLightingFixture.Id);
-            if (bhomLight != null)
-                return bhomLight;
 
-            bhomLight = new BH.oM.Lighting.Elements.Luminaire()
+            LuminaireType luminaireType = refObjects.GetValue<LuminaireType>(familyInstance.Symbol.Id);
+            if (luminaireType != null)
+                return luminaireType;
+
+            luminaireType = new LuminaireType
             {
-                Position = (revitLightingFixture.Location as LocationPoint)?.Point?.PointFromRevit(),
-                Direction = (revitLightingFixture.GetTotalTransform().BasisZ.VectorFromRevit())
+                Name = familyInstance.Symbol.Name,
             };
-            bhomLight.LuminaireType = new oM.Lighting.Elements.LuminaireType()
-            { Name = revitLightingFixture.FamilyTypeFullName() };
-
-            //Set type
-            revitLightingFixture.CopyTypeToFragment(bhomLight, settings, refObjects);
 
             //Set identifiers, parameters & custom data
-            bhomLight.SetIdentifiers(revitLightingFixture);
-            bhomLight.CopyParameters(revitLightingFixture, settings.MappingSettings);
-            bhomLight.SetProperties(revitLightingFixture, settings.MappingSettings);
+            luminaireType.SetIdentifiers(familyInstance.Symbol);
+            luminaireType.CopyParameters(familyInstance.Symbol, settings.MappingSettings);
+            luminaireType.SetProperties(familyInstance.Symbol, settings.MappingSettings);
 
-            refObjects.AddOrReplace(revitLightingFixture.Id, bhomLight);
-            return bhomLight;
+            refObjects.AddOrReplace(familyInstance.Symbol.Id, luminaireType);
+            return luminaireType;
         }
-        
+
         /***************************************************/
     }
 }
-
-
 
