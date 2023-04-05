@@ -164,6 +164,13 @@ namespace BH.Engine.Adapters.Revit
             return bHoMObject.Property;
         }
 
+        /***************************************************/
+
+        private static IBHoMObject GetRevitElementType(this BH.oM.Lighting.Elements.Luminaire bHoMObject)
+        {
+            return bHoMObject.LuminaireType;
+        }
+
 
         /***************************************************/
         /****              Fallback methods             ****/

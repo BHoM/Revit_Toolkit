@@ -58,7 +58,7 @@ namespace BH.Revit.Engine.Core
             };
             
             // Set type
-            bhomLight.LuminaireType = revitLightingFixture.LuminaireTypeFromRevit(settings, refObjects);
+            bhomLight.LuminaireType = revitLightingFixture.Symbol.LuminaireTypeFromRevit(settings, refObjects);
 
             // Set identifiers, parameters & custom data
             bhomLight.SetIdentifiers(revitLightingFixture);

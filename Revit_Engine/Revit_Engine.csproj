@@ -115,6 +115,11 @@
       <HintPath>$(ProgramData)\BHoM\Assemblies\Library_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Lighting_oM">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Lighting_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="MEP_oM">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(ProgramData)\BHoM\Assemblies\MEP_oM.dll</HintPath>
