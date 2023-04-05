@@ -193,7 +193,7 @@ namespace BH.Revit.Engine.Core
                         pc.Curves.Add(new BH.oM.Geometry.Line { Start = pc.EndPoint(), End = pc.StartPoint() });
                 }
 
-                return new List<ISurface>(outlines.Select(x => new PlanarSurface(x, new List<ICurve>())));
+                return new List<ISurface>(outlines.Select(x => BH.Engine.Geometry.Create.PlanarSurface(x, new List<ICurve>())));
             }
             else
                 return familyInstance.OpeningSurfaces_Curtain();
@@ -310,7 +310,7 @@ namespace BH.Revit.Engine.Core
             t.RollBack(failureHandlingOptions);
 
             if (loops != null)
-                surfaces.AddRange(loops.Select(x => new PlanarSurface(x.FromRevit(), null)));
+                surfaces.AddRange(loops.Select(x => BH.Engine.Geometry.Create.PlanarSurface(x.FromRevit(), null)));
             else if (surfaces.Count != 0)
                 BH.Engine.Base.Compute.RecordWarning(String.Format("Geometrical processing of a Revit element failed due to an internal Revit error. Converted opening might be missing one or more of its surfaces. Revit ElementId: {0}", familyInstance.Id));
 

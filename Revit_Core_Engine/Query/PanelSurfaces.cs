@@ -292,11 +292,11 @@ namespace BH.Revit.Engine.Core
                                 }
 
                                 CurveLoop outline = loops.FirstOrDefault(x => x.IsCounterclockwise(plane.Normal));
-                                PlanarSurface surface = new PlanarSurface(outline.FromRevit(), null);
+                                PlanarSurface surface = BH.Engine.Geometry.Create.PlanarSurface(outline.FromRevit(), null);
                                 List<PlanarSurface> openings = new List<PlanarSurface>();
                                 foreach (CurveLoop loop in loops.Where(x => x != outline))
                                 {
-                                    openings.Add(new PlanarSurface(loop.FromRevit(), null));
+                                    openings.Add(BH.Engine.Geometry.Create.PlanarSurface(loop.FromRevit(), null));
                                 }
 
                                 if (insertsDeleted[id])
@@ -319,7 +319,7 @@ namespace BH.Revit.Engine.Core
                                             {
                                                 foreach (CurveLoop cl in pf.GetEdgesAsCurveLoops())
                                                 {
-                                                    openings.Add(new PlanarSurface(cl.FromRevit(), null));
+                                                    openings.Add(BH.Engine.Geometry.Create.PlanarSurface(cl.FromRevit(), null));
                                                 }
                                             }
                                         }
@@ -418,7 +418,7 @@ namespace BH.Revit.Engine.Core
                 }
 
                 if (outline != null)
-                    result.Add(new PlanarSurface(outline, new List<ICurve>()), openings.Select(x => new PlanarSurface(x, new List<ICurve>())).ToList());
+                    result.Add(BH.Engine.Geometry.Create.PlanarSurface(outline, new List<ICurve>()), openings.Select(x => BH.Engine.Geometry.Create.PlanarSurface(x, new List<ICurve>())).ToList());
             }
 
             return result;
