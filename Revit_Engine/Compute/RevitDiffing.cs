@@ -150,8 +150,7 @@ namespace BH.Engine.Adapters.Revit
             {
                 rcc = new RevitComparisonConfig();
 
-                if (diffConfig != null)
-                    BH.Engine.Reflection.Modify.CopyPropertiesFromParent(rcc, diffConfig?.ComparisonConfig);
+                BH.Engine.Reflection.Modify.CopyPropertiesFromParent(rcc, diffConfig?.ComparisonConfig);
             }
 
             // Get the past and following RevitIdentifiers fragments.
@@ -183,7 +182,7 @@ namespace BH.Engine.Adapters.Revit
                 followingIds = followingIdFragments.Select(x => x.PersistentId.ToString()).ToList();
             }
 
-             //Check for duplicate ids
+            //Check for duplicate ids
             bool dupsInPastIds = pastIds.Count != pastIds.Distinct().Count();
             bool dupsInFollIds = followingIds.Count != followingIds.Distinct().Count();
 
@@ -194,7 +193,7 @@ namespace BH.Engine.Adapters.Revit
                 if (dupsInFollIds) messageSubjects.Add(nameof(followingObjects));
                 string message = $"Some of the {string.Join(" and ", messageSubjects)} contain duplicate {revitIdName}s. ";
 
-                if((dupsInPastIds && pastObjects.Any(x => x.GetType().Namespace.Contains("Structure"))) || 
+                if ((dupsInPastIds && pastObjects.Any(x => x.GetType().Namespace.Contains("Structure"))) ||
                     (dupsInFollIds && followingObjects.Any(x => x.GetType().Namespace.Contains("Structure"))))
                     message += "\nIf trying to diff structural objects, try pulling using the Phsyical discipline rather than Structural discipline, as models containing disjointed floors and walls and/or curved beams lead to one Revit element being converted into multiple structural BHoM elements.";
 
