@@ -143,6 +143,8 @@ namespace BH.Revit.Engine.Core
                 default:
                     if (typeof(BH.oM.Spatial.ShapeProfiles.IProfile).BuiltInCategories().Contains((BuiltInCategory)familySymbol.Category.Id.IntegerValue))
                         return typeof(BH.oM.Spatial.ShapeProfiles.IProfile);
+                    else if (typeof(BH.oM.Lighting.Elements.LuminaireType).BuiltInCategories().Contains((BuiltInCategory)familySymbol.Category.Id.IntegerValue))
+                        return typeof(BH.oM.Lighting.Elements.Luminaire);
                     else
                         return null;
             }

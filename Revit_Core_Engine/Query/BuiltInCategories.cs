@@ -230,6 +230,12 @@ namespace BH.Revit.Engine.Core
                 {
                     Autodesk.Revit.DB.BuiltInCategory.OST_LightingFixtures,
                 }
+            },
+            {
+                typeof (BH.oM.Lighting.Elements.LuminaireType), new BuiltInCategory[]
+                {
+                    Autodesk.Revit.DB.BuiltInCategory.OST_LightingFixtures,
+                }
             }
         };
 
