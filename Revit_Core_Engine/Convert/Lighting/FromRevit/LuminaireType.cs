@@ -56,7 +56,8 @@ namespace BH.Revit.Engine.Core
 
             luminaireType = new LuminaireType
             {
-                Name = familySymbol.Name,
+                Name = familySymbol.Family.Name,
+                Model = familySymbol.Name,
             };
 
             //Set identifiers, parameters & custom data
