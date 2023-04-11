@@ -54,7 +54,7 @@ namespace BH.Revit.Engine.Core
             {
                 Name = revitLightingFixture.FamilyTypeFullName(),
                 Position = (revitLightingFixture.Location as LocationPoint)?.Point?.PointFromRevit(),
-                Direction = (revitLightingFixture.GetTotalTransform().BasisZ.VectorFromRevit())
+                Orientation = (revitLightingFixture.GetTotalTransform().BasisFromRevit())
             };
             
             // Set type
