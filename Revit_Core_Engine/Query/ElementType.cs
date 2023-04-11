@@ -26,6 +26,8 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
+using BH.oM.Lighting.Elements;
+using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -125,6 +127,23 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Returns the Revit LightingFixture type to be used when converting a given BHoM Luminaire to Revit.")]
+        [Input("luminaire", "BHoM Luminaire to find a correspondent Revit element type for.")]
+        [Input("document", "Revit document to parse in search for the element type.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("lightingFixtureType", "Revit LightingFixture type to be used when converting the input BHoM object to Revit.")]
+        public static FamilySymbol ElementType(this BH.oM.Lighting.Elements.Luminaire luminaire, Document document, RevitSettings settings = null)
+        {
+            HashSet<BuiltInCategory> categories = luminaire.BuiltInCategories();
+
+            string familyName, familyTypeName;
+            luminaire.LuminaireFamilyAndTypeNames(out familyName, out familyTypeName);
+
+            return document.ElementType(familyName, familyTypeName, categories, settings) as FamilySymbol;
+        }
+
+        /***************************************************/
+
         [Description("Returns the Revit rebar bar type to be used when converting a given BHoM reinforcing bar to Revit.")]
         [Input("bar", "BHoM reinforcing bar to find a correspondent Revit element type for.")]
         [Input("document", "Revit document to parse in search for the element type.")]
@@ -156,6 +175,7 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
 
         [Description("Returns the Revit element type to be used when converting a given BHoM object to Revit.")]
         [Input("bHoMObject", "BHoM object to find a correspondent Revit element type for.")]
@@ -259,6 +279,17 @@ namespace BH.Revit.Engine.Core
                 return collector.Cast<T>().FirstOrDefault(x => x.FamilyName == familyName && x.Name == familyTypeName);
             else
                 return collector.FirstOrDefault(x => x.Name == familyTypeName) as T;
+        }
+
+        /***************************************************/
+
+        private static void LuminaireFamilyAndTypeNames(this Luminaire luminaire, out string familyName, out string familyTypeName)
+        {
+            familyName = luminaire.LuminaireType.Name;
+            familyTypeName = luminaire.LuminaireType.Model;
+
+            if (string.IsNullOrEmpty(familyTypeName))
+                familyTypeName = luminaire.Name;
         }
 
         /***************************************************/
