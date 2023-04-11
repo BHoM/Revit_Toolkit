@@ -52,5 +52,12 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        public static string UnitTypePropertyName(this Parameter parameter)
+        {
+            return parameter.StorageType == StorageType.Double ? parameter.Definition.GetDataType().UnitTypePropertyName() : null;
+        }
+
+        /***************************************************/
     }
 }
