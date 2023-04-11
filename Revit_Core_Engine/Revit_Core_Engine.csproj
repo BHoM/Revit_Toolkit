@@ -47,8 +47,9 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="	xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\ProgramData\BHoM\Assemblies&quot; /Y&#xD;&#xA;					xcopy &quot;$(ProjectDir)Files\Families&quot; &quot;C:\ProgramData\BHoM\Resources\Revit\Families&quot; /Y /I /E" />
-  </Target>
+    <Exec Command="	xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\ProgramData\BHoM\Assemblies&quot; /Y
+					xcopy &quot;$(ProjectDir)Files\Families&quot; &quot;C:\ProgramData\BHoM\Resources\Revit\Families&quot; /Y /I /E" />
+   </Target>
 
   <ItemGroup>
     <ProjectReference Include="..\Revit_Engine\Revit_Engine.csproj" />
