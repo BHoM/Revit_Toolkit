@@ -241,6 +241,11 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Units_Engine">
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Units_Engine.dll</HintPath>
+		<Private>False</Private>
+		<SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   
   <ItemGroup>

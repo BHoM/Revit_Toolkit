@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Base;
+using BH.Engine.Units;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using System;
@@ -56,7 +57,7 @@ namespace BH.Revit.Engine.Core
             double angle1 = eVect.AngleTo(XYZ.BasisZ);
             double angle2 = eVect.AngleTo(-XYZ.BasisZ);
 
-            return Math.Min(angle1, angle2) < toleranceInDegree.ToRadians();
+            return Math.Min(angle1, angle2) < toleranceInDegree.FromDegree();
         }
 
         /***************************************************/
