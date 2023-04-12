@@ -49,7 +49,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("lightingFixture", "Revit LightingFixture element resulting from the BH.oM.Lighting.Elements.Luminaire.")]
-        public static FamilyInstance ToRevitLightingFixture (this Luminaire luminaire, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static FamilyInstance ToRevitFamilyInstance (this Luminaire luminaire, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (luminaire == null || document == null)
                 return null;
