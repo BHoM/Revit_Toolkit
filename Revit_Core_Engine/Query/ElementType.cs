@@ -134,12 +134,7 @@ namespace BH.Revit.Engine.Core
         [Output("lightingFixtureType", "Revit LightingFixture type to be used when converting the input BHoM object to Revit.")]
         public static FamilySymbol ElementType(this BH.oM.Lighting.Elements.Luminaire luminaire, Document document, RevitSettings settings = null)
         {
-            HashSet<BuiltInCategory> categories = luminaire.BuiltInCategories();
-
-            string familyName, familyTypeName;
-            luminaire.LuminaireFamilyAndTypeNames(out familyName, out familyTypeName);
-
-            return document.ElementType(familyName, familyTypeName, categories, settings) as FamilySymbol;
+            return (FamilySymbol)luminaire.ElementTypeInclProperty(luminaire.LuminaireType, document, luminaire.LuminaireType.BuiltInCategories(), settings);
         }
 
         /***************************************************/
@@ -279,17 +274,6 @@ namespace BH.Revit.Engine.Core
                 return collector.Cast<T>().FirstOrDefault(x => x.FamilyName == familyName && x.Name == familyTypeName);
             else
                 return collector.FirstOrDefault(x => x.Name == familyTypeName) as T;
-        }
-
-        /***************************************************/
-
-        private static void LuminaireFamilyAndTypeNames(this Luminaire luminaire, out string familyName, out string familyTypeName)
-        {
-            familyName = luminaire.LuminaireType.Name;
-            familyTypeName = luminaire.LuminaireType.Model;
-
-            if (string.IsNullOrEmpty(familyTypeName))
-                familyTypeName = luminaire.Name;
         }
 
         /***************************************************/
