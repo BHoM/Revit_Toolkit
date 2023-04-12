@@ -359,7 +359,7 @@ namespace BH.Revit.Engine.Core
         [Output("lightingFixture", "Revit LightingFixture element resulting from the BH.oM.Lighting.Elements.Luminaire.")]
         public static Element ToRevit(this BH.oM.Lighting.Elements.Luminaire luminaire, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            return luminaire.ToRevitLightingFixture(document, settings, refObjects);
+            return luminaire.ToRevitFamilyInstance(document, settings, refObjects);
         }
 
 
