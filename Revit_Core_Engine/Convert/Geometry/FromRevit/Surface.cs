@@ -47,7 +47,7 @@ namespace BH.Revit.Engine.Core
             oM.Geometry.ICurve externalBoundary = crvLoop[0].FromRevit();
             List<oM.Geometry.ICurve> internalBoundary = crvLoop.Skip(1).Select(x => x.FromRevit() as oM.Geometry.ICurve).ToList();                           
 
-            return BH.Engine.Geometry.Create.PlanarSurface(externalBoundary, internalBoundary);
+            return new oM.Geometry.PlanarSurface(externalBoundary, internalBoundary);
         }
 
 
