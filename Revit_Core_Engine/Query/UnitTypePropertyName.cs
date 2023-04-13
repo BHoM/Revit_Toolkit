@@ -53,6 +53,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Returns name of SpecTypeId property that contains given Revit parameter's unit type object (enum for Revit up to 2020 or ForgeTypeId for later versions).")]
+        [Input("parameter", "Parameter to be queried for the correspondent SpecTypeId property name.")]
+        [Output("identifier", "Name of SpecTypeId property that contains the unit type object correspondent to the input parameter.")]
         public static string UnitTypePropertyName(this Parameter parameter)
         {
             return parameter.StorageType == StorageType.Double ? parameter.Definition.GetDataType().UnitTypePropertyName() : null;
