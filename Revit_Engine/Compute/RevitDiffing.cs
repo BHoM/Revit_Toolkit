@@ -144,19 +144,14 @@ namespace BH.Engine.Adapters.Revit
             }
 
             // Checks and setup of DiffingConfig/ComparisonConfig.
+            diffConfig = diffConfig ?? new DiffingConfig();
             RevitComparisonConfig rcc = diffConfig?.ComparisonConfig as RevitComparisonConfig;
             if (rcc == null)
             {
                 rcc = new RevitComparisonConfig();
 
-                if (diffConfig != null)
-                    BH.Engine.Reflection.Modify.CopyPropertiesFromParent(rcc, diffConfig?.ComparisonConfig);
+                BH.Engine.Reflection.Modify.CopyPropertiesFromParent(rcc, diffConfig?.ComparisonConfig);
             }
-            DiffingConfig diffConfigClone = GetRevitDiffingConfig(rcc);
-
-            //Add any custom object difference compares on the provided diff config
-            if (diffConfig.CustomObjectDifferencesComparers != null && diffConfig.CustomObjectDifferencesComparers.Any())
-                diffConfigClone.CustomObjectDifferencesComparers.AddRange(diffConfig.CustomObjectDifferencesComparers);
 
             // Get the past and following RevitIdentifiers fragments.
             IEnumerable<RevitIdentifiers> pastIdFragments = pastObjects.OfType<IBHoMObject>().Select(obj => obj.GetRevitIdentifiers()).Where(x => x != null);
@@ -187,7 +182,7 @@ namespace BH.Engine.Adapters.Revit
                 followingIds = followingIdFragments.Select(x => x.PersistentId.ToString()).ToList();
             }
 
-             //Check for duplicate ids
+            //Check for duplicate ids
             bool dupsInPastIds = pastIds.Count != pastIds.Distinct().Count();
             bool dupsInFollIds = followingIds.Count != followingIds.Distinct().Count();
 
@@ -198,7 +193,7 @@ namespace BH.Engine.Adapters.Revit
                 if (dupsInFollIds) messageSubjects.Add(nameof(followingObjects));
                 string message = $"Some of the {string.Join(" and ", messageSubjects)} contain duplicate {revitIdName}s. ";
 
-                if((dupsInPastIds && pastObjects.Any(x => x.GetType().Namespace.Contains("Structure"))) || 
+                if ((dupsInPastIds && pastObjects.Any(x => x.GetType().Namespace.Contains("Structure"))) ||
                     (dupsInFollIds && followingObjects.Any(x => x.GetType().Namespace.Contains("Structure"))))
                     message += "\nIf trying to diff structural objects, try pulling using the Phsyical discipline rather than Structural discipline, as models containing disjointed floors and walls and/or curved beams lead to one Revit element being converted into multiple structural BHoM elements.";
 
@@ -206,12 +201,15 @@ namespace BH.Engine.Adapters.Revit
                 return null;
             }
 
+            // Get a Revit-customised instance of DiffingConfig.
+            DiffingConfig diffConfigClone = GetRevitDiffingConfig(rcc, diffConfig);
+
             //Compute the diffing through DiffWithCustomIds making use of the ids extracted from the objects
             Diff revitDiff = BH.Engine.Diffing.Compute.DiffWithCustomIds(pastObjects.ToList(), pastIds, followingObjects.ToList(), followingIds, diffConfigClone);
             return revitDiff;
         }
 
-        private static DiffingConfig GetRevitDiffingConfig(RevitComparisonConfig rcc)
+        private static DiffingConfig GetRevitDiffingConfig(RevitComparisonConfig rcc, DiffingConfig originalDiffConfig = null)
         {
             rcc = rcc ?? new RevitComparisonConfig();
 
@@ -219,7 +217,7 @@ namespace BH.Engine.Adapters.Revit
             rcc.TypeExceptions.Add(typeof(RevitPulledParameters));
             rcc.TypeExceptions.Add(typeof(RevitParametersToPush));
 
-            return new DiffingConfig()
+            DiffingConfig result = new DiffingConfig()
             {
                 ComparisonConfig = rcc,
                 CustomObjectDifferencesComparers = new List<Func<object, object, BaseComparisonConfig, List<IPropertyDifference>>>()
@@ -228,8 +226,21 @@ namespace BH.Engine.Adapters.Revit
                     (obj1, obj2, baseComparisonConfig) => { return Query.RevitRevitParametersToPushDifferences(obj1, obj2, baseComparisonConfig); }
                 }
             };
+
+            // If an instance of a diffingConfig was provided, copy its properties.
+            if (originalDiffConfig != null)
+            {
+                //Add any custom object difference compares provided via the original diff config.
+                if (originalDiffConfig.CustomObjectDifferencesComparers != null && originalDiffConfig.CustomObjectDifferencesComparers.Any())
+                    result.CustomObjectDifferencesComparers.AddRange(originalDiffConfig.CustomObjectDifferencesComparers.Except(result.CustomObjectDifferencesComparers));
+
+                result.AllowDuplicateIds = originalDiffConfig.AllowDuplicateIds;
+                result.EnablePropertyDiffing = originalDiffConfig.EnablePropertyDiffing;
+                result.IncludeUnchangedObjects = originalDiffConfig.IncludeUnchangedObjects;
+                result.ComparisonConfig = originalDiffConfig.ComparisonConfig;
+            }
+
+            return result;
         }
     }
 }
-
-
