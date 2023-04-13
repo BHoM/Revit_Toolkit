@@ -134,7 +134,7 @@ namespace BH.Revit.Engine.Core
         [Output("lightingFixtureType", "Revit LightingFixture type to be used when converting the input BHoM object to Revit.")]
         public static FamilySymbol ElementType(this BH.oM.Lighting.Elements.Luminaire luminaire, Document document, RevitSettings settings = null)
         {
-            return (FamilySymbol)luminaire.ElementTypeInclProperty(luminaire.LuminaireType, document, luminaire.LuminaireType.BuiltInCategories(), settings);
+            return luminaire.ElementTypeInclProperty(luminaire.LuminaireType, document, luminaire.LuminaireType.BuiltInCategories(), settings) as FamilySymbol;
         }
 
         /***************************************************/
