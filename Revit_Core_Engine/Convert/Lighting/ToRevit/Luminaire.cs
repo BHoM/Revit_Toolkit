@@ -60,7 +60,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            FamilySymbol familySymbol = (FamilySymbol)luminaire.ElementType(document, settings);
+            FamilySymbol familySymbol = luminaire.ElementType(document, settings) as FamilySymbol;
             if (familySymbol == null)
             {
                 Compute.ElementTypeNotFoundWarning(luminaire);
@@ -71,7 +71,7 @@ namespace BH.Revit.Engine.Core
                 return Create.FamilyInstance(document, familySymbol, (luminaire.Position).ToRevit(), luminaire.Orientation.ToRevit(), luminaire.HostElement(document, settings), settings);
             else
             {
-                BH.Engine.Base.Compute.RecordError($"A family could not be created based on the given luminaire because its location was invalid. BHoM_Guid: {luminaire.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordError($"An element could not be created based on the given luminaire because its location was invalid. BHoM_Guid: {luminaire.BHoM_Guid}");
                 return null;
             }
         }
