@@ -13,13 +13,7 @@ namespace BH.oM.Revit.Attributes
         /****             Public properties             ****/
         /***************************************************/
 
-        public string[] Disciplines
-        {
-            get 
-            {
-                return m_Disciplines; 
-            }
-        }
+        public virtual string[] Disciplines { get; }
 
         /***************************************************/
         /****                Constructors               ****/
@@ -27,15 +21,8 @@ namespace BH.oM.Revit.Attributes
 
         public CategoryDisciplineAttribute(params string[] disciplines)
         {
-            m_Disciplines = disciplines;
+            Disciplines = disciplines;
         }
-
-
-        /***************************************************/
-        /****              Private fields               ****/
-        /***************************************************/
-
-        private readonly string[] m_Disciplines;
 
         /***************************************************/
     }
