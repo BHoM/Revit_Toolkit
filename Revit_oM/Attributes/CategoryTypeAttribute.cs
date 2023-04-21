@@ -13,13 +13,8 @@ namespace BH.oM.Revit.Attributes
         /****             Public properties             ****/
         /***************************************************/
 
-        public string Type
-        {
-            get
-            {
-                return m_Type;
-            }
-        }
+        public virtual string Type { get; }
+
 
         /***************************************************/
         /****                Constructors               ****/
@@ -27,15 +22,8 @@ namespace BH.oM.Revit.Attributes
 
         public CategoryTypeAttribute(string type)
         {
-            m_Type = type;
+            Type = type;
         }
-
-
-        /***************************************************/
-        /****              Private fields               ****/
-        /***************************************************/
-
-        private readonly string m_Type;
 
         /***************************************************/
     }
