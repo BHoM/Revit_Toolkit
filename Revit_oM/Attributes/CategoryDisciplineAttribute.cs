@@ -1,15 +1,17 @@
 ﻿using BH.oM.Base;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace BH.oM.Revit.Attributes
 {
+    [Description("Attribute that defines disciplines, to which a category belongs as defined in Visibility & Graphics window." +
+                 "\nAllowed values of Disciplines property are: 'Architecture', 'Structure', 'Mechanical', 'Electrical', 'Piping' and 'Infrastructure'." +
+                 "\nEach category added to " + nameof(Enums.Category) + " needs to have " + nameof(CategoryDisciplineAttribute) + " assigned to be successfully reflected.")]
     public class CategoryDisciplineAttribute : Attribute, IImmutable, IObject
     {
-        private readonly string[] m_Disciplines;
+        /***************************************************/
+        /****             Public properties             ****/
+        /***************************************************/
 
         public string[] Disciplines
         {
@@ -19,9 +21,22 @@ namespace BH.oM.Revit.Attributes
             }
         }
 
+        /***************************************************/
+        /****                Constructors               ****/
+        /***************************************************/
+
         public CategoryDisciplineAttribute(params string[] disciplines)
         {
             m_Disciplines = disciplines;
         }
+
+
+        /***************************************************/
+        /****              Private fields               ****/
+        /***************************************************/
+
+        private readonly string[] m_Disciplines;
+
+        /***************************************************/
     }
 }
