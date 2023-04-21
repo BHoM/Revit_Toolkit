@@ -155,6 +155,7 @@ namespace BH.oM.Revit.Enums
         OST_Areas,
         [DisplayText("Assemblies")]
         [CategoryType("Internal")]
+        [CategoryDiscipline("Architecture", "Structure", "Mechanical", "Electrical", "Piping", "Infrastructure")]
         OST_Assemblies,
         [DisplayText("Assembly Tags")]
         [CategoryType("Annotation")]
@@ -702,6 +703,7 @@ namespace BH.oM.Revit.Enums
         OST_ModelGroupTags,
         [DisplayText("Model Groups")]
         [CategoryType("Internal")]
+        [CategoryDiscipline("Architecture", "Structure", "Mechanical", "Electrical", "Piping", "Infrastructure")]
         OST_IOSModelGroups,
         [DisplayText("Multi Leader Tag")]
         [CategoryType("Annotation")]
@@ -913,6 +915,7 @@ namespace BH.oM.Revit.Enums
         OST_RevisionClouds,
         [DisplayText("Revision")]
         [CategoryType("Internal")]
+        [CategoryDiscipline("Architecture", "Structure", "Mechanical", "Electrical", "Piping", "Infrastructure")]
         OST_Revisions,
         [DisplayText("Road Tags")]
         [CategoryType("Annotation")]
@@ -952,6 +955,7 @@ namespace BH.oM.Revit.Enums
         OST_ScheduleGraphics,
         [DisplayText("Schedules")]
         [CategoryType("Internal")]
+        [CategoryDiscipline("Architecture", "Structure", "Mechanical", "Electrical", "Piping", "Infrastructure")]
         OST_Schedules,
         [DisplayText("Scope Boxes")]
         [CategoryType("Annotation")]
@@ -1279,6 +1283,7 @@ namespace BH.oM.Revit.Enums
         OST_ViewportLabel,
         [DisplayText("Views")]
         [CategoryType("Internal")]
+        [CategoryDiscipline("Architecture", "Structure", "Mechanical", "Electrical", "Piping", "Infrastructure")]
         OST_Views,
         [DisplayText("Wall Sweep Tags")]
         [CategoryType("Annotation")]
