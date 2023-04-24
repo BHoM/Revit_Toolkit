@@ -176,8 +176,10 @@ namespace BH.Revit.Engine.Core
             if (level == null)
                 return null;
 
-            XYZ xdir = orientation.ProjectedX(settings);
-            FamilyInstance familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, xdir, level, StructuralType.NonStructural);
+            double ZToLevel = origin.Z - level.ProjectElevation;
+            origin = new XYZ(origin.X, origin.Y, ZToLevel);
+
+            FamilyInstance familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, level, StructuralType.NonStructural);
             if (familyInstance == null)
                 return null;
 
@@ -186,6 +188,11 @@ namespace BH.Revit.Engine.Core
             
             if (host != null)
                 familyInstance.HostIgnoredWarning();
+
+            double angle = XYZ.BasisX.AngleOnPlaneTo(orientation.ProjectedX(settings), XYZ.BasisZ);
+            XYZ axisEnd = new XYZ(origin.X, origin.Y, origin.Z + 30);
+            Autodesk.Revit.DB.Line axis = Autodesk.Revit.DB.Line.CreateBound(origin, axisEnd);
+            ElementTransformUtils.RotateElement(document, familyInstance.Id, axis, angle);
 
             return familyInstance;
         }
