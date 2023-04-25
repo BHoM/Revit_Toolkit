@@ -177,7 +177,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             double zToLevel = origin.Z - level.ProjectElevation;
-            origin = new XYZ(origin.X, origin.Y, ZToLevel);
+            origin = new XYZ(origin.X, origin.Y, zToLevel);
 
             FamilyInstance familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, level, StructuralType.NonStructural);
             if (familyInstance == null)
