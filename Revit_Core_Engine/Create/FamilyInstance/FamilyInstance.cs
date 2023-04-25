@@ -190,9 +190,7 @@ namespace BH.Revit.Engine.Core
                 familyInstance.HostIgnoredWarning();
 
             double angle = XYZ.BasisX.AngleOnPlaneTo(orientation.ProjectedX(settings), XYZ.BasisZ);
-            XYZ axisEnd = new XYZ(origin.X, origin.Y, origin.Z + 30);
-            Autodesk.Revit.DB.Line axis = Autodesk.Revit.DB.Line.CreateBound(origin, axisEnd);
-            ElementTransformUtils.RotateElement(document, familyInstance.Id, axis, angle);
+            ElementTransformUtils.RotateElement(document, familyInstance.Id, Line.CreateUnbound(origin, XYZ.BasisZ), angle);
 
             return familyInstance;
         }
