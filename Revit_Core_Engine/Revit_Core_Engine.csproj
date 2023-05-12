@@ -47,8 +47,7 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="	xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\ProgramData\BHoM\Assemblies&quot; /Y
-					xcopy &quot;$(ProjectDir)Files\Families&quot; &quot;C:\ProgramData\BHoM\Resources\Revit\Families&quot; /Y /I /E" />
+    <Exec Command="	xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\ProgramData\BHoM\Assemblies&quot; /Y&#xD;&#xA;					xcopy &quot;$(ProjectDir)Files\Families&quot; &quot;C:\ProgramData\BHoM\Resources\Revit\Families&quot; /Y /I /E" />
    </Target>
 
   <ItemGroup>
@@ -241,6 +240,10 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Tagging_oM">
+      <HintPath>..\..\..\ProgramData\BHoM\Assemblies\Tagging_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Units_Engine">
       <HintPath>$(ProgramData)\BHoM\Assemblies\Units_Engine.dll</HintPath>
 		<Private>False</Private>
