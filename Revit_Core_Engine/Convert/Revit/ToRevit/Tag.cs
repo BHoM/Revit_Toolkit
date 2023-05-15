@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
         //[Input("settings", "Revit adapter settings to be used while performing the convert.")]
         //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         //[Output("viewport", "Revit Viewport resulting from converting the input BH.oM.Adapters.Revit.Elements.Viewport.")]
-        public static Element ToRevitTag(this ProvisionalTag tag, TagSettings tagSettings, Document doc)
+        public static Element ToRevitTag(this ProvisionalTag tag, TagSettings tagSettings, Document doc, View view)
         {
             Element elem;
             Element newTag;
@@ -67,42 +67,41 @@ namespace BH.Revit.Engine.Core
             if (elem == null)
                 return null;
 
+            XYZ tagPoint = tag.Center.ToRevit();
+            var tagTypeId = new ElementId(tag.TagTypeId);
+
             if (elem is Room)
             {
                 var room = elem as Room;
-                var tagTypeId = new ElementId(tag.TagTypeId);
-                RoomTag roomTag = room.RoomTag(doc, link, tagTypeId, out XYZ newTagLocationPoint);
+                RoomTag roomTag = room.RoomTag(doc, view, link, tagTypeId, out XYZ newTagLocationPoint);
 
                 if (roomTag == null)
                     return null;
 
-                XYZ tagPnt = tag.Center.ToRevit();
-                roomTag.Location.Move(tagPnt - newTagLocationPoint);
+                roomTag.Location.Move(tagPoint - newTagLocationPoint);
 
-                //Get tagPnt in the link's coordinate system for IsPointInRoom below to work
+                //IsPointInRoom below requires tagPnt to be in the link's coordinate system
                 if (linkTransform != null)
-                    tagPnt = linkTransform.Inverse.OfPoint(tagPnt);
+                    tagPoint = linkTransform.Inverse.OfPoint(tagPoint);
 
-                //Move tagPnt up slightly for IsPointInRoom below to work
-                tagPnt = new XYZ(tagPnt.X, tagPnt.Y, newTagLocationPoint.Z + 1);
+                //Move tagPnt up by 1m for IsPointInRoom below to work
+                tagPoint = new XYZ(tagPoint.X, tagPoint.Y, newTagLocationPoint.Z + 1);
 
-                roomTag.HasLeader = room.IsPointInRoom(tagPnt) == false;
+                roomTag.HasLeader = room.IsPointInRoom(tagPoint) == false;
                 newTag = roomTag;
             }
             else if (elem is Space)
             {
                 var space = elem as Space;
-                SpaceTag spaceTag = space.SpaceTag();
+                SpaceTag spaceTag = space.SpaceTag(doc, view, tagTypeId, out XYZ newTagLocationPoint);
 
                 if (spaceTag == null)
                     return null;
 
-                XYZ spaceLocPoint = (space.Location as LocationPoint).Point;
-                XYZ tagPnt = tag.Center.ToRevit();
-                tagPnt = new XYZ(tagPnt.X, tagPnt.Y, spaceLocPoint.Z + 1);
-                spaceTag.Location.Move(tagPnt - spaceLocPoint);
+                spaceTag.Location.Move(tagPoint - newTagLocationPoint);
+                tagPoint += new XYZ(tagPoint.X, tagPoint.Y, newTagLocationPoint.Z + 1);
 
-                spaceTag.HasLeader = space.IsPointInSpace(tagPnt) == false;
+                spaceTag.HasLeader = space.IsPointInSpace(tagPoint) == false;
                 newTag = spaceTag;
             }
             else
@@ -112,11 +111,13 @@ namespace BH.Revit.Engine.Core
                 {
                     refCount = pTag.HostIds.Count;
 
+                    //If this is a typical tag, update the typical quantity parameter in all referenced hosts
                     if (refCount > 1)
                     {
                         foreach (int id in pTag.HostIds)
                         {
-                            Parameter elemCountParam = m_Doc.GetElement(new ElementId(id))?.LookupParameter(tagSettings.TypicalQuantityParameterName);
+                            Element host = doc.GetElement(new ElementId(id));
+                            Parameter elemCountParam = host?.LookupParameter(tagSettings.TypicalQuantityParameterName);
 
                             if (elemCountParam != null)
                                 elemCountParam.Set(refCount);
@@ -124,7 +125,7 @@ namespace BH.Revit.Engine.Core
                     }
                 }
 
-                newTag = elem.TagByNonSpatialCategory(out bool _, refCount, tag.Center.ToRevit());
+                newTag = elem.TagByCategory(doc, view, tagTypeId, tag.Center.ToRevit());
             }
 
             return newTag;

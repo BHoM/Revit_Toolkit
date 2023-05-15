@@ -21,12 +21,6 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Architecture;
-using BH.oM.Base.Attributes;
-using BH.oM.Tagging;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -42,28 +36,24 @@ namespace BH.Revit.Engine.Core
         //[Input("sheetNumber", "Number of the new sheet.")]
         //[Input("titleBlockId", "The Title Block Id to be applied to the sheet.")]
         //[Output("newSheet", "The new sheet.")]
-        public static RoomTag RoomTag(this Room room, Document doc, View view, RevitLinkInstance roomLink, ElementId tagTypeId, out XYZ tagLocationPoint)
+        public static IndependentTag TagByCategory(this Element elem, Document doc, View view, ElementId tagTypeId, XYZ tagPoint = null)
         {
-            tagLocationPoint = (room.Location as LocationPoint)?.Point;
-            if (tagLocationPoint == null)
-                return null;
+            //ElementId catId = elem.Category.Id;
+            //ElementId tagTypeId = taggedItemsCount > 1
+            //    ? new ElementId(m_TypicalTagTypeByCategoryId[catId.IntegerValue])
+            //    : m_TagTypeByCategoryId[catId];
 
-            LinkElementId id;
-            if (roomLink != null)
+            //rotateWithComponent = (doc.GetElement(tagTypeId) as FamilySymbol)
+            //    .Family.get_Parameter(BuiltInParameter.FAMILY_ROTATE_WITH_COMPONENT)
+            //    .AsInteger() == 1;
+
+            if (tagPoint == null)
             {
-                id = new LinkElementId(roomLink.Id, room.Id);
-                tagLocationPoint = roomLink.GetTotalTransform().OfPoint(tagLocationPoint);
-            }
-            else
-            {
-                id = new LinkElementId(room.Id);
+                BoundingBoxXYZ eBox = elem.get_BoundingBox(view);
+                tagPoint = (eBox.Max + eBox.Min) / 2;
             }
 
-            UV roomUV = new UV(tagLocationPoint.X, tagLocationPoint.Y);
-            RoomTag tag = doc.Create.NewRoomTag(id, roomUV, view.Id);
-            tag.ChangeTypeId(tagTypeId);
-
-            return tag;
+            return IndependentTag.Create(doc, tagTypeId, doc.ActiveView.Id, new Reference(elem), false, TagOrientation.Horizontal, tagPoint);
         }
 
         /***************************************************/
