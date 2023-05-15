@@ -47,11 +47,11 @@ namespace BH.Revit.Engine.Core
             //    .Family.get_Parameter(BuiltInParameter.FAMILY_ROTATE_WITH_COMPONENT)
             //    .AsInteger() == 1;
 
-            if (tagPoint == null)
-            {
-                BoundingBoxXYZ eBox = elem.get_BoundingBox(view);
-                tagPoint = (eBox.Max + eBox.Min) / 2;
-            }
+            //if (tagPoint == null)
+            //{
+            //    BoundingBoxXYZ eBox = elem.get_BoundingBox(view);
+            //    tagPoint = (eBox.Max + eBox.Min) / 2;
+            //}
 
             return Autodesk.Revit.DB.IndependentTag.Create(doc, tagTypeId, view.Id, new Reference(elem), false, TagOrientation.Horizontal, tagPoint);
         }

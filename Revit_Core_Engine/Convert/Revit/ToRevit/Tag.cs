@@ -39,14 +39,14 @@ namespace BH.Revit.Engine.Core
         //[Input("settings", "Revit adapter settings to be used while performing the convert.")]
         //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         //[Output("viewport", "Revit Viewport resulting from converting the input BH.oM.Adapters.Revit.Elements.Viewport.")]
-        public static Element ToRevit(this ProvisionalTag tag, TagSettings tagSettings, Document doc, View view)
+        public static Element ToRevitTag(this ProvisionalTag tag, TagSettings tagSettings, Document doc, View view)
         {
             Element elem;
             Element newTag;
             RevitLinkInstance link = null;
             Transform linkTransform = null;
 
-            if (tag.Host.LinkId != 1)
+            if (tag.Host.LinkId > 0)
             {
                 link = doc.GetElement(new ElementId(tag.Host.LinkId)) as RevitLinkInstance;
                 elem = link?.GetLinkDocument().GetElement(new ElementId(tag.Host.Id));
