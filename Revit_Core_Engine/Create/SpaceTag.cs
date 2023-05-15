@@ -21,13 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.DB.Mechanical;
-using BH.oM.Base.Attributes;
-using BH.oM.Tagging;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -43,16 +37,15 @@ namespace BH.Revit.Engine.Core
         //[Input("sheetNumber", "Number of the new sheet.")]
         //[Input("titleBlockId", "The Title Block Id to be applied to the sheet.")]
         //[Output("newSheet", "The new sheet.")]
-        public static SpaceTag SpaceTag(this Space space, Document doc, View view, ElementId tagTypeId, out XYZ tagLocationPoint)
+        public static SpaceTag SpaceTag(this Space space, Document doc, View view, ElementId tagTypeId)
         {
-            tagLocationPoint = null;
             var spaceLocation = space.Location as LocationPoint;
 
             if (spaceLocation == null)
                 return null;
 
-            tagLocationPoint = spaceLocation.Point;
-            UV spaceUV = new UV(tagLocationPoint.X, tagLocationPoint.Y);
+            XYZ tagPoint = spaceLocation.Point;
+            UV spaceUV = new UV(tagPoint.X, tagPoint.Y);
 
             SpaceTag tag = doc.Create.NewSpaceTag(space, spaceUV, view);
             tag.ChangeTypeId(tagTypeId);

@@ -22,11 +22,6 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Architecture;
-using BH.oM.Base.Attributes;
-using BH.oM.Tagging;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -42,24 +37,24 @@ namespace BH.Revit.Engine.Core
         //[Input("sheetNumber", "Number of the new sheet.")]
         //[Input("titleBlockId", "The Title Block Id to be applied to the sheet.")]
         //[Output("newSheet", "The new sheet.")]
-        public static RoomTag RoomTag(this Room room, Document doc, View view, RevitLinkInstance roomLink, ElementId tagTypeId, out XYZ tagLocationPoint)
+        public static RoomTag RoomTag(this Room room, Document doc, View view, ElementId tagTypeId, RevitLinkInstance roomLink = null)
         {
-            tagLocationPoint = (room.Location as LocationPoint)?.Point;
-            if (tagLocationPoint == null)
+            XYZ tagPoint = (room.Location as LocationPoint)?.Point;
+            if (tagPoint == null)
                 return null;
 
             LinkElementId id;
             if (roomLink != null)
             {
                 id = new LinkElementId(roomLink.Id, room.Id);
-                tagLocationPoint = roomLink.GetTotalTransform().OfPoint(tagLocationPoint);
+                tagPoint = roomLink.GetTotalTransform().OfPoint(tagPoint);
             }
             else
             {
                 id = new LinkElementId(room.Id);
             }
 
-            UV roomUV = new UV(tagLocationPoint.X, tagLocationPoint.Y);
+            UV roomUV = new UV(tagPoint.X, tagPoint.Y);
             RoomTag tag = doc.Create.NewRoomTag(id, roomUV, view.Id);
             tag.ChangeTypeId(tagTypeId);
 

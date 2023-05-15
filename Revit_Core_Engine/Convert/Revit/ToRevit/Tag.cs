@@ -23,14 +23,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.DB.Mechanical;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base.Attributes;
 using BH.oM.Tagging;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -46,7 +39,7 @@ namespace BH.Revit.Engine.Core
         //[Input("settings", "Revit adapter settings to be used while performing the convert.")]
         //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         //[Output("viewport", "Revit Viewport resulting from converting the input BH.oM.Adapters.Revit.Elements.Viewport.")]
-        public static Element ToRevitTag(this ProvisionalTag tag, TagSettings tagSettings, Document doc, View view)
+        public static Element ToRevit(this ProvisionalTag tag, TagSettings tagSettings, Document doc, View view)
         {
             Element elem;
             Element newTag;
@@ -73,11 +66,12 @@ namespace BH.Revit.Engine.Core
             if (elem is Room)
             {
                 var room = elem as Room;
-                RoomTag roomTag = room.RoomTag(doc, view, link, tagTypeId, out XYZ newTagLocationPoint);
+                RoomTag roomTag = room.RoomTag(doc, view, tagTypeId, link);
 
                 if (roomTag == null)
                     return null;
 
+                XYZ newTagLocationPoint = (roomTag.Location as LocationPoint).Point;
                 roomTag.Location.Move(tagPoint - newTagLocationPoint);
 
                 //IsPointInRoom below requires tagPnt to be in the link's coordinate system
@@ -93,11 +87,12 @@ namespace BH.Revit.Engine.Core
             else if (elem is Space)
             {
                 var space = elem as Space;
-                SpaceTag spaceTag = space.SpaceTag(doc, view, tagTypeId, out XYZ newTagLocationPoint);
+                SpaceTag spaceTag = space.SpaceTag(doc, view, tagTypeId);
 
                 if (spaceTag == null)
                     return null;
 
+                XYZ newTagLocationPoint = (spaceTag.Location as LocationPoint).Point;
                 spaceTag.Location.Move(tagPoint - newTagLocationPoint);
                 tagPoint += new XYZ(tagPoint.X, tagPoint.Y, newTagLocationPoint.Z + 1);
 
@@ -106,10 +101,9 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                int refCount = 1;
                 if (tag is ProvisionalPointTag pTag)
                 {
-                    refCount = pTag.HostIds.Count;
+                    int refCount = pTag.HostIds.Count;
 
                     //If this is a typical tag, update the typical quantity parameter in all referenced hosts
                     if (refCount > 1)
@@ -125,7 +119,7 @@ namespace BH.Revit.Engine.Core
                     }
                 }
 
-                newTag = elem.TagByCategory(doc, view, tagTypeId, tag.Center.ToRevit());
+                newTag = elem.IndependentTag(doc, view, tagTypeId, tag.Center.ToRevit());
             }
 
             return newTag;

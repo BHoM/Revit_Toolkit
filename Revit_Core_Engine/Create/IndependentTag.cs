@@ -36,7 +36,7 @@ namespace BH.Revit.Engine.Core
         //[Input("sheetNumber", "Number of the new sheet.")]
         //[Input("titleBlockId", "The Title Block Id to be applied to the sheet.")]
         //[Output("newSheet", "The new sheet.")]
-        public static IndependentTag TagByCategory(this Element elem, Document doc, View view, ElementId tagTypeId, XYZ tagPoint = null)
+        public static IndependentTag IndependentTag(this Element elem, Document doc, View view, ElementId tagTypeId, XYZ tagPoint = null)
         {
             //ElementId catId = elem.Category.Id;
             //ElementId tagTypeId = taggedItemsCount > 1
@@ -53,7 +53,7 @@ namespace BH.Revit.Engine.Core
                 tagPoint = (eBox.Max + eBox.Min) / 2;
             }
 
-            return IndependentTag.Create(doc, tagTypeId, doc.ActiveView.Id, new Reference(elem), false, TagOrientation.Horizontal, tagPoint);
+            return Autodesk.Revit.DB.IndependentTag.Create(doc, tagTypeId, view.Id, new Reference(elem), false, TagOrientation.Horizontal, tagPoint);
         }
 
         /***************************************************/
