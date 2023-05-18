@@ -50,7 +50,7 @@ namespace BH.Revit.Engine.Core
         [Input("cropRegionVisible", "True if the crop region should be visible.")]
         [Input("annotationCrop", "True if the annotation crop should be visible.")]
         [Output("newView", "The new view.")]
-        public static List<ViewSection> ViewElevations(this Document document, string elevationName, XYZ elevationMarkerLocation, ViewPlan referenceViewPlan, int numberOfElevations = 4, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
+        public static List<ViewSection> ViewElevations(this Document document, string elevationName, XYZ elevationMarkerLocation, View referenceViewPlan, int numberOfElevations = 4, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
         {
             if (numberOfElevations < 1 || numberOfElevations > 4)
             {
@@ -66,7 +66,7 @@ namespace BH.Revit.Engine.Core
             for (int i = 0; i < numberOfElevations; i++)
             {
                 ViewSection newElevation = elevationMarker.CreateElevation(document, referenceViewPlan.Id, i);
-                newElevation.SetViewName(elevationName + " - " + (i + 1).ToString(), document);
+                newElevation.SetViewName(elevationName + " " + (i + 1).ToString(), document);
 
                 if (viewTemplateId != null)
                 {
