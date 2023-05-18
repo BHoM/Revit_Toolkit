@@ -44,6 +44,9 @@ namespace BH.Revit.Engine.Core
         {
             Document document = sheet.Document;
 
+            if (viewportPlacementPoint == null)
+                viewportPlacementPoint = new XYZ();
+
             Viewport viewPort = Autodesk.Revit.DB.Viewport.Create(document, sheet.Id, view.Id, viewportPlacementPoint);
 
             if (viewPort == null)
@@ -55,10 +58,11 @@ namespace BH.Revit.Engine.Core
             viewPort.ChangeTypeId(viewportTypeId);
             viewPort.Rotation = viewportRotation;
 
-            document.Regenerate();
-
             if (viewportPlacementPoint != null)
+            {
+                document.Regenerate();
                 viewPort.SetBoxCenter(viewportPlacementPoint);
+            }
 
             return viewPort;
         }
