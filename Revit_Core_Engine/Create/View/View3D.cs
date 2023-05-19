@@ -25,6 +25,7 @@ using System;
 using System.ComponentModel;
 using BH.Engine.Geometry;
 using BH.oM.Base.Attributes;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -56,6 +57,7 @@ namespace BH.Revit.Engine.Core
                 try
                 {
                     (result as View3D).SetSectionBox(boundingBoxXyz);
+                    AlignCropBoxToBoundingBox(result, boundingBoxXyz);
                 }
                 catch (Exception)
                 {
@@ -266,6 +268,32 @@ namespace BH.Revit.Engine.Core
             return new XYZ(a, b, c);
         }
         
+        /***************************************************/
+
+        private static void AlignCropBoxToBoundingBox(View view3D, BoundingBoxXYZ bbox)
+        {
+            var view3DBounding = view3D.CropBox;
+            var transform = view3DBounding.Transform;
+
+            var bboxPoints = bbox.Points();
+
+            var bboxPointsTransformed = bboxPoints.Select(x => transform.Inverse.OfPoint(x)).ToList();
+            var minX = bboxPointsTransformed.Select(x => x.X).OrderBy(x => x).FirstOrDefault();
+            var maxX = bboxPointsTransformed.Select(x => x.X).OrderByDescending(x => x).FirstOrDefault();
+            var minY = bboxPointsTransformed.Select(x => x.Y).OrderBy(x => x).FirstOrDefault();
+            var maxY = bboxPointsTransformed.Select(x => x.Y).OrderByDescending(x => x).FirstOrDefault();
+            var minZ = bboxPointsTransformed.Select(x => x.Z).OrderBy(x => x).FirstOrDefault();
+            var maxZ = bboxPointsTransformed.Select(x => x.Z).OrderByDescending(x => x).FirstOrDefault();
+
+            var newMin = new XYZ(minX, minY, minZ);
+            var newMax = new XYZ(maxX, maxY, maxZ);
+
+            var newBBox = new BoundingBoxXYZ() { Min = newMin, Max = newMax };
+            view3D.CropBoxActive = true;
+            view3D.CropBox = newBBox;
+            view3D.CropBoxVisible = false;
+        }
+
         /***************************************************/
     }
 }
