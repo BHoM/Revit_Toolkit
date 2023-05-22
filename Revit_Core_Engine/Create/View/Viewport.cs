@@ -44,10 +44,7 @@ namespace BH.Revit.Engine.Core
         {
             Document document = sheet.Document;
 
-            if (viewportPlacementPoint == null)
-                viewportPlacementPoint = new XYZ();
-
-            Viewport viewPort = Autodesk.Revit.DB.Viewport.Create(document, sheet.Id, view.Id, viewportPlacementPoint);
+            Viewport viewPort = Autodesk.Revit.DB.Viewport.Create(document, sheet.Id, view.Id, new XYZ());
 
             if (viewPort == null)
             {
@@ -62,6 +59,10 @@ namespace BH.Revit.Engine.Core
             {
                 document.Regenerate();
                 viewPort.SetBoxCenter(viewportPlacementPoint);
+            }
+            else
+            {
+                BH.Engine.Base.Compute.RecordNote("Viewport placement point not defined - it has been placed in default position");
             }
 
             return viewPort;
