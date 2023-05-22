@@ -39,17 +39,16 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Creates and returns a new Plan view in the current Revit file.")]
+        [Description("Creates elevation marker and elevation views in the current Revit file.")]
         [Input("document", "Revit current document to be processed.")]
-        [Input("level", "The level that the created Floor Plan refers to.")]
-        [Input("viewName", "Name of the new view.")]
-        [Input("viewFamily", "View family type of the new view.")]
-        [Input("cropBox", "Optional, the crop region to attempt to apply to the newly created view.")]
+        [Input("elevationName", "Name of the elevation views. A number will be added to this value (from 1 to 4).")]
+        [Input("elevationMarkerLocation", "Location of the elevation marker to be placed.")]
+        [Input("referenceViewPlan", "ViewPlan that elevation marker and elevation views will be referenced to.")]
+        [Input("numberOfElevations", "Number of the elevation views to be created.")]
         [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
-        [Input("viewDetailLevel", "Optional, the Detail Level of the view.")]
         [Input("cropRegionVisible", "True if the crop region should be visible.")]
         [Input("annotationCrop", "True if the annotation crop should be visible.")]
-        [Output("newView", "The new view.")]
+        [Output("elevations", "The list of created elevations.")]
         public static List<ViewSection> ViewElevations(this Document document, string elevationName, XYZ elevationMarkerLocation, View referenceViewPlan, int numberOfElevations = 4, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
         {
             if (numberOfElevations < 1 || numberOfElevations > 4)
