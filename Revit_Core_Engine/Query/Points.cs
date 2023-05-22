@@ -24,6 +24,7 @@ using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -33,24 +34,30 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Queries edge points of BoundingBoxXYZ.")]
+        [Description("Queries corner points of BoundingBoxXYZ.")]
         [Input("bbox", "BoundingBoxXYZ to get the points from.")]
-        [Output("edgeCurves", "Edge points of the BoundingBoxXYZ.")]
+        [Output("edgeCurves", "List of corner points of the BoundingBoxXYZ.")]
         public static List<XYZ> Points(this BoundingBoxXYZ bbox)
         {
             if (bbox == null)
                 return null;
 
-            var bboxPoints = new List<XYZ>();
+            var bboxPoints = new List<XYZ>
+            {
+                new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Min.Z),
+                new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Min.Z),
+                new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Min.Z),
+                new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Min.Z),
+                new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Max.Z),
+                new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Max.Z),
+                new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Max.Z),
+                new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Max.Z)
+            };
 
-            bboxPoints.Add(new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Min.Z));
-            bboxPoints.Add(new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Min.Z));
-            bboxPoints.Add(new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Min.Z));
-            bboxPoints.Add(new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Min.Z));
-            bboxPoints.Add(new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Max.Z));
-            bboxPoints.Add(new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Max.Z));
-            bboxPoints.Add(new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Max.Z));
-            bboxPoints.Add(new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Max.Z));
+            Transform bboxTransform = bbox.Transform ?? Transform.Identity;
+
+            if (!bboxTransform.IsIdentity)
+                bboxPoints.Select(x => bboxTransform.OfPoint(x)).ToList();
 
             return bboxPoints;
         }
