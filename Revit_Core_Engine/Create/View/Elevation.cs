@@ -39,48 +39,48 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Creates elevation marker and elevation views in the current Revit file.")]
+        [Description("Creates elevation marker in the current Revit file.")]
         [Input("document", "Revit current document to be processed.")]
-        [Input("elevationName", "Name of the elevation views. A number will be added to this value (from 1 to 4).")]
-        [Input("elevationMarkerLocation", "Location of the elevation marker to be placed.")]
-        [Input("referenceViewPlan", "ViewPlan that elevation marker and elevation views will be referenced to.")]
-        [Input("numberOfElevations", "Number of the elevation views to be created.")]
-        [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
-        [Input("cropRegionVisible", "True if the crop region should be visible.")]
-        [Input("annotationCrop", "True if the annotation crop should be visible.")]
-        [Output("elevations", "The list of created elevations.")]
-        public static ElevationMarker ElevationMarker(this Document document, XYZ elevationMarkerLocation, View referenceViewPlan)
+        [Input("elevationMarkerLocation", "Location point of the elevation marker to be placed.")]
+        [Input("referenceViewPlan", "ViewPlan that elevation marker is referenced to.")]
+        [Output("elevationMarker", "Elevation Marker that has been created.")]
+        public static ElevationMarker ElevationMarker(this XYZ elevationMarkerLocation, View referenceViewPlan)
         {
-            var vft = Core.Query.ViewFamilyType(document, ViewFamily.Elevation);
-            var elevationMarker = Autodesk.Revit.DB.ElevationMarker.CreateElevationMarker(document, vft.Id, elevationMarkerLocation, referenceViewPlan.Scale);
+            Document doc = referenceViewPlan.Document;
+            var vft = Query.ViewFamilyType(doc, ViewFamily.Elevation);
+            var elevationMarker = Autodesk.Revit.DB.ElevationMarker.CreateElevationMarker(doc, vft.Id, elevationMarkerLocation, referenceViewPlan.Scale);
 
             return elevationMarker;
         }
 
         /***************************************************/
 
-        [Description("Creates elevation marker and elevation views in the current Revit file.")]
-        [Input("document", "Revit current document to be processed.")]
-        [Input("elevationName", "Name of the elevation views. A number will be added to this value (from 1 to 4).")]
-        [Input("elevationMarkerLocation", "Location of the elevation marker to be placed.")]
+        [Description("Creates elevation views referenced do elevation marker in the current Revit file.")]
+        [Input("elevationMarker", "Elevation marker to which elevation views will be referenced.")]
+        [Input("elevationName", "Name of the elevation view. Elevation index will be added to the value (from 1 to 4).")]
         [Input("referenceViewPlan", "ViewPlan that elevation marker and elevation views will be referenced to.")]
-        [Input("numberOfElevations", "Number of the elevation views to be created.")]
+        [Input("elevationIndex", "The index on the Elevation Marker where the new elevation will be placed.")]
+        [Input("bottomLine", "Location line of the elevation view and the bottom line for the crop region shape.")]
+        [Input("depth", "Depth of the elevation view.")]
+        [Input("height", "Height of the elevation view.")]
         [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
         [Input("cropRegionVisible", "True if the crop region should be visible.")]
         [Input("annotationCrop", "True if the annotation crop should be visible.")]
         [Output("elevations", "The list of created elevations.")]
-        public static ViewSection ElevationView(this Document document, string elevationName, ElevationMarker elevationMarker, View referenceViewPlan, int elevationIndex, Line bottomLine, double depth, double height, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
+        public static ViewSection ElevationView(this ElevationMarker elevationMarker, string elevationName, View referenceViewPlan, int elevationIndex, Line bottomLine, double depth, double height, double offset, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
         {
+            Document doc = elevationMarker.Document;
+
             //create ViewSection
-            ViewSection newElevation = elevationMarker.CreateElevation(document, referenceViewPlan.Id, elevationIndex);
+            ViewSection newElevation = elevationMarker.CreateElevation(doc, referenceViewPlan.Id, elevationIndex);
 
             //set name
-            newElevation.SetViewName(elevationName + " " + (elevationIndex + 1).ToString(), document);
+            newElevation.SetViewName(elevationName + " " + (elevationIndex + 1).ToString(), doc);
 
             //set template
             if (viewTemplateId != null && viewTemplateId.IntegerValue != -1)
             {
-                if (!(document.GetElement(viewTemplateId) as View).IsTemplate)
+                if (!(doc.GetElement(viewTemplateId) as View).IsTemplate)
                 {
                     BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if it's a valid View Template.");
                     return null;
@@ -97,7 +97,7 @@ namespace BH.Revit.Engine.Core
             }
 
             //set crop box shape
-            var curveLoop = ElevationCropRegionShape(bottomLine, height, 0);
+            var curveLoop = ElevationCropRegionShape(bottomLine, height, offset);
             newElevation.GetCropRegionShapeManager().SetCropShape(curveLoop);
 
             //set depth
@@ -135,9 +135,7 @@ namespace BH.Revit.Engine.Core
 
             var curveLoop = CurveLoop.Create(lines);
 
-            return curveLoop;
-
-            //return CurveLoop.CreateViaOffset(curveLoop, offset, curveLoop.GetPlane().Normal);
+            return CurveLoop.CreateViaOffset(curveLoop, offset, curveLoop.GetPlane().Normal);
         }
 
         /***************************************************/
