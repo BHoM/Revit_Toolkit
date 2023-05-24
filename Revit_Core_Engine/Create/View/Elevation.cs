@@ -21,15 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
-using System;
-using System.ComponentModel;
 using BH.oM.Base.Attributes;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using Autodesk.Revit.UI;
-using BH.oM.Adapters.Revit.Elements;
-using BH.oM.Graphics;
-using ViewPlan = Autodesk.Revit.DB.ViewPlan;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -116,8 +111,10 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+        /****              Private Methods              ****/
+        /***************************************************/
 
-        [Description("Get the shape of the elevation crop region aligned to the given line.")]
+        [Description("Get the shape of the elevation crop region created from the given line and increased by offset.")]
         private static CurveLoop ElevationCropRegionShape(Line line, double height, double offset)
         {
             var pt1 = line.GetEndPoint(0);
