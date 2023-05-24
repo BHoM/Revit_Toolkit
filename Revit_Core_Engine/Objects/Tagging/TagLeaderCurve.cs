@@ -25,6 +25,7 @@ using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core.Objects
 {
+    [Description("Represents the leader curve of an existing tag in the model.")]
     public class TagLeaderCurve
     {
         /***************************************************/
@@ -43,4 +44,3 @@ namespace BH.Revit.Engine.Core.Objects
         /***************************************************/
     }
 }
-

@@ -47,7 +47,6 @@ namespace BH.Revit.Engine.Core
                     if (tag.IsLeaderVisible(reference))
                     {
                         return tag.GetLeaderEnd(reference);
-
                     }
                 }
 #endif

@@ -21,6 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -30,35 +32,18 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        //[Description("Creates and returns a new Sheet in the current Revit file.")]
-        //[Input("document", "The current Revit document to be processed.")]
-        //[Input("sheetName", "Name of the new sheet.")]
-        //[Input("sheetNumber", "Number of the new sheet.")]
-        //[Input("titleBlockId", "The Title Block Id to be applied to the sheet.")]
-        //[Output("newSheet", "The new sheet.")]
+        [Description("Create a tag for a Revit element in the input document and view.")]
+        [Input("elem", "A Revit element that requires a new tag.")]
+        [Input("doc", "The Revit document to receive the new tag.")]
+        [Input("view", "The Revit view to receive the new tag.")]
+        [Input("tagTypeId", "ID of the Revit tag family type to use for creating the new tag.")]
+        [Input("tagPoint", "A location point for the new tag.")]
+        [Output("tag", "A new IndependentTag instance for the input element.")]
         public static IndependentTag IndependentTag(this Element elem, Document doc, View view, ElementId tagTypeId, XYZ tagPoint = null)
         {
-            //ElementId catId = elem.Category.Id;
-            //ElementId tagTypeId = taggedItemsCount > 1
-            //    ? new ElementId(m_TypicalTagTypeByCategoryId[catId.IntegerValue])
-            //    : m_TagTypeByCategoryId[catId];
-
-            //rotateWithComponent = (doc.GetElement(tagTypeId) as FamilySymbol)
-            //    .Family.get_Parameter(BuiltInParameter.FAMILY_ROTATE_WITH_COMPONENT)
-            //    .AsInteger() == 1;
-
-            //if (tagPoint == null)
-            //{
-            //    BoundingBoxXYZ eBox = elem.get_BoundingBox(view);
-            //    tagPoint = (eBox.Max + eBox.Min) / 2;
-            //}
-
             return Autodesk.Revit.DB.IndependentTag.Create(doc, tagTypeId, view.Id, new Reference(elem), false, TagOrientation.Horizontal, tagPoint);
         }
 
         /***************************************************/
     }
 }
-
-
-

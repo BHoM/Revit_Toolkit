@@ -24,10 +24,12 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.DB.Mechanical;
 using BH.Engine.Geometry;
+using BH.oM.Base.Attributes;
 using BH.oM.Tagging;
 using BH.Revit.Engine.Core.Objects;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Point = BH.oM.Geometry.Point;
 
@@ -39,6 +41,13 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [Description("Converts a layout of provisional tags to actual Revit tags in the input document and view.")]
+        [Input("layout", "An object containing provisional tags we will convert to Revit tags.")]
+        [Input("tagSettings", "Settings defining how we want to place new tags into the view.")]
+        [Input("doc", "The Revit document to receive new tags.")]
+        [Input("view", "The Revit view to receive new tags.")]
+        [Input("viewInfo", "An object holding information about the view to assist with tag placement.")]
+        [Output("tags", "New Revit tags. Will be a list of generic Revit elements to allow returning IndependentTag, RoomTag and SpaceTag instances.")]
         public static List<Element> ToRevitTags(this TagLayout layout, TagSettings tagSettings, Document doc, View view, TagViewInfo viewInfo)
         {
             var createdTags = new List<Element>();
@@ -119,14 +128,10 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-
-        //[Description("Converts BH.oM.Adapters.Revit.Elements.Viewport to a Revit Viewport.")]
-        //[Input("viewport", "BH.oM.Adapters.Revit.Elements.Viewport to be converted.")]
-        //[Input("document", "Revit document, in which the output of the convert will be created.")]
-        //[Input("settings", "Revit adapter settings to be used while performing the convert.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("viewport", "Revit Viewport resulting from converting the input BH.oM.Adapters.Revit.Elements.Viewport.")]
-        public static Element ToRevitTag(this ProvisionalTag tag, TagSettings tagSettings, Document doc, View view)
+        /****              Private Methods              ****/
+        /***************************************************/
+                
+        private static Element ToRevitTag(this ProvisionalTag tag, TagSettings tagSettings, Document doc, View view)
         {
             Element elem;
             Element newTag;
@@ -212,8 +217,6 @@ namespace BH.Revit.Engine.Core
             return newTag;
         }
 
-        /***************************************************/
-        /****               Private Methods             ****/
         /***************************************************/
 
         private static void AddLeader(this IndependentTag eTag, ProvisionalTag tag)

@@ -32,15 +32,14 @@ using Point = BH.oM.Geometry.Point;
 
 namespace BH.Revit.Engine.Core
 {
-    //[Description("Class used to extract elements visible in the active view of the host document if that view is of 2d type. See " + nameof(Query.ElementIdsByVisibleInActiveView) + " for usage example.")]
     public class ExistingTagsExportContext : IExportContext2D
     {
         /***************************************************/
         /****             Private Properties            ****/
         /***************************************************/
 
-        private TagViewInfo m_ViewInfo;
         private Document m_Doc = null;
+        private TagViewInfo m_ViewInfo;
         private Element m_CurrentTag = null;
         private List<ElementId> m_TagIds = null;
         private List<XYZ> m_KnownLeaderPoints = new List<XYZ>();
@@ -51,8 +50,9 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Create an export context that extracts start points of leader lines from existing IndependentTags in the active view.")]
-        [Input("ids", "IDs of IndependentTags to extract leader start points from.")]
+        [Input("tagIds", "IDs of IndependentTags to extract leader start points from.")]
         [Input("doc", "The current Revit document.")]
+        [Input("viewInfo", "An object holding information about the view to assist with tag placement.")]
         public ExistingTagsExportContext(List<ElementId> tagIds, Document doc, TagViewInfo viewInfo)
         {
             m_Doc = doc;
@@ -126,9 +126,7 @@ namespace BH.Revit.Engine.Core
 
                 if (newPoints.Count != 1)
                 {
-                    var points = endPoints.Select(x => x.PointFromRevit())
-                        //.Transform(m_ViewInfo.InversedTransformMatrix))
-                        .ToList();
+                    var points = endPoints.Select(x => x.PointFromRevit()).ToList();
 
                     //This curve is part of the tag head
                     if (m_ExistingTags.TryGetValue(key, out ExistingTag eTag))

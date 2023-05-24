@@ -21,13 +21,11 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Geometry;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using BH.Revit.Engine.Core.Objects;
 using System;
 using System.ComponentModel;
-using BhLine = BH.oM.Geometry.Line;
 
 namespace BH.Revit.Engine.Core
 {
@@ -91,6 +89,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

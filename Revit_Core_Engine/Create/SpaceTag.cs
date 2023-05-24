@@ -22,6 +22,8 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Mechanical;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,12 +33,12 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        //[Description("Creates and returns a new Sheet in the current Revit file.")]
-        //[Input("document", "The current Revit document to be processed.")]
-        //[Input("sheetName", "Name of the new sheet.")]
-        //[Input("sheetNumber", "Number of the new sheet.")]
-        //[Input("titleBlockId", "The Title Block Id to be applied to the sheet.")]
-        //[Output("newSheet", "The new sheet.")]
+        [Description("Create a tag for a Revit space in the input document and view.")]
+        [Input("space", "A Revit space that requires a new tag.")]
+        [Input("doc", "The Revit document to receive the new tag.")]
+        [Input("view", "The Revit view to receive the new tag.")]
+        [Input("tagTypeId", "ID of the Revit tag family type to use for creating the new tag.")]
+        [Output("tag", "A new SpaceTag instance for the input space.")]
         public static SpaceTag SpaceTag(this Space space, Document doc, View view, ElementId tagTypeId)
         {
             var spaceLocation = space.Location as LocationPoint;
@@ -56,6 +58,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

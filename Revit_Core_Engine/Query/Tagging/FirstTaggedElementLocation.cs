@@ -77,6 +77,8 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+        /****              Private Methods              ****/
+        /***************************************************/
 
         private static Element FirstTaggedElement(this IndependentTag tag, out Transform linkTransform)
         {
@@ -116,4 +118,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-

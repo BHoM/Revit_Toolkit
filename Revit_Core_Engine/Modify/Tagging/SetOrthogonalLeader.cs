@@ -22,7 +22,6 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
-using BH.oM.Geometry;
 using BH.Revit.Engine.Core.Objects;
 using System;
 using System.ComponentModel;
@@ -65,6 +64,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

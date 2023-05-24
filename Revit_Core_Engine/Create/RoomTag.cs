@@ -22,6 +22,8 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Architecture;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,12 +33,13 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        //[Description("Creates and returns a new Sheet in the current Revit file.")]
-        //[Input("document", "The current Revit document to be processed.")]
-        //[Input("sheetName", "Name of the new sheet.")]
-        //[Input("sheetNumber", "Number of the new sheet.")]
-        //[Input("titleBlockId", "The Title Block Id to be applied to the sheet.")]
-        //[Output("newSheet", "The new sheet.")]
+        [Description("Create a tag for a Revit room in the input document and view.")]
+        [Input("room", "A Revit room that requires a new tag.")]
+        [Input("doc", "The Revit document to receive the new tag.")]
+        [Input("view", "The Revit view to receive the new tag.")]
+        [Input("tagTypeId", "ID of the Revit tag family type to use for creating the new tag.")]
+        [Input("roomLink", "If specified, the Revit link instance that contains the input room.")]
+        [Output("tag", "A new RoomTag instance for the input room.")]
         public static RoomTag RoomTag(this Room room, Document doc, View view, ElementId tagTypeId, RevitLinkInstance roomLink = null)
         {
             XYZ tagPoint = (room.Location as LocationPoint)?.Point;
@@ -64,6 +67,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

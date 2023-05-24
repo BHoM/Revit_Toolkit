@@ -241,8 +241,9 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Tagging_oM">
-      <HintPath>..\..\..\ProgramData\BHoM\Assemblies\Tagging_oM.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Tagging_oM.dll</HintPath>
+		<Private>False</Private>
+		<SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Units_Engine">
       <HintPath>$(ProgramData)\BHoM\Assemblies\Units_Engine.dll</HintPath>

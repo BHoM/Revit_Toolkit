@@ -23,7 +23,6 @@
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
 using BH.oM.Tagging;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -35,10 +34,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Extracts colour of a given Revit element's face.")]
-        //[Input("face", "Revit element's face to extract the colour from.")]
-        //[Input("document", "Revit document, to which the face belongs.")]
-        //[Output("colour", "Colour of the input Revit element's face.")]
+        [Description("Returns a dictionary of ExistingTag instances that represent existing tags in the input Revit view.")]
+        [Input("tagIds", "IDs of existing Revit tags to convert into ExistingTag instances.")]
+        [Input("doc", "The Revit document to receive new tags.")]
+        [Input("viewInfo", "An object holding information about the view to assist with tag placement.")]
+        [Output("existingTags", "A dictionary of ExistingTag instances that represent existing tags in the input Revit view.")]
         public static Dictionary<ElementId, ExistingTag> ExistingTagsFromContext(this List<ElementId> tagIds, Document doc, TagViewInfo viewInfo)
         {
             var context = new ExistingTagsExportContext(tagIds, doc, viewInfo);
@@ -59,4 +59,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
