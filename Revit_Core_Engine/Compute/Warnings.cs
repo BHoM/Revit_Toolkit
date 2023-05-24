@@ -355,6 +355,18 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        internal static void ViewTemplateNotExistsWarning(this oM.Adapters.Revit.Elements.ElevationView elevationView)
+        {
+            string message = "View Template has not been found for given BHoM ElevationView.";
+
+            if (elevationView != null)
+                message = string.Format("{0} BHoM Guid: {1} View Template Name: {2}", message, elevationView.BHoM_Guid, elevationView.TemplateName);
+
+            BH.Engine.Base.Compute.RecordError(message);
+        }
+
+        /***************************************************/
+
         internal static void NullObjectPropertiesWarning(this IInstance instance)
         {
             string message = "The instance has no object properties.";
