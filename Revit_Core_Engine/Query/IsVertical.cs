@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Base;
+using BH.Engine.Geometry;
 using BH.Engine.Units;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
@@ -44,20 +45,9 @@ namespace BH.Revit.Engine.Core
         [Output("isVertical", "True if the input Revit planar curve is based on a vertical plane.")]
         public static bool IsVertical(this Curve planarCurve, double toleranceInDegree)
         {
-            if (planarCurve is Line)
-            {
-                XYZ dirVect = ((Line)planarCurve).Direction;
-                if (dirVect.IsAlmostEqualTo(XYZ.BasisZ) || dirVect.IsAlmostEqualTo(-XYZ.BasisZ))
-                {
-                    return true;
-                }
-            }
+            Vector eVect = (planarCurve.GetEndPoint(1) - planarCurve.GetEndPoint(0)).Normalize().VectorFromRevit();
 
-            XYZ eVect = (planarCurve.GetEndPoint(1) - planarCurve.GetEndPoint(0)).Normalize();
-            double angle1 = eVect.AngleTo(XYZ.BasisZ);
-            double angle2 = eVect.AngleTo(-XYZ.BasisZ);
-
-            return Math.Min(angle1, angle2) < toleranceInDegree.FromDegree();
+            return eVect.AcuteAngle(Vector.ZAxis) < toleranceInDegree.FromDegree();
         }
 
         /***************************************************/

@@ -21,11 +21,13 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Geometry;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using BH.Revit.Engine.Core.Objects;
 using System;
 using System.ComponentModel;
+using BhLine = BH.oM.Geometry.Line;
 
 namespace BH.Revit.Engine.Core
 {
@@ -60,6 +62,11 @@ namespace BH.Revit.Engine.Core
                     endPoint = tag.HostLocationInXY;
 
                 XYZ elbowPnt = Core.Compute.VectorIntersection(startPoint, endPoint, startDir, endDir);
+                /***************************************************/
+                //var line1 = new BhLine { Start = startPoint.PointFromRevit(), End = (startPoint + startDir).PointFromRevit(), Infinite = true };
+                //var line2 = new BhLine { Start = endPoint.PointFromRevit(), End = (endPoint + endDir).PointFromRevit(), Infinite = true };
+                //XYZ elbowPnt = line1.LineIntersection(line2, true).ToRevit();
+                /***************************************************/
 
                 existingTag.SetLeaderElbow(vTransform.OfPoint(elbowPnt));
                 startPoint = vTransform.OfPoint(startPoint);

@@ -20,32 +20,22 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using BH.oM.Base.Attributes;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.Revit.Engine.Core
+namespace BH.oM.Adapters.Revit.Enums
 {
-    public static partial class Query
+    /***************************************************/
+
+    [Description("An enum defining the position of a point on a curve object.")]
+    public enum PointOnCurvePosition
     {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
-
-        [Description("Get the smallest possible angle between 2 vectors regardless of their directions.")]
-        [Input("vector1", "The first vector.")]
-        [Input("vector2", "The second vector.")]
-        [Output("angle", "The smallest possible angle between 2 vectors regardless of their directions.")]
-        public static double AcuteAngle(this XYZ vector1, XYZ vector2)
-        {
-            double angle1 = vector1.AngleTo(vector2);
-            double angle2 = vector1.AngleTo(-vector2);
-            return Math.Min(angle1, angle2);
-        }
-
-        /***************************************************/
+        Lowest,
+        Middle,
+        Highest
     }
+
+    /***************************************************/
 }
+
+
 

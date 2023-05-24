@@ -21,8 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
-using System.ComponentModel;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,29 +33,38 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Gets the location point of a Revit element.")]
-        [Input("elem", "A generic Element instance.")]
-        [Input("useCurveMidPoint", "If True, get the middle point of the element's LocationCurve if the element isn't point-based.")]
+        [Description("Gets the location point of a Revit element with additional options for dealing with curve-based objects.")]
+        [Input("elem", "A generic Revit element.")]
+        [Input("pointOnCurve", "A value to specify when the input element is curve-based, if we need its midpoint, lowest endpoint or highest endpoint.")]
         [Output("xyz", "The location point of a Revit element.")]
-        public static XYZ LocationPoint(this Element elem, bool useCurveMidPoint = false)
+        public static XYZ LocationPoint(this Element elem, PointOnCurvePosition pointOnCurve)
         {
-            var eLocation = elem.Location;
+            XYZ ePoint = null;
+            Location eLocation = elem.Location;
 
-            if (eLocation is LocationCurve)
+            if (eLocation is LocationPoint)
+            {
+                ePoint = (eLocation as LocationPoint).Point;
+            }
+            else if (eLocation is LocationCurve)
             {
                 Curve eCurve = (eLocation as LocationCurve).Curve;
 
-                if (useCurveMidPoint && eCurve.IsBound)
-                {
-                    return eCurve.Evaluate(0.5, true);
-                }
+                if (pointOnCurve == PointOnCurvePosition.Middle)
+                    ePoint = eCurve.Evaluate(0.5, true);
                 else
                 {
-                    return null;
+                    XYZ pnt1 = eCurve.Evaluate(0, true);
+                    XYZ pnt2 = eCurve.Evaluate(1, true);
+
+                    if (pointOnCurve == PointOnCurvePosition.Lowest)
+                        ePoint = (pnt1.Z > pnt2.Z) ? pnt2 : pnt1;
+                    else if (pointOnCurve == PointOnCurvePosition.Highest)
+                        ePoint = (pnt1.Z > pnt2.Z) ? pnt1 : pnt2;
                 }
             }
-            else
-                return (eLocation as LocationPoint).Point;
+
+            return ePoint;
         }
 
         /***************************************************/
