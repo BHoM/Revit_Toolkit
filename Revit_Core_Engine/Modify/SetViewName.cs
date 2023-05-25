@@ -38,8 +38,9 @@ namespace BH.Revit.Engine.Core
         [Input("view", "The View for which the name will be changed.")]
         [Input("viewName", "New name of the view.")]
         [Input("document", "The current Revit document to be processed.")]
-        public static void SetViewName(this View view, string viewName, Document document)
+        public static void SetViewName(this View view, string viewName)
         {
+            var document = view.Document;
             int number = 0;
             string uniqueName = viewName;
 
