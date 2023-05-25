@@ -86,7 +86,7 @@ namespace BH.Revit.Engine.Core
 
             if (!string.IsNullOrEmpty(viewName))
             {
-                newView.SetViewName(viewName, document);
+                newView.SetViewName(viewName);
             }
 
             return newView;
