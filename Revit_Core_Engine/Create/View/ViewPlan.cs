@@ -98,7 +98,7 @@ namespace BH.Revit.Engine.Core
             
             if (!string.IsNullOrEmpty(viewName))
             {
-                newView.SetViewName(viewName, document);
+                newView.SetViewName(viewName);
             }
 
             if (!newView.get_Parameter(BuiltInParameter.VIEWER_CROP_REGION_VISIBLE).Set(cropRegionVisible ? 1 : 0))
