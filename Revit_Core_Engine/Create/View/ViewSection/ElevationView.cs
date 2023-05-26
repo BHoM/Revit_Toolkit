@@ -44,6 +44,7 @@ namespace BH.Revit.Engine.Core
         [Input("bottomLine", "Location line of the elevation view and the bottom line for the crop region shape.")]
         [Input("depth", "Depth of the elevation view.")]
         [Input("height", "Height of the elevation view.")]
+        [Input("offset", "Offset that will be added to the elevation view CropBox shape.")]
         [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
         [Input("cropRegionVisible", "True if the crop region should be visible.")]
         [Input("annotationCrop", "True if the annotation crop should be visible.")]
