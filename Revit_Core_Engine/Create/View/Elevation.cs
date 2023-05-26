@@ -21,8 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Architecture;
 using BH.Engine.Geometry;
+using BH.oM.Adapters.Revit;
 using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
@@ -36,15 +36,15 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Creates Elevation view based on given line. Elevation marker will be placed in the middle of the line.")]
+        [Description("Creates a single Elevation view based on given line. Elevation marker will be placed in the middle of the line.")]
         [Input("document", "Revit current document to be processed.")]
         [Input("elevationLine", "Location line of the elevation view and the bottom line for the crop region shape.")]
         [Input("referenceViewPlan", "ViewPlan that elevation marker is referenced to.")]
         [Input("elevationName", "Name of the elevation view.")]
         [Input("depth", "Depth of the elevation view.")]
         [Input("height", "Height of the elevation view.")]
-        [Input("offset", "Offset that will be added to elevation depth and CropBox shape.")]
-        [Input("elevationMarek", "Elevation marker that has been created (out parameter).")]
+        [Input("offset", "Offset that will be added to the elevation view CropBox shape.")]
+        [Input("elevationMarker", "Elevation marker that has been created (out parameter).")]
         [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
         [Input("cropRegionVisible", "True if the crop region should be visible.")]
         [Input("annotationCrop", "True if the annotation crop should be visible.")]
@@ -57,6 +57,10 @@ namespace BH.Revit.Engine.Core
             var lineDirection = elevationLine.Direction.Normalize();
             var markerDirection = lineDirection.VectorFromRevit().Rotate(-Math.PI / 2, BH.oM.Geometry.Vector.ZAxis).ToRevit();
             var angle = -markerDirection.AngleTo(XYZ.BasisX);
+
+            if (Math.Abs(angle) < Tolerance.Angle)
+                angle = 0;
+
             var axis = Line.CreateBound(elevationMarkerLocation, elevationMarkerLocation + XYZ.BasisZ);
 
             elevationMarker = ElevationMarker(elevationMarkerLocation, referenceViewPlan);
@@ -71,8 +75,23 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Creates elevation views referenced do elevation marker in the current Revit file.")]
-        [Input("elevationMarker", "Elevation marker to which elevation views will be referenced.")]
+        [Description("Creates elevation marker in the current Revit file.")]
+        [Input("elevationMarkerLocation", "Placement point of the elevation marker.")]
+        [Input("referenceViewPlan", "ViewPlan that elevation marker is referenced to.")]
+        [Output("elevationMarker", "Elevation marker that has been created.")]
+        public static ElevationMarker ElevationMarker(this XYZ elevationMarkerLocation, View referenceViewPlan)
+        {
+            Document doc = referenceViewPlan.Document;
+            var vft = Query.ViewFamilyType(doc, ViewFamily.Elevation);
+            var elevationMarker = Autodesk.Revit.DB.ElevationMarker.CreateElevationMarker(doc, vft.Id, elevationMarkerLocation, referenceViewPlan.Scale);
+
+            return elevationMarker;
+        }
+
+        /***************************************************/
+
+        [Description("Creates elevation view referenced do elevation marker in the current Revit file.")]
+        [Input("elevationMarker", "Elevation marker to which elevation view will be referenced.")]
         [Input("elevationName", "Name of the elevation view.")]
         [Input("referenceViewPlan", "ViewPlan that elevation marker and elevation views will be referenced to.")]
         [Input("elevationIndex", "The index on the Elevation Marker where the new elevation will be placed.")]
@@ -96,18 +115,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
         /****              Private Methods              ****/
-        /***************************************************/
-
-        [Description("Creates elevation marker in the current Revit file.")]
-        private static ElevationMarker ElevationMarker(this XYZ elevationMarkerLocation, View referenceViewPlan)
-        {
-            Document doc = referenceViewPlan.Document;
-            var vft = Query.ViewFamilyType(doc, ViewFamily.Elevation);
-            var elevationMarker = Autodesk.Revit.DB.ElevationMarker.CreateElevationMarker(doc, vft.Id, elevationMarkerLocation, referenceViewPlan.Scale);
-
-            return elevationMarker;
-        }
-
         /***************************************************/
 
         [Description("Modify elevation properties and shape.")]
@@ -142,7 +149,7 @@ namespace BH.Revit.Engine.Core
             elevation.GetCropRegionShapeManager().SetCropShape(curveLoop);
 
             //set depth
-            elevation.get_Parameter(BuiltInParameter.VIEWER_BOUND_OFFSET_FAR).Set(depth + offset);
+            elevation.get_Parameter(BuiltInParameter.VIEWER_BOUND_OFFSET_FAR).Set(depth);
 
             //set crop region visibility
             if (!elevation.get_Parameter(BuiltInParameter.VIEWER_CROP_REGION_VISIBLE).Set(cropRegionVisible ? 1 : 0))
