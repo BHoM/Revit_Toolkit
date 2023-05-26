@@ -267,15 +267,16 @@ namespace BH.Revit.Engine.Core
 
             return new XYZ(a, b, c);
         }
-        
+
         /***************************************************/
 
+        [Description("Aligns 3DView CropBox to given bounding box.")]
         private static void AlignCropBoxToBoundingBox(View view3D, BoundingBoxXYZ bbox)
         {
             var view3DBounding = view3D.CropBox;
             var transform = view3DBounding.Transform;
 
-            var bboxPoints = bbox.Points();
+            var bboxPoints = bbox.CornerPoints();
 
             var bboxPointsTransformed = bboxPoints.Select(x => transform.Inverse.OfPoint(x)).ToList();
             var minX = bboxPointsTransformed.Select(x => x.X).OrderBy(x => x).FirstOrDefault();
