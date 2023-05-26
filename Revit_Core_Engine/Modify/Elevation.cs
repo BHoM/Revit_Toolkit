@@ -40,7 +40,7 @@ namespace BH.Revit.Engine.Core
         [Description("Modify existing elevation view.")]
         [Input("elevation", "Elevation view to be modified.")]
         [Input("elevationName", "Name of the elevation view.")]
-        [Input("elevationLine", "Location line of the elevation view and the bottom line for the crop region shape.")]
+        [Input("bottomLine", "Location line of the elevation view and the bottom line for the crop region shape.")]
         [Input("depth", "Depth of the elevation view.")]
         [Input("height", "Height of the elevation view.")]
         [Input("offset", "Offset that will be added to the elevation view CropBox shape.")]
@@ -48,7 +48,7 @@ namespace BH.Revit.Engine.Core
         [Input("cropRegionVisible", "True if the crop region should be visible.")]
         [Input("annotationCrop", "True if the annotation crop should be visible.")]
         [Output("elevationView", "Elevation view that has been modified.")]
-        public static ViewSection ModifyElevation(this ViewSection elevation, string elevationName, Line bottomLine, double depth, double height, double offset, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
+        public static void ModifyElevation(this ViewSection elevation, string elevationName, Line bottomLine, double depth, double height, double offset, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
         {
             Document doc = elevation.Document;
 
@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
                 if (!(doc.GetElement(viewTemplateId) as View).IsTemplate)
                 {
                     BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if it's a valid View Template.");
-                    return null;
+                    return;
                 }
 
                 try
@@ -89,7 +89,7 @@ namespace BH.Revit.Engine.Core
             if (!elevation.get_Parameter(BuiltInParameter.VIEWER_ANNOTATION_CROP_ACTIVE).Set(annotationCrop ? 1 : 0))
                 BH.Engine.Base.Compute.RecordWarning($"Could not set the annotation crop in the view. Parameter is ready-only.");
 
-            return elevation;
+            return;
 
         }
 
