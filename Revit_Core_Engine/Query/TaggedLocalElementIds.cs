@@ -34,15 +34,15 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Find all of an independent tag's references.")]
+        [Description("Find IDs of elements in the active model that an existing independent tag references. This excludes linked elements.")]
         [Input("tag", "An existing independent tag.")]
-        [Output("references", "The input independent tag's references.")]
-        public static List<Reference> TaggedReferences(this IndependentTag tag)
+        [Output("references", "IDs of elements in the active model that an existing independent tag references.")]
+        public static List<ElementId> TaggedLocalElementIds(this IndependentTag tag)
         {
 #if REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021
-            return new List<Reference> { tag.GetTaggedReference() };
+            return new List<ElementId> { tag.GetTaggedLocalElement().Id };
 #else
-            return tag.GetTaggedReferences().ToList();
+            return tag.GetTaggedLocalElementIds().ToList();
 #endif
         }
 
