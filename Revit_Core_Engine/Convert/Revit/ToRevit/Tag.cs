@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+#if (!REVIT2018 && !REVIT2019)
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.DB.Mechanical;
@@ -226,11 +227,12 @@ namespace BH.Revit.Engine.Core
 
             eTag.HasLeader = true;
             eTag.LeaderEndCondition = LeaderEndCondition.Free;
-            Reference taggedRef = eTag.GetTaggedReferences().First();
-            eTag.SetLeaderEnd(taggedRef, tag.ArrowPoint.ToRevit());
+
+            Reference taggedRef = eTag.TaggedReferences().First();
+            eTag.SetTagLeaderEnd(taggedRef, tag.ArrowPoint.ToRevit());
 
             if (tag.ElbowPoint != null)
-                eTag.SetLeaderElbow(taggedRef, tag.ElbowPoint.ToRevit());
+                eTag.SetTagLeaderElbow(taggedRef, tag.ElbowPoint.ToRevit());
         }
 
         /***************************************************/
@@ -306,7 +308,7 @@ namespace BH.Revit.Engine.Core
                     var createdTag = actualTag as IndependentTag;
                     if (createdTag != null)
                     {
-                        reference = createdTag.GetTaggedReferences().First();
+                        reference = createdTag.TaggedReferences().First();
 
                         if (tag.ArrowLine == null)
                         {
@@ -317,12 +319,12 @@ namespace BH.Revit.Engine.Core
                         }
                         else
                         {
-                            arrowPnt = createdTag.GetLeaderEnd(reference);
+                            arrowPnt = createdTag.TagLeaderEnd(reference);
 
                             if (tag.ElbowPoint != null)
                             {
                                 //Angled leader
-                                moveVect = (tag.ElbowPoint.ToRevit() - createdTag.GetLeaderElbow(reference)).ToXY();
+                                moveVect = (tag.ElbowPoint.ToRevit() - createdTag.TagLeaderElbow(reference)).ToXY();
                             }
                             else if (existingTagsById.TryGetValue(createdTag.Id, out ExistingTag eTag))
                             {
@@ -337,7 +339,7 @@ namespace BH.Revit.Engine.Core
                         actualTag.Location.Move(moveVect);
 
                     if (arrowPnt != null && reference != null)
-                        createdTag.SetLeaderEnd(reference, arrowPnt);
+                        createdTag.SetTagLeaderEnd(reference, arrowPnt);
                 }
 
                 tr.Commit();
@@ -350,3 +352,4 @@ namespace BH.Revit.Engine.Core
 
 
 
+#endif

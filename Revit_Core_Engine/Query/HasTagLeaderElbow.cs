@@ -20,11 +20,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-#if (!REVIT2018 && !REVIT2019)
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
-using BH.oM.Tagging;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
@@ -35,29 +32,20 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns a dictionary of ExistingTag instances that represent existing tags in the input Revit view.")]
-        [Input("tagIds", "IDs of existing Revit tags to convert into ExistingTag instances.")]
-        [Input("doc", "The Revit document to receive new tags.")]
-        [Input("viewInfo", "An object holding information about the view to assist with tag placement.")]
-        [Output("existingTags", "A dictionary of ExistingTag instances that represent existing tags in the input Revit view.")]
-        public static Dictionary<ElementId, ExistingTag> ExistingTagsFromContext(this List<ElementId> tagIds, Document doc, TagViewInfo viewInfo)
+        [Description("Check if an existing independent tag's leader has an elbow point.")]
+        [Input("tag", "An existing independent tag.")]
+        [Input("taggedReference", "A reference to an element being tagged.")]
+        [Output("bool", "Whether an existing independent tag's leader has an elbow point.")]
+        public static bool HasTagLeaderElbow(this IndependentTag tag, Reference taggedReference)
         {
-            var context = new ExistingTagsExportContext(tagIds, doc, viewInfo);
-
-            var exporter = new CustomExporter(doc, context)
-            {
-                ShouldStopOnError = true,
-                IncludeGeometricObjects = true,
-                Export2DIncludingAnnotationObjects = true,
-            };
-
-            exporter.Export(new List<ElementId> { doc.ActiveView.Id });
-            Dictionary<ElementId, ExistingTag> result = context.ExistingTagsById();
-
-            return result;
+#if REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021
+            return tag.HasElbow;
+#else
+            return tag.HasLeaderElbow(taggedReference);
+#endif
         }
 
         /***************************************************/
     }
 }
-#endif
+

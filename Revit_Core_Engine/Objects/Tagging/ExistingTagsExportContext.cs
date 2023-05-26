@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+#if (!REVIT2018 && !REVIT2019)
 using Autodesk.Revit.DB;
 using BH.Engine.Geometry;
 using BH.oM.Base.Attributes;
@@ -190,18 +191,7 @@ namespace BH.Revit.Engine.Core
 
         public RenderNodeAction OnElementBegin2D(ElementNode node)
         {
-            Document eDoc;
-
-            if (node.LinkInstanceId.IntegerValue == -1)
-            {
-                eDoc = m_Doc;
-            }
-            else
-            {
-                eDoc = (m_Doc.GetElement(node.LinkInstanceId) as RevitLinkInstance).GetLinkDocument();
-            }
-
-            m_CurrentTag = eDoc.GetElement(node.ElementId);
+            m_CurrentTag = m_Doc.GetElement(node.ElementId);
 
             if (m_CurrentTag == null
                 || m_CurrentTag.Category == null
@@ -215,16 +205,16 @@ namespace BH.Revit.Engine.Core
 
             if (tag != null && tag.HasLeader)
             {
-                foreach (Reference reference in tag.GetTaggedReferences())
+                foreach (Reference reference in tag.TaggedReferences())
                 {
                     if (tag.LeaderEndCondition == LeaderEndCondition.Free)
                     {
-                        m_KnownLeaderPoints.Add(tag.GetLeaderEnd(reference));
+                        m_KnownLeaderPoints.Add(tag.TagLeaderEnd(reference));
                     }
 
-                    if (tag.HasLeaderElbow(reference))
+                    if (tag.HasTagLeaderElbow(reference))
                     {
-                        m_KnownLeaderPoints.Add(tag.GetLeaderElbow(reference));
+                        m_KnownLeaderPoints.Add(tag.TagLeaderElbow(reference));
                     }
                 }
             }
@@ -364,3 +354,4 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
+#endif

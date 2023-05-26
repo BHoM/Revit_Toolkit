@@ -21,13 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Geometry;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using static Autodesk.Revit.DB.SpecTypeId;
 
 namespace BH.Revit.Engine.Core
 {

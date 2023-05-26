@@ -20,44 +20,33 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-#if (!REVIT2018 && !REVIT2019)
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
-using BH.oM.Tagging;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Query
+    public static partial class Modify
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Returns a dictionary of ExistingTag instances that represent existing tags in the input Revit view.")]
-        [Input("tagIds", "IDs of existing Revit tags to convert into ExistingTag instances.")]
-        [Input("doc", "The Revit document to receive new tags.")]
-        [Input("viewInfo", "An object holding information about the view to assist with tag placement.")]
-        [Output("existingTags", "A dictionary of ExistingTag instances that represent existing tags in the input Revit view.")]
-        public static Dictionary<ElementId, ExistingTag> ExistingTagsFromContext(this List<ElementId> tagIds, Document doc, TagViewInfo viewInfo)
+        [Description("Set the elbow point location of an independent tag's leader.")]
+        [Input("tag", "An existing independent tag.")]
+        [Input("taggedReference", "A reference to an element being tagged.")]
+        [Input("point", "The new location for the elbow point of input tag's leader.")]
+        public static void SetTagLeaderElbow(this IndependentTag eTag, Reference taggedReference, XYZ point)
         {
-            var context = new ExistingTagsExportContext(tagIds, doc, viewInfo);
-
-            var exporter = new CustomExporter(doc, context)
-            {
-                ShouldStopOnError = true,
-                IncludeGeometricObjects = true,
-                Export2DIncludingAnnotationObjects = true,
-            };
-
-            exporter.Export(new List<ElementId> { doc.ActiveView.Id });
-            Dictionary<ElementId, ExistingTag> result = context.ExistingTagsById();
-
-            return result;
+#if REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021
+            eTag.LeaderElbow = point;
+#else            
+            eTag.SetLeaderElbow(taggedReference, point);
+#endif
         }
 
         /***************************************************/
     }
 }
-#endif
+
+

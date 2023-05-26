@@ -41,7 +41,11 @@ namespace BH.Revit.Engine.Core
         [Output("tag", "A new IndependentTag instance for the input element.")]
         public static IndependentTag IndependentTag(this Element elem, Document doc, View view, ElementId tagTypeId, XYZ tagPoint = null)
         {
+#if REVIT2018
+            return Autodesk.Revit.DB.IndependentTag.Create(doc, view.Id, new Reference(elem), false, TagMode.TM_ADDBY_CATEGORY, TagOrientation.Horizontal, tagPoint);
+#else
             return Autodesk.Revit.DB.IndependentTag.Create(doc, tagTypeId, view.Id, new Reference(elem), false, TagOrientation.Horizontal, tagPoint);
+#endif
         }
 
         /***************************************************/
