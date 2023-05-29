@@ -48,26 +48,32 @@ namespace BH.Revit.Engine.Core
         [Input("cropRegionVisible", "True if the crop region should be visible.")]
         [Input("annotationCrop", "True if the annotation crop should be visible.")]
         [Output("elevationView", "Elevation view that has been created.")]
-        public static ViewSection ElevationByLine(this Line elevationLine, string elevationName, View referenceViewPlan, double depth, double height, double offset, out ElevationMarker elevationMarker, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
+        public static ViewSection ElevationByLine(this Line elevationLine, string elevationName, View referenceViewPlan, double depth, double height, double offset, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
         {
             Document doc = referenceViewPlan.Document;
 
             var elevationMarkerLocation = elevationLine.Evaluate(0.5, true);
             var lineDirection = elevationLine.Direction.Normalize();
+
+            if (lineDirection.DotProduct(XYZ.BasisZ) < Tolerance.Angle)
+            {
+                //warning and make horizontal
+            }
+
             var markerDirection = lineDirection.VectorFromRevit().Rotate(-Math.PI / 2, BH.oM.Geometry.Vector.ZAxis).ToRevit();
             var angle = -markerDirection.AngleTo(XYZ.BasisX);
 
             if (Math.Abs(angle) < Tolerance.Angle)
                 angle = 0;
 
-            var axis = Line.CreateBound(elevationMarkerLocation, elevationMarkerLocation + XYZ.BasisZ);
+            var axis = Line.CreateUnbound(elevationMarkerLocation, XYZ.BasisZ);
 
-            elevationMarker = ElevationMarker(elevationMarkerLocation, referenceViewPlan);
+            var elevationMarker = ElevationMarker(elevationMarkerLocation, referenceViewPlan);
             var elevationView = elevationMarker.CreateElevation(doc, referenceViewPlan.Id, 0);
 
             ElementTransformUtils.RotateElement(doc, elevationMarker.Id, axis, angle);
 
-            elevationView.ModifyElevation(elevationName, elevationLine, depth, height, offset, viewTemplateId, cropRegionVisible, annotationCrop);
+            elevationView.SetElevationProperties(elevationName, elevationLine, depth, height, offset, viewTemplateId, cropRegionVisible, annotationCrop);
 
             return elevationView;
         }
