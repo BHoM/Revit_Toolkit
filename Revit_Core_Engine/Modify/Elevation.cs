@@ -37,7 +37,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Modify existing elevation view.")]
+        [Description("Modify existing elevation view by changing it's name, location line, CropBox shape, template, crop region and annotation crop visibility.")]
         [Input("elevation", "Elevation view to be modified.")]
         [Input("elevationName", "Name of the elevation view.")]
         [Input("bottomLine", "Location line of the elevation view and the bottom line for the crop region shape.")]
@@ -48,7 +48,7 @@ namespace BH.Revit.Engine.Core
         [Input("cropRegionVisible", "True if the crop region should be visible.")]
         [Input("annotationCrop", "True if the annotation crop should be visible.")]
         [Output("elevationView", "Elevation view that has been modified.")]
-        public static void ModifyElevation(this ViewSection elevation, string elevationName, Line bottomLine, double depth, double height, double offset, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
+        public static void SetElevationProperties(this ViewSection elevation, string elevationName, Line bottomLine, double depth, double height, double offset, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
         {
             Document doc = elevation.Document;
 
@@ -90,7 +90,6 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Base.Compute.RecordWarning($"Could not set the annotation crop in the view. Parameter is ready-only.");
 
             return;
-
         }
 
         /***************************************************/
