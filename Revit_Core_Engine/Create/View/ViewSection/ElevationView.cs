@@ -55,7 +55,7 @@ namespace BH.Revit.Engine.Core
 
             //create ViewSection
             ViewSection newElevation = elevationMarker.CreateElevation(doc, referenceViewPlan.Id, elevationIndex);
-            newElevation.ModifyElevation(elevationName, bottomLine, depth, height, offset, viewTemplateId, cropRegionVisible, annotationCrop);
+            newElevation.SetElevationProperties(elevationName, bottomLine, depth, height, offset, viewTemplateId, cropRegionVisible, annotationCrop);
 
             return newElevation;
         }
