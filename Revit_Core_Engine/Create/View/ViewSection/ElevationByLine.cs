@@ -66,15 +66,13 @@ namespace BH.Revit.Engine.Core
             }
 
             var elevationMarkerLocation = elevationLine.Evaluate(0.5, true);
-            var markerDirection = lineDirection.VectorFromRevit().Rotate(-Math.PI / 2, BH.oM.Geometry.Vector.ZAxis).ToRevit();
-            var axis = Line.CreateUnbound(elevationMarkerLocation, XYZ.BasisZ);
-            var angle = -markerDirection.AngleTo(XYZ.BasisX);
-
-            if (Math.Abs(angle) < Tolerance.Angle)
-                angle = 0;
-
             var elevationMarker = ElevationMarker(elevationMarkerLocation, referenceViewPlan);
             var elevationView = elevationMarker.CreateElevation(doc, referenceViewPlan.Id, 0);
+
+            XYZ viewDir = -elevationView.ViewDirection;
+            var markerDirection = lineDirection.VectorFromRevit().Rotate(Math.PI / 2, BH.oM.Geometry.Vector.ZAxis).ToRevit();
+            var angle = 2 * Math.PI - markerDirection.AngleOnPlaneTo(viewDir, XYZ.BasisZ);
+            var axis = Line.CreateUnbound(elevationMarkerLocation, XYZ.BasisZ);
 
             ElementTransformUtils.RotateElement(doc, elevationMarker.Id, axis, angle);
             elevationView.SetElevationProperties(elevationName, elevationLine, depth, height, offset, viewTemplateId, cropRegionVisible, annotationCrop);
