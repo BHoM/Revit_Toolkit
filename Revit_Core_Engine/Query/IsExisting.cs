@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
         [Output("bool", "True if given view name already exists in the model.")]
         public static bool IsExistingViewName(this string viewName, Document document)
         {
-            List<string> viewNamesInModel = new FilteredElementCollector(document).OfClass(typeof(ViewPlan)).Select(x => x.Name).ToList();
+            List<string> viewNamesInModel = new FilteredElementCollector(document).OfClass(typeof(View)).Select(x => x.Name).ToList();
 
             return viewNamesInModel.Contains(viewName);
         }
