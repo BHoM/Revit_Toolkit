@@ -51,28 +51,32 @@ namespace BH.Revit.Engine.Core
         public static ViewSection ElevationByLine(this Line elevationLine, string elevationName, View referenceViewPlan, double depth, double height, double offset, ElementId viewTemplateId = null, bool cropRegionVisible = false, bool annotationCrop = false)
         {
             Document doc = referenceViewPlan.Document;
-
-            var elevationMarkerLocation = elevationLine.Evaluate(0.5, true);
             var lineDirection = elevationLine.Direction.Normalize();
 
-            if (lineDirection.DotProduct(XYZ.BasisZ) < Tolerance.Angle)
+            //check if elevation line is horizontal, project on view plane if not
+            if (lineDirection.DotProduct(XYZ.BasisZ) > Tolerance.Angle)
             {
-                //warning and make horizontal
+                BH.Engine.Base.Compute.RecordWarning($"The elevation location line is not horizontal and will be projected on reference view plane.");
+                var viewPlane = referenceViewPlan.SketchPlane.GetPlane();
+                var bhomPlane = BH.Engine.Geometry.Create.Plane(viewPlane.Origin.PointFromRevit(), viewPlane.Normal.VectorFromRevit());
+                var bhomProjLine = elevationLine.FromRevit().Project(bhomPlane);
+
+                elevationLine = bhomProjLine.ToRevit();
+                lineDirection = elevationLine.Direction.Normalize();
             }
 
+            var elevationMarkerLocation = elevationLine.Evaluate(0.5, true);
             var markerDirection = lineDirection.VectorFromRevit().Rotate(-Math.PI / 2, BH.oM.Geometry.Vector.ZAxis).ToRevit();
+            var axis = Line.CreateUnbound(elevationMarkerLocation, XYZ.BasisZ);
             var angle = -markerDirection.AngleTo(XYZ.BasisX);
 
             if (Math.Abs(angle) < Tolerance.Angle)
                 angle = 0;
 
-            var axis = Line.CreateUnbound(elevationMarkerLocation, XYZ.BasisZ);
-
             var elevationMarker = ElevationMarker(elevationMarkerLocation, referenceViewPlan);
             var elevationView = elevationMarker.CreateElevation(doc, referenceViewPlan.Id, 0);
 
             ElementTransformUtils.RotateElement(doc, elevationMarker.Id, axis, angle);
-
             elevationView.SetElevationProperties(elevationName, elevationLine, depth, height, offset, viewTemplateId, cropRegionVisible, annotationCrop);
 
             return elevationView;
