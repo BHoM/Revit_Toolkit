@@ -79,7 +79,7 @@ namespace BH.Revit.Engine.Core
                     convertedTags.Add(tag);
                     createdTags.Add(newTag);
 
-                    if (tag.ArrowPoint == null)
+                    if (tag.Geometry.ArrowPoint == null)
                         continue;
 
                     if (newTag is IndependentTag independentTag == false)
@@ -104,7 +104,7 @@ namespace BH.Revit.Engine.Core
                         Parameter quantityParam = doc.GetElement(new ElementId(id))?.LookupParameter(tagSettings.TypicalQuantityParameterName);
 
                         if (quantityParam != null)
-                            quantityParam.Set(tag.QuantityOfTypical);
+                            quantityParam.Set(tag.TypicalQuantity);
                     }
                 }
 
@@ -153,7 +153,7 @@ namespace BH.Revit.Engine.Core
             if (elem == null)
                 return null;
 
-            XYZ tagPoint = tag.Center.ToRevit();
+            XYZ tagPoint = tag.Geometry.Center.ToRevit();
             var tagTypeId = new ElementId(tag.TagTypeId);
 
             if (elem is Room room)
@@ -212,7 +212,7 @@ namespace BH.Revit.Engine.Core
                     }
                 }
 
-                newTag = elem.IndependentTag(doc, view, tagTypeId, tag.Center.ToRevit());
+                newTag = elem.IndependentTag(doc, view, tagTypeId, tag.Geometry.Center.ToRevit());
             }
 
             return newTag;
@@ -229,10 +229,10 @@ namespace BH.Revit.Engine.Core
             eTag.LeaderEndCondition = LeaderEndCondition.Free;
 
             Reference taggedRef = eTag.TaggedReferences().First();
-            eTag.SetTagLeaderEnd(taggedRef, tag.ArrowPoint.ToRevit());
+            eTag.SetTagLeaderEnd(taggedRef, tag.Geometry.ArrowPoint.ToRevit());
 
-            if (tag.ElbowPoint != null)
-                eTag.SetTagLeaderElbow(taggedRef, tag.ElbowPoint.ToRevit());
+            if (tag.Geometry.ElbowPoint != null)
+                eTag.SetTagLeaderElbow(taggedRef, tag.Geometry.ElbowPoint.ToRevit());
         }
 
         /***************************************************/
@@ -261,7 +261,7 @@ namespace BH.Revit.Engine.Core
                         if (existingTagsById.TryGetValue(tag.Tag.Id, out ExistingTag eTag))
                         {
                             tag.LeaderStartPoint = eTag.LeaderStarts.First().ToRevit();
-                            tag.LeaderStartPointInXY = viewInfo.InversedTransformMatrix.ToRevit().OfPoint(tag.LeaderStartPoint);
+                            tag.LeaderStartPointInXY = viewInfo.Transform.Invert().ToRevit().OfPoint(tag.LeaderStartPoint);
                         }
 
                         if (leaderType == TagLeaderType.Angled45)
@@ -310,7 +310,7 @@ namespace BH.Revit.Engine.Core
                     {
                         reference = createdTag.TaggedReferences().First();
 
-                        if (tag.ArrowLine == null)
+                        if (tag.Geometry.ArrowLine == null)
                         {
                             if (existingTagsById.TryGetValue(createdTag.Id, out ExistingTag eTag))
                             {
@@ -321,15 +321,15 @@ namespace BH.Revit.Engine.Core
                         {
                             arrowPnt = createdTag.TagLeaderEnd(reference);
 
-                            if (tag.ElbowPoint != null)
+                            if (tag.Geometry.ElbowPoint != null)
                             {
                                 //Angled leader
-                                moveVect = (tag.ElbowPoint.ToRevit() - createdTag.TagLeaderElbow(reference)).ToXY();
+                                moveVect = (tag.Geometry.ElbowPoint.ToRevit() - createdTag.TagLeaderElbow(reference)).ToXY();
                             }
                             else if (existingTagsById.TryGetValue(createdTag.Id, out ExistingTag eTag))
                             {
                                 //Straight leader
-                                Point tempPnt = eTag.LeaderStarts[0].Project(tag.ArrowLine);
+                                Point tempPnt = eTag.LeaderStarts[0].Project(tag.Geometry.ArrowLine);
                                 moveVect = tempPnt.ToRevit() - eTag.LeaderStarts[0].ToRevit();
                             }
                         }

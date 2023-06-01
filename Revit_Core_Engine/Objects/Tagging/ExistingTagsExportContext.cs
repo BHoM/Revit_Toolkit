@@ -74,7 +74,7 @@ namespace BH.Revit.Engine.Core
 
                 //Transform tag bounding points to the model origin to get the tag head's bounding box independently from view rotation
                 BoundingBox tagHeadBBox = eTag.TextBoundingPoints
-                    .Select(x => x.Transform(m_ViewInfo.InversedTransformMatrix))
+                    .Select(x => x.Transform(m_ViewInfo.Transform.Invert()))
                     .ToList().Bounds();
 
                 Point pMin = tagHeadBBox.Min.ToXY();
@@ -84,7 +84,7 @@ namespace BH.Revit.Engine.Core
                 eTag.Height = pMin.DistanceAlongVector(pMax, Vector.YAxis);
 
                 //Transform the box center back to where the tag actually is
-                eTag.TextCenter = tagHeadBBox.Centre().Transform(m_ViewInfo.TransformMatrix);
+                eTag.TextCenter = tagHeadBBox.Centre().Transform(m_ViewInfo.Transform);
             }
 
             return m_ExistingTags;
