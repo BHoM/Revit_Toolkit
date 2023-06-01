@@ -26,6 +26,7 @@ using System.ComponentModel;
 using BH.Engine.Geometry;
 using BH.oM.Base.Attributes;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace BH.Revit.Engine.Core
 {
@@ -273,23 +274,27 @@ namespace BH.Revit.Engine.Core
         [Description("Aligns 3DView CropBox to given bounding box.")]
         private static void AlignCropBoxToBoundingBox(View view3D, BoundingBoxXYZ bbox)
         {
-            var view3DBounding = view3D.CropBox;
-            var transform = view3DBounding.Transform;
+            BoundingBoxXYZ view3DBounding = view3D.CropBox;
+            Transform transform = view3DBounding.Transform;
 
-            var bboxPoints = bbox.CornerPoints();
+            List<XYZ> bboxPoints = bbox.CornerPoints();
+            List<XYZ> bboxPointsTransformed = bboxPoints.Select(x => transform.Inverse.OfPoint(x)).ToList();
 
-            var bboxPointsTransformed = bboxPoints.Select(x => transform.Inverse.OfPoint(x)).ToList();
-            var minX = bboxPointsTransformed.Select(x => x.X).OrderBy(x => x).FirstOrDefault();
-            var maxX = bboxPointsTransformed.Select(x => x.X).OrderByDescending(x => x).FirstOrDefault();
-            var minY = bboxPointsTransformed.Select(x => x.Y).OrderBy(x => x).FirstOrDefault();
-            var maxY = bboxPointsTransformed.Select(x => x.Y).OrderByDescending(x => x).FirstOrDefault();
-            var minZ = bboxPointsTransformed.Select(x => x.Z).OrderBy(x => x).FirstOrDefault();
-            var maxZ = bboxPointsTransformed.Select(x => x.Z).OrderByDescending(x => x).FirstOrDefault();
+            XYZ newMin = new XYZ
+                (
+                bboxPointsTransformed.Select(x => x.X).OrderBy(x => x).FirstOrDefault(),
+                bboxPointsTransformed.Select(x => x.Y).OrderBy(x => x).FirstOrDefault(),
+                bboxPointsTransformed.Select(x => x.Z).OrderBy(x => x).FirstOrDefault()
+                );
 
-            var newMin = new XYZ(minX, minY, minZ);
-            var newMax = new XYZ(maxX, maxY, maxZ);
+            XYZ newMax = new XYZ
+                (
+                bboxPointsTransformed.Select(x => x.X).OrderByDescending(x => x).FirstOrDefault(),
+                bboxPointsTransformed.Select(x => x.Y).OrderByDescending(x => x).FirstOrDefault(),
+                bboxPointsTransformed.Select(x => x.Z).OrderByDescending(x => x).FirstOrDefault()
+                );
 
-            var newBBox = new BoundingBoxXYZ() { Min = newMin, Max = newMax };
+            BoundingBoxXYZ newBBox = new BoundingBoxXYZ() { Min = newMin, Max = newMax };
             view3D.CropBoxActive = true;
             view3D.CropBox = newBBox;
             view3D.CropBoxVisible = false;

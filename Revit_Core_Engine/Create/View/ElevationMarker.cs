@@ -43,8 +43,8 @@ namespace BH.Revit.Engine.Core
         public static ElevationMarker ElevationMarker(this XYZ elevationMarkerLocation, View referenceViewPlan)
         {
             Document doc = referenceViewPlan.Document;
-            var vft = Query.ViewFamilyType(doc, ViewFamily.Elevation);
-            var elevationMarker = Autodesk.Revit.DB.ElevationMarker.CreateElevationMarker(doc, vft.Id, elevationMarkerLocation, referenceViewPlan.Scale);
+            ViewFamilyType vft = Query.ViewFamilyType(doc, ViewFamily.Elevation);
+            ElevationMarker elevationMarker = Autodesk.Revit.DB.ElevationMarker.CreateElevationMarker(doc, vft.Id, elevationMarkerLocation, referenceViewPlan.Scale);
 
             return elevationMarker;
         }
