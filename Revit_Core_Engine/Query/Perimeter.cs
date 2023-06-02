@@ -26,9 +26,6 @@ using BH.oM.Geometry;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System;
-using Autodesk.Revit.DB.Architecture;
 
 namespace BH.Revit.Engine.Core
 {
@@ -47,14 +44,24 @@ namespace BH.Revit.Engine.Core
             if (spatialElement == null)
                 return null;
 
-            Autodesk.Revit.DB.Face face = spatialElement.Faces(new Options()).Where(x => Math.Abs((x as PlanarFace).FaceNormal.Z + 1) < Tolerance.MacroDistance).FirstOrDefault();
+            IList<IList<BoundarySegment>> boundarySegments = spatialElement.GetBoundarySegments(new SpatialElementBoundaryOptions());
+            if (boundarySegments == null)
+                return null;
 
-            IList<CurveLoop> curveLoops = face.GetEdgesAsCurveLoops();
             List<PolyCurve> results = new List<PolyCurve>();
 
-            foreach (CurveLoop cLoop in curveLoops)
+            foreach (IList<BoundarySegment> boundarySegmentList in boundarySegments)
             {
-                results.Add(cLoop.FromRevit());
+                if (boundarySegmentList == null)
+                    continue;
+
+                List<BH.oM.Geometry.ICurve> curves = new List<ICurve>();
+                foreach (BoundarySegment boundarySegment in boundarySegmentList)
+                {
+                    curves.Add(boundarySegment.GetCurve().IFromRevit());
+                }
+
+                results.Add(BH.Engine.Geometry.Create.PolyCurve(curves));
             }
 
             return results;
