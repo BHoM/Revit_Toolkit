@@ -27,6 +27,7 @@ using BH.Engine.Geometry;
 using BH.oM.Base.Attributes;
 using System.Linq;
 using System.Collections.Generic;
+using BH.oM.Adapters.Revit;
 
 namespace BH.Revit.Engine.Core
 {
@@ -56,10 +57,16 @@ namespace BH.Revit.Engine.Core
 
             if (boundingBoxXyz != null)
             {
-                if (offset != 0)
+                if (Math.Abs(offset) > Tolerance.ShortCurve)
                 {
-                    boundingBoxXyz.Min -= new XYZ(offset, offset, offset);
-                    boundingBoxXyz.Max += new XYZ(offset, offset, offset);
+                    XYZ offsetVec = new XYZ(offset, offset, offset);
+                    Transform bboxTransform = boundingBoxXyz.Transform;
+
+                    if (!bboxTransform.IsIdentity)
+                        bboxTransform.OfVector(offsetVec);
+
+                    boundingBoxXyz.Min -= offsetVec;
+                    boundingBoxXyz.Max += offsetVec;
                 }
 
                 try
