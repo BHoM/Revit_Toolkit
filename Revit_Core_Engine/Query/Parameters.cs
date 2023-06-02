@@ -57,7 +57,6 @@ namespace BH.Revit.Engine.Core
         [Description("Returns all unique parameters of the element.")]
         private static List<Parameter> Parameters(this Element element, bool includeHiddenParameters = false)
         {
-            var doc = element.Document;
             var parameters = new List<Parameter>();
 
             if (includeHiddenParameters)
