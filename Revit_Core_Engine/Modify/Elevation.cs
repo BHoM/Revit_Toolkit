@@ -58,7 +58,7 @@ namespace BH.Revit.Engine.Core
             //set template
             if (viewTemplateId != null && viewTemplateId.IntegerValue != -1)
             {
-                if (!(doc.GetElement(viewTemplateId) as View).IsTemplate)
+                if ((doc.GetElement(viewTemplateId) as View)?.IsTemplate != true)
                 {
                     BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if it's a valid View Template.");
                     return;

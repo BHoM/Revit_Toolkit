@@ -36,7 +36,7 @@ namespace BH.Revit.Engine.Core
 
         [Description("Queries corner points of BoundingBoxXYZ.")]
         [Input("bbox", "BoundingBoxXYZ to get the points from.")]
-        [Output("cornerCurves", "List of corner points of the BoundingBoxXYZ.")]
+        [Output("cornerPoints", "List of corner points of the BoundingBoxXYZ.")]
         public static List<XYZ> CornerPoints(this BoundingBoxXYZ bbox)
         {
             if (bbox == null)
