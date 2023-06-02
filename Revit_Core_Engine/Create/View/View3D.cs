@@ -57,17 +57,7 @@ namespace BH.Revit.Engine.Core
 
             if (boundingBoxXyz != null)
             {
-                if (Math.Abs(offset) > Tolerance.ShortCurve)
-                {
-                    XYZ offsetVec = new XYZ(offset, offset, offset);
-                    Transform bboxTransform = boundingBoxXyz.Transform;
-
-                    if (!bboxTransform.IsIdentity)
-                        bboxTransform.OfVector(offsetVec);
-
-                    boundingBoxXyz.Min -= offsetVec;
-                    boundingBoxXyz.Max += offsetVec;
-                }
+                boundingBoxXyz.Inflate(offset);
 
                 try
                 {
