@@ -41,31 +41,24 @@ namespace BH.Revit.Engine.Core
         [Input("viewName", "Optional, name of the new view.")]
         [Input("boundingBoxXyz", "Optional, the cuboid BoundingBoxXYZ to fit isometric view.")]
         [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
-        [Input("viewDetailLevel", "Optional, the Detail Level of the view.")]
-        [Input("offset", "Offset that will be added to the BoundingBoxXYZ.")]
+        [Input("viewDetailLevel", "Optional, the Detail Level of the view.")]        
         [Output("view3D", "The new view.")]        
-        public static View View3D(this Document document, string viewName = null, BoundingBoxXYZ boundingBoxXyz = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse, double offset = 0)
+        public static View View3D(this Document document, string viewName = null, BoundingBoxXYZ boundingBoxXyz = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse)
         {
-            View newView = null;
+            View result = null;
+
             ViewFamilyType vft = Query.ViewFamilyType(document, ViewFamily.ThreeDimensional);
 
-            newView = Autodesk.Revit.DB.View3D.CreateIsometric(document, vft.Id);
-
-            if (viewDetailLevel != ViewDetailLevel.Undefined)
-                Modify.SetViewDetailLevel(newView, viewDetailLevel);
+            result = Autodesk.Revit.DB.View3D.CreateIsometric(document, vft.Id);
+            
+            Modify.SetViewDetailLevel(result, viewDetailLevel);
 
             if (boundingBoxXyz != null)
             {
-                if (offset != 0)
-                {
-                    boundingBoxXyz.Min -= new XYZ(offset, offset, offset);
-                    boundingBoxXyz.Max += new XYZ(offset, offset, offset);
-                }
-
                 try
                 {
-                    (newView as View3D).SetSectionBox(boundingBoxXyz);
-                    AlignCropBoxToBoundingBox(newView, boundingBoxXyz);
+                    (result as View3D).SetSectionBox(boundingBoxXyz);
+                    AlignCropBoxToBoundingBox(result, boundingBoxXyz);
                 }
                 catch (Exception)
                 {
@@ -75,28 +68,33 @@ namespace BH.Revit.Engine.Core
 
             if (viewTemplateId != null)
             {
-                if (!(document.GetElement(viewTemplateId) as View).IsTemplate)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if it's a valid View Template.");
-                    return newView;
-                }
-
                 try
                 {
-                    newView.ViewTemplateId = viewTemplateId;
+                    result.ViewTemplateId = viewTemplateId;
                 }
                 catch (Exception)
                 {
-                    BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if it's a valid ElementId.");
+                    BH.Engine.Base.Compute.RecordWarning("Could not apply the View Template of Id " + viewTemplateId + "'." + ". Please check if it's a valid ElementId.");
                 }
             }
-
+            
             if (!string.IsNullOrEmpty(viewName))
             {
-                newView.SetViewName(viewName);
+                try
+                {
+#if (REVIT2018 || REVIT2019)
+                    result.ViewName = viewName;
+#else
+                    result.Name = viewName;
+#endif
+                }
+                catch
+                {
+                    BH.Engine.Base.Compute.RecordWarning("There is already a view named '" + viewName + "'." + " It has been named '" + result.Name + "' instead.");
+                }
             }
-
-            return newView;
+            
+            return result;
         }
         
         /***************************************************/
