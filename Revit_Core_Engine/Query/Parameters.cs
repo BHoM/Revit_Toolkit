@@ -36,9 +36,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Gets the parameter type of a Revit parameter definition.")]
-        [Input("definition", "Revit parameter definition to extract the parameter type from.")]
-        [Output("parameterType", "Parameter type extracted from the input Revit parameter definition.")]
+        [Description("Returns all unique parameters of the elements.")]
+        [Input("elements", "Elements to get the parameters from.")]
+        [Input("includeHiddenParameters", "True for including hidden parameters (not visible in the Revit UI).")]
+        [Output("parameters", "Unique parameters of the given elements.")]
         public static List<Parameter> Parameters(this List<Element> elements, bool includeHiddenParameters = false)
         {
             var parameters = new List<Parameter>();
@@ -53,9 +54,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Gets the parameter type of a Revit parameter definition.")]
-        [Input("definition", "Revit parameter definition to extract the parameter type from.")]
-        [Output("parameterType", "Parameter type extracted from the input Revit parameter definition.")]
+        [Description("Returns all unique parameters of the element.")]
         private static List<Parameter> Parameters(this Element element, bool includeHiddenParameters = false)
         {
             var doc = element.Document;
