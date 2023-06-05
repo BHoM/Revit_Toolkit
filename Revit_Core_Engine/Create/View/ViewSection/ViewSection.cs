@@ -70,35 +70,12 @@ namespace BH.Revit.Engine.Core
             if (viewScale != 0)
                 result.SetViewScale(viewScale);
 
-            if (viewDetailLevel != ViewDetailLevel.Undefined)
-                result.SetViewDetailLevel(viewDetailLevel);
-
-            if (viewTemplateId != null)
-            {
-                try
-                {
-                    result.ViewTemplateId = viewTemplateId;
-                }
-                catch (Exception)
-                {
-                    BH.Engine.Base.Compute.RecordWarning("Could not apply the View Template of Id " + viewTemplateId + "'." + ". Please check if it's a valid ElementId.");
-                }
-            }
+            result.SetViewDetailLevel(viewDetailLevel);
+            result.SetViewTemplate(viewTemplateId);
 
             if (!string.IsNullOrEmpty(viewName))
             {
-                try
-                {
-#if (REVIT2018 || REVIT2019)
-                    result.ViewName = viewName;
-#else
-                    result.Name = viewName;
-#endif
-                }
-                catch
-                {
-                    BH.Engine.Base.Compute.RecordWarning("There is already a view named '" + viewName + "'." + " It has been named '" + result.Name + "' instead.");
-                }
+                result.SetViewName(viewName);
             }
 
             return result;
