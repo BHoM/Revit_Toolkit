@@ -36,18 +36,50 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Returns all unique type parameters of the elements.")]
+        [Input("elements", "Elements to get the parameters from.")]
+        [Input("includeHiddenParameters", "True for including hidden parameters (not displayed in the Revit UI).")]
+        [Output("parameters", "Unique type parameters of the given elements.")]
+        public static List<Parameter> TypeParameters(this List<Element> elements, bool includeHiddenParameters = true)
+        {
+            if (elements == null || elements.Count == 0)
+                return null;
+
+            HashSet<int> elementTypeIds = new HashSet<int>();
+
+            foreach (Element elem in elements)
+            {
+                ElementId elTypeId = elem.GetTypeId();
+
+                if (elTypeId.IntegerValue != -1)
+                    elementTypeIds.Add(elTypeId.IntegerValue);
+            }
+
+            Document doc = elements[0].Document;
+            List<Element> elementTypes = elementTypeIds.Select(x => doc.GetElement(new ElementId(x))).ToList();
+
+            return elementTypes.Parameters(includeHiddenParameters);
+        }
+
+        /***************************************************/
+
         [Description("Returns all unique parameters of the elements.")]
         [Input("elements", "Elements to get the parameters from.")]
-        [Input("includeHiddenParameters", "True for including hidden parameters (not visible in the Revit UI).")]
+        [Input("includeHiddenParameters", "True for including hidden parameters (not displayed in the Revit UI).")]
         [Output("parameters", "Unique parameters of the given elements.")]
-        public static List<Parameter> Parameters(this List<Element> elements, bool includeHiddenParameters = false)
+        public static List<Parameter> Parameters(this List<Element> elements, bool includeHiddenParameters = true)
         {
-            var parameters = new List<Parameter>();
+            HashSet<int> ids = new HashSet<int>();
+            List<Parameter> parameters = new List<Parameter>();
 
-            foreach (var elem in elements)
-                parameters.AddRange(elem.Parameters(includeHiddenParameters));
-
-            parameters = parameters.GroupBy(x => x.Id.IntegerValue).Select(x => x.First()).ToList();
+            foreach (Element elem in elements)
+            {
+                foreach (Parameter param in elem.Parameters(includeHiddenParameters))
+                {
+                    if (ids.Add(param.Id.IntegerValue))
+                        parameters.Add(param);
+                }
+            }
 
             return parameters;
         }
@@ -55,7 +87,10 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Returns all unique parameters of the element.")]
-        private static List<Parameter> Parameters(this Element element, bool includeHiddenParameters = false)
+        [Input("elements", "Element to get the parameters from.")]
+        [Input("includeHiddenParameters", "True for including hidden parameters (not displayed in the Revit UI).")]
+        [Output("parameters", "Unique parameters of the given elements.")]
+        public static List<Parameter> Parameters(this Element element, bool includeHiddenParameters = true)
         {
             var parameters = new List<Parameter>();
 
