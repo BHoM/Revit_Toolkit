@@ -55,7 +55,7 @@ namespace BH.Revit.Engine.Core
                 }
                 catch (Exception)
                 {
-                    BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if it's a valid ElementId.");
+                    BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if view template is applicable to this view.");
                 }
             }
         }
