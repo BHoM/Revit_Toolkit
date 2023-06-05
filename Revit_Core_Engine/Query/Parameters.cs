@@ -100,7 +100,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Returns all parameters of the element.")]
-        [Input("elements", "Element to get the parameters from.")]
+        [Input("element", "Element to get the parameters from.")]
         [Input("includeHiddenParameters", "If true, include hidden parameters (not displayed in the Revit UI), otherwise skip them.")]
         [Output("parameters", "Parameters of the given elements.")]
         public static List<Parameter> Parameters(this Element element, bool includeHiddenParameters = true)
