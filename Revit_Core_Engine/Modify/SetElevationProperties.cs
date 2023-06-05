@@ -56,23 +56,7 @@ namespace BH.Revit.Engine.Core
             elevation.SetViewName(elevationName);
 
             //set template
-            if (viewTemplateId != null && viewTemplateId.IntegerValue != -1)
-            {
-                if ((doc.GetElement(viewTemplateId) as View)?.IsTemplate != true)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if it's a valid View Template.");
-                    return;
-                }
-
-                try
-                {
-                    elevation.ViewTemplateId = viewTemplateId;
-                }
-                catch (Exception)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if it's a valid ElementId.");
-                }
-            }
+            elevation.SetViewTemplate(viewTemplateId);
 
             //set crop box shape
             var curveLoop = ElevationCropRegionShape(bottomLine, height, offset);

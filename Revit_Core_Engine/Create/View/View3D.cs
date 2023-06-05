@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
         [Input("boundingBoxXyz", "Optional, the cuboid BoundingBoxXYZ to fit isometric view.")]
         [Input("viewTemplateId", "Optional, the View Template Id to be applied in the view.")]
         [Input("viewDetailLevel", "Optional, the Detail Level of the view.")]
-        [Input("offset", "Offset that will be added to the BoundingBoxXYZ.")]
+        [Input("offset", "Offset that will be added to each side of the input BoundingBoxXYZ.")]
         [Output("view3D", "The new view.")]        
         public static View View3D(this Document document, string viewName = null, BoundingBoxXYZ boundingBoxXyz = null, ElementId viewTemplateId = null, ViewDetailLevel viewDetailLevel = ViewDetailLevel.Coarse, double offset = 0)
         {
@@ -52,8 +52,7 @@ namespace BH.Revit.Engine.Core
 
             newView = Autodesk.Revit.DB.View3D.CreateIsometric(document, vft.Id);
 
-            if (viewDetailLevel != ViewDetailLevel.Undefined)
-                Modify.SetViewDetailLevel(newView, viewDetailLevel);
+            Modify.SetViewDetailLevel(newView, viewDetailLevel);
 
             if (boundingBoxXyz != null)
             {
@@ -70,23 +69,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            if (viewTemplateId != null)
-            {
-                if (!(document.GetElement(viewTemplateId) as View).IsTemplate)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if it's a valid View Template.");
-                    return newView;
-                }
-
-                try
-                {
-                    newView.ViewTemplateId = viewTemplateId;
-                }
-                catch (Exception)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if it's a valid ElementId.");
-                }
-            }
+            newView.SetViewTemplate(viewTemplateId);
 
             if (!string.IsNullOrEmpty(viewName))
             {
