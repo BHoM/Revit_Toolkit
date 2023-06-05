@@ -27,6 +27,7 @@ using BH.oM.Graphics.Misc;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Security.Cryptography;
 
 namespace BH.Revit.Engine.Core
 {
@@ -36,14 +37,23 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns all unique type parameters of the elements.")]
-        [Input("elements", "Elements to get the parameters from.")]
+        [Description("Returns single instance of each unique type parameter of the given elements. Each parameter is extracted only from the first element in the group that shares it, therefore no information about values nor parent elements of the parameter objects should be derived from the output of this method.")]
+        [Input("elements", "Elements to get the type parameters from.")]
         [Input("includeHiddenParameters", "True for including hidden parameters (not displayed in the Revit UI).")]
         [Output("parameters", "Unique type parameters of the given elements.")]
         public static List<Parameter> TypeParameters(this List<Element> elements, bool includeHiddenParameters = true)
         {
-            if (elements == null || elements.Count == 0)
+            if (elements == null)
                 return null;
+
+            if (elements.Count == 0)
+                return new List<Parameter>();
+
+            if (elements.GroupBy(x => x.Document).Count() > 1)
+            {
+                BH.Engine.Base.Compute.RecordWarning("Could not return parameters because elements are stored in more than one Revit document.");
+                return null;
+            }
 
             HashSet<int> elementTypeIds = new HashSet<int>();
 
@@ -63,12 +73,15 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Returns all unique parameters of the elements.")]
+        [Description("Returns single instance of each unique parameter of the given elements. Each parameter is extracted only from the first element in the group that shares it, therefore no information about values nor parent elements of the parameter objects should be derived from the output of this method.")]
         [Input("elements", "Elements to get the parameters from.")]
         [Input("includeHiddenParameters", "True for including hidden parameters (not displayed in the Revit UI).")]
-        [Output("parameters", "Unique parameters of the given elements.")]
+        [Output("parameters", "Parameters of the given elements.")]
         public static List<Parameter> Parameters(this List<Element> elements, bool includeHiddenParameters = true)
         {
+            if (elements == null)
+                return null;
+
             HashSet<int> ids = new HashSet<int>();
             List<Parameter> parameters = new List<Parameter>();
 
@@ -86,13 +99,16 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Returns all unique parameters of the element.")]
+        [Description("Returns all parameters of the element.")]
         [Input("elements", "Element to get the parameters from.")]
         [Input("includeHiddenParameters", "True for including hidden parameters (not displayed in the Revit UI).")]
-        [Output("parameters", "Unique parameters of the given elements.")]
+        [Output("parameters", "Parameters of the given elements.")]
         public static List<Parameter> Parameters(this Element element, bool includeHiddenParameters = true)
         {
-            var parameters = new List<Parameter>();
+            if (element == null)
+                return null;
+
+            List<Parameter> parameters = new List<Parameter>();
 
             if (includeHiddenParameters)
             {
