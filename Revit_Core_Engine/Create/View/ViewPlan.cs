@@ -61,8 +61,7 @@ namespace BH.Revit.Engine.Core
 
             newView = Autodesk.Revit.DB.ViewPlan.Create(document, viewFamilyType.Id, level.Id);
             
-            if (viewDetailLevel != ViewDetailLevel.Undefined)
-                Modify.SetViewDetailLevel(newView, viewDetailLevel);
+            Modify.SetViewDetailLevel(newView, viewDetailLevel);
             
             if (cropBox != null)
             {
@@ -78,23 +77,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            if (viewTemplateId != null)
-            {
-                if (!(document.GetElement(viewTemplateId) as View).IsTemplate)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if it's a valid View Template.");
-                    return newView;
-                }
-
-                try
-                {
-                    newView.ViewTemplateId = viewTemplateId;
-                }
-                catch (Exception)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"Could not apply the View Template of Id '{viewTemplateId}'. Please check if it's a valid ElementId.");
-                }
-            }
+            newView.SetViewTemplate(viewTemplateId);
             
             if (!string.IsNullOrEmpty(viewName))
             {
