@@ -38,7 +38,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Enlarges BoundingBoxXYZ by given offset.")]
-        [Input("boundingBoxXYZ", "BoundingBoxXYZ to add the offset for.")]
+        [Input("boundingBoxXyz", "BoundingBoxXYZ to add the offset for.")]
         [Input("offset", "Offset that will be added to the BoundingBoxXYZ.")]
         public static void Inflate(this BoundingBoxXYZ boundingBoxXyz, double offset)
         {
