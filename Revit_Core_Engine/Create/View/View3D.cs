@@ -37,6 +37,7 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [PreviousVersion("6.2", "BH.Revit.Engine.Core.Create.View3D(Autodesk.Revit.DB.Document, System.String, Autodesk.Revit.DB.BoundingBoxXYZ, Autodesk.Revit.DB.ElementId, Autodesk.Revit.DB.ViewDetailLevel)")]
         [Description("Creates and returns a new ISOMETRIC 3D view in the current Revit file.")]
         [Input("document", "Revit current document to be processed.")]
         [Input("viewName", "Optional, name of the new view.")]
