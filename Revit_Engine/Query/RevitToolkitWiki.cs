@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
  *
@@ -20,29 +20,34 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.Attributes;
-using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
+using BH.oM.Adapters.Revit;
+using BH.oM.Base;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
-namespace BH.Revit.Adapter.Core
+namespace BH.Engine.Adapters.Revit
 {
-    [Transaction(TransactionMode.Manual)]
-    [Regeneration(RegenerationOption.Manual)]
-    public class RevitToolkitWiki : IExternalCommand
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
+        [Description("Generates the Revit Toolkit wiki URL for a provided page.")]
+        [Input("page", "An optional page in the wiki to link to. If no page is provided, the root URL is returned.")]
+        [Output("url", "Fully qualified URL for the Revit Toolkit wiki.")]
+        public static string RevitToolkitWiki(string page = null)
         {
-            System.Diagnostics.Process.Start(BH.Engine.Adapters.Revit.Query.RevitToolkitWiki());
-            return Result.Succeeded;
+            string url = "https://github.com/BHoM/Revit_Toolkit/wiki";
+
+            if (!string.IsNullOrEmpty(page))
+            {
+                url += $"/{page}";
+            }
+
+            return url;
         }
 
         /***************************************************/
     }
 }
-
-
-
