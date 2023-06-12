@@ -48,6 +48,9 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
+            if (familySymbol.IsActive == false)
+                familySymbol.Activate();
+
             FamilyInstance adaptiveComponent = AdaptiveComponentInstanceUtils.CreateAdaptiveComponentInstance(document, familySymbol);
             IList<ElementId> pointIds = AdaptiveComponentInstanceUtils.GetInstancePointElementRefIds(adaptiveComponent);
             if (pointIds.Count != points.Count)
