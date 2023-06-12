@@ -55,6 +55,9 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
+            if (familySymbol.IsActive == false)
+                familySymbol.Activate();
+
             switch (familySymbol.Family.FamilyPlacementType)
             {
                 case FamilyPlacementType.OneLevelBased:
@@ -94,6 +97,9 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
+            if (familySymbol.IsActive == false)
+                familySymbol.Activate();
+
             switch (familySymbol.Family.FamilyPlacementType)
             {
                 case FamilyPlacementType.TwoLevelsBased:
@@ -131,6 +137,9 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
+            if (familySymbol.IsActive == false)
+                familySymbol.Activate();
+
             if (familySymbol.Family.FamilyPlacementType == FamilyPlacementType.ViewBased)
                 return Create.FamilyInstance_ViewBased(document, familySymbol, origin, orientation, view, settings);
             else
@@ -155,6 +164,9 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             settings = settings.DefaultIfNull();
+
+            if (familySymbol.IsActive == false)
+                familySymbol.Activate();
 
             if (familySymbol.Family.FamilyPlacementType == FamilyPlacementType.CurveBasedDetail)
                 return Create.FamilyInstance_CurveBasedDetail(document, familySymbol, curve, view, settings);
