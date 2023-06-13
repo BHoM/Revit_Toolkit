@@ -110,9 +110,12 @@ namespace BH.Revit.Engine.Core
             if (parameter != null)
                 int.TryParse(parameter.AsValueString(), out familyTypeId);
 
-            parameter = element.get_Parameter(BuiltInParameter.ELEM_PARTITION_PARAM);
-            if (parameter != null)
-                workset = parameter.AsValueString();
+            if (element.Document.IsWorkshared)
+            {
+                parameter = element.get_Parameter(BuiltInParameter.ELEM_PARTITION_PARAM);
+                if (parameter != null)
+                    workset = parameter.AsValueString();
+            }
 
             if (element.ViewSpecific)
                 ownerViewId = element.OwnerViewId.IntegerValue;
