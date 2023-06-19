@@ -55,7 +55,15 @@ namespace BH.Revit.Engine.Core
 
                     Transform geometryTransform = geometryInstance.Transform;
                     if (transform != null)
+                    {
                         geometryTransform = geometryTransform.Multiply(transform.Inverse);
+
+                        // This is an edge case fix where the transform origin lies very close to zero, but not exactly at it
+                        // See #1330 for reference
+                        double distanceFromZero = geometryTransform.Origin.DistanceTo(XYZ.Zero);
+                        if (distanceFromZero != 0 && distanceFromZero < 1e-6)
+                            geometryTransform.Origin = XYZ.Zero;
+                    }
 
                     GeometryElement geomElement = geometryInstance.GetInstanceGeometry(geometryTransform);
                     if (geomElement == null)
