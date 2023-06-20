@@ -173,7 +173,11 @@ namespace BH.Revit.Engine.Core
             
             List<BH.oM.Geometry.Point> endPoints = connectors.Where(x => x.ConnectorType == ConnectorType.End).Select(x => x.Origin.PointFromRevit()).ToList();
             List<BH.oM.Geometry.Point> midPoints = connectors.Where(x => x.ConnectorType != ConnectorType.End).Select(x => x.Origin.PointFromRevit()).ToList();
-            
+
+            //Thanks to Revit, the order of connectors from connectorManager.Connectors isn't always the same!
+            //So, we need SortCollinear to maintain the same connector order each time we pull an object.
+            endPoints = endPoints.SortCollinear();
+
             BH.oM.Geometry.Line line = BH.Engine.Geometry.Create.Line(endPoints[0], endPoints[1]);
             List<BH.oM.Geometry.Line> result = new List<BH.oM.Geometry.Line>();
 
