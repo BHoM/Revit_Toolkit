@@ -24,12 +24,11 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Physical.Elements;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
+using BH.oM.Physical.Elements;
 using System;
 using System.ComponentModel;
-using System.Linq;
-using BH.oM.Geometry;
 
 namespace BH.Revit.Engine.Core
 {
@@ -90,8 +89,8 @@ namespace BH.Revit.Engine.Core
 
                     //Thanks to Revit, the order of connectors from connectorManager.Connectors isn't always the same!
                     //So, we need to get the connector whose origin has the smallest X,Y & Z values in order to measure OrientationAngle consistently.
-                    var p1 = connector.Origin;
-                    var p2 = conn.Origin;
+                    XYZ p1 = connector.Origin;
+                    XYZ p2 = conn.Origin;
 
                     if ((p1.X - p2.X) > Tolerance.Distance
                         || (p1.Y - p2.Y) > Tolerance.Distance
