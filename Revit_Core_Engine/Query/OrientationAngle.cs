@@ -29,6 +29,7 @@ using BH.oM.Base.Attributes;
 using System;
 using System.ComponentModel;
 using System.Linq;
+using BH.oM.Geometry;
 
 namespace BH.Revit.Engine.Core
 {
@@ -81,8 +82,23 @@ namespace BH.Revit.Engine.Core
                 // Get the End connector for this duct
                 if (conn.ConnectorType == ConnectorType.End)
                 {
-                    connector = conn;
-                    break;
+                    if (connector == null)
+                    {
+                        connector = conn;
+                        continue;
+                    }
+
+                    //Thanks to Revit, the order of connectors from connectorManager.Connectors isn't always the same!
+                    //So, we need to get the connector whose origin has the smallest X,Y & Z values in order to measure OrientationAngle consistently.
+                    var p1 = connector.Origin;
+                    var p2 = conn.Origin;
+
+                    if ((p1.X - p2.X) > Tolerance.Distance
+                        || (p1.Y - p2.Y) > Tolerance.Distance
+                        || (p1.Z - p2.Z) > Tolerance.Distance)
+                    {
+                        connector = conn;
+                    }
                 }
             }
 
