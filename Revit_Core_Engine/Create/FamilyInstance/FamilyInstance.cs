@@ -416,7 +416,7 @@ namespace BH.Revit.Engine.Core
                 bool closest;
 
                 RevitLinkInstance linkInstance = null;
-                if (document != host.Document)
+                if (document.PathName != host.Document.PathName)
                     linkInstance = document.LinkInstance(host.Document.Title);
 
                 XYZ location = host.ClosestPointOn(origin, out reference, out closest, orientation?.BasisZ, linkInstance, settings);
@@ -530,7 +530,7 @@ namespace BH.Revit.Engine.Core
             if (host != null)
             {
                 RevitLinkInstance linkInstance = null;
-                if (document != host.Document)
+                if (document.PathName != host.Document.PathName)
                     linkInstance = document.LinkInstance(host.Document.Title);
 
                 location = host.ClosestLineOn(line, out reference, linkInstance);
@@ -588,7 +588,7 @@ namespace BH.Revit.Engine.Core
             else
             {
                 RevitLinkInstance linkInstance = null;
-                if (document != host.Document)
+                if (document.PathName != host.Document.PathName)
                     linkInstance = document.LinkInstance(host.Document.Title);
 
                 Reference reference;
