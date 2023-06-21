@@ -412,6 +412,7 @@ namespace BH.Revit.Engine.Core
         {
             if (host != null)
             {
+                XYZ location;
                 Reference reference;
                 bool closest;
 
@@ -419,9 +420,18 @@ namespace BH.Revit.Engine.Core
                 if (document.PathName != host.Document.PathName)
                     linkInstance = document.LinkInstance(host.Document.Title);
 
-                XYZ location = host.ClosestPointOn(origin, out reference, out closest, orientation?.BasisZ, linkInstance, settings);
-                if (location == null || reference == null)
-                    return null;
+                if (host is Level)
+                {
+                    location = origin;
+                    reference = ((Level)host).GetPlaneReference();
+                    closest = true;
+                }
+                else
+                {
+                    location = host.ClosestPointOn(origin, out reference, out closest, orientation?.BasisZ, linkInstance, settings);
+                    if (location == null || reference == null)
+                        return null;
+                }
 
                 XYZ refDir = XYZ.BasisX;
                 if (orientation?.BasisX != null)
