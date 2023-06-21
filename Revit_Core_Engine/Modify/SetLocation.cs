@@ -435,7 +435,7 @@ namespace BH.Revit.Engine.Core
 
             if (elementLocation.Point.DistanceTo(newLocation) > settings.DistanceTolerance)
             {
-                if (element.Host != null)
+                if (element.Host != null && !(element.Host is Level))
                 {
                     if (element.HostFace == null)
                     {
