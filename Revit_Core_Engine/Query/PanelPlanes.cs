@@ -77,7 +77,6 @@ namespace BH.Revit.Engine.Core
             List<Plane> result = new List<Plane>();
             foreach (Reference reference in HostObjectUtils.GetTopFaces(floor))
             {
-
                 PlanarFace pf = floor.GetGeometryObjectFromReference(reference) as PlanarFace;
                 if (pf != null)
                 {
@@ -85,6 +84,8 @@ namespace BH.Revit.Engine.Core
                     if (result.All(x => !x.IsSimilar(plane, settings, true)))
                         result.Add(plane);
                 }
+                else
+                    BH.Engine.Base.Compute.RecordWarning($"Some top faces of the floor are not planar, therefore they could not be queried. ElementId: {floor.Id.IntegerValue}");
             }
 
             return result;
@@ -110,6 +111,8 @@ namespace BH.Revit.Engine.Core
                     if (result.All(x => !x.IsSimilar(plane, settings, true)))
                         result.Add(plane);
                 }
+                else
+                    BH.Engine.Base.Compute.RecordWarning($"Some top faces of the roof are not planar, therefore they could not be queried. ElementId: {roof.Id.IntegerValue}");
             }
 
             return result;
@@ -135,6 +138,8 @@ namespace BH.Revit.Engine.Core
                     if (result.All(x => !x.IsSimilar(plane, settings, true)))
                         result.Add(plane);
                 }
+                else
+                    BH.Engine.Base.Compute.RecordWarning($"Some top faces of the ceiling are not planar, therefore they could not be queried. ElementId: {ceiling.Id.IntegerValue}");
             }
 
             return result;
