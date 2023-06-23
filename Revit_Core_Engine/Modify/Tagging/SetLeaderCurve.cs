@@ -51,8 +51,8 @@ namespace BH.Revit.Engine.Core
 
                 existingTag.SetLeaderElbow(elbowPnt);
             }
-            else if (Math.Abs(tag.CenterInXY.X - tag.HostLocationInXY.X) <= Tolerance.Distance
-                || Math.Abs(tag.CenterInXY.Y - tag.HostLocationInXY.Y) <= Tolerance.Distance)
+            else if (Math.Abs(tag.CenterAtOrigin.X - tag.HostLocationInXY.X) <= Tolerance.Distance
+                || Math.Abs(tag.CenterAtOrigin.Y - tag.HostLocationInXY.Y) <= Tolerance.Distance)
             {
                 existingTag.SetLeaderElbow(tag.HostLocation.ClosestPoint(tag.TagLeaderStartCandidates()));
             }

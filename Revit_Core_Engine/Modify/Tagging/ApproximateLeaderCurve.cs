@@ -54,18 +54,12 @@ namespace BH.Revit.Engine.Core
             if (1 - Math.Abs(startDir.DotProduct(endDir)) > Tolerance.Angle)
             {
                 if (startPoint == null)
-                    startPoint = tag.CenterInXY;
+                    startPoint = tag.CenterAtOrigin;
 
                 if (endPoint == null)
                     endPoint = tag.HostLocationInXY;
 
-                XYZ elbowPnt = Core.Compute.VectorIntersection(startPoint, endPoint, startDir, endDir);
-                /***************************************************/
-                //var line1 = new BhLine { Start = startPoint.PointFromRevit(), End = (startPoint + startDir).PointFromRevit(), Infinite = true };
-                //var line2 = new BhLine { Start = endPoint.PointFromRevit(), End = (endPoint + endDir).PointFromRevit(), Infinite = true };
-                //XYZ elbowPnt = line1.LineIntersection(line2, true).ToRevit();
-                /***************************************************/
-
+                XYZ elbowPnt = Compute.VectorIntersection(startPoint, endPoint, startDir, endDir);
                 existingTag.SetLeaderElbow(vTransform.OfPoint(elbowPnt));
                 startPoint = vTransform.OfPoint(startPoint);
 
@@ -79,8 +73,8 @@ namespace BH.Revit.Engine.Core
                     tag.ApproximateLeaderCurve(startDir, endDir, nextStartPnt, tag.HostLocationInXY, iteration);
                 }
             }
-            else if (Math.Abs(tag.CenterInXY.X - tag.HostLocationInXY.X) <= Tolerance.Distance
-                || Math.Abs(tag.CenterInXY.Y - tag.HostLocationInXY.Y) <= Tolerance.Distance)
+            else if (Math.Abs(tag.CenterAtOrigin.X - tag.HostLocationInXY.X) <= Tolerance.Distance
+                || Math.Abs(tag.CenterAtOrigin.Y - tag.HostLocationInXY.Y) <= Tolerance.Distance)
             {
                 existingTag.SetLeaderElbow(tag.HostLocation.ClosestPoint(tag.TagLeaderStartCandidates()));
             }

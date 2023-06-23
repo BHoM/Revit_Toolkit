@@ -52,8 +52,8 @@ namespace BH.Revit.Engine.Core
             if (tag.Tag.HasElbow())
                 tag.ViewTransform.Inverse.OfPoint(tag.Tag.FirstLeaderElbow());
 
-            if (Math.Abs(XYZ.BasisX.DotProduct(refPointInXY - tag.CenterInXY))
-                > Math.Abs(XYZ.BasisY.DotProduct(refPointInXY - tag.CenterInXY)))
+            if (Math.Abs(XYZ.BasisX.DotProduct(refPointInXY - tag.CenterAtOrigin))
+                > Math.Abs(XYZ.BasisY.DotProduct(refPointInXY - tag.CenterAtOrigin)))
             {
                 tag.ApproximateLeaderCurve(XYZ.BasisX, XYZ.BasisY);
             }

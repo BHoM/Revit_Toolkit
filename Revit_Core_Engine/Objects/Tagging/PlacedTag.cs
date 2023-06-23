@@ -39,7 +39,7 @@ namespace BH.Revit.Engine.Core.Objects
         public virtual XYZ Center { get; set; } = null;
 
         [Description("The center point of the tag at the XY plane's origin.")]
-        public virtual XYZ CenterInXY { get; set; } = null;
+        public virtual XYZ CenterAtOrigin { get; set; } = null;
 
         [Description("The start point of this tag's leader line.")]
         public virtual XYZ LeaderStartPoint { get; set; } = null;

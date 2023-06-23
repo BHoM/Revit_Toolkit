@@ -37,7 +37,7 @@ namespace BH.Revit.Engine.Core
         [Output("view", "The view that owns the input Revit element.")]
         public static View OwnerView(this Element elem)
         {
-            if (elem == null || elem.OwnerViewId == null || elem.OwnerViewId.IntegerValue == -1)
+            if (elem?.OwnerViewId == null || elem.OwnerViewId.IntegerValue == -1)
             {
                 return null;
             }

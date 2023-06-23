@@ -23,7 +23,6 @@
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
 using BH.Revit.Engine.Core.Objects;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -36,12 +35,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Create wrappers for existing tags in the model using the LocatedTag class inherited from Adroit.")]
+        [Description("Create wrappers for existing tags in the model using the LocatedTag class.")]
         [Input("tags", "Existing tags in the model.")]
         [Output("locatedTags", "Wrappers for existing tags in the model.")]
         public static List<PlacedTag> PlacedTags(this List<IndependentTag> tags)
         {
-            var locatedTags = new List<PlacedTag>();
+            List<PlacedTag> locatedTags = new List<PlacedTag>();
             if (!tags.Any())
                 return locatedTags;
 
@@ -64,7 +63,7 @@ namespace BH.Revit.Engine.Core
             Transform viewTransform = view.ViewTransform() ?? Transform.Identity;
             Transform inversedTransform = viewTransform.Inverse;
 
-            var validTags = tags.Where(x => x != null && !x.IsOrphaned && !x.Pinned);
+            IEnumerable<IndependentTag> validTags = tags.Where(x => x != null && !x.IsOrphaned && !x.Pinned);
 
             using (Transaction tr = new Transaction(doc, "Get tag locations"))
             {
@@ -106,7 +105,7 @@ namespace BH.Revit.Engine.Core
                         Center = tagCenter,
                         BoundingBox = tagBox,
                         ViewTransform = viewTransform,
-                        CenterInXY = inversedTransform.OfPoint(tagCenter)
+                        CenterAtOrigin = inversedTransform.OfPoint(tagCenter)
                     });
                 }
 
