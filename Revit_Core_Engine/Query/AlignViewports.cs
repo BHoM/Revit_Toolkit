@@ -48,19 +48,19 @@ namespace BH.Revit.Engine.Core
         public static List<XYZ> AlignViewports(this Outline drawingArea, List<Viewport> viewports, out Outline totalOutline, double borderOffset = 0.1, double viewportOffset = 0.1, AlignViewDirection direction = AlignViewDirection.Right)
         {
             int rows = 1;
-            Outline rowOutline;
-            List<XYZ> viewportPoints = AlignViewportsInRow(drawingArea, viewports, out rowOutline, borderOffset, viewportOffset, direction);
+
+            XYZ borderOffsetVec = new XYZ(borderOffset, borderOffset, 0);
+            drawingArea.MinimumPoint += borderOffsetVec;
+            drawingArea.MaximumPoint -= borderOffsetVec;
+
+            List<XYZ> viewportPoints = AlignViewportsInRow(drawingArea, viewports, out Outline rowOutline, viewportOffset, direction);
             totalOutline = new Outline(rowOutline);
 
             while (totalOutline.MaximumPoint.X > drawingArea.MaximumPoint.X)
             {
                 rows++;
 
-                double totalOutlineMinX = double.MaxValue;
-                double totalOutlineMinY = double.MaxValue;
-                double totalOutlineMaxX = double.MinValue;
-                double totalOutlineMaxY = double.MinValue;
-
+                totalOutline = null;
                 Outline newDrawingArea = new Outline(drawingArea);
                 viewportPoints = new List<XYZ>();
 
@@ -73,43 +73,28 @@ namespace BH.Revit.Engine.Core
 
                 foreach (List<Viewport> viewportsInRow in listOfViewports)
                 {
-                    viewportPoints.AddRange(AlignViewportsInRow(newDrawingArea, viewportsInRow, out rowOutline, borderOffset, viewportOffset, direction));
+                    viewportPoints.AddRange(AlignViewportsInRow(newDrawingArea, viewportsInRow, out rowOutline, viewportOffset, direction));
+                    totalOutline = totalOutline.Add(rowOutline);
 
-                    if (rowOutline.MinimumPoint.X < totalOutlineMinX)
-                        totalOutlineMinX = rowOutline.MinimumPoint.X;
-                    if (rowOutline.MinimumPoint.Y < totalOutlineMinY)
-                        totalOutlineMinY = rowOutline.MinimumPoint.Y;
-                    if (rowOutline.MaximumPoint.X > totalOutlineMaxX)
-                        totalOutlineMaxX = rowOutline.MaximumPoint.X;
-                    if (rowOutline.MaximumPoint.Y > totalOutlineMaxY)
-                        totalOutlineMaxY = rowOutline.MaximumPoint.Y;
-
-                    XYZ newDrawingAreaMaxPoint = new XYZ(totalOutlineMaxX, totalOutlineMinY, 0);
+                    XYZ newDrawingAreaMaxPoint = new XYZ(totalOutline.MaximumPoint.X, totalOutline.MinimumPoint.Y - viewportOffset, 0);
                     newDrawingArea = new Outline(newDrawingArea.MinimumPoint, newDrawingAreaMaxPoint);
                 }
-
-                XYZ totalOutlineMinPoint = new XYZ(totalOutlineMinX, totalOutlineMinY, 0);
-                XYZ totalOutlineMaxPoint = new XYZ(totalOutlineMaxX, totalOutlineMaxY, 0);
-
-                totalOutline = new Outline(totalOutlineMinPoint, totalOutlineMaxPoint);
             }
 
             return viewportPoints;
         }
 
         /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
 
-        [Description("Finds the location curve that should be assigned to the Revit FamilyInstance representing a framing element in order to make this instance's centroid overlap with the centreline of a given BHoM framing element, taken all offsets and justifications into account.")]
-        [Input("framingElement", "BHoM framing element to align the Revit framing to.")]
-        [Output("curve", "Location curve for the input Revit FamilyInstance that aligns its centreline to the input BHoM framing element.")]
-        public static List<XYZ> AlignViewportsInRow(this Outline drawingArea, List<Viewport> viewports, out Outline totalOutline, double borderOffset = 0.1, double viewportOffset = 0.1, AlignViewDirection direction = AlignViewDirection.Right)
+        [Description("Return center points of viewports in the given direction.")]
+        private static List<XYZ> AlignViewportsInRow(this Outline drawingArea, List<Viewport> viewports, out Outline totalOutline, double viewportOffset = 0.1, AlignViewDirection direction = AlignViewDirection.Right)
         {
             //topleft point of drawing area with border offset
-            XYZ topLeftPoint = new XYZ(drawingArea.MinimumPoint.X + borderOffset, drawingArea.MaximumPoint.Y - borderOffset, 0);
-            List<XYZ> viewportCenterPoints = new List<XYZ>();
-
-            XYZ viewportsTotalMinPoint = new XYZ();
-            XYZ viewportsTotalMaxPoint = new XYZ();
+            XYZ topLeftPoint = new XYZ(drawingArea.MinimumPoint.X, drawingArea.MaximumPoint.Y, 0);
+            List<XYZ> viewportNewCenterPoints = new List<XYZ>();
+            totalOutline = null;
 
             for (int i = 0; i < viewports.Count; i++)
             {
@@ -117,27 +102,56 @@ namespace BH.Revit.Engine.Core
                 Outline viewportOutline = viewport.GetBoxOutline();
                 double viewportWidth = viewportOutline.MaximumPoint.X - viewportOutline.MinimumPoint.X;
                 double viewportHeight = viewportOutline.MaximumPoint.Y - viewportOutline.MinimumPoint.Y;
-                double viewportCenterX;
+                double viewportNewCenterX;
 
                 if (i == 0)
-                {
-                    viewportCenterX = topLeftPoint.X + viewportWidth / 2;
-                    viewportsTotalMinPoint = new XYZ(topLeftPoint.X, topLeftPoint.Y - viewportHeight, 0);
-                }
+                    viewportNewCenterX = topLeftPoint.X + viewportWidth / 2;
                 else
-                    viewportCenterX = topLeftPoint.X + viewportOffset + viewportWidth / 2;
+                    viewportNewCenterX = topLeftPoint.X + viewportOffset + viewportWidth / 2;
 
-                double viewportCenterY = topLeftPoint.Y - viewportHeight / 2;
-                XYZ viewportPoint = new XYZ(viewportCenterX, viewportCenterY, 0);
-                viewportCenterPoints.Add(viewportPoint);
+                double viewportNewCenterY = topLeftPoint.Y - viewportHeight / 2;
+                XYZ viewportNewCenterPoint = new XYZ(viewportNewCenterX, viewportNewCenterY, 0);
+                viewportNewCenterPoints.Add(viewportNewCenterPoint);
 
-                topLeftPoint = new XYZ(viewportCenterX + viewportWidth / 2, viewportCenterY + viewportHeight / 2, 0);
-                viewportsTotalMaxPoint = new XYZ(viewportPoint.X + viewportWidth / 2, viewportPoint.Y + viewportHeight / 2, 0);
+                topLeftPoint = new XYZ(viewportNewCenterX + viewportWidth / 2, viewportNewCenterY + viewportHeight / 2, 0);
+
+                viewportOutline = MovedToPoint(viewportOutline, viewportNewCenterPoint);
+                totalOutline = totalOutline.Add(viewportOutline);
             }
 
-            totalOutline = new Outline(viewportsTotalMinPoint, viewportsTotalMaxPoint);
+            return viewportNewCenterPoints;
+        }
 
-            return viewportCenterPoints;
+        /***************************************************/
+
+        private static Outline MovedToPoint(this Outline outline, XYZ centerPoint)
+        {
+            double outlineWidth = outline.MaximumPoint.X - outline.MinimumPoint.X;
+            double outlineHeight = outline.MaximumPoint.Y - outline.MinimumPoint.Y;
+            XYZ halfDiagonal = new XYZ(outlineWidth / 2, outlineHeight / 2, 0);
+
+            XYZ newMin = centerPoint - halfDiagonal;
+            XYZ newMax = centerPoint + halfDiagonal;
+
+            return new Outline(newMin, newMax);
+        }
+
+        /***************************************************/
+
+        private static Outline Add(this Outline outline, Outline outlineToAdd)
+        {
+            if (outline == null)
+                return new Outline(outlineToAdd);
+
+            double minX = Math.Min(outline.MinimumPoint.X, outlineToAdd.MinimumPoint.X);
+            double minY = Math.Min(outline.MinimumPoint.Y, outlineToAdd.MinimumPoint.Y);
+            double maxX = Math.Max(outline.MaximumPoint.X, outlineToAdd.MaximumPoint.X);
+            double maxY = Math.Max(outline.MaximumPoint.Y, outlineToAdd.MaximumPoint.Y);
+
+            XYZ minPoint = new XYZ(minX, minY, 0);
+            XYZ maxPoint = new XYZ(maxX, maxY, 0);
+
+            return new Outline(minPoint, maxPoint);
         }
 
         /***************************************************/
