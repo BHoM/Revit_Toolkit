@@ -21,20 +21,12 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
-using BH.Engine.Geometry;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Geometry;
-using BH.oM.Physical.Elements;
-using BH.oM.Base;
-using System;
-using System.ComponentModel;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
 using BH.oM.Revit.Enums;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using BH.oM.Structure.Offsets;
-using BH.oM.Structure.Results;
 
 namespace BH.Revit.Engine.Core
 {
@@ -44,10 +36,15 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Finds the location curve that should be assigned to the Revit FamilyInstance representing a framing element in order to make this instance's centroid overlap with the centreline of a given BHoM framing element, taken all offsets and justifications into account.")]
-        [Input("framingElement", "BHoM framing element to align the Revit framing to.")]
-        [Output("curve", "Location curve for the input Revit FamilyInstance that aligns its centreline to the input BHoM framing element.")]
-        public static List<XYZ> AlignViewports(this Outline drawingArea, List<Viewport> viewports, double borderOffset, double viewportOffset, ViewportAlignmentDirection direction, out Outline totalOutline)
+        [Description("Returns center points of the viewports aligned in the drawing area in given direction and offsets.")]
+        [Input("drawingArea", "Outline in which viewports will be aligned.")]
+        [Input("viewports", "Viewports to aligned in the drawing area.")]
+        [Input("borderOffset", "Distance between border of the drawing area and viewports.")]
+        [Input("viewportOffset", "Distance between each viewport.")]
+        [Input("direction", "Direction of the viewport alignment.")]
+        [Input("totalOutline", "Bounded outline of the aligned viewports.")]
+        [Output("viewportCenterPoints", "Center points of the aligned viewports.")]
+        public static List<XYZ> AlignViewports(this Outline drawingArea, List<Viewport> viewports, double borderOffset, double viewportOffset, ViewportAlignment direction, out Outline totalOutline)
         {
             //add border offset to drawing area
             XYZ borderOffsetVec = new XYZ(borderOffset, borderOffset, 0);
@@ -66,17 +63,15 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
-        private static List<Outline> AlignOutlines(this Outline drawingArea, List<Outline> outlines, double offset, ViewportAlignmentDirection direction)
+        private static List<Outline> AlignOutlines(this Outline drawingArea, List<Outline> outlines, double offset, ViewportAlignment direction)
         {
             List<Outline> alignedOutlines = new List<Outline>();
             XYZ topLeftPoint = new XYZ(drawingArea.MinimumPoint.X, drawingArea.MaximumPoint.Y, 0);
+            XYZ topRightPoint = new XYZ(drawingArea.MaximumPoint.X, drawingArea.MaximumPoint.Y, 0);
+            List<List<Outline>> listOfOutlines = DivideOutlinesInRows(drawingArea, outlines, offset, direction);
 
-            if (direction == ViewportAlignmentDirection.Horizontal)
+            if (direction == ViewportAlignment.HorizontalFromLeftToRight)
             {
-                //group outlines into rows
-                List<List<Outline>> listOfOutlines = DivideOutlinesInRows(drawingArea, outlines, offset, direction);
-
-                //align outline by rows
                 XYZ newTopLeftPoint = topLeftPoint;
                 foreach (List<Outline> outlinesInRow in listOfOutlines)
                 {
@@ -87,12 +82,8 @@ namespace BH.Revit.Engine.Core
                     newTopLeftPoint = new XYZ(rowOutlinesBound.MinimumPoint.X, rowOutlinesBound.MinimumPoint.Y - offset, 0);
                 }
             }
-            else if (direction == ViewportAlignmentDirection.Vertical)
+            else if (direction == ViewportAlignment.VerticalFromLeftToRight)
             {
-                //group outlines into rows
-                List<List<Outline>> listOfOutlines = DivideOutlinesInRows(drawingArea, outlines, offset, direction);
-
-                //align outline by rows
                 XYZ newTopLeftPoint = topLeftPoint;
                 foreach (List<Outline> outlinesInRow in listOfOutlines)
                 {
@@ -103,20 +94,44 @@ namespace BH.Revit.Engine.Core
                     newTopLeftPoint = new XYZ(rowOutlinesBound.MaximumPoint.X + offset, rowOutlinesBound.MaximumPoint.Y, 0);
                 }
             }
+            else if (direction == ViewportAlignment.HorizontalFromRightToLeft)
+            {
+                XYZ newTopRightPoint = topRightPoint;
+                foreach (List<Outline> outlinesInRow in listOfOutlines)
+                {
+                    List<Outline> alignedOutlinesInRow = outlinesInRow.OutlinesInRow(newTopRightPoint, offset, direction);
+                    alignedOutlines.AddRange(alignedOutlinesInRow);
+                    Outline rowOutlinesBound = alignedOutlinesInRow.Bounds();
+
+                    newTopRightPoint = new XYZ(rowOutlinesBound.MaximumPoint.X, rowOutlinesBound.MinimumPoint.Y - offset, 0);
+                }
+            }
+            else if (direction == ViewportAlignment.VerticalFromRightToLeft)
+            {
+                XYZ newTopRightPoint = topRightPoint;
+                foreach (List<Outline> outlinesInRow in listOfOutlines)
+                {
+                    List<Outline> alignedOutlinesInRow = outlinesInRow.OutlinesInRow(newTopRightPoint, offset, direction);
+                    alignedOutlines.AddRange(alignedOutlinesInRow);
+                    Outline rowOutlinesBound = alignedOutlinesInRow.Bounds();
+
+                    newTopRightPoint = new XYZ(rowOutlinesBound.MinimumPoint.X - offset, rowOutlinesBound.MaximumPoint.Y, 0);
+                }
+            }
 
             return alignedOutlines;
         }
 
         /***************************************************/
 
-        private static List<List<Outline>> DivideOutlinesInRows(this Outline drawingArea, List<Outline> outlines, double offset, ViewportAlignmentDirection direction)
+        private static List<List<Outline>> DivideOutlinesInRows(this Outline drawingArea, List<Outline> outlines, double offset, ViewportAlignment direction)
         {
             List<List<Outline>> listOfOutlines = new List<List<Outline>>();
             XYZ topLeftPoint = new XYZ(drawingArea.MinimumPoint.X, drawingArea.MaximumPoint.Y, 0);
             double drawingAreaWidth = drawingArea.MaximumPoint.X - drawingArea.MinimumPoint.X;
             double drawingAreaHeight = drawingArea.MaximumPoint.Y - drawingArea.MinimumPoint.Y;
 
-            if (direction == ViewportAlignmentDirection.Horizontal)
+            if (direction == ViewportAlignment.HorizontalFromLeftToRight || direction == ViewportAlignment.HorizontalFromRightToLeft)
             {
                 List<Outline> pendingOutlines = outlines;
 
@@ -139,7 +154,7 @@ namespace BH.Revit.Engine.Core
                     pendingOutlines = pendingOutlines.Skip(rowOutlines.Count).ToList();
                 }
             }
-            else if (direction == ViewportAlignmentDirection.Vertical)
+            else if (direction == ViewportAlignment.VerticalFromLeftToRight || direction == ViewportAlignment.VerticalFromRightToLeft)
             {
                 List<Outline> pendingOutlines = outlines;
 
@@ -168,7 +183,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static List<Outline> OutlinesInRow(this List<Outline> outlines, XYZ topLeftPoint, double offset, ViewportAlignmentDirection direction)
+        private static List<Outline> OutlinesInRow(this List<Outline> outlines, XYZ startingPoint, double offset, ViewportAlignment direction)
         {
             List<Outline> outlinesInRow = new List<Outline>();
 
@@ -178,38 +193,71 @@ namespace BH.Revit.Engine.Core
                 double outlineWidth = outline.MaximumPoint.X - outline.MinimumPoint.X;
                 double outlineHeight = outline.MaximumPoint.Y - outline.MinimumPoint.Y;
 
-                if (direction == ViewportAlignmentDirection.Horizontal)
+                if (direction == ViewportAlignment.HorizontalFromLeftToRight)
                 {
                     double outlineTopLeftX;
 
                     if (i == 0)
-                        outlineTopLeftX = topLeftPoint.X;
+                        outlineTopLeftX = startingPoint.X;
                     else
-                        outlineTopLeftX = topLeftPoint.X + offset;
+                        outlineTopLeftX = startingPoint.X + offset;
 
-                    double outlineTopLeftY = topLeftPoint.Y;
+                    double outlineTopLeftY = startingPoint.Y;
 
                     XYZ outlineNewCenterPoint = new XYZ(outlineTopLeftX + outlineWidth / 2, outlineTopLeftY - outlineHeight / 2, 0);
                     outline = outline.MovedToCenterPoint(outlineNewCenterPoint);
                     outlinesInRow.Add(outline);
 
-                    topLeftPoint = new XYZ(outlineTopLeftX + outlineWidth, outlineTopLeftY, 0);
+                    startingPoint = new XYZ(outlineTopLeftX + outlineWidth, outlineTopLeftY, 0);
                 }
-                else if (direction == ViewportAlignmentDirection.Vertical)
+                else if (direction == ViewportAlignment.VerticalFromLeftToRight)
                 {
-                    double outlineTopLeftX = topLeftPoint.X;
+                    double outlineTopLeftX = startingPoint.X;
                     double outlineTopLeftY;
 
                     if (i == 0)
-                        outlineTopLeftY = topLeftPoint.Y;
+                        outlineTopLeftY = startingPoint.Y;
                     else
-                        outlineTopLeftY = topLeftPoint.Y - offset;
+                        outlineTopLeftY = startingPoint.Y - offset;
 
                     XYZ outlineNewCenterPoint = new XYZ(outlineTopLeftX + outlineWidth / 2, outlineTopLeftY - outlineHeight / 2, 0);
                     outline = outline.MovedToCenterPoint(outlineNewCenterPoint);
                     outlinesInRow.Add(outline);
 
-                    topLeftPoint = new XYZ(outlineTopLeftX, outlineTopLeftY - outlineHeight, 0);
+                    startingPoint = new XYZ(outlineTopLeftX, outlineTopLeftY - outlineHeight, 0);
+                }
+                else if (direction == ViewportAlignment.HorizontalFromRightToLeft)
+                {
+                    double outlineTopRightX;
+
+                    if (i == 0)
+                        outlineTopRightX = startingPoint.X;
+                    else
+                        outlineTopRightX = startingPoint.X - offset;
+
+                    double outlineTopRightY = startingPoint.Y;
+
+                    XYZ outlineNewCenterPoint = new XYZ(outlineTopRightX - outlineWidth / 2, outlineTopRightY - outlineHeight / 2, 0);
+                    outline = outline.MovedToCenterPoint(outlineNewCenterPoint);
+                    outlinesInRow.Add(outline);
+
+                    startingPoint = new XYZ(outlineTopRightX - outlineWidth, outlineTopRightY, 0);
+                }
+                else if (direction == ViewportAlignment.VerticalFromRightToLeft)
+                {
+                    double outlineTopRightX = startingPoint.X;
+                    double outlineTopRightY;
+
+                    if (i == 0)
+                        outlineTopRightY = startingPoint.Y;
+                    else
+                        outlineTopRightY = startingPoint.Y - offset;
+
+                    XYZ outlineNewCenterPoint = new XYZ(outlineTopRightX - outlineWidth / 2, outlineTopRightY - outlineHeight / 2, 0);
+                    outline = outline.MovedToCenterPoint(outlineNewCenterPoint);
+                    outlinesInRow.Add(outline);
+
+                    startingPoint = new XYZ(outlineTopRightX, outlineTopRightY - outlineHeight, 0);
                 }
             }
 
@@ -256,24 +304,6 @@ namespace BH.Revit.Engine.Core
                 maxX = Math.Max(outline.MaximumPoint.X, maxX);
                 maxY = Math.Max(outline.MaximumPoint.Y, maxY);
             }
-
-            XYZ minPoint = new XYZ(minX, minY, 0);
-            XYZ maxPoint = new XYZ(maxX, maxY, 0);
-
-            return new Outline(minPoint, maxPoint);
-        }
-
-        /***************************************************/
-
-        private static Outline Add(this Outline outline, Outline outlineToAdd)
-        {
-            if (outline == null)
-                return new Outline(outlineToAdd);
-
-            double minX = Math.Min(outline.MinimumPoint.X, outlineToAdd.MinimumPoint.X);
-            double minY = Math.Min(outline.MinimumPoint.Y, outlineToAdd.MinimumPoint.Y);
-            double maxX = Math.Max(outline.MaximumPoint.X, outlineToAdd.MaximumPoint.X);
-            double maxY = Math.Max(outline.MaximumPoint.Y, outlineToAdd.MaximumPoint.Y);
 
             XYZ minPoint = new XYZ(minX, minY, 0);
             XYZ maxPoint = new XYZ(maxX, maxY, 0);
