@@ -33,6 +33,8 @@ using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using BH.oM.Revit.Enums;
 using System.Linq;
+using BH.oM.Structure.Offsets;
+using BH.oM.Structure.Results;
 
 namespace BH.Revit.Engine.Core
 {
@@ -47,96 +49,13 @@ namespace BH.Revit.Engine.Core
         [Output("curve", "Location curve for the input Revit FamilyInstance that aligns its centreline to the input BHoM framing element.")]
         public static List<XYZ> AlignViewports(this Outline drawingArea, List<Viewport> viewports, double borderOffset, double viewportOffset, ViewportAlignmentDirection direction, out Outline totalOutline)
         {
-            List<XYZ> viewportPoints = new List<XYZ>();
-            totalOutline = null;
-
             //add border offset to drawing area
             XYZ borderOffsetVec = new XYZ(borderOffset, borderOffset, 0);
             drawingArea.MinimumPoint += borderOffsetVec;
             drawingArea.MaximumPoint -= borderOffsetVec;
-            
-            if (direction == ViewportAlignmentDirection.Horizontal)
-            {
-                //group viewports in rows
-                List<Viewport> pendingViewports = viewports;
-                List<List<Viewport>> listOfViewports = new List<List<Viewport>>();
 
-                while (pendingViewports.Count > 0)
-                {
-                    List<Viewport> rowViewports = pendingViewports;
-                    AlignViewportsInRow(drawingArea, rowViewports, viewportOffset, direction, out Outline rowOutline);
-
-                    while (rowOutline.MaximumPoint.X > drawingArea.MaximumPoint.X)
-                    {
-                        rowViewports = rowViewports.Take(rowViewports.Count - 1).ToList();
-                        AlignViewportsInRow(drawingArea, rowViewports, viewportOffset, direction, out rowOutline);
-                    }
-
-                    listOfViewports.Add(rowViewports);
-                    pendingViewports = pendingViewports.Skip(rowViewports.Count).ToList();
-                }
-
-                //get viewport center points
-                totalOutline = null;
-                Outline newDrawingArea = new Outline(drawingArea);
-
-                foreach (List<Viewport> viewportsInRow in listOfViewports)
-                {
-                    viewportPoints.AddRange(AlignViewportsInRow(newDrawingArea, viewportsInRow, viewportOffset, direction, out Outline rowOutline));
-                    totalOutline = totalOutline.Add(rowOutline);
-
-                    XYZ newDrawingAreaMaxPoint = new XYZ(totalOutline.MaximumPoint.X, totalOutline.MinimumPoint.Y - viewportOffset, 0);
-                    newDrawingArea = new Outline(newDrawingArea.MinimumPoint, newDrawingAreaMaxPoint);
-                }
-            }
-            else if (direction == ViewportAlignmentDirection.Vertical)
-            {
-                //group viewports in rows
-                List<Viewport> pendingViewports = viewports;
-                List<List<Viewport>> listOfViewports = new List<List<Viewport>>();
-
-                while (pendingViewports.Count > 0)
-                {
-                    List<Viewport> rowViewports = pendingViewports;
-                    AlignViewportsInRow(drawingArea, rowViewports, viewportOffset, direction, out Outline rowOutline);
-
-                    while (rowOutline.MinimumPoint.Y < drawingArea.MinimumPoint.Y)
-                    {
-                        rowViewports = rowViewports.Take(rowViewports.Count - 1).ToList();
-                        AlignViewportsInRow(drawingArea, rowViewports, viewportOffset, direction, out rowOutline);
-                    }
-
-                    listOfViewports.Add(rowViewports);
-                    pendingViewports = pendingViewports.Skip(rowViewports.Count).ToList();
-                }
-
-                //get viewport center points
-                totalOutline = null;
-                Outline newDrawingArea = new Outline(drawingArea);
-
-                foreach (List<Viewport> viewportsInRow in listOfViewports)
-                {
-                    viewportPoints.AddRange(AlignViewportsInRow(newDrawingArea, viewportsInRow, viewportOffset, direction, out Outline rowOutline));
-                    totalOutline = totalOutline.Add(rowOutline);
-
-                    XYZ newDrawingAreaMinPoint = new XYZ(totalOutline.MaximumPoint.X + viewportOffset, totalOutline.MinimumPoint.Y, 0);
-                    newDrawingArea = new Outline(newDrawingAreaMinPoint, newDrawingArea.MaximumPoint);
-                }
-            }
-
-            return viewportPoints;
-        }
-
-        /***************************************************/
-        /****              Private methods              ****/
-        /***************************************************/
-
-        [Description("Return center points of viewports in the given direction.")]
-        private static List<XYZ> AlignViewportsInRow(this Outline drawingArea, List<Viewport> viewports, double viewportOffset, ViewportAlignmentDirection direction, out Outline totalOutline)
-        {
-            XYZ topLeftPoint = new XYZ(drawingArea.MinimumPoint.X, drawingArea.MaximumPoint.Y, 0);
             List<Outline> viewportOutlines = viewports.Select(x => x.GetBoxOutline()).ToList();
-            List<Outline> alignedOutlines = viewportOutlines.OrganizeOutlinesInRow(topLeftPoint, viewportOffset, direction);
+            List<Outline> alignedOutlines = drawingArea.AlignOutlines(viewportOutlines, viewportOffset, direction);
             List<XYZ> viewportCenterPoints = alignedOutlines.Select(x => x.CenterPoint()).ToList();
             totalOutline = alignedOutlines.Bounds();
 
@@ -144,8 +63,112 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
 
-        private static List<Outline> OrganizeOutlinesInRow(this List<Outline> outlines, XYZ topLeftPoint, double offset, ViewportAlignmentDirection direction)
+        private static List<Outline> AlignOutlines(this Outline drawingArea, List<Outline> outlines, double offset, ViewportAlignmentDirection direction)
+        {
+            List<Outline> alignedOutlines = new List<Outline>();
+            XYZ topLeftPoint = new XYZ(drawingArea.MinimumPoint.X, drawingArea.MaximumPoint.Y, 0);
+
+            if (direction == ViewportAlignmentDirection.Horizontal)
+            {
+                //group outlines into rows
+                List<List<Outline>> listOfOutlines = DivideOutlinesInRows(drawingArea, outlines, offset, direction);
+
+                //align outline by rows
+                XYZ newTopLeftPoint = topLeftPoint;
+                foreach (List<Outline> outlinesInRow in listOfOutlines)
+                {
+                    List<Outline> alignedOutlinesInRow = outlinesInRow.OutlinesInRow(newTopLeftPoint, offset, direction);
+                    alignedOutlines.AddRange(alignedOutlinesInRow);
+                    Outline rowOutlinesBound = alignedOutlinesInRow.Bounds();
+
+                    newTopLeftPoint = new XYZ(rowOutlinesBound.MinimumPoint.X, rowOutlinesBound.MinimumPoint.Y - offset, 0);
+                }
+            }
+            else if (direction == ViewportAlignmentDirection.Vertical)
+            {
+                //group outlines into rows
+                List<List<Outline>> listOfOutlines = DivideOutlinesInRows(drawingArea, outlines, offset, direction);
+
+                //align outline by rows
+                XYZ newTopLeftPoint = topLeftPoint;
+                foreach (List<Outline> outlinesInRow in listOfOutlines)
+                {
+                    List<Outline> alignedOutlinesInRow = outlinesInRow.OutlinesInRow(newTopLeftPoint, offset, direction);
+                    alignedOutlines.AddRange(alignedOutlinesInRow);
+                    Outline rowOutlinesBound = alignedOutlinesInRow.Bounds();
+
+                    newTopLeftPoint = new XYZ(rowOutlinesBound.MaximumPoint.X + offset, rowOutlinesBound.MaximumPoint.Y, 0);
+                }
+            }
+
+            return alignedOutlines;
+        }
+
+        /***************************************************/
+
+        private static List<List<Outline>> DivideOutlinesInRows(this Outline drawingArea, List<Outline> outlines, double offset, ViewportAlignmentDirection direction)
+        {
+            List<List<Outline>> listOfOutlines = new List<List<Outline>>();
+            XYZ topLeftPoint = new XYZ(drawingArea.MinimumPoint.X, drawingArea.MaximumPoint.Y, 0);
+            double drawingAreaWidth = drawingArea.MaximumPoint.X - drawingArea.MinimumPoint.X;
+            double drawingAreaHeight = drawingArea.MaximumPoint.Y - drawingArea.MinimumPoint.Y;
+
+            if (direction == ViewportAlignmentDirection.Horizontal)
+            {
+                List<Outline> pendingOutlines = outlines;
+
+                while (pendingOutlines.Count > 0)
+                {
+                    List<Outline> rowOutlines = pendingOutlines;
+                    List<Outline> alignedRowOutlines = rowOutlines.OutlinesInRow(topLeftPoint, offset, direction);
+                    Outline rowOutline = alignedRowOutlines.Bounds();
+                    double rowOutlineWidth = rowOutline.MaximumPoint.X - rowOutline.MinimumPoint.X;
+
+                    while (rowOutlineWidth > drawingAreaWidth)
+                    {
+                        rowOutlines = rowOutlines.Take(rowOutlines.Count - 1).ToList();
+                        alignedRowOutlines = rowOutlines.OutlinesInRow(topLeftPoint, offset, direction);
+                        rowOutline = alignedRowOutlines.Bounds();
+                        rowOutlineWidth = rowOutline.MaximumPoint.X - rowOutline.MinimumPoint.X;
+                    }
+
+                    listOfOutlines.Add(rowOutlines);
+                    pendingOutlines = pendingOutlines.Skip(rowOutlines.Count).ToList();
+                }
+            }
+            else if (direction == ViewportAlignmentDirection.Vertical)
+            {
+                List<Outline> pendingOutlines = outlines;
+
+                while (pendingOutlines.Count > 0)
+                {
+                    List<Outline> rowOutlines = pendingOutlines;
+                    List<Outline> alignedRowOutlines = rowOutlines.OutlinesInRow(topLeftPoint, offset, direction);
+                    Outline rowOutline = alignedRowOutlines.Bounds();
+                    double rowOutlineHeight = rowOutline.MaximumPoint.Y - rowOutline.MinimumPoint.Y;
+
+                    while (rowOutlineHeight > drawingAreaHeight)
+                    {
+                        rowOutlines = rowOutlines.Take(rowOutlines.Count - 1).ToList();
+                        alignedRowOutlines = rowOutlines.OutlinesInRow(topLeftPoint, offset, direction);
+                        rowOutline = alignedRowOutlines.Bounds();
+                        rowOutlineHeight = rowOutline.MaximumPoint.Y - rowOutline.MinimumPoint.Y;
+                    }
+
+                    listOfOutlines.Add(rowOutlines);
+                    pendingOutlines = pendingOutlines.Skip(rowOutlines.Count).ToList();
+                }
+            }
+
+            return listOfOutlines;
+        }
+
+        /***************************************************/
+
+        private static List<Outline> OutlinesInRow(this List<Outline> outlines, XYZ topLeftPoint, double offset, ViewportAlignmentDirection direction)
         {
             List<Outline> outlinesInRow = new List<Outline>();
 
