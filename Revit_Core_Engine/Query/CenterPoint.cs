@@ -20,23 +20,30 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using Autodesk.Revit.DB;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
-namespace BH.oM.Revit.Enums
+namespace BH.Revit.Engine.Core
 {
-    /***************************************************/
-
-    [Description("Direction of the sheet viewport alignment.")]
-    public enum ViewportAlignment
+    public static partial class Query
     {
-        HorizontalFromLeftToRight,
-        VerticalFromLeftToRight,
-        HorizontalFromRightToLeft,
-        VerticalFromRightToLeft
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+
+        [Description("Returns the center point of the outline.")]
+        [Input("outline", "Outline to get the center point from.")]
+        [Output("point", "Center point of the outline.")]
+        public static XYZ CenterPoint(this Outline outline)
+        {
+            double centerX = outline.MinimumPoint.X + (outline.MaximumPoint.X - outline.MinimumPoint.X) / 2;
+            double centerY = outline.MinimumPoint.Y + (outline.MaximumPoint.Y - outline.MinimumPoint.Y) / 2;
+
+            return new XYZ(centerX, centerY, 0);
+        }
+
+        /***************************************************/
     }
-
-    /***************************************************/
 }
-
-
 
