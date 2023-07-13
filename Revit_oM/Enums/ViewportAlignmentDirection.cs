@@ -27,10 +27,10 @@ namespace BH.oM.Revit.Enums
     /***************************************************/
 
     [Description("Enumerator defining the way in which two strings are compared.")]
-    public enum AlignViewDirection
+    public enum ViewportAlignmentDirection
     {
-        Right,
-        Down
+        Horizontal,
+        Vertical
     }
 
     /***************************************************/
