@@ -26,11 +26,13 @@ namespace BH.oM.Revit.Enums
 {
     /***************************************************/
 
-    [Description("Enumerator defining the way in which two strings are compared.")]
-    public enum ViewportAlignmentDirection
+    [Description("Direction of the sheet viewport alignment.")]
+    public enum ViewportAlignment
     {
-        Horizontal,
-        Vertical
+        HorizontalFromLeftToRight,
+        VerticalFromLeftToRight,
+        HorizontalFromRightToLeft,
+        VerticalFromRightToLeft
     }
 
     /***************************************************/
