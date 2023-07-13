@@ -134,58 +134,78 @@ namespace BH.Revit.Engine.Core
         [Description("Return center points of viewports in the given direction.")]
         private static List<XYZ> AlignViewportsInRow(this Outline drawingArea, List<Viewport> viewports, double viewportOffset, ViewportAlignmentDirection direction, out Outline totalOutline)
         {
-            //topleft point of drawing area with border offset
             XYZ topLeftPoint = new XYZ(drawingArea.MinimumPoint.X, drawingArea.MaximumPoint.Y, 0);
-            List<XYZ> viewportNewCenterPoints = new List<XYZ>();
-            totalOutline = null;
+            List<Outline> viewportOutlines = viewports.Select(x => x.GetBoxOutline()).ToList();
+            List<Outline> alignedOutlines = viewportOutlines.OrganizeOutlinesInRow(topLeftPoint, viewportOffset, direction);
+            List<XYZ> viewportCenterPoints = alignedOutlines.Select(x => x.CenterPoint()).ToList();
+            totalOutline = alignedOutlines.Bounds();
 
-            for (int i = 0; i < viewports.Count; i++)
-            {
-                Viewport viewport = viewports[i];
-                Outline viewportOutline = viewport.GetBoxOutline();
-                double viewportWidth = viewportOutline.MaximumPoint.X - viewportOutline.MinimumPoint.X;
-                double viewportHeight = viewportOutline.MaximumPoint.Y - viewportOutline.MinimumPoint.Y;
-                XYZ viewportNewCenterPoint = new XYZ();
-
-                if (direction == ViewportAlignmentDirection.Horizontal)
-                {
-                    double viewportNewCenterX;
-
-                    if (i == 0)
-                        viewportNewCenterX = topLeftPoint.X + viewportWidth / 2;
-                    else
-                        viewportNewCenterX = topLeftPoint.X + viewportOffset + viewportWidth / 2;
-
-                    double viewportNewCenterY = topLeftPoint.Y - viewportHeight / 2;
-                    viewportNewCenterPoint = new XYZ(viewportNewCenterX, viewportNewCenterY, 0);
-                    topLeftPoint = new XYZ(viewportNewCenterPoint.X + viewportWidth / 2, viewportNewCenterPoint.Y + viewportHeight / 2, 0);
-                }
-                else if (direction == ViewportAlignmentDirection.Vertical)
-                {
-                    double viewportNewCenterX = topLeftPoint.X + viewportWidth / 2;
-                    double viewportNewCenterY;
-
-                    if (i == 0)
-                        viewportNewCenterY = topLeftPoint.Y - viewportHeight / 2;
-                    else
-                        viewportNewCenterY = topLeftPoint.Y - viewportOffset - viewportHeight / 2;
-
-                    viewportNewCenterPoint = new XYZ(viewportNewCenterX, viewportNewCenterY, 0);
-                    topLeftPoint = new XYZ(viewportNewCenterPoint.X - viewportWidth / 2, viewportNewCenterPoint.Y - viewportHeight / 2, 0);
-                }
-                
-                viewportNewCenterPoints.Add(viewportNewCenterPoint);
-
-                viewportOutline = MovedToPoint(viewportOutline, viewportNewCenterPoint);
-                totalOutline = totalOutline.Add(viewportOutline);
-            }
-
-            return viewportNewCenterPoints;
+            return viewportCenterPoints;
         }
 
         /***************************************************/
 
-        private static Outline MovedToPoint(this Outline outline, XYZ centerPoint)
+        private static List<Outline> OrganizeOutlinesInRow(this List<Outline> outlines, XYZ topLeftPoint, double offset, ViewportAlignmentDirection direction)
+        {
+            List<Outline> outlinesInRow = new List<Outline>();
+
+            for (int i = 0; i < outlines.Count; i++)
+            {
+                Outline outline = outlines[i];
+                double outlineWidth = outline.MaximumPoint.X - outline.MinimumPoint.X;
+                double outlineHeight = outline.MaximumPoint.Y - outline.MinimumPoint.Y;
+
+                if (direction == ViewportAlignmentDirection.Horizontal)
+                {
+                    double outlineTopLeftX;
+
+                    if (i == 0)
+                        outlineTopLeftX = topLeftPoint.X;
+                    else
+                        outlineTopLeftX = topLeftPoint.X + offset;
+
+                    double outlineTopLeftY = topLeftPoint.Y;
+
+                    XYZ outlineNewCenterPoint = new XYZ(outlineTopLeftX + outlineWidth / 2, outlineTopLeftY - outlineHeight / 2, 0);
+                    outline = outline.MovedToCenterPoint(outlineNewCenterPoint);
+                    outlinesInRow.Add(outline);
+
+                    topLeftPoint = new XYZ(outlineTopLeftX + outlineWidth, outlineTopLeftY, 0);
+                }
+                else if (direction == ViewportAlignmentDirection.Vertical)
+                {
+                    double outlineTopLeftX = topLeftPoint.X;
+                    double outlineTopLeftY;
+
+                    if (i == 0)
+                        outlineTopLeftY = topLeftPoint.Y;
+                    else
+                        outlineTopLeftY = topLeftPoint.Y - offset;
+
+                    XYZ outlineNewCenterPoint = new XYZ(outlineTopLeftX + outlineWidth / 2, outlineTopLeftY - outlineHeight / 2, 0);
+                    outline = outline.MovedToCenterPoint(outlineNewCenterPoint);
+                    outlinesInRow.Add(outline);
+
+                    topLeftPoint = new XYZ(outlineTopLeftX, outlineTopLeftY - outlineHeight, 0);
+                }
+            }
+
+            return outlinesInRow;
+        }
+
+        /***************************************************/
+
+        private static XYZ CenterPoint(this Outline outline)
+        {
+            double centerX = outline.MinimumPoint.X + (outline.MaximumPoint.X - outline.MinimumPoint.X) / 2;
+            double centerY = outline.MinimumPoint.Y + (outline.MaximumPoint.Y - outline.MinimumPoint.Y) / 2;
+
+            return new XYZ(centerX, centerY, 0);
+        }
+
+        /***************************************************/
+
+        private static Outline MovedToCenterPoint(this Outline outline, XYZ centerPoint)
         {
             double outlineWidth = outline.MaximumPoint.X - outline.MinimumPoint.X;
             double outlineHeight = outline.MaximumPoint.Y - outline.MinimumPoint.Y;
@@ -195,6 +215,29 @@ namespace BH.Revit.Engine.Core
             XYZ newMax = centerPoint + halfDiagonal;
 
             return new Outline(newMin, newMax);
+        }
+
+        /***************************************************/
+
+        private static Outline Bounds(this List<Outline> outlines)
+        {
+            double minX = double.MaxValue;
+            double minY = double.MaxValue;
+            double maxX = double.MinValue;
+            double maxY = double.MinValue;
+
+            foreach (Outline outline in outlines)
+            {
+                minX = Math.Min(outline.MinimumPoint.X, minX);
+                minY = Math.Min(outline.MinimumPoint.Y, minY);
+                maxX = Math.Max(outline.MaximumPoint.X, maxX);
+                maxY = Math.Max(outline.MaximumPoint.Y, maxY);
+            }
+
+            XYZ minPoint = new XYZ(minX, minY, 0);
+            XYZ maxPoint = new XYZ(maxX, maxY, 0);
+
+            return new Outline(minPoint, maxPoint);
         }
 
         /***************************************************/
