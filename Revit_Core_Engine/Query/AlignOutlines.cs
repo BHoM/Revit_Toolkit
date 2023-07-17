@@ -35,23 +35,23 @@ namespace BH.Revit.Engine.Core
         /****               Public methods              ****/
         /***************************************************/
 
-        [Description("Aligns outlines in the bounding outline in given direction.")]
+        [Description("Aligns outlines in the bounding outline along a given direction.")]
         [Input("boudingOutline", "Bounding outline in which outline will be aligned.")]
         [Input("outlines", "Outlines to aligned in the bounding outline.")]
         [Input("offset", "Distance between each outline.")]
         [Input("direction", "Direction of the outline alignment.")]
         [Output("alignedOutlines", "Outlines aligned in the bounding outline.")]
-        public static List<Outline> AlignOutlines(this Outline boudingOutline, List<Outline> outlines, double offset, OutlineAlignment direction)
+        public static List<Outline> AlignOutlines(this Outline drawingArea, List<Outline> outlines, double offset, OutlineAlignment direction)
         {
             List<Outline> alignedOutlines = new List<Outline>();
-            XYZ topLeftPoint = new XYZ(boudingOutline.MinimumPoint.X, boudingOutline.MaximumPoint.Y, 0);
-            XYZ topRightPoint = new XYZ(boudingOutline.MaximumPoint.X, boudingOutline.MaximumPoint.Y, 0);
-            List<List<Outline>> listOfOutlines = DivideOutlinesInRows(boudingOutline, outlines, offset, direction);
+            XYZ topLeftPoint = new XYZ(drawingArea.MinimumPoint.X, drawingArea.MaximumPoint.Y, 0);
+            XYZ topRightPoint = new XYZ(drawingArea.MaximumPoint.X, drawingArea.MaximumPoint.Y, 0);
+            List<List<Outline>> outlinesByRows = DivideOutlinesInRows(drawingArea, outlines, offset, direction);
 
             if (direction == OutlineAlignment.HorizontalFromLeftToRight)
             {
                 XYZ newTopLeftPoint = topLeftPoint;
-                foreach (List<Outline> outlinesInRow in listOfOutlines)
+                foreach (List<Outline> outlinesInRow in outlinesByRows)
                 {
                     List<Outline> alignedOutlinesInRow = outlinesInRow.OutlinesInRow(newTopLeftPoint, offset, direction);
                     alignedOutlines.AddRange(alignedOutlinesInRow);
@@ -63,7 +63,7 @@ namespace BH.Revit.Engine.Core
             else if (direction == OutlineAlignment.VerticalFromLeftToRight)
             {
                 XYZ newTopLeftPoint = topLeftPoint;
-                foreach (List<Outline> outlinesInRow in listOfOutlines)
+                foreach (List<Outline> outlinesInRow in outlinesByRows)
                 {
                     List<Outline> alignedOutlinesInRow = outlinesInRow.OutlinesInRow(newTopLeftPoint, offset, direction);
                     alignedOutlines.AddRange(alignedOutlinesInRow);
@@ -75,7 +75,7 @@ namespace BH.Revit.Engine.Core
             else if (direction == OutlineAlignment.HorizontalFromRightToLeft)
             {
                 XYZ newTopRightPoint = topRightPoint;
-                foreach (List<Outline> outlinesInRow in listOfOutlines)
+                foreach (List<Outline> outlinesInRow in outlinesByRows)
                 {
                     List<Outline> alignedOutlinesInRow = outlinesInRow.OutlinesInRow(newTopRightPoint, offset, direction);
                     alignedOutlines.AddRange(alignedOutlinesInRow);
@@ -87,7 +87,7 @@ namespace BH.Revit.Engine.Core
             else if (direction == OutlineAlignment.VerticalFromRightToLeft)
             {
                 XYZ newTopRightPoint = topRightPoint;
-                foreach (List<Outline> outlinesInRow in listOfOutlines)
+                foreach (List<Outline> outlinesInRow in outlinesByRows)
                 {
                     List<Outline> alignedOutlinesInRow = outlinesInRow.OutlinesInRow(newTopRightPoint, offset, direction);
                     alignedOutlines.AddRange(alignedOutlinesInRow);
@@ -106,59 +106,62 @@ namespace BH.Revit.Engine.Core
 
         private static List<List<Outline>> DivideOutlinesInRows(this Outline drawingArea, List<Outline> outlines, double offset, OutlineAlignment direction)
         {
-            List<List<Outline>> listOfOutlines = new List<List<Outline>>();
-            XYZ topLeftPoint = new XYZ(drawingArea.MinimumPoint.X, drawingArea.MaximumPoint.Y, 0);
-            double drawingAreaWidth = drawingArea.MaximumPoint.X - drawingArea.MinimumPoint.X;
-            double drawingAreaHeight = drawingArea.MaximumPoint.Y - drawingArea.MinimumPoint.Y;
+            List<List<Outline>> outlinesByRows = new List<List<Outline>>();
 
             if (direction == OutlineAlignment.HorizontalFromLeftToRight || direction == OutlineAlignment.HorizontalFromRightToLeft)
             {
-                List<Outline> pendingOutlines = outlines;
+                List<Outline> currentRowOutlines = new List<Outline>();
+                double drawingAreaWidth = drawingArea.MaximumPoint.X - drawingArea.MinimumPoint.X;
+                double currentRowWidth = -offset;
 
-                while (pendingOutlines.Count > 0)
+                foreach (Outline outline in outlines)
                 {
-                    List<Outline> rowOutlines = pendingOutlines;
-                    List<Outline> alignedRowOutlines = rowOutlines.OutlinesInRow(topLeftPoint, offset, direction);
-                    Outline rowOutline = alignedRowOutlines.Bounds();
-                    double rowOutlineWidth = rowOutline.MaximumPoint.X - rowOutline.MinimumPoint.X;
+                    double outlineWidth = outline.MaximumPoint.X - outline.MinimumPoint.X;
+                    currentRowWidth += outlineWidth + offset;
 
-                    while (rowOutlineWidth > drawingAreaWidth)
+                    if (currentRowWidth < drawingAreaWidth)
                     {
-                        rowOutlines = rowOutlines.Take(rowOutlines.Count - 1).ToList();
-                        alignedRowOutlines = rowOutlines.OutlinesInRow(topLeftPoint, offset, direction);
-                        rowOutline = alignedRowOutlines.Bounds();
-                        rowOutlineWidth = rowOutline.MaximumPoint.X - rowOutline.MinimumPoint.X;
+                        currentRowOutlines.Add(outline);
                     }
-
-                    listOfOutlines.Add(rowOutlines);
-                    pendingOutlines = pendingOutlines.Skip(rowOutlines.Count).ToList();
+                    else
+                    {
+                        outlinesByRows.Add(currentRowOutlines);
+                        currentRowOutlines = new List<Outline> { outline };
+                        currentRowWidth = outlineWidth;
+                    }
                 }
+
+                if (currentRowOutlines.Any())
+                    outlinesByRows.Add(currentRowOutlines);
             }
             else if (direction == OutlineAlignment.VerticalFromLeftToRight || direction == OutlineAlignment.VerticalFromRightToLeft)
             {
-                List<Outline> pendingOutlines = outlines;
+                List<Outline> currentRowOutlines = new List<Outline>();
+                double drawingAreaHeight = drawingArea.MaximumPoint.Y - drawingArea.MinimumPoint.Y;
+                double currentRowHeight = -offset;
 
-                while (pendingOutlines.Count > 0)
+                foreach (Outline outline in outlines)
                 {
-                    List<Outline> rowOutlines = pendingOutlines;
-                    List<Outline> alignedRowOutlines = rowOutlines.OutlinesInRow(topLeftPoint, offset, direction);
-                    Outline rowOutline = alignedRowOutlines.Bounds();
-                    double rowOutlineHeight = rowOutline.MaximumPoint.Y - rowOutline.MinimumPoint.Y;
+                    double outlineHeight = outline.MaximumPoint.Y - outline.MinimumPoint.Y;
+                    currentRowHeight += outlineHeight + offset;
 
-                    while (rowOutlineHeight > drawingAreaHeight)
+                    if (currentRowHeight < drawingAreaHeight)
                     {
-                        rowOutlines = rowOutlines.Take(rowOutlines.Count - 1).ToList();
-                        alignedRowOutlines = rowOutlines.OutlinesInRow(topLeftPoint, offset, direction);
-                        rowOutline = alignedRowOutlines.Bounds();
-                        rowOutlineHeight = rowOutline.MaximumPoint.Y - rowOutline.MinimumPoint.Y;
+                        currentRowOutlines.Add(outline);
                     }
-
-                    listOfOutlines.Add(rowOutlines);
-                    pendingOutlines = pendingOutlines.Skip(rowOutlines.Count).ToList();
+                    else
+                    {
+                        outlinesByRows.Add(currentRowOutlines);
+                        currentRowOutlines = new List<Outline> { outline };
+                        currentRowHeight = outlineHeight;
+                    }
                 }
+
+                if (currentRowOutlines.Any())
+                    outlinesByRows.Add(currentRowOutlines);
             }
 
-            return listOfOutlines;
+            return outlinesByRows;
         }
 
         /***************************************************/

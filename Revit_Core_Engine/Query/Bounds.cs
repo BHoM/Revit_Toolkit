@@ -87,23 +87,15 @@ namespace BH.Revit.Engine.Core
         [Output("bounds", "Combined outline of the given outlines.")]
         public static Outline Bounds(this List<Outline> outlines)
         {
-            double minX = double.MaxValue;
-            double minY = double.MaxValue;
-            double maxX = double.MinValue;
-            double maxY = double.MinValue;
+            Outline newOutline = new Outline(outlines[0]);
 
-            foreach (Outline outline in outlines)
+            foreach (Outline outline in outlines.Skip(1))
             {
-                minX = Math.Min(outline.MinimumPoint.X, minX);
-                minY = Math.Min(outline.MinimumPoint.Y, minY);
-                maxX = Math.Max(outline.MaximumPoint.X, maxX);
-                maxY = Math.Max(outline.MaximumPoint.Y, maxY);
+                newOutline.AddPoint(outline.MinimumPoint);
+                newOutline.AddPoint(outline.MaximumPoint);
             }
 
-            XYZ minPoint = new XYZ(minX, minY, 0);
-            XYZ maxPoint = new XYZ(maxX, maxY, 0);
-
-            return new Outline(minPoint, maxPoint);
+            return newOutline;
         }
 
         /***************************************************/
