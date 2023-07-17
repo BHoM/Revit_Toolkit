@@ -37,10 +37,7 @@ namespace BH.Revit.Engine.Core
         [Output("point", "Center point of the outline.")]
         public static XYZ CenterPoint(this Outline outline)
         {
-            double centerX = outline.MinimumPoint.X + (outline.MaximumPoint.X - outline.MinimumPoint.X) / 2;
-            double centerY = outline.MinimumPoint.Y + (outline.MaximumPoint.Y - outline.MinimumPoint.Y) / 2;
-
-            return new XYZ(centerX, centerY, 0);
+            return (outline.MinimumPoint + outline.MaximumPoint) / 2;
         }
 
         /***************************************************/
