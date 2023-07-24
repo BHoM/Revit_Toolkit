@@ -87,6 +87,9 @@ namespace BH.Revit.Engine.Core
         [Output("bounds", "Combined outline of the given outlines.")]
         public static Outline Bounds(this List<Outline> outlines)
         {
+            if (outlines == null || !outlines.Any())
+                return null;
+
             Outline newOutline = new Outline(outlines[0]);
 
             foreach (Outline outline in outlines.Skip(1))
