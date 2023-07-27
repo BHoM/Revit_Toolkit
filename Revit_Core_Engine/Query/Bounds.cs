@@ -88,7 +88,11 @@ namespace BH.Revit.Engine.Core
         public static Outline Bounds(this List<Outline> outlines)
         {
             if (outlines == null || !outlines.Any())
+            {
+                BH.Engine.Base.Compute.RecordError("Outline collection cannot be null or empty.");
                 return null;
+            }
+                
 
             Outline newOutline = new Outline(outlines[0]);
 
