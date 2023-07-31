@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using BH.Engine.Spatial;
 
 namespace BH.Revit.Engine.Core
 {
@@ -224,7 +225,7 @@ namespace BH.Revit.Engine.Core
                         {
                             foreach (PolyCurve curve in cells[i].CurveLoops.FromRevit())
                             {
-                                PlanarSurface surface = BH.Engine.Geometry.Create.PlanarSurface(curve, null);
+                                PlanarSurface surface = BH.Engine.Geometry.Create.PlanarSurface(curve, null) ?? BH.Engine.Geometry.Create.PlanarSurface(curve.Project(curve.ElementVertices().FitPlane()), null);
                                 if (surface == null)
                                     return null;
 
