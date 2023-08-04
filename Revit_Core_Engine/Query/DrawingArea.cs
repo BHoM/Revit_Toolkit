@@ -37,7 +37,32 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Compute the outline of Title Block drawing area.")]
+        [Description("Returns the drawing area outline of the Title Block instance.")]
+        [Input("titleBlock", "Title Block to get the drawing area outline from.")]
+        [Output("outline", "The Title Block's drawing area.")]
+        public static Outline DrawingArea(this FamilyInstance titleBlock)
+        {
+            if (titleBlock == null || !((BuiltInCategory)titleBlock.Category.Id.IntegerValue == Autodesk.Revit.DB.BuiltInCategory.OST_TitleBlocks))
+            {
+                BH.Engine.Base.Compute.RecordWarning($"Title block cannot be null and has to be of Title Block category.");
+                return null;
+            }
+
+            Outline drawingArea = titleBlock.Symbol.DrawingArea();
+            Transform transform = titleBlock.GetTotalTransform();
+
+            if (!transform.IsIdentity)
+            {
+                drawingArea.MaximumPoint += transform.Origin;
+                drawingArea.MinimumPoint += transform.Origin;
+            }
+
+            return drawingArea;
+        }
+
+        /***************************************************/
+
+        [Description("Returns the outline of Title Block drawing area.")]
         [Input("titleBlock", "Title Block symbol to get the drawing area outline from.")]
         [Output("outline", "The Title Block's drawing area.")]
         public static Outline DrawingArea(this FamilySymbol titleBlock)
