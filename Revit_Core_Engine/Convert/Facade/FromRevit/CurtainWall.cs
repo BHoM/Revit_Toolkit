@@ -80,6 +80,7 @@ namespace BH.Revit.Engine.Core
                 extEdges.Add(frameEdge);
             }
 
+            //TODO: take edges from panel outlines!
             bHoMCurtainWall = new CurtainWall { ExternalEdges = extEdges, Openings = curtainPanels.ToList(), Name = wall.WallType.Name };
 
             bHoMCurtainWall.Name = wall.FamilyTypeFullName();
