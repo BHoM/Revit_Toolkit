@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
         [Output("property", "BHoM mullion element property extracted from the input Revit FamilyInstance.")]
         public static FrameEdgeProperty MullionElementProperty(this FamilyInstance familyInstance, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (familyInstance == null || familyInstance.Symbol == null)
+            if (familyInstance?.Symbol == null)
                 return null;
             
             FrameEdgeProperty frameEdgeProperty = refObjects.GetValue<FrameEdgeProperty>(familyInstance.Id);
