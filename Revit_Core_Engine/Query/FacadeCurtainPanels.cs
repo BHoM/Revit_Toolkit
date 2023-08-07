@@ -68,18 +68,19 @@ namespace BH.Revit.Engine.Core
 
             for (int i = 0; i < panels.Count; i++)
             {
-                Autodesk.Revit.DB.Panel panel = panels[i] as Autodesk.Revit.DB.Panel;
+                FamilyInstance panel = panels[i] as FamilyInstance;
                 if (panel == null)
                     continue;
 
                 List<PolyCurve> pcs = new List<PolyCurve>();
                 try
-                { 
-                    pcs = cells[i].CurveLoops.FromRevit(); 
+                {
+                    // This catches when PlanarizedCurveLoops throws an exception due to the cell having no loops, meaning in Revit it exists in the database but is no longer a valid CurtainWall cell
+                    CurveArrArray x = cells[i].PlanarizedCurveLoops;
+                    pcs = cells[i].CurveLoops.FromRevit();
                 }
-                catch  // This catches when CurveLoops throws an exception due to the cell having no loops, meaning in Revit it exists in the database but is no longer on the CurtainWall with any corresponding Curves
+                catch 
                 { 
-                    //TODO: can't null check instead of try catch?
                     continue; 
                 }
 
@@ -119,7 +120,7 @@ namespace BH.Revit.Engine.Core
         }
 
         //TODO: apply in all applicable places
-        private static OpeningType Opn(this Autodesk.Revit.DB.Panel panel)
+        private static OpeningType Opn(this FamilyInstance panel)
         {
             BuiltInCategory category = (BuiltInCategory)panel.Category.Id.IntegerValue;
             if (category == Autodesk.Revit.DB.BuiltInCategory.OST_Windows || category == Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanels)
@@ -131,9 +132,9 @@ namespace BH.Revit.Engine.Core
         }
 
         //TODO: apply in all applicable places
-        private static BH.oM.Physical.Constructions.Construction Constr(this Autodesk.Revit.DB.Panel panel, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects)
+        private static BH.oM.Physical.Constructions.Construction Constr(this FamilyInstance panel, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects)
         {
-            if (panel.Document.GetElement(panel.FindHostPanel()) is Wall wall)
+            if ((panel as Autodesk.Revit.DB.Panel)?.FindHostPanel() is ElementId hostId && panel.Document.GetElement(hostId) is Wall wall)
             {
                 HostObjAttributes hostObjAttributes = wall.Document.GetElement(wall.GetTypeId()) as HostObjAttributes;
                 string materialGrade = wall.MaterialGrade(settings);
