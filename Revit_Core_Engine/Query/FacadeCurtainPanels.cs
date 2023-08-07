@@ -62,10 +62,8 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             List<FrameEdge> mullions = curtainGrid.CurtainWallMullions(document, settings, refObjects);
-            //List<Tuple<BH.oM.Geometry.Point, FrameEdge>> mullionsByLocation = mullions.Where(x => x.Curve != null).Select(x => new Tuple<BH.oM.Geometry.Point, FrameEdge>(x.Curve.IPointAtParameter(0.5), x)).ToList();
 
             List<oM.Facade.Elements.Opening> result = new List<oM.Facade.Elements.Opening>();
-
             for (int i = 0; i < panels.Count; i++)
             {
                 FamilyInstance panel = panels[i] as FamilyInstance;
@@ -101,9 +99,11 @@ namespace BH.Revit.Engine.Core
                     bHoMOpening.OpeningConstruction = panel.Constr(settings, refObjects);
                     bHoMOpening.Type = panel.Opn();
 
+                    // Add mullion information to the openings
                     bHoMOpening.Edges = new List<FrameEdge>();
                     foreach (ICurve curve in outline.Curves)
                     {
+                        // Find the correspondent mullions based on adjacency
                         BH.oM.Geometry.Point mid = curve.IPointAtParameter(0.5);
                         FrameEdge mullion = mullions.FirstOrDefault(x => x.Curve != null && mid.IDistance(x.Curve) <= settings.DistanceTolerance);
                         if (mullion == null)
