@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
         {
             if (titleBlock == null || !((BuiltInCategory)titleBlock.Category.Id.IntegerValue == Autodesk.Revit.DB.BuiltInCategory.OST_TitleBlocks))
             {
-                BH.Engine.Base.Compute.RecordWarning($"Title block cannot be null and has to be of the Title Block category.");
+                BH.Engine.Base.Compute.RecordError($"Title block cannot be null and has to be of the Title Block category.");
                 return null;
             }
 
