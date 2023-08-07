@@ -72,26 +72,37 @@ namespace BH.Revit.Engine.Core
                 if (panel == null)
                     continue;
 
-                List<PolyCurve> pcs = new List<PolyCurve>();
+                List<PolyCurve> outlines = new List<PolyCurve>();
                 try
                 {
                     // This catches when PlanarizedCurveLoops throws an exception due to the cell having no loops, meaning in Revit it exists in the database but is no longer a valid CurtainWall cell
                     CurveArrArray x = cells[i].PlanarizedCurveLoops;
-                    pcs = cells[i].CurveLoops.FromRevit();
+                    
+                    // Collapse nonlinear edges of a cell to lines - valid because mullions are linear anyways
+                    foreach (CurveArray array in cells[i].CurveLoops)
+                    {
+                        PolyCurve outline = new PolyCurve();
+                        foreach (Curve curve in array)
+                        {
+                            outline.Curves.Add(new BH.oM.Geometry.Line { Start = curve.GetEndPoint(0).PointFromRevit(), End = curve.GetEndPoint(1).PointFromRevit() });
+                        }
+
+                        outlines.Add(outline);
+                    }
                 }
                 catch 
                 { 
                     continue; 
                 }
 
-                foreach (PolyCurve pc in pcs)
+                foreach (PolyCurve outline in outlines)
                 {
                     BH.oM.Facade.Elements.Opening bHoMOpening = new oM.Facade.Elements.Opening();
                     bHoMOpening.OpeningConstruction = panel.Constr(settings, refObjects);
                     bHoMOpening.Type = panel.Opn();
 
                     bHoMOpening.Edges = new List<FrameEdge>();
-                    foreach (ICurve curve in pc.Curves)
+                    foreach (ICurve curve in outline.Curves)
                     {
                         BH.oM.Geometry.Point mid = curve.IPointAtParameter(0.5);
                         FrameEdge mullion = mullions.FirstOrDefault(x => x.Curve != null && mid.IDistance(x.Curve) <= settings.DistanceTolerance);
