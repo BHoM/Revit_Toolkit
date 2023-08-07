@@ -165,25 +165,6 @@ namespace BH.Revit.Engine.Core
             }
         }
 
-
-        /***************************************************/
-        /****              Private methods              ****/
-        /***************************************************/
-
-        //private static oM.Facade.Elements.Opening FacadePanelAsOpening(this oM.Facade.Elements.Panel panel, string refId = "", Dictionary<string, List<IBHoMObject>> refObjects = null)
-        //{
-        //    if (panel == null)
-        //        return null;
-            
-        //    oM.Facade.Elements.Opening opening = refObjects.GetValue<oM.Facade.Elements.Opening>(refId);
-        //    if (opening != null)
-        //        return opening;
-
-        //    opening = new oM.Facade.Elements.Opening { Name = panel.Name, Edges = panel.ExternalEdges, Fragments = panel.Fragments, OpeningConstruction = panel.Construction, Tags = panel.Tags, CustomData = panel.CustomData, Type = oM.Facade.Elements.OpeningType.Undefined };
-
-        //    return opening;
-        //}
-
         /***************************************************/
     }
 }
