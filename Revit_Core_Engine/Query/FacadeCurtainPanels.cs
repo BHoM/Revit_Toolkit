@@ -96,8 +96,8 @@ namespace BH.Revit.Engine.Core
                 foreach (PolyCurve outline in outlines)
                 {
                     BH.oM.Facade.Elements.Opening bHoMOpening = new oM.Facade.Elements.Opening();
-                    bHoMOpening.OpeningConstruction = panel.Constr(settings, refObjects);
-                    bHoMOpening.Type = panel.Opn();
+                    bHoMOpening.OpeningConstruction = panel.Construction(settings, refObjects);
+                    bHoMOpening.Type = panel.OpeningType();
 
                     // Add mullion information to the openings
                     bHoMOpening.Edges = new List<FrameEdge>();
@@ -130,20 +130,12 @@ namespace BH.Revit.Engine.Core
             return result;
         }
 
-        //TODO: apply in all applicable places
-        private static OpeningType Opn(this FamilyInstance panel)
-        {
-            BuiltInCategory category = (BuiltInCategory)panel.Category.Id.IntegerValue;
-            if (category == Autodesk.Revit.DB.BuiltInCategory.OST_Windows || category == Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanels)
-                return BH.oM.Facade.Elements.OpeningType.Window;
-            else if (category == Autodesk.Revit.DB.BuiltInCategory.OST_Doors)
-                return BH.oM.Facade.Elements.OpeningType.Door;
-            else
-                return BH.oM.Facade.Elements.OpeningType.Undefined;
-        }
 
-        //TODO: apply in all applicable places
-        private static BH.oM.Physical.Constructions.Construction Constr(this FamilyInstance panel, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects)
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        private static BH.oM.Physical.Constructions.Construction Construction(this FamilyInstance panel, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects)
         {
             if ((panel as Autodesk.Revit.DB.Panel)?.FindHostPanel() is ElementId hostId && panel.Document.GetElement(hostId) is Wall wall)
             {
@@ -163,6 +155,19 @@ namespace BH.Revit.Engine.Core
                 else
                     return panel.GlazingConstruction();
             }
+        }
+
+        /***************************************************/
+
+        private static BH.oM.Facade.Elements.OpeningType OpeningType(this FamilyInstance panel)
+        {
+            BuiltInCategory category = (BuiltInCategory)panel.Category.Id.IntegerValue;
+            if (category == Autodesk.Revit.DB.BuiltInCategory.OST_Windows || category == Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanels)
+                return BH.oM.Facade.Elements.OpeningType.Window;
+            else if (category == Autodesk.Revit.DB.BuiltInCategory.OST_Doors)
+                return BH.oM.Facade.Elements.OpeningType.Door;
+            else
+                return BH.oM.Facade.Elements.OpeningType.Undefined;
         }
 
         /***************************************************/
