@@ -51,7 +51,7 @@ namespace BH.Revit.Engine.Core
             List<FrameEdge> result = new List<FrameEdge>();
             List<Element> mullions = curtainGrid.GetMullionIds().Select(x => document.GetElement(x)).ToList();
 
-            foreach (Mullion mullion in mullions)
+            foreach (Mullion mullion in mullions.Where(x => x.get_BoundingBox(null) != null))
             {
                 result.Add(mullion.FrameEdgeFromRevit(settings, refObjects));
             }
