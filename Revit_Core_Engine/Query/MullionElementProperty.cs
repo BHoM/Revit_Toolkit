@@ -29,6 +29,7 @@ using BH.oM.Base.Attributes;
 using BH.oM.Spatial.ShapeProfiles;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -52,9 +53,17 @@ namespace BH.Revit.Engine.Core
             if (frameEdgeProperty != null)
                 return frameEdgeProperty;
 
-            // Profile and material extraction not yet implemented
-            IProfile profile = null;
+            // Material extraction not yet implemented
             BH.oM.Physical.Materials.Material material = null;
+
+            // Convert the profile to BHoM
+            IProfile profile = null;
+            MullionType mullionType = familyInstance.Symbol as MullionType;
+            if (mullionType != null)
+                profile = mullionType.ProfileFromRevit(settings, refObjects);
+
+            if (profile == null)
+                BH.Engine.Base.Compute.RecordWarning($"Mullion profile could not be extracted. ElementId: {familyInstance.Id.IntegerValue}");
 
             List<ConstantFramingProperty> sectionProperties = new List<ConstantFramingProperty> { BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, 0, familyInstance.Symbol.Name) };
             frameEdgeProperty = new FrameEdgeProperty { Name = familyInstance.Symbol.Name, SectionProperties = sectionProperties };
