@@ -24,7 +24,9 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -35,6 +37,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts a BHoM representation of material from Revit FamilyInstance representing a framing element.")]
+        [Input("familyInstance", "Revit FamilyInstance to be queried.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("material", "BHoM representation of material extracted from Revit FamilyInstance representing a framing element.")]
         public static BH.oM.Physical.Materials.Material FramingMaterial(this FamilyInstance familyInstance, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -76,7 +83,7 @@ namespace BH.Revit.Engine.Core
 
             return material;
         }
-    }
 
-    /***************************************************/
+        /***************************************************/
+    }
 }
