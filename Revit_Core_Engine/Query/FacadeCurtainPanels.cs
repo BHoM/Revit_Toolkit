@@ -108,7 +108,7 @@ namespace BH.Revit.Engine.Core
                         FrameEdge mullion = mullions.FirstOrDefault(x => x.Curve != null && mid.IDistance(x.Curve) <= settings.DistanceTolerance);
                         if (mullion == null)
                         {
-                            BH.Engine.Base.Compute.RecordWarning("Mullion information is missing for some profiles in the curtain wall.");
+                            BH.Engine.Base.Compute.RecordWarning("Mullion information is missing for some panels in the curtain wall.");
                             mullion = new FrameEdge();
                         }
 
