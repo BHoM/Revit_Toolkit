@@ -54,30 +54,15 @@ namespace BH.Revit.Engine.Core
             if (framingProperty != null)
                 return framingProperty;
 
-            // Convert the material to BHoM.
-            ElementId structuralMaterialId = familyInstance.StructuralMaterialId;
-            if (structuralMaterialId.IntegerValue < 0)
-                structuralMaterialId = familyInstance.Symbol.LookupParameterElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
+            // Convert the material to BHoM
+            BH.oM.Physical.Materials.Material material = familyInstance.FramingMaterial(settings, refObjects);
 
-            Material revitMaterial = familyInstance.Document.GetElement(structuralMaterialId) as Material;
-            if (revitMaterial == null)
-                revitMaterial = familyInstance.Category.Material;
-
-            string materialGrade = familyInstance.MaterialGrade(settings);
-            BH.oM.Physical.Materials.Material material = revitMaterial.MaterialFromRevit(materialGrade, settings, refObjects);
-
-            // If Revit material is null, rename the BHoM material based on material type of framing family.
-            if (material != null && revitMaterial == null)
-            {
-                material.Name = String.Format("Unknown {0} Material", familyInstance.StructuralMaterialType);
-                material.Properties.Add(familyInstance.StructuralMaterialType.EmptyMaterialFragment(materialGrade));
-            }
-
+            // Convert the profile to BHoM and mirror it if needed
             IProfile profile = familyInstance.Symbol.ProfileFromRevit(settings, refObjects);
             if (profile == null)
                 familyInstance.Symbol.NotConvertedWarning();
 
-            if (familyInstance.Mirrored)
+            if (profile != null && familyInstance.Mirrored)
             {
                 if (profile is FreeFormProfile)
                 {
@@ -95,7 +80,8 @@ namespace BH.Revit.Engine.Core
                     profile = BH.Engine.Spatial.Create.ChannelProfile(channel.Height, channel.FlangeWidth, channel.WebThickness, channel.FlangeThickness, channel.RootRadius, channel.ToeRadius, true);
                 }
             }
-            
+
+            // Get rotation
             double rotation = familyInstance.OrientationAngle(settings);
             
             framingProperty = BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, rotation, familyInstance.Symbol.Name);
