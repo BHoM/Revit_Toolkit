@@ -53,8 +53,8 @@ namespace BH.Revit.Engine.Core
             if (frameEdgeProperty != null)
                 return frameEdgeProperty;
 
-            // Material extraction not yet implemented
-            BH.oM.Physical.Materials.Material material = null;
+            // Convert the material to BHoM
+            BH.oM.Physical.Materials.Material material = familyInstance.FramingMaterial(settings, refObjects);
 
             // Convert the profile to BHoM
             IProfile profile = null;
