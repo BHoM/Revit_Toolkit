@@ -72,7 +72,10 @@ namespace BH.Revit.Engine.Core
             if (opening != null)
                 return opening;
 
-            FrameEdgeProperty frameEdgeProperty = familyInstance.FrameEdgeProperty(settings, refObjects);
+            // Extraction of frame edge property from Revit FamilyInstance is not implemented yet
+            BH.Engine.Base.Compute.RecordWarning($"Extraction of frame edge property from a Revit opening is currently not supported, property set to null. ElementId: {familyInstance.Id.IntegerValue}");
+            FrameEdgeProperty frameEdgeProperty = null;
+            
             BH.oM.Geometry.ISurface location = familyInstance.OpeningSurface(host, settings);
 
             List<FrameEdge> edges = new List<FrameEdge>();
