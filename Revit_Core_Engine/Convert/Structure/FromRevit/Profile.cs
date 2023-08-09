@@ -792,6 +792,13 @@ namespace BH.Revit.Engine.Core
                 if (adjustment.Length() > settings.DistanceTolerance)
                     profileCurves = profileCurves.Select(x => x.ITranslate(adjustment)).ToList();
 
+                // If Mullion, rotate 90 degrees to match orientation of Mullions on CurtainWalls per BHoM Standard of -X is Exterior, +X is Interior
+                if (familySymbol is MullionType)
+                {
+                    double angle = -Math.PI * 0.5;
+                    profileCurves = profileCurves.Select(x => x.IRotate(oM.Geometry.Point.Origin, Vector.ZAxis, angle)).ToList();
+                }
+
                 // Check if the curves are in the horizontal plane, if not then align them.
                 if (familySymbol.Family.FamilyPlacementType == FamilyPlacementType.CurveDrivenStructural)
                 {
