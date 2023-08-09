@@ -89,6 +89,47 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        [Description("Converts a Revit Wall to BH.oM.Facade.Elements.CurtainSystem.")]
+        [Input("system", "Revit CurtainSystem to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("curtainWall", "BH.oM.Facade.Elements.CurtainWall resulting from converting the input Revit CurtainSystem.")]
+        public static CurtainWall CurtainWallFromRevit(this CurtainSystem system, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            if (system == null)
+                return null;
+
+            settings = settings.DefaultIfNull();
+
+            CurtainWall bHoMCurtainWall = refObjects.GetValue<CurtainWall>(system.Id);
+            if (bHoMCurtainWall != null)
+                return bHoMCurtainWall;
+
+            IEnumerable<oM.Facade.Elements.Opening> curtainPanels = system.ICurtainGrids().SelectMany(x => x.FacadeCurtainPanels(system.Document, settings, refObjects)).ToList();
+
+            if (curtainPanels == null || !curtainPanels.Any())
+                BH.Engine.Base.Compute.RecordError(String.Format("Processing of panels of Revit curtain wall failed. BHoM curtain wall without location has been returned. Revit ElementId: {0}", system.Id.IntegerValue));
+
+            // Get external edges of whole curtain wall
+            List<FrameEdge> allEdges = curtainPanels.SelectMany(x => x.Edges).ToList();
+            List<FrameEdge> extEdges = allEdges.Distinct().Where(x => allEdges.Count(y => x == y) == 1).ToList();
+
+            bHoMCurtainWall = new CurtainWall { ExternalEdges = extEdges, Openings = curtainPanels.ToList(), Name = system.CurtainSystemType.Name };
+
+            bHoMCurtainWall.Name = system.FamilyTypeFullName();
+
+            //Set identifiers, parameters & custom data
+            bHoMCurtainWall.SetIdentifiers(system);
+            bHoMCurtainWall.CopyParameters(system, settings.MappingSettings);
+            bHoMCurtainWall.SetProperties(system, settings.MappingSettings);
+
+            refObjects.AddOrReplace(system.Id, bHoMCurtainWall);
+
+            return bHoMCurtainWall;
+        }
+
+        /***************************************************/
     }
 }
 
