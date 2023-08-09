@@ -264,6 +264,8 @@ namespace BH.Revit.Engine.Core
             switch (discipline)
             {
                 case Discipline.Facade:
+                case Discipline.Architecture:
+                case Discipline.Physical:
                     return typeof(BH.oM.Facade.Elements.CurtainWall);
             }
 
