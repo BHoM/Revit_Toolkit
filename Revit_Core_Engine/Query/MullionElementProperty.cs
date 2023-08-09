@@ -39,41 +39,38 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts the mullion element property from a Revit FamilyInstance.")]
-        [Input("familyInstance", "Revit FamilyInstance to be queried.")]
+        [Description("Extracts the mullion element property from a Revit Mullion.")]
+        [Input("mullion", "Revit Mullion to be queried.")]
         [Input("settings", "Revit adapter settings to be used while performing the query.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("property", "BHoM mullion element property extracted from the input Revit FamilyInstance.")]
-        public static FrameEdgeProperty MullionElementProperty(this FamilyInstance familyInstance, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("property", "BHoM mullion element property extracted from the input Revit Mullion.")]
+        public static FrameEdgeProperty MullionElementProperty(this Mullion mullion, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (familyInstance?.Symbol == null)
+            if (mullion?.Symbol == null)
                 return null;
             
-            FrameEdgeProperty frameEdgeProperty = refObjects.GetValue<FrameEdgeProperty>(familyInstance.Id);
+            FrameEdgeProperty frameEdgeProperty = refObjects.GetValue<FrameEdgeProperty>(mullion.Id);
             if (frameEdgeProperty != null)
                 return frameEdgeProperty;
 
             // Convert the material to BHoM
-            BH.oM.Physical.Materials.Material material = familyInstance.FramingMaterial(settings, refObjects);
+            BH.oM.Physical.Materials.Material material = mullion.FramingMaterial(settings, refObjects);
 
             // Convert the profile to BHoM
-            IProfile profile = null;
-            MullionType mullionType = familyInstance.Symbol as MullionType;
-            if (mullionType != null)
-                profile = mullionType.ProfileFromRevit(settings, refObjects);
+            IProfile profile = mullion.MullionType.ProfileFromRevit(settings, refObjects);
 
             if (profile == null)
-                BH.Engine.Base.Compute.RecordWarning($"Mullion profile could not be extracted. ElementId: {familyInstance.Id.IntegerValue}");
+                BH.Engine.Base.Compute.RecordWarning($"Mullion profile could not be extracted. ElementId: {mullion.Id.IntegerValue}");
 
-            List<ConstantFramingProperty> sectionProperties = new List<ConstantFramingProperty> { BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, 0, familyInstance.Symbol.Name) };
-            frameEdgeProperty = new FrameEdgeProperty { Name = familyInstance.Symbol.Name, SectionProperties = sectionProperties };
+            List<ConstantFramingProperty> sectionProperties = new List<ConstantFramingProperty> { BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, 0, mullion.Symbol.Name) };
+            frameEdgeProperty = new FrameEdgeProperty { Name = mullion.Symbol.Name, SectionProperties = sectionProperties };
 
             //Set identifiers, parameters & custom data
-            frameEdgeProperty.SetIdentifiers(familyInstance.Symbol);
-            frameEdgeProperty.CopyParameters(familyInstance.Symbol, settings.MappingSettings);
-            frameEdgeProperty.SetProperties(familyInstance.Symbol, settings.MappingSettings);
+            frameEdgeProperty.SetIdentifiers(mullion.Symbol);
+            frameEdgeProperty.CopyParameters(mullion.Symbol, settings.MappingSettings);
+            frameEdgeProperty.SetProperties(mullion.Symbol, settings.MappingSettings);
 
-            refObjects.AddOrReplace(familyInstance.Id, frameEdgeProperty);
+            refObjects.AddOrReplace(mullion.Id, frameEdgeProperty);
             return frameEdgeProperty;
         }
 
