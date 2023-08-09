@@ -35,6 +35,7 @@ using BH.oM.Base.Attributes;
 using System.Runtime;
 using BH.oM.Revit.Enums;
 using BH.Engine.Geometry;
+using BH.Engine.Base;
 
 namespace BH.Revit.Engine.Core
 {
@@ -105,7 +106,7 @@ namespace BH.Revit.Engine.Core
                     {
                         // Find the correspondent mullions based on adjacency
                         BH.oM.Geometry.Point mid = curve.IPointAtParameter(0.5);
-                        FrameEdge mullion = mullions.FirstOrDefault(x => x.Curve != null && mid.IDistance(x.Curve) <= settings.DistanceTolerance);
+                        FrameEdge mullion = mullions.FirstOrDefault(x => x.Curve != null && mid.IDistance(x.Curve) <= settings.DistanceTolerance).DeepClone();
                         if (mullion == null)
                         {
                             BH.Engine.Base.Compute.RecordWarning("Mullion information is missing for some panels in the curtain wall.");
