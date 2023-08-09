@@ -72,7 +72,7 @@ namespace BH.Revit.Engine.Core
 
             // Get external edges of whole curtain wall
             List<FrameEdge> allEdges = curtainPanels.SelectMany(x => x.Edges).ToList();
-            List<FrameEdge> extEdges = allEdges.Distinct().Where(x => allEdges.Count(y => x == y) == 1).ToList();
+            List<FrameEdge> extEdges = allEdges.Distinct().Where(x => allEdges.Count(y => x.ElementId() == y.ElementId()) == 1).ToList();
 
             bHoMCurtainWall = new CurtainWall { ExternalEdges = extEdges, Openings = curtainPanels.ToList(), Name = wall.WallType.Name };
 
