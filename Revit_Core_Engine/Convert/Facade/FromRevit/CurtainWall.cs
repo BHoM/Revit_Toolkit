@@ -115,9 +115,7 @@ namespace BH.Revit.Engine.Core
             List<FrameEdge> allEdges = curtainPanels.SelectMany(x => x.Edges).ToList();
             List<FrameEdge> extEdges = allEdges.Distinct().Where(x => allEdges.Count(y => x == y) == 1).ToList();
 
-            bHoMCurtainWall = new CurtainWall { ExternalEdges = extEdges, Openings = curtainPanels.ToList(), Name = system.CurtainSystemType.Name };
-
-            bHoMCurtainWall.Name = system.FamilyTypeFullName();
+            bHoMCurtainWall = new CurtainWall { ExternalEdges = extEdges, Openings = curtainPanels.ToList(), Name = system.FamilyTypeFullName() };
 
             //Set identifiers, parameters & custom data
             bHoMCurtainWall.SetIdentifiers(system);
