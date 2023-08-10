@@ -147,7 +147,10 @@ namespace BH.Revit.Engine.Core
                 return profile;
 
             // The algorithm below is so convoluted because mullion type does not have a profile
-            // Instead, one needs to extract the geometry of one of the instances, and it needs to be the one that does not join with its start face
+            // Instead, one needs to extract the geometry of one of the instances
+            // The instance to be queried needs to have its start (bottom) face exposed
+            // In simple words, it needs to be the first mullion in a chain of mullions of same type            
+            
             // First, take arbitrary mullion of a given type
             Document doc = mullionType.Document;
             Mullion representativeMullion = new FilteredElementCollector(doc)
@@ -175,10 +178,15 @@ namespace BH.Revit.Engine.Core
             BH.oM.Geometry.Vector direction = line.Direction();
             foreach (Mullion candidateMullion in allMullionsInWall)
             {
+                // Skip mullions that are not collinear with the representative mullion
                 BH.oM.Geometry.Line candidateLine = candidateMullion.MullionLine();
                 if (candidateLine == null || !candidateLine.IsCollinear(line))
                     continue;
 
+                // Update the representative mullion if the candidate:
+                // - is collinear (check above)
+                // - has the same direction
+                // - has start before the current representative mullion, counting along the mullion direction
                 if ((candidateLine.Start - line.Start).DotProduct(direction) > 0)
                 {
                     representativeMullion = candidateMullion;
