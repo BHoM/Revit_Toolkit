@@ -1,0 +1,5 @@
+﻿{
+  "MessageForDeleted": {
+    "BH.Revit.Engine.Core.Query.FrameEdgeProperty(Autodesk.Revit.DB.FamilyInstance, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>)": "FrameEdgeProperty extraction mechanism had changed and this method became obsolete."
+  }
+}
