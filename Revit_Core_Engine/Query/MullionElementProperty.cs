@@ -39,6 +39,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("6.3", "BH.Revit.Engine.Core.Query.MullionElementProperty(Autodesk.Revit.DB.FamilyInstance, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>)")]
         [Description("Extracts the mullion element property from a Revit Mullion.")]
         [Input("mullion", "Revit Mullion to be queried.")]
         [Input("settings", "Revit adapter settings to be used while performing the query.")]
