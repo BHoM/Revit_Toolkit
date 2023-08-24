@@ -32,29 +32,29 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Creates the callout visible in the referenced view plan.")]
-        [Input("referenceViewPlan", "View plan on which the callout will be visible.")]
+        [Description("Creates the callout view visible on the referenced view.")]
+        [Input("referenceView", "View on which the callout will be visible. Callouts can be created on view plans, sections and detail views.")]
         [Input("boundingBoxXyz", "Bounds of the callout.")]
         [Input("calloutName", "Name of the callout view. If null, default name will be set.")]
         [Input("calloutTemplateId", "Id of the template to be applied to the callout view. If null, no template will be set.")]
         [Output("callout", "New callout view.")]
-        public static View Callout(this ViewPlan referenceViewPlan, BoundingBoxXYZ boundingBoxXyz, string calloutName = null, ElementId calloutTemplateId = null)
+        public static View Callout(this View referenceView, BoundingBoxXYZ boundingBoxXyz, string calloutName = null, ElementId calloutTemplateId = null)
         {
-            if (referenceViewPlan == null)
+            if (referenceView == null)
             {
-                BH.Engine.Base.Compute.RecordError("Could not create a callout view based on null reference view plan.");
+                BH.Engine.Base.Compute.RecordError("Could not create a callout view based on null reference view.");
                 return null;
             }
             else if (boundingBoxXyz == null)
             {
-                BH.Engine.Base.Compute.RecordError("Could not create a callout view based on a null boudning box.");
+                BH.Engine.Base.Compute.RecordError("Could not create a callout view based on a null bounding box.");
                 return null;
             }
 
-            Document document = referenceViewPlan.Document;
+            Document document = referenceView.Document;
             ViewFamilyType detailViewFamilyType = Query.ViewFamilyType(document, ViewFamily.Detail);
 
-            View callout = Autodesk.Revit.DB.ViewSection.CreateCallout(document, referenceViewPlan.Id, detailViewFamilyType.Id, boundingBoxXyz.Min, boundingBoxXyz.Max);
+            View callout = Autodesk.Revit.DB.ViewSection.CreateCallout(document, referenceView.Id, detailViewFamilyType.Id, boundingBoxXyz.Min, boundingBoxXyz.Max);
 
             callout.SetViewTemplate(calloutTemplateId);
 
