@@ -67,16 +67,11 @@ namespace BH.Revit.Engine.Core
         [Output("outline", "The Title Block's drawing area.")]
         public static Outline DrawingArea(this FamilySymbol titleBlockSymbol)
         {
-            List<DetailLine> lines = titleBlockSymbol.VisibleLines();
-            CompositeGeometry compositeGeom = new CompositeGeometry();
-
-            foreach (DetailLine dLine in lines)
+            List<BH.oM.Geometry.Line> lines = titleBlockSymbol.VisibleLines();
+            CompositeGeometry compositeGeom = new CompositeGeometry()
             {
-                BH.oM.Geometry.Line bhomLine = dLine.GeometryCurve.IFromRevit() as BH.oM.Geometry.Line;
-
-                if (bhomLine != null)
-                    compositeGeom.Elements.Add(bhomLine);
-            }
+                Elements = lines.Cast<IGeometry>().ToList()
+            };
 
             BH.oM.Geometry.Point centrePoint = compositeGeom.Bounds().Centre();
 
@@ -119,8 +114,8 @@ namespace BH.Revit.Engine.Core
         /****             Private methods               ****/
         /***************************************************/
 
-        [Description("Returns all visible detail lines of the title block symbol.")]
-        private static List<DetailLine> VisibleLines(this FamilySymbol titleBlockSymbol)
+        [Description("Returns all visible lines of the title block symbol.")]
+        private static List<BH.oM.Geometry.Line> VisibleLines(this FamilySymbol titleBlockSymbol)
         {
             Document document = titleBlockSymbol.Document;
             Document familyDoc = document.EditFamily(titleBlockSymbol.Family);
@@ -164,8 +159,10 @@ namespace BH.Revit.Engine.Core
             }
 
             visibleLines.AddRange(nestedLines);
+            List<BH.oM.Geometry.Line> lines = visibleLines.Where(x => x.GeometryCurve is Autodesk.Revit.DB.Line).Select(x => x.GeometryCurve.IFromRevit()).Cast<BH.oM.Geometry.Line>().ToList();
+            familyDoc.Close(false);
 
-            return visibleLines;
+            return lines;
         }
 
         /***************************************************/
