@@ -63,17 +63,16 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Returns the outline of Title Block drawing area.")]
-        [Input("titleBlock", "Title Block symbol to get the drawing area outline from.")]
+        [Input("titleBlockSymbol", "Title Block symbol to get the drawing area outline from.")]
         [Output("outline", "The Title Block's drawing area.")]
         public static Outline DrawingArea(this FamilySymbol titleBlockSymbol)
         {
-            List<DetailLine> lines = VisibleLines(titleBlockSymbol);
-
-            var compositeGeom = new CompositeGeometry();
+            List<DetailLine> lines = titleBlockSymbol.VisibleLines();
+            CompositeGeometry compositeGeom = new CompositeGeometry();
 
             foreach (DetailLine dLine in lines)
             {
-                var bhomLine = dLine.GeometryCurve.IFromRevit() as BH.oM.Geometry.Line;
+                BH.oM.Geometry.Line bhomLine = dLine.GeometryCurve.IFromRevit() as BH.oM.Geometry.Line;
 
                 if (bhomLine != null)
                     compositeGeom.Elements.Add(bhomLine);
@@ -81,10 +80,10 @@ namespace BH.Revit.Engine.Core
 
             BH.oM.Geometry.Point centrePoint = compositeGeom.Bounds().Centre();
 
-            var leftLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint - Vector.XAxis * 10);
-            var rightLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint + Vector.XAxis * 10);
-            var upLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint + Vector.YAxis * 10);
-            var downLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint - Vector.YAxis * 10);
+            BH.oM.Geometry.Line leftLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint - Vector.XAxis * 10);
+            BH.oM.Geometry.Line rightLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint + Vector.XAxis * 10);
+            BH.oM.Geometry.Line upLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint + Vector.YAxis * 10);
+            BH.oM.Geometry.Line downLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint - Vector.YAxis * 10);
 
             double leftBound = double.MinValue;
             double rightBound = double.MaxValue;
@@ -93,25 +92,25 @@ namespace BH.Revit.Engine.Core
 
             foreach (BH.oM.Geometry.Line bhomLine in compositeGeom.Elements)
             {
-                var leftPoint = leftLine.LineIntersection(bhomLine);
+                oM.Geometry.Point leftPoint = leftLine.LineIntersection(bhomLine);
                 if (leftPoint != null && leftPoint.X > leftBound)
                     leftBound = leftPoint.X;
 
-                var rightPoint = rightLine.LineIntersection(bhomLine);
+                oM.Geometry.Point rightPoint = rightLine.LineIntersection(bhomLine);
                 if (rightPoint != null && rightPoint.X < rightBound)
                     rightBound = rightPoint.X;
 
-                var downPoint = downLine.LineIntersection(bhomLine);
+                oM.Geometry.Point downPoint = downLine.LineIntersection(bhomLine);
                 if (downPoint != null && downPoint.Y > bottomBound)
                     bottomBound = downPoint.Y;
 
-                var upPoint = upLine.LineIntersection(bhomLine);
+                oM.Geometry.Point upPoint = upLine.LineIntersection(bhomLine);
                 if (upPoint != null && upPoint.Y < topBound)
                     topBound = upPoint.Y;
             }
 
-            var minPoint = BH.Engine.Geometry.Create.Point(leftBound, bottomBound);
-            var maxPoint = BH.Engine.Geometry.Create.Point(rightBound, topBound);
+            oM.Geometry.Point minPoint = BH.Engine.Geometry.Create.Point(leftBound, bottomBound);
+            oM.Geometry.Point maxPoint = BH.Engine.Geometry.Create.Point(rightBound, topBound);
 
             return new Outline(minPoint.ToRevit(), maxPoint.ToRevit());
         }
@@ -121,7 +120,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Returns all visible detail lines of the title block symbol.")]
-        private static List<DetailLine> VisibleLines(FamilySymbol titleBlockSymbol)
+        private static List<DetailLine> VisibleLines(this FamilySymbol titleBlockSymbol)
         {
             Document document = titleBlockSymbol.Document;
             Document familyDoc = document.EditFamily(titleBlockSymbol.Family);
@@ -154,14 +153,12 @@ namespace BH.Revit.Engine.Core
 
             List<DetailLine> visibleLines = new FilteredElementCollector(familyDoc, previewViewId).OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Lines).WhereElementIsNotElementType().Where(x => x is DetailLine).Cast<DetailLine>().ToList();
             List<FamilyInstance> visibleFamilyInstances = new FilteredElementCollector(familyDoc, previewViewId).OfClass(typeof(FamilyInstance)).WhereElementIsNotElementType().Cast<FamilyInstance>().ToList();
-
             List<DetailLine> nestedLines = new List<DetailLine>();
 
             foreach (var familyInstance in visibleFamilyInstances)
             {
                 Family nestedFamily = familyInstance.Symbol.Family;
                 Document nestedFamilyDoc = familyDoc.EditFamily(nestedFamily);
-
                 List<DetailLine> nestedFamilyLines = new FilteredElementCollector(nestedFamilyDoc).OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Lines).WhereElementIsNotElementType().Where(x => x is DetailLine).Cast<DetailLine>().ToList();
                 nestedLines.AddRange(nestedFamilyLines);
             }
