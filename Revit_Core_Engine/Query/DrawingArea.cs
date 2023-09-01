@@ -65,11 +65,9 @@ namespace BH.Revit.Engine.Core
         [Description("Returns the outline of Title Block drawing area.")]
         [Input("titleBlock", "Title Block symbol to get the drawing area outline from.")]
         [Output("outline", "The Title Block's drawing area.")]
-        public static Outline DrawingArea(this FamilySymbol titleBlock)
+        public static Outline DrawingArea(this FamilySymbol titleBlockSymbol)
         {
-            Document document = titleBlock.Document;
-            Document familyDoc = document.EditFamily(titleBlock.Family);
-            List<DetailLine> lines = new FilteredElementCollector(familyDoc).OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Lines).WhereElementIsNotElementType().Where(x => x is DetailLine).Cast<DetailLine>().ToList();
+            List<DetailLine> lines = VisibleLines(titleBlockSymbol);
 
             var compositeGeom = new CompositeGeometry();
 
@@ -82,7 +80,7 @@ namespace BH.Revit.Engine.Core
             }
 
             BH.oM.Geometry.Point centrePoint = compositeGeom.Bounds().Centre();
-            
+
             var leftLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint - Vector.XAxis * 10);
             var rightLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint + Vector.XAxis * 10);
             var upLine = BH.Engine.Geometry.Create.Line(centrePoint, centrePoint + Vector.YAxis * 10);
@@ -117,7 +115,63 @@ namespace BH.Revit.Engine.Core
 
             return new Outline(minPoint.ToRevit(), maxPoint.ToRevit());
         }
-    }
 
-    /***************************************************/
+        /***************************************************/
+        /****             Private methods               ****/
+        /***************************************************/
+
+        [Description("Returns all visible detail lines of the title block symbol.")]
+        private static List<DetailLine> VisibleLines(FamilySymbol titleBlockSymbol)
+        {
+            Document document = titleBlockSymbol.Document;
+            Document familyDoc = document.EditFamily(titleBlockSymbol.Family);
+
+            FamilyManager familyManager = familyDoc.FamilyManager;
+            string symbolName = titleBlockSymbol.Name;
+            FamilyType symbolFamilyType = null;
+
+            foreach (FamilyType type in familyManager.Types)
+            {
+                if (type.Name == symbolName)
+                {
+                    symbolFamilyType = type;
+                    break;
+                }
+            }
+
+            ElementId previewViewId = familyDoc.GetDocumentPreviewSettings().PreviewViewId;
+            View previewView = familyDoc.GetElement(previewViewId) as View;
+
+            using (Transaction familyTransaction = new Transaction(familyDoc, "In Family Transaction"))
+            {
+                familyTransaction.Start();
+
+                familyDoc.FamilyManager.CurrentType = symbolFamilyType;
+                previewView.TemporaryViewModes.PreviewFamilyVisibility = PreviewFamilyVisibilityMode.On;
+
+                familyTransaction.Commit();
+            }
+
+            List<DetailLine> visibleLines = new FilteredElementCollector(familyDoc, previewViewId).OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Lines).WhereElementIsNotElementType().Where(x => x is DetailLine).Cast<DetailLine>().ToList();
+            List<FamilyInstance> visibleFamilyInstances = new FilteredElementCollector(familyDoc, previewViewId).OfClass(typeof(FamilyInstance)).WhereElementIsNotElementType().Cast<FamilyInstance>().ToList();
+
+            List<DetailLine> nestedLines = new List<DetailLine>();
+
+            foreach (var familyInstance in visibleFamilyInstances)
+            {
+                Family nestedFamily = familyInstance.Symbol.Family;
+                Document nestedFamilyDoc = familyDoc.EditFamily(nestedFamily);
+
+                List<DetailLine> nestedFamilyLines = new FilteredElementCollector(nestedFamilyDoc).OfCategory(Autodesk.Revit.DB.BuiltInCategory.OST_Lines).WhereElementIsNotElementType().Where(x => x is DetailLine).Cast<DetailLine>().ToList();
+                nestedLines.AddRange(nestedFamilyLines);
+            }
+
+            visibleLines.AddRange(nestedLines);
+
+            return visibleLines;
+        }
+
+        /***************************************************/
+
+    }
 }
