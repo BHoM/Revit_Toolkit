@@ -22,6 +22,8 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry.CoordinateSystem;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -34,7 +36,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the combined bounding box containing given Revit elements, aligned with the given direction, inflated by a given offset.")]
+        [Description("Returns the combined bounding box containing given Revit elements, aligned with the right given direction, inflated by a given offset.")]
         [Input("elements", "Elements to find the elevation box for.")]
         [Input("direction", "Direction, along which the elevation is meant to be made.")]
         [Input("sideOffset", "Offset value to inflate the elevation view in width and height, in metres.")]
@@ -43,53 +45,12 @@ namespace BH.Revit.Engine.Core
         [Output("box", "Elevation box of the input Revit elements.")]
         public static BoundingBoxXYZ ViewBoxElevation(this IEnumerable<Element> elements, XYZ direction, double sideOffset, double frontOffset, double backOffset)
         {
-            if (elements == null || !elements.Any())
-            {
-                BH.Engine.Base.Compute.RecordError("Could create view box for null Revit elements.");
-                return null;
-            }
-
-            if (direction == null)
-            {
-                BH.Engine.Base.Compute.RecordError("Could create view box with null direction.");
-                return null;
-            }
-
-            direction = new XYZ(direction.X, direction.Y, 0);
-            if (direction.GetLength() < BH.oM.Geometry.Tolerance.Distance)
-            {
-                BH.Engine.Base.Compute.RecordError("Cannot create the view box of an element because its direction starts and ends at the same point.");
-                return null;
-            }
-
-            direction = direction.Normalize();
-            Transform sectionRotation = Transform.CreateRotation(XYZ.BasisZ, XYZ.BasisX.AngleOnPlaneTo(direction, XYZ.BasisZ));
-
-            // Dimensions of the box
-            BoundingBoxXYZ boundingBox = elements.PhysicalBounds(sectionRotation.Inverse);
-
-            // Front offset and depth
-            frontOffset = frontOffset.FromSI(SpecTypeId.Length);
-            backOffset = backOffset.FromSI(SpecTypeId.Length);
-            double y = boundingBox.Transform.Origin.Y + boundingBox.Max.Y + frontOffset;
-            double depth = boundingBox.Max.Y - boundingBox.Min.Y + frontOffset + backOffset;
-
-            // View location line
-            XYZ start = sectionRotation.OfPoint(new XYZ(boundingBox.Min.X + boundingBox.Transform.Origin.X, y, 0));
-            XYZ end = sectionRotation.OfPoint(new XYZ(boundingBox.Max.X + boundingBox.Transform.Origin.X, y, 0));
-            Line line = Line.CreateBound(start, end);
-
-            // View height
-            double minZ = boundingBox.Min.Z + boundingBox.Transform.Origin.Z;
-            double maxZ = boundingBox.Max.Z + boundingBox.Transform.Origin.Z;
-            double height = maxZ - minZ;
-
-            return Create.SectionBoundingBox(line, minZ, height, sideOffset.FromSI(SpecTypeId.Length), depth);
+            return elements.ViewBoxSection(direction, XYZ.BasisZ, sideOffset, frontOffset, backOffset);
         }
 
         /***************************************************/
 
-        [Description("Returns the bounding box containing a given Revit element, aligned with the given direction, inflated by a given offset.")]
+        [Description("Returns the bounding box containing a given Revit element, aligned with the given right direction, inflated by a given offset.")]
         [Input("element", "Element to find the elevation box for.")]
         [Input("direction", "Direction, along which the elevation is meant to be made.")]
         [Input("sideOffset", "Offset value to inflate the elevation view in width and height, in metres, in metres.")]
@@ -99,6 +60,66 @@ namespace BH.Revit.Engine.Core
         public static BoundingBoxXYZ ViewBoxElevation(this Element element, XYZ direction, double sideOffset, double frontOffset, double backOffset)
         {
             return new List<Element> { element }.ViewBoxElevation(direction, sideOffset, frontOffset, backOffset);
+        }
+
+        /***************************************************/
+
+        [Description("Returns the combined bounding box containing given Revit elements, aligned with the given right and up direction, inflated by a given offset.")]
+        [Input("elements", "Elements to find the elevation box for.")]
+        [Input("rightDirection", "Direction, along which the elevation is meant to be made.")]
+        [Input("upDirection", "Direction pointing up in the created section. Needs to be perpendicular to upDirection.")]
+        [Input("sideOffset", "Offset value to inflate the elevation view in width and height, in metres.")]
+        [Input("frontOffset", "Offset distance between the element front and the origin of the view, in metres. Use negative value to create section.")]
+        [Input("backOffset", "Offset distance between the element back and the back edge of the view, in metres.")]
+        [Output("box", "Elevation box of the input Revit elements.")]
+        public static BoundingBoxXYZ ViewBoxSection(this IEnumerable<Element> elements, XYZ rightDirection, XYZ upDirection, double sideOffset, double frontOffset, double backOffset)
+        {
+            if (elements == null || !elements.Any())
+            {
+                BH.Engine.Base.Compute.RecordError("Could create view box for null Revit elements.");
+                return null;
+            }
+
+            if (upDirection == null || rightDirection == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Could create view box with null direction.");
+                return null;
+            }
+
+            if (upDirection.GetLength() < BH.oM.Geometry.Tolerance.Distance || rightDirection.GetLength() < BH.oM.Geometry.Tolerance.Distance)
+            {
+                BH.Engine.Base.Compute.RecordError("Cannot create the view box of an element because its direction starts and ends at the same point.");
+                return null;
+            }
+
+            upDirection = upDirection.Normalize();
+            rightDirection = rightDirection.Normalize();
+
+            if (Math.Abs(upDirection.DotProduct(rightDirection)) > BH.oM.Geometry.Tolerance.Angle)
+            {
+                BH.Engine.Base.Compute.RecordError("Cannot create the view box of an element because the provided right and up directions are not perpendicular.");
+                return null;
+            }
+
+            // Transform between view orientation and global orientation
+            Plane plane = Plane.CreateByOriginAndBasis(XYZ.Zero, rightDirection, upDirection);
+            Cartesian coordinateSystem = plane.FromRevit();
+            BH.oM.Geometry.TransformMatrix orientationMatrix = BH.Engine.Geometry.Create.OrientationMatrixGlobalToLocal(coordinateSystem);
+            Transform transform = orientationMatrix.ToRevit();
+
+            // Bounds of the element in the provided coordinate system
+            BoundingBoxXYZ boundingBox = elements.PhysicalBounds(transform.Inverse);
+            boundingBox.Transform = transform;
+
+            // Front offset and depth
+            frontOffset = frontOffset.FromSI(SpecTypeId.Length);
+            backOffset = backOffset.FromSI(SpecTypeId.Length);
+            sideOffset = sideOffset.FromSI(SpecTypeId.Length);
+
+            // Final dimensions of the bounding box
+            boundingBox.Min = new XYZ(boundingBox.Min.X - sideOffset, boundingBox.Min.Y - sideOffset, boundingBox.Min.Z - frontOffset);
+            boundingBox.Max = new XYZ(boundingBox.Max.X + sideOffset, boundingBox.Max.Y + sideOffset, boundingBox.Max.Z + backOffset);
+            return boundingBox;
         }
 
         /***************************************************/
