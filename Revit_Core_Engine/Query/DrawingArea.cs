@@ -140,7 +140,9 @@ namespace BH.Revit.Engine.Core
             {
                 familyTransaction.Start();
 
-                familyDoc.FamilyManager.CurrentType = symbolFamilyType;
+                if (symbolFamilyType != null)
+                    familyDoc.FamilyManager.CurrentType = symbolFamilyType;
+
                 previewView.TemporaryViewModes.PreviewFamilyVisibility = PreviewFamilyVisibilityMode.On;
 
                 familyTransaction.Commit();
