@@ -79,30 +79,35 @@ namespace BH.Revit.Engine.Core
                 result.SetViewName(viewName);
             }
 
-            document.Regenerate();
-
-            // Sometimes Revit rotates the views by 90 degrees compared to the provided input, the lines below bring the view orientation back to the desirable shape
-            BoundingBoxXYZ cropBox = result.CropBox;
-            if (Math.Abs(cropBox.Transform.BasisX.DotProduct(boundingBoxXyz.Transform.BasisX)) < BH.oM.Geometry.Tolerance.Angle)
+            // In case of non-vertical section, sometimes Revit rotates the views by 90 degrees compared to the provided input
+            // The lines below bring the view orientation back to the desirable shape
+            if (1 - Math.Abs(boundingBoxXyz.Transform.BasisY.DotProduct(XYZ.BasisZ)) > BH.oM.Geometry.Tolerance.Angle)
             {
-                // Rotate the cropbox by 90 degrees
-                Element cropBoxElement = new FilteredElementCollector(document).OfCategory(BuiltInCategory.OST_Viewers).FirstOrDefault(x => x != result && x.Name == result.Name);
-                BoundingBoxXYZ boxOfCropBoxElement = cropBoxElement.get_BoundingBox(result);
-                ElementTransformUtils.RotateElement(document, cropBoxElement.Id, Line.CreateUnbound((boxOfCropBoxElement.Min + boxOfCropBoxElement.Max) / 2 + boxOfCropBoxElement.Transform.Origin, boundingBoxXyz.Transform.BasisZ), Math.PI / 2);
+                document.Regenerate();
 
-                // Realign the crop box to show the desired part of the view
-                cropBox = result.CropBox;
-                BoundingBoxXYZ bbox = new BoundingBoxXYZ();
-                bbox.Enabled = true;
-                
-                double xDomain = cropBox.Max.Y - cropBox.Min.Y;
-                double yDomain = cropBox.Max.X - cropBox.Min.X;
-                XYZ mid = (cropBox.Min + cropBox.Max) / 2;
-                bbox.Transform = cropBox.Transform;
-                bbox.Min = new XYZ(mid.X - xDomain / 2, mid.Y - yDomain / 2, result.CropBox.Min.Z);
-                bbox.Max = new XYZ(mid.X + xDomain / 2, mid.Y + yDomain / 2, result.CropBox.Max.Z);
-                
-                result.CropBox = bbox;
+                // Check if the view got rotated and action if necessary
+                BoundingBoxXYZ cropBox = result.CropBox;
+                if (Math.Abs(cropBox.Transform.BasisX.DotProduct(boundingBoxXyz.Transform.BasisX)) < BH.oM.Geometry.Tolerance.Angle)
+                {
+                    // Rotate the cropbox by 90 degrees
+                    Element cropBoxElement = new FilteredElementCollector(document).OfCategory(BuiltInCategory.OST_Viewers).FirstOrDefault(x => x != result && x.Name == result.Name);
+                    BoundingBoxXYZ boxOfCropBoxElement = cropBoxElement.get_BoundingBox(result);
+                    ElementTransformUtils.RotateElement(document, cropBoxElement.Id, Line.CreateUnbound((boxOfCropBoxElement.Min + boxOfCropBoxElement.Max) / 2 + boxOfCropBoxElement.Transform.Origin, boundingBoxXyz.Transform.BasisZ), Math.PI / 2);
+
+                    // Realign the crop box to show the desired part of the view
+                    cropBox = result.CropBox;
+                    BoundingBoxXYZ bbox = new BoundingBoxXYZ();
+                    bbox.Enabled = true;
+
+                    double xDomain = cropBox.Max.Y - cropBox.Min.Y;
+                    double yDomain = cropBox.Max.X - cropBox.Min.X;
+                    XYZ mid = (cropBox.Min + cropBox.Max) / 2;
+                    bbox.Transform = cropBox.Transform;
+                    bbox.Min = new XYZ(mid.X - xDomain / 2, mid.Y - yDomain / 2, result.CropBox.Min.Z);
+                    bbox.Max = new XYZ(mid.X + xDomain / 2, mid.Y + yDomain / 2, result.CropBox.Max.Z);
+
+                    result.CropBox = bbox;
+                }
             }
 
             return result;
