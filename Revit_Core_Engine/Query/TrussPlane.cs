@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
  *
@@ -21,9 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Structure;
+using BH.Engine.Adapters.Revit;
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using BH.oM.Facade.Elements;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -37,30 +38,38 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts the mullions from a Revit curtain grid and returns them in a form of BHoM FrameEdges.")]
-        [Input("curtainGrid", "Revit curtain grid to extract the mullions from.")]
-        [Input("document", "Revit document, to which the curtain grid belongs.")]
-        [Input("settings", "Revit adapter settings to be used while performing the query.")]
-        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("mullions", "Mullions extracted from the input Revit curtain grid and converted to BHoM FrameEdges.")]
-        public static List<FrameEdge> CurtainWallMullions(this CurtainGrid curtainGrid, Document document, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Description("Finds the plane of a truss element. Returns null if the truss is not planar.")]
+        [Input("truss", "Truss element to query for its plane.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Output("plane", "Plane of the input truss. Null if the truss is nonplanar.")]
+        public static BH.oM.Geometry.Plane TrussPlane(this Truss truss, RevitSettings settings = null)
         {
-            if (curtainGrid == null)
-                return null;
-
-            List<FrameEdge> result = new List<FrameEdge>();
-            List<Element> mullions = curtainGrid.GetMullionIds().Select(x => document.GetElement(x)).ToList();
-
-            foreach (Mullion mullion in mullions.Where(x => x.get_BoundingBox(null) != null))
+            if (truss == null)
             {
-                result.Add(mullion.FrameEdgeFromRevit(settings, refObjects));
+                BH.Engine.Base.Compute.RecordError("Extraction of truss plane failed because the queried truss cannot be null.");
+                return null;
             }
 
-            return result;
+            settings = settings.DefaultIfNull();
+
+            List<BH.oM.Geometry.Point> points = new List<oM.Geometry.Point>();
+            foreach (Curve curve in truss.Curves)
+            {
+                points.AddRange(curve.Tessellate().Select(x => x.PointFromRevit()));
+            }
+
+            if (!points.IsCoplanar(settings.DistanceTolerance))
+            {
+                BH.Engine.Base.Compute.RecordError("Extraction of truss plane failed because the truss is not planar.");
+                return null;
+            }
+
+            return points.FitPlane(settings.DistanceTolerance);
         }
 
         /***************************************************/
     }
 }
+
 
 

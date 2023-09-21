@@ -254,6 +254,26 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Finds a suitable BHoM type to convert the given Revit CurtainSystem to, based on the requested engineering discipline and adapter settings.")]
+        [Input("system", "Revit CurtainSystem to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit CurtainSystem to.")]
+        public static Type BHoMType(this CurtainSystem system, Discipline discipline, RevitSettings settings = null)
+        {
+            switch (discipline)
+            {
+                case Discipline.Facade:
+                case Discipline.Architecture:
+                case Discipline.Physical:
+                    return typeof(BH.oM.Facade.Elements.CurtainWall);
+            }
+
+            return null;
+        }
+
+        /***************************************************/
+
         [Description("Finds a suitable BHoM type to convert the given Revit HostObjAttributes to, based on the requested engineering discipline and adapter settings.")]
         [Input("hostObjAttributes", "Revit HostObjAttributes to find a correspondent BHoM type.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]

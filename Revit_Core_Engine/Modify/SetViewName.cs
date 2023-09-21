@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
  *
@@ -34,7 +34,6 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("6.2", "BH.Revit.Engine.Core.Modify.SetViewName(Autodesk.Revit.DB.View, System.String, Autodesk.Revit.DB.Document)")]
         [Description("Set View Name to the given value. If the view name already exists in the model, a number suffix is added.")]
         [Input("view", "The View for which the name will be changed.")]
         [Input("viewName", "New name of the view.")]

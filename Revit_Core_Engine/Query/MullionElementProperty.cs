@@ -29,6 +29,7 @@ using BH.oM.Base.Attributes;
 using BH.oM.Spatial.ShapeProfiles;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -38,33 +39,39 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts the mullion element property from a Revit FamilyInstance.")]
-        [Input("familyInstance", "Revit FamilyInstance to be queried.")]
+        [PreviousVersion("6.3", "BH.Revit.Engine.Core.Query.MullionElementProperty(Autodesk.Revit.DB.FamilyInstance, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>)")]
+        [Description("Extracts the mullion element property from a Revit Mullion.")]
+        [Input("mullion", "Revit Mullion to be queried.")]
         [Input("settings", "Revit adapter settings to be used while performing the query.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("property", "BHoM mullion element property extracted from the input Revit FamilyInstance.")]
-        public static FrameEdgeProperty MullionElementProperty(this FamilyInstance familyInstance, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("property", "BHoM mullion element property extracted from the input Revit Mullion.")]
+        public static FrameEdgeProperty MullionElementProperty(this Mullion mullion, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (familyInstance == null || familyInstance.Symbol == null)
+            if (mullion?.Symbol == null)
                 return null;
             
-            FrameEdgeProperty frameEdgeProperty = refObjects.GetValue<FrameEdgeProperty>(familyInstance.Id);
+            FrameEdgeProperty frameEdgeProperty = refObjects.GetValue<FrameEdgeProperty>(mullion.Id);
             if (frameEdgeProperty != null)
                 return frameEdgeProperty;
 
-            // Profile and material extraction not yet implemented
-            IProfile profile = null;
-            BH.oM.Physical.Materials.Material material = null;
+            // Convert the material to BHoM
+            BH.oM.Physical.Materials.Material material = mullion.FramingMaterial(settings, refObjects);
 
-            List<ConstantFramingProperty> sectionProperties = new List<ConstantFramingProperty> { BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, 0, familyInstance.Symbol.Name) };
-            frameEdgeProperty = new FrameEdgeProperty { Name = familyInstance.Symbol.Name, SectionProperties = sectionProperties };
+            // Convert the profile to BHoM
+            IProfile profile = mullion.MullionType.ProfileFromRevit(settings, refObjects);
+
+            if (profile == null)
+                BH.Engine.Base.Compute.RecordWarning($"Mullion profile could not be extracted. ElementId: {mullion.Id.IntegerValue}");
+
+            List<ConstantFramingProperty> sectionProperties = new List<ConstantFramingProperty> { BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, 0, mullion.Symbol.Name) };
+            frameEdgeProperty = new FrameEdgeProperty { Name = mullion.Symbol.Name, SectionProperties = sectionProperties };
 
             //Set identifiers, parameters & custom data
-            frameEdgeProperty.SetIdentifiers(familyInstance.Symbol);
-            frameEdgeProperty.CopyParameters(familyInstance.Symbol, settings.MappingSettings);
-            frameEdgeProperty.SetProperties(familyInstance.Symbol, settings.MappingSettings);
+            frameEdgeProperty.SetIdentifiers(mullion.Symbol);
+            frameEdgeProperty.CopyParameters(mullion.Symbol, settings.MappingSettings);
+            frameEdgeProperty.SetProperties(mullion.Symbol, settings.MappingSettings);
 
-            refObjects.AddOrReplace(familyInstance.Id, frameEdgeProperty);
+            refObjects.AddOrReplace(mullion.Id, frameEdgeProperty);
             return frameEdgeProperty;
         }
 

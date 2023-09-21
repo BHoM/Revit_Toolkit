@@ -32,6 +32,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
 using BH.oM.Base.Attributes;
+using System.Runtime;
+using BH.oM.Revit.Enums;
+using BH.Engine.Geometry;
+using BH.Engine.Base;
 
 namespace BH.Revit.Engine.Core
 {
@@ -58,52 +62,67 @@ namespace BH.Revit.Engine.Core
             if (panels.Count != cells.Count)
                 return null;
 
-            List<IElement1D> cwMullions = curtainGrid.CurtainWallMullions(document, settings, refObjects).Select(x => x as IElement1D).ToList();
+            List<FrameEdge> mullions = curtainGrid.CurtainWallMullions(document, settings, refObjects);
 
             List<oM.Facade.Elements.Opening> result = new List<oM.Facade.Elements.Opening>();
-
             for (int i = 0; i < panels.Count; i++)
             {
                 FamilyInstance panel = panels[i] as FamilyInstance;
-                List<PolyCurve> pcs = new List<PolyCurve>();
                 if (panel == null)
                     continue;
+
+                List<PolyCurve> outlines = new List<PolyCurve>();
                 try
-                { 
-                    pcs = cells[i].CurveLoops.FromRevit(); 
+                {
+                    // This catches when PlanarizedCurveLoops throws an exception due to the cell having no loops, meaning in Revit it exists in the database but is no longer a valid CurtainWall cell
+                    CurveArrArray x = cells[i].PlanarizedCurveLoops;
+                    
+                    // Collapse nonlinear edges of a cell to lines - valid because mullions are linear anyways
+                    foreach (CurveArray array in cells[i].CurveLoops)
+                    {
+                        PolyCurve outline = new PolyCurve();
+                        foreach (Curve curve in array)
+                        {
+                            outline.Curves.Add(new BH.oM.Geometry.Line { Start = curve.GetEndPoint(0).PointFromRevit(), End = curve.GetEndPoint(1).PointFromRevit() });
+                        }
+
+                        outlines.Add(outline);
+                    }
                 }
-                catch  // This catches when CurveLoops throws an exception due to the cell having no loops, meaning in Revit it exists in the database but is no longer on the CurtainWall with any corresponding Curves
+                catch 
                 { 
                     continue; 
                 }
 
-                foreach (PolyCurve pc in pcs)
+                foreach (PolyCurve outline in outlines)
                 {
-                    BH.oM.Facade.Elements.Opening bHoMOpening = null;
-                    // If panel is a basic wall, the panel is not the actual element, it is an empty panel that hosts the
-                    // actual element, so we assign it a null construction and separately return the wall
-                    if (panel is Autodesk.Revit.DB.Panel && document.GetElement((panel as Autodesk.Revit.DB.Panel).FindHostPanel()) is Wall)
-                    {
-                        Wall hostElement = document.GetElement((panel as Autodesk.Revit.DB.Panel).FindHostPanel()) as Wall;
-                        BH.oM.Facade.Elements.Panel bHoMCWPanel = hostElement.FacadePanelFromRevit(settings, refObjects);
-                        bHoMOpening = bHoMCWPanel.FacadePanelAsOpening(hostElement.Id.ToString(), refObjects);
-                    }
-                    else
-                        bHoMOpening = panel.FacadeOpeningFromRevit(settings, refObjects);
+                    BH.oM.Facade.Elements.Opening bHoMOpening = new oM.Facade.Elements.Opening();
+                    bHoMOpening.OpeningConstruction = panel.Construction(settings, refObjects);
+                    bHoMOpening.Type = panel.OpeningType();
 
-                    if (bHoMOpening == null)
-                        continue;
-
-                    List<FrameEdge> edges = bHoMOpening.Edges;
-                    foreach  (FrameEdge edge in edges)
+                    // Add mullion information to the openings
+                    bHoMOpening.Edges = new List<FrameEdge>();
+                    foreach (ICurve curve in outline.Curves)
                     {
-                        List<FrameEdge> adjEdges = edge.AdjacentElements(cwMullions).OfType<FrameEdge>().ToList() ;
-                        if (adjEdges.Count > 0)
-                            edge.FrameEdgeProperty = adjEdges[0].FrameEdgeProperty;
-                        else
-                            edge.FrameEdgeProperty = null;
+                        // Find the correspondent mullions based on adjacency
+                        BH.oM.Geometry.Point mid = curve.IPointAtParameter(0.5);
+                        FrameEdge mullion = mullions.FirstOrDefault(x => x.Curve != null && mid.IDistance(x.Curve) <= settings.DistanceTolerance).DeepClone();
+                        if (mullion == null)
+                        {
+                            BH.Engine.Base.Compute.RecordWarning("Mullion information is missing for some panels in the curtain wall.");
+                            mullion = new FrameEdge();
+                        }
+
+                        mullion.Curve = curve;
+                        bHoMOpening.Edges.Add(mullion);
                     }
-                    bHoMOpening.Edges = edges;
+
+                    bHoMOpening.Name = panel.Name;
+
+                    //Set identifiers, parameters & custom data
+                    bHoMOpening.SetIdentifiers(panel);
+                    bHoMOpening.CopyParameters(panel, settings.MappingSettings);
+                    bHoMOpening.SetProperties(panel, settings.MappingSettings);
 
                     result.Add(bHoMOpening);
                 }
@@ -117,18 +136,39 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
-        private static oM.Facade.Elements.Opening FacadePanelAsOpening(this oM.Facade.Elements.Panel panel, string refId = "", Dictionary<string, List<IBHoMObject>> refObjects = null)
+        private static BH.oM.Physical.Constructions.Construction Construction(this FamilyInstance panel, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects)
         {
-            if (panel == null)
-                return null;
-            ;
-            oM.Facade.Elements.Opening opening = refObjects.GetValue<oM.Facade.Elements.Opening>(refId);
-            if (opening != null)
-                return opening;
+            if ((panel as Autodesk.Revit.DB.Panel)?.FindHostPanel() is ElementId hostId && panel.Document.GetElement(hostId) is Wall wall)
+            {
+                HostObjAttributes hostObjAttributes = wall.Document.GetElement(wall.GetTypeId()) as HostObjAttributes;
+                string materialGrade = wall.MaterialGrade(settings);
+                return hostObjAttributes.ConstructionFromRevit(materialGrade, settings, refObjects);
+            }
+            else
+            {
+                int category = panel.Category.Id.IntegerValue;
+                if (category == (int)Autodesk.Revit.DB.BuiltInCategory.OST_Walls)
+                {
+                    HostObjAttributes hostObjAttributes = panel.Document.GetElement(panel.GetTypeId()) as HostObjAttributes;
+                    string materialGrade = panel.MaterialGrade(settings);
+                    return hostObjAttributes.ConstructionFromRevit(materialGrade, settings, refObjects);
+                }
+                else
+                    return panel.GlazingConstruction();
+            }
+        }
 
-            opening = new oM.Facade.Elements.Opening { Name = panel.Name, Edges = panel.ExternalEdges, Fragments = panel.Fragments, OpeningConstruction = panel.Construction, Tags = panel.Tags, CustomData = panel.CustomData, Type = oM.Facade.Elements.OpeningType.Undefined };
+        /***************************************************/
 
-            return opening;
+        private static BH.oM.Facade.Elements.OpeningType OpeningType(this FamilyInstance panel)
+        {
+            BuiltInCategory category = (BuiltInCategory)panel.Category.Id.IntegerValue;
+            if (category == Autodesk.Revit.DB.BuiltInCategory.OST_Windows || category == Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanels)
+                return BH.oM.Facade.Elements.OpeningType.Window;
+            else if (category == Autodesk.Revit.DB.BuiltInCategory.OST_Doors)
+                return BH.oM.Facade.Elements.OpeningType.Door;
+            else
+                return BH.oM.Facade.Elements.OpeningType.Undefined;
         }
 
         /***************************************************/

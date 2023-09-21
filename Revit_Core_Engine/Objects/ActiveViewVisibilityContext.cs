@@ -95,14 +95,15 @@ namespace BH.Revit.Engine.Core
         {
             Document doc = m_Documents.Peek();
             m_Elements[doc.PathName].Add(elementId);
-
             Element element = doc.GetElement(elementId);
-            if (element is RevitLinkInstance)
+
+            if (element is RevitLinkInstance linkInstance)
             {
-                RevitLinkInstance linkInstance = (RevitLinkInstance)element;
-                if (m_TargetDocument == null || m_TargetDocument.PathName == linkInstance.GetLinkDocument().PathName)
+                Document linkDoc = linkInstance.GetLinkDocument();
+
+                if (m_TargetDocument == null || m_TargetDocument.PathName == linkDoc.PathName)
                 {
-                    m_DocumentLookup[linkInstance.Document.PathName] = linkInstance.Document;
+                    m_DocumentLookup[linkDoc.PathName] = linkDoc;
                     return RenderNodeAction.Proceed;
                 }
             }

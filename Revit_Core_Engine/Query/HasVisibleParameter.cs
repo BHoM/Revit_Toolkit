@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
  *
@@ -21,13 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using BH.oM.Facade.Elements;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -37,30 +32,44 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts the mullions from a Revit curtain grid and returns them in a form of BHoM FrameEdges.")]
-        [Input("curtainGrid", "Revit curtain grid to extract the mullions from.")]
-        [Input("document", "Revit document, to which the curtain grid belongs.")]
-        [Input("settings", "Revit adapter settings to be used while performing the query.")]
-        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("mullions", "Mullions extracted from the input Revit curtain grid and converted to BHoM FrameEdges.")]
-        public static List<FrameEdge> CurtainWallMullions(this CurtainGrid curtainGrid, Document document, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Description("Returns true if an element contains the given parameter among its visible parameters.")]
+        [Input("element", "Revit element to check whether it has a given parameter.")]
+        [Input("parameter", "Parameter to search for.")]
+        [Output("hasParameter", "True if the input element contains the given parameter among its visible parameters, otherwise false.")]
+        public static bool HasVisibleParameter(this Element element, BuiltInParameter parameter)
         {
-            if (curtainGrid == null)
-                return null;
+            if (element == null)
+                return false;
 
-            List<FrameEdge> result = new List<FrameEdge>();
-            List<Element> mullions = curtainGrid.GetMullionIds().Select(x => document.GetElement(x)).ToList();
-
-            foreach (Mullion mullion in mullions.Where(x => x.get_BoundingBox(null) != null))
+            foreach(Parameter param in element.Parameters)
             {
-                result.Add(mullion.FrameEdgeFromRevit(settings, refObjects));
+                if ((param.Definition as InternalDefinition)?.BuiltInParameter == parameter)
+                    return true;
             }
 
-            return result;
+            return false;
+        }
+
+        /***************************************************/
+
+        [Description("Returns true if an element contains a parameter with the give name among its visible parameters.")]
+        [Input("element", "Revit element to check whether it has a parameter with the given name.")]
+        [Input("parameterName", "Parameter name to search for.")]
+        [Output("hasParameter", "True if the input element contains a parameter with the given name among its visible parameters, otherwise false.")]
+        public static bool HasVisibleParameter(this Element element, string parameterName)
+        {
+            if (element == null)
+                return false;
+
+            foreach (Parameter param in element.Parameters)
+            {
+                if (param.Definition.Name == parameterName)
+                    return true;
+            }
+
+            return false;
         }
 
         /***************************************************/
     }
 }
-
-

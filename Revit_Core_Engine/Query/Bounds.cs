@@ -36,10 +36,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the combined bounding box of a given colection of volumetric solids.")]
+        [Description("Returns the combined bounding box of a given collection of volumetric solids.")]
         [Input("solids", "A collection of solids to find the bounds for.")]
         [Input("transform", "Optional transform of the bounding box's coordinate system.")]
-        [Output("bounds", "Combined bounding box of the input colection of volumetric solids.")]
+        [Output("bounds", "Combined bounding box of the input collection of volumetric solids.")]
         public static BoundingBoxXYZ Bounds(this IEnumerable<Solid> solids, Transform transform = null)
         {
             solids = solids?.Where(x => x != null && x.Volume > 1e-6).ToList();
@@ -78,6 +78,31 @@ namespace BH.Revit.Engine.Core
             unionBbox.Max = new XYZ(maxX, maxY, maxZ);
 
             return unionBbox;
+        }
+
+        /***************************************************/
+
+        [Description("Returns the combined outline of the given outlines.")]
+        [Input("outlines", "A list of outlines to combine.")]
+        [Output("bounds", "Combined outline of the given outlines.")]
+        public static Outline Bounds(this List<Outline> outlines)
+        {
+            if (outlines == null || !outlines.Any())
+            {
+                BH.Engine.Base.Compute.RecordError("Outline collection cannot be null or empty.");
+                return null;
+            }
+                
+
+            Outline newOutline = new Outline(outlines[0]);
+
+            foreach (Outline outline in outlines.Skip(1))
+            {
+                newOutline.AddPoint(outline.MinimumPoint);
+                newOutline.AddPoint(outline.MaximumPoint);
+            }
+
+            return newOutline;
         }
 
         /***************************************************/

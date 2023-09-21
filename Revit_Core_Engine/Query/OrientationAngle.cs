@@ -121,6 +121,8 @@ namespace BH.Revit.Engine.Core
         [Output("angle", "BHoM-representative column orientation angle extracted from the input Revit family instance.")]
         public static double OrientationAngleColumn(this FamilyInstance familyInstance, RevitSettings settings)
         {
+            settings = settings.DefaultIfNull();
+
             double rotation = double.NaN;
             Location location = familyInstance.Location;
 
@@ -151,6 +153,8 @@ namespace BH.Revit.Engine.Core
             Curve locationCurve = (familyInstance.Location as LocationCurve)?.Curve;
             if (locationCurve == null)
                 return double.NaN;
+
+            settings = settings.DefaultIfNull();
 
             if (locationCurve is Autodesk.Revit.DB.Line)
             {

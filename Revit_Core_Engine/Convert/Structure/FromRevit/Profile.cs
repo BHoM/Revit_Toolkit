@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****               Public Methods              ****/
         /***************************************************/
-        
+
         [Description("Converts a Revit FamilySymbol to BH.oM.Spatial.ShapeProfiles.IProfile.")]
         [Input("familySymbol", "Revit FamilySymbol to be converted.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
@@ -127,6 +127,92 @@ namespace BH.Revit.Engine.Core
 
             profile.Name = familySymbol.Name;
             refObjects.AddOrReplace(familySymbol.Id, profile);
+
+            return profile;
+        }
+
+        /***************************************************/
+
+        [Description("Converts a Revit MullionType to BH.oM.Spatial.ShapeProfiles.IProfile.")]
+        [Input("mullionType", "Revit MullionType to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("profile", "BH.oM.Spatial.ShapeProfiles.IProfile resulting from converting the input Revit MullionType.")]
+        public static IProfile ProfileFromRevit(this MullionType mullionType, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            settings = settings.DefaultIfNull();
+
+            IProfile profile = refObjects.GetValue<IProfile>(mullionType.Id);
+            if (profile != null)
+                return profile;
+
+            // The algorithm below is so convoluted because mullion type does not have a profile
+            // Instead, one needs to extract the geometry of one of the instances
+            // The instance to be queried needs to have its start (bottom) face exposed
+            // In simple words, it needs to be the first mullion in a chain of mullions of same type            
+            
+            // First, take arbitrary mullion of a given type
+            Document doc = mullionType.Document;
+            Mullion representativeMullion = new FilteredElementCollector(doc)
+                .OfClass(typeof(FamilyInstance))
+                .Where(x => x is Mullion)
+                .Cast<Mullion>()
+                .FirstOrDefault(x => x.MullionType.Id.IntegerValue == mullionType.Id.IntegerValue && x.MullionLine() != null);
+
+            if (representativeMullion == null)
+            {
+                BH.Engine.Base.Compute.RecordError($"Profile could not be extracted from a mullion. ElementId: {mullionType.Id.IntegerValue}");
+                return null;
+            }
+
+            // Find the first mullion in the chain the arbitrary one belongs to
+            List<Mullion> allMullionsInWall = new FilteredElementCollector(doc)
+                .OfClass(typeof(FamilyInstance))
+                .Where(x => x is Mullion)
+                .Cast<Mullion>()
+                .Where(x => x.Host.Id.IntegerValue == representativeMullion.Host.Id.IntegerValue
+                         && x.MullionType.Id.IntegerValue == mullionType.Id.IntegerValue)
+                .ToList();
+
+            BH.oM.Geometry.Line line = representativeMullion.MullionLine();
+            BH.oM.Geometry.Vector direction = line.Direction();
+            foreach (Mullion candidateMullion in allMullionsInWall)
+            {
+                // Skip mullions that are not collinear with the representative mullion
+                BH.oM.Geometry.Line candidateLine = candidateMullion.MullionLine();
+                if (candidateLine == null || !candidateLine.IsCollinear(line))
+                    continue;
+
+                // Update the representative mullion if the candidate:
+                // - is collinear (check above)
+                // - has the same direction
+                // - has start before the current representative mullion, counting along the mullion direction
+                if ((candidateLine.Start - line.Start).DotProduct(direction) > 0)
+                {
+                    representativeMullion = candidateMullion;
+                    line = candidateLine;
+                }
+            }
+
+            // Find the instance geometry and extract profile from it
+            Options options = new Options();
+            options.DetailLevel = ViewDetailLevel.Fine;
+            options.IncludeNonVisibleObjects = false;
+            GeometryInstance instance = representativeMullion.get_Geometry(options).FirstOrDefault(x => x is GeometryInstance) as GeometryInstance;
+            MullionType instanceSymbol = instance.Symbol as MullionType;
+            if (instanceSymbol != null)
+                profile = instanceSymbol.FreeFormProfileFromRevit(settings);
+
+            if (profile == null)
+                return null;
+
+            //Set identifiers, parameters & custom data
+            profile.SetIdentifiers(mullionType);
+            profile.CopyParameters(mullionType, settings.MappingSettings);
+            profile.SetProperties(mullionType, settings.MappingSettings);
+
+            profile.Name = mullionType.Name;
+            refObjects.AddOrReplace(mullionType.Id, profile);
 
             return profile;
         }
@@ -610,7 +696,7 @@ namespace BH.Revit.Engine.Core
             XYZ direction;
             if (familySymbol.Family.FamilyPlacementType == FamilyPlacementType.CurveDrivenStructural)
                 direction = XYZ.BasisX;
-            else if (familySymbol.Family.FamilyPlacementType == FamilyPlacementType.TwoLevelsBased)
+            else if (familySymbol.Family.FamilyPlacementType == FamilyPlacementType.TwoLevelsBased || familySymbol is MullionType)
                 direction = XYZ.BasisZ;
             else
             {
@@ -714,6 +800,13 @@ namespace BH.Revit.Engine.Core
                 if (adjustment.Length() > settings.DistanceTolerance)
                     profileCurves = profileCurves.Select(x => x.ITranslate(adjustment)).ToList();
 
+                // If Mullion, rotate 90 degrees to match orientation of Mullions on CurtainWalls per BHoM Standard of -X is Exterior, +X is Interior
+                if (familySymbol is MullionType)
+                {
+                    double angle = -Math.PI * 0.5;
+                    profileCurves = profileCurves.Select(x => x.IRotate(oM.Geometry.Point.Origin, Vector.ZAxis, angle)).ToList();
+                }
+
                 // Check if the curves are in the horizontal plane, if not then align them.
                 if (familySymbol.Family.FamilyPlacementType == FamilyPlacementType.CurveDrivenStructural)
                 {
@@ -751,6 +844,17 @@ namespace BH.Revit.Engine.Core
             }
 
             return solid;
+        }
+
+        /***************************************************/
+
+        private static BH.oM.Geometry.Line MullionLine(this Mullion mullion)
+        {
+            Curve curve = mullion?.LocationCurve;
+            if (curve == null)
+                return null;
+            else
+                return new oM.Geometry.Line { Start = curve.GetEndPoint(0).PointFromRevit(), End = curve.GetEndPoint(1).PointFromRevit() };
         }
 
 
