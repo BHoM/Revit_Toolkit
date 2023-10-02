@@ -28,7 +28,9 @@ using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -65,50 +67,47 @@ namespace BH.Revit.Engine.Core
         {
             settings = settings.DefaultIfNull();
 
-            double rotation;
-
-            Location location = mepCurve.Location;
-
-            LocationCurve locationCurve = location as LocationCurve;
-            Curve curve = locationCurve.Curve;
+            Curve curve = (mepCurve.Location as LocationCurve)?.Curve;
+            if (curve == null)
+            {
+                BH.Engine.Base.Compute.RecordError($"Cannot query orientation of a MEP element without a valid location curve. ElementId: {mepCurve.Id.IntegerValue}");
+                return double.NaN;
+            }
 
             BH.oM.Geometry.ICurve bhomCurve = curve.IFromRevit(); // Convert to a BHoM curve
 
-            // Get the connector
-            Connector connector = null;
-            foreach (Connector conn in mepCurve.ConnectorManager.Connectors)
+            List<Connector> endConnectors = mepCurve.ConnectorsOfType(ConnectorType.End);
+            if (endConnectors.Count != 2)
             {
-                // Get the End connector for this duct
-                if (conn.ConnectorType == ConnectorType.End)
-                {
-                    if (connector == null)
-                    {
-                        connector = conn;
-                        continue;
-                    }
-
-                    //Thanks to Revit, the order of connectors from connectorManager.Connectors isn't always the same!
-                    //So, we need to get the connector whose origin has the smallest X,Y & Z values in order to measure OrientationAngle consistently.
-                    XYZ p1 = connector.Origin;
-                    XYZ p2 = conn.Origin;
-
-                    if ((p1.X - p2.X) > Tolerance.Distance
-                        || (p1.Y - p2.Y) > Tolerance.Distance
-                        || (p1.Z - p2.Z) > Tolerance.Distance)
-                    {
-                        connector = conn;
-                    }
-                }
+                BH.Engine.Base.Compute.RecordError($"Cannot query orientation of a MEP element without two end connectors. ElementId: {mepCurve.Id.IntegerValue}");
+                return double.NaN;
             }
 
+            XYZ endPoint = curve.GetEndPoint(0);
+            endConnectors = endConnectors.OrderBy(x => x.Origin.DistanceTo(endPoint)).ToList();
+            Connector endConnector = endConnectors[0];
+
             // Coordinate system of the connector
-            Transform transform = connector.CoordinateSystem;
+            Transform transform = endConnector.CoordinateSystem;
 
             // Get the rotation
+            double rotation;
             if ((bhomCurve as BH.oM.Geometry.Line).IsVertical()) // Is the duct vertical?
-                rotation = XYZ.BasisY.AngleOnPlaneTo(transform.BasisX, transform.BasisZ);
+                rotation = transform.BasisX.AngleOnPlaneTo(XYZ.BasisY, transform.BasisZ);
             else
-                rotation = Math.PI + XYZ.BasisZ.AngleOnPlaneTo(transform.BasisY, transform.BasisZ);
+            {
+                rotation = XYZ.BasisZ.AngleOnPlaneTo(transform.BasisY, transform.BasisZ);
+                
+                bool positiveDir;
+                double xDifference = endConnectors[1].Origin.X - endConnectors[0].Origin.X;
+                if (Math.Abs(xDifference) < 1e-6)
+                    positiveDir = endConnectors[1].Origin.Y > endConnectors[0].Origin.Y;
+                else
+                    positiveDir = xDifference > 0;
+
+                if (positiveDir)
+                    rotation *= -1;
+            }
 
             return rotation.NormalizeAngleDomain();
         }
