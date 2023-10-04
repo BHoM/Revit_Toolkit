@@ -25,7 +25,6 @@ using BH.oM.Base.Attributes;
 using System;
 using System.ComponentModel;
 
-#if (!REVIT2018 && !REVIT2019)
 namespace BH.Revit.Engine.Core
 {
     [Description("Class used to extract elements visible in the active view of the host document if that view is of 2d type. See " + nameof(Query.ElementIdsByVisibleInActiveView) + " for usage example.")]
@@ -134,4 +133,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-#endif

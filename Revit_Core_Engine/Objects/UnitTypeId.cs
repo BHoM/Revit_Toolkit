@@ -24,7 +24,7 @@ using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
-#if (REVIT2018 || REVIT2019 || REVIT2020)
+#if (REVIT2020)
 namespace BH.Revit.Engine.Core
 {
     [Description("This class is defined by BHoM only for Revit Versions < 2021. Revit versions from 2021 onwards define an equivalent class with the same name as part of their API." +
