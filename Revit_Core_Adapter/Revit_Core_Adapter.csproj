@@ -13,21 +13,13 @@
   <PropertyGroup>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <OutputPath>..\Build\</OutputPath>
-    <Configurations>Debug;Release;Debug2018;Release2018;Debug2019;Release2019;Debug2020;Release2020;Debug2021;Release2021;Debug2022;Release2022;Debug2023;Release2023</Configurations>
+    <Configurations>Debug;Release;Debug2020;Release2020;Debug2021;Release2021;Debug2022;Release2022;Debug2023;Release2023</Configurations>
     <TargetFramework>net480</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
-    <AssemblyName>Revit_Core_Adapter_2018</AssemblyName>
-	<DefineConstants>REVIT2018</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018'">
-    <AssemblyName>Revit_Core_Adapter_2018</AssemblyName>
-	<DefineConstants>REVIT2018</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
-    <AssemblyName>Revit_Core_Adapter_2019</AssemblyName>
-	<DefineConstants>REVIT2019</DefineConstants>
+    <AssemblyName>Revit_Core_Adapter_2020</AssemblyName>
+	<DefineConstants>REVIT2020</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
     <AssemblyName>Revit_Core_Adapter_2020</AssemblyName>
@@ -47,13 +39,7 @@
   </PropertyGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
-    <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2018.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2018\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E" />
-  </Target>
-  <Target Name="PostBuild2018" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018'">
-    <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2018.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2018\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E" />
-  </Target>
-  <Target Name="PostBuild2019" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
-    <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2019.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2019\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E" />
+    <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2020.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2020\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E" />
   </Target>
   <Target Name="PostBuild2020" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
     <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2020.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2020\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E" />
@@ -141,27 +127,11 @@
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018' Or '$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
-      <HintPath>..\libs\2018\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2018' Or '$(Configuration)'=='Release2018' Or '$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
-      <HintPath>..\libs\2018\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
-      <HintPath>..\libs\2019\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2019' Or '$(Configuration)'=='Release2019'">
-      <HintPath>..\libs\2019\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
+    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020' Or '$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
       <HintPath>..\libs\2020\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
+    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020' Or '$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
       <HintPath>..\libs\2020\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
@@ -213,12 +183,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Listener\Files\BHoM_2018.Addin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Listener\Files\BHoM_2019.Addin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Listener\Files\BHoM_2020.Addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
