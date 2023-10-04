@@ -1,11 +1,7 @@
-BHoM/Revit_Toolkit/Debug2018
-BHoM/Revit_Toolkit/Debug2019
 BHoM/Revit_Toolkit/Debug2020
 BHoM/Revit_Toolkit/Debug2021
 BHoM/Revit_Toolkit/Debug2022
 BHoM/Revit_Toolkit/Debug2023
-BHoM/Revit_Toolkit/Release2018
-BHoM/Revit_Toolkit/Release2019
 BHoM/Revit_Toolkit/Release2020
 BHoM/Revit_Toolkit/Release2021
 BHoM/Revit_Toolkit/Release2022
