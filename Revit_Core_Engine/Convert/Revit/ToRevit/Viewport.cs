@@ -61,11 +61,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             List<View> viewList = new FilteredElementCollector(document).OfClass(typeof(View)).Cast<View>().ToList();
-#if (REVIT2018 || REVIT2019)
-            View view = viewList.FirstOrDefault(x => !x.IsTemplate && x.ViewName == viewport.ViewName);
-#else
             View view = viewList.FirstOrDefault(x => !x.IsTemplate && x.Name == viewport.ViewName);
-#endif
 
             if (view == null)
                 return null;

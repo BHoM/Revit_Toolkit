@@ -25,7 +25,7 @@ using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
-#if (REVIT2018 || REVIT2019 || REVIT2020)
+#if (REVIT2020)
 namespace BH.Revit.Engine.Core
 {
     [Description("This class is defined by BHoM only for Revit Versions < 2021. Revit versions from 2021 onwards define an equivalent class with the same name as part of their API." +
@@ -183,15 +183,9 @@ namespace BH.Revit.Engine.Core
         public static UnitType CostRatePower { [NotImplemented] get { return NonExistentUnitType(nameof(CostRatePower), 2021); } }
         public static UnitType CostRateEnergy { [NotImplemented] get { return NonExistentUnitType(nameof(CostRateEnergy), 2021); } }
         public static UnitType CostPerArea { [NotImplemented] get { return NonExistentUnitType(nameof(CostPerArea), 2021); } }
-        public static UnitType AngularSpeed { [NotImplemented] get { return NonExistentUnitType(nameof(AngularSpeed), 2021); } }
-        
-#if (REVIT2018 || REVIT2019)
-        public static UnitType Time { [NotImplemented] get { return NonExistentUnitType(nameof(Time), 2020); } }
-        public static UnitType Speed { [NotImplemented] get { return NonExistentUnitType(nameof(Speed), 2020); } }
-#else
+        public static UnitType AngularSpeed { [NotImplemented] get { return NonExistentUnitType(nameof(AngularSpeed), 2021); } }        
         public static UnitType Time { get { return UnitType.UT_TimeInterval; } }
         public static UnitType Speed { get { return UnitType.UT_Speed; } }
-#endif
 
         public static class Boolean
         {

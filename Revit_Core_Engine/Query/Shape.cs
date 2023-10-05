@@ -51,22 +51,7 @@ namespace BH.Revit.Engine.Core
                 return Autodesk.Revit.DB.ConnectorProfileType.Invalid;
             }
 
-#if REVIT2018
-            // Get the duct connector shape in Revit 2018 by extracting it from one of the duct connectors
-            foreach (Connector connector in mEPCurve.ConnectorManager.Connectors)
-            {
-                // Get the End connector for this duct
-                if (connector.ConnectorType == ConnectorType.End)
-                {
-                    return connector.Shape;
-                }
-            }
-
-            // Return an Invalid connector shape if no primary connector is found
-            return ConnectorProfileType.Invalid;
-#else
             return (mEPCurve.Document.GetElement(mEPCurve.GetTypeId()) as MEPCurveType).Shape;
-#endif
         }
 
         /***************************************************/

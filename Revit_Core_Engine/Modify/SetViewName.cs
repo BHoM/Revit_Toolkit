@@ -49,11 +49,8 @@ namespace BH.Revit.Engine.Core
                 uniqueName = $"{viewName} ({number})";
             }
 
-#if (REVIT2018 || REVIT2019)
-                    view.ViewName = uniqueName;
-#else
             view.Name = uniqueName;
-#endif
+
             if (uniqueName != viewName)
             {
                 BH.Engine.Base.Compute.RecordWarning($"There is already a view named '{viewName}'. It has been named '{uniqueName}' instead.");

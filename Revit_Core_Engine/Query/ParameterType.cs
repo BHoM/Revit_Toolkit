@@ -35,7 +35,7 @@ namespace BH.Revit.Engine.Core
         [Description("Gets the parameter type of a Revit parameter definition.")]
         [Input("definition", "Revit parameter definition to extract the parameter type from.")]
         [Output("parameterType", "Parameter type extracted from the input Revit parameter definition.")]
-#if (REVIT2018 || REVIT2019 || REVIT2020)
+#if (REVIT2020)
         public static ParameterType? ParameterType(this Definition definition)
         {
             if (definition.ParameterType == Autodesk.Revit.DB.ParameterType.Invalid)

@@ -157,25 +157,12 @@ namespace BH.Revit.Engine.Core
         [Input("fromAsset", "Source Revit StructuralAsset to copy the material characteristics from.")]
         public static void CopyCharacteristics(this IMaterialFragment toMaterial, StructuralAsset fromAsset)
         {
-            double density = fromAsset.Density.ToSI(SpecTypeId.MassDensity);
-
-#if (REVIT2018 || REVIT2019)
-            double dampingRatio = fromAsset.DampingRatio;
-#else
-
-#endif
+            toMaterial.Density = fromAsset.Density.ToSI(SpecTypeId.MassDensity);
 
             oM.Geometry.Vector youngsModulus = BH.Engine.Geometry.Create.Vector(fromAsset.YoungModulus.X.ToSI(SpecTypeId.Stress), fromAsset.YoungModulus.Y.ToSI(SpecTypeId.Stress), fromAsset.YoungModulus.Z.ToSI(SpecTypeId.Stress));
             oM.Geometry.Vector thermalExpansionCoeff = BH.Engine.Geometry.Create.Vector(fromAsset.ThermalExpansionCoefficient.X.ToSI(SpecTypeId.ThermalExpansionCoefficient), fromAsset.ThermalExpansionCoefficient.Y.ToSI(SpecTypeId.ThermalExpansionCoefficient), fromAsset.ThermalExpansionCoefficient.Z.ToSI(SpecTypeId.ThermalExpansionCoefficient));
             oM.Geometry.Vector poissonsRatio = BH.Engine.Geometry.Create.Vector(fromAsset.PoissonRatio.X, fromAsset.PoissonRatio.Y, fromAsset.PoissonRatio.Z);
             oM.Geometry.Vector shearModulus = BH.Engine.Geometry.Create.Vector(fromAsset.ShearModulus.X.ToSI(SpecTypeId.Stress), fromAsset.ShearModulus.Y.ToSI(SpecTypeId.Stress), fromAsset.ShearModulus.Z.ToSI(SpecTypeId.Stress));
-
-            toMaterial.Density = density;
-#if (REVIT2018 || REVIT2019)
-            toMaterial.DampingRatio = dampingRatio;
-#else
-
-#endif
 
             if (toMaterial is Aluminium)
             {

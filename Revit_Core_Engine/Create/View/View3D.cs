@@ -106,11 +106,7 @@ namespace BH.Revit.Engine.Core
             {
                 try
                 {
-#if (REVIT2018 || REVIT2019)
-                    result.ViewName = viewName;
-#else
                     result.Name = viewName;
-#endif
                 }
                 catch
                 {
