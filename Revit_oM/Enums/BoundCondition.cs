@@ -38,6 +38,7 @@ namespace BH.oM.Adapters.Revit.Enums
         Unplaced,
         NotEnclosed,
         Redundant,
+        NoGeometry
     }
 
     /***************************************************/
