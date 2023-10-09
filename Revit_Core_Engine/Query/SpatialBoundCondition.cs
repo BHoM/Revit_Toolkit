@@ -38,7 +38,7 @@ namespace BH.Revit.Engine.Core
         [Description("Check if a room/space/area is bounded, unplaced, redundant, or not enclosed.")]
         [Input("elem", "A spatial element to be check if it's bounded, unplaced, redundant, or not enclosed.")]
         [Output("BoundCondition", "The bound condition of the spatial element to be checked.")]
-        public static BoundCondition? SpatialBoundCondition(this SpatialElement elem, bool volumeComputationEnabled = false)
+        public static BoundCondition? SpatialBoundCondition(this SpatialElement elem)
         {
             if (elem == null)
                 return null;
@@ -58,7 +58,7 @@ namespace BH.Revit.Engine.Core
                     return BoundCondition.NotEnclosed;
                 }
             }
-            else if (volumeComputationEnabled)
+            else if (AreaVolumeSettings.GetAreaVolumeSettings(elem.Document).ComputeVolumes)
             {
                 if (elem is Room room && room.Volume == 0
                     || elem is Space space && space.Volume == 0)
