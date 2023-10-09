@@ -51,7 +51,7 @@ namespace BH.Revit.Engine.Core
                 }
                 else if (elem.GetBoundarySegments(new SpatialElementBoundaryOptions()).Count > 0)
                 {
-                    return BoundCondition.Redundant;
+                    return BoundCondition.Overlapping;
                 }
                 else
                 {
