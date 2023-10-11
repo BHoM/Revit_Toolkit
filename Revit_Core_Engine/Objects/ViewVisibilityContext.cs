@@ -27,19 +27,21 @@ using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
-    [Description("Class used to extract elements visible in the active view of the host document if that view is of 3d type. See " + nameof(Query.ElementIdsByVisibleInActiveView) + " for usage example.")]
-    public class ActiveViewVisibilityContext : IExportContext
+    //[Description("Class used to extract elements visible in the active view of the host document if that view is of 3d type. See " + nameof(Query.ElementIdsByVisibleInActiveView) + " for usage example.")]
+    public class ViewVisibilityContext : IExportContext
     {
         /***************************************************/
         /****                Constructor                ****/
         /***************************************************/
 
-        [Description("hostDocument refers to the document that owns the active view. targetDocument can take three values:" +
-                     "\n- same as hostDocument - visible elements of the host document are then collected" +
-                     "\n- document linked in the host document - elements of that linked document visible in the active view of the host document are then collected" +
-                     "\n- null - all elements of all documents, host and links, are then collected")]
-        public ActiveViewVisibilityContext(Document hostDocument, Document targetDocument)
+        //[Description("hostDocument refers to the document that owns the active view. targetDocument can take three values:" +
+        //             "\n- same as hostDocument - visible elements of the host document are then collected" +
+        //             "\n- document linked in the host document - elements of that linked document visible in the active view of the host document are then collected" +
+        //             "\n- null - all elements of all documents, host and links, are then collected")]
+        public ViewVisibilityContext(View view, Document targetDocument)
         {
+            Document hostDocument = view.Document;
+            m_ViewId = view.Id;
             m_HostDocument = hostDocument;
             m_TargetDocument = targetDocument;
             m_Documents.Push(hostDocument);
@@ -52,8 +54,8 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns ids of all elements visible in the active view of the host document. The ids are grouped by document they belong to.")]
-        public Dictionary<Document, HashSet<ElementId>> GetAllElementsVisibleInActiveView()
+        //[Description("Returns ids of all elements visible in the active view of the host document. The ids are grouped by document they belong to.")]
+        public Dictionary<Document, HashSet<ElementId>> GetAllElementsVisibleInView()
         {
             if (m_TargetDocument != null)
             {
@@ -66,8 +68,8 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Returns ids of given target document's elements visible in the active view of the host document.")]
-        public HashSet<ElementId> GetElementsVisibleInActiveView(Document targetDocument)
+        //[Description("Returns ids of given target document's elements visible in the active view of the host document.")]
+        public HashSet<ElementId> GetElementsVisibleInView(Document targetDocument)
         {
             HashSet<ElementId> result = null;
             if (!m_Elements.TryGetValue(targetDocument?.PathName, out result))
@@ -190,7 +192,7 @@ namespace BH.Revit.Engine.Core
 
         public RenderNodeAction OnViewBegin(ViewNode node)
         {
-            if (node.ViewId == m_HostDocument.ActiveView.Id)
+            if (node.ViewId == m_ViewId)
                 return RenderNodeAction.Proceed;
             else
                 return RenderNodeAction.Skip;
@@ -214,6 +216,7 @@ namespace BH.Revit.Engine.Core
         /****              Private fields               ****/
         /***************************************************/
 
+        private ElementId m_ViewId;
         private Document m_HostDocument;
         private Document m_TargetDocument;
         private Stack<Document> m_Documents = new Stack<Document>();

@@ -27,21 +27,21 @@ using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
-    [Description("Class used to extract elements visible in the active view of the host document if that view is of 2d type. See " + nameof(Query.ElementIdsByVisibleInActiveView) + " for usage example.")]
-    public class Active2dViewVisibilityContext : ActiveViewVisibilityContext, IExportContext2D
+    //[Description("Class used to extract elements visible in the active view of the host document if that view is of 2d type. See " + nameof(Query.ElementIdsByVisibleInActiveView) + " for usage example.")]
+    public class View2DVisibilityContext : ViewVisibilityContext, IExportContext2D
     {
         /***************************************************/
         /****                Constructor                ****/
         /***************************************************/
 
-        [Description("hostDocument refers to the document that owns the active view. targetDocument can take three values:" +
-                     "\n- same as hostDocument - visible elements of the host document are then collected" +
-                     "\n- document linked in the host document - elements of that linked document visible in the active view of the host document are then collected" +
-                     "\n- null - all elements of all documents, host and links, are then collected.")]
-        [Input("hostDocument", "Host document for the process, the document that owns the active view.")]
-        [Input("targetDocument", "Target document for the process, the document that elements are collected from. Can be the same as host document, a document linked in the host document or null.")]
-        [Output("context", "Context used to extract elements visible in the active view of the host document if that view is of 2d type.")]
-        public Active2dViewVisibilityContext(Document hostDocument, Document targetDocument) : base(hostDocument, targetDocument)
+        //[Description("hostDocument refers to the document that owns the active view. targetDocument can take three values:" +
+        //             "\n- same as hostDocument - visible elements of the host document are then collected" +
+        //             "\n- document linked in the host document - elements of that linked document visible in the active view of the host document are then collected" +
+        //             "\n- null - all elements of all documents, host and links, are then collected.")]
+        //[Input("hostDocument", "Host document for the process, the document that owns the active view.")]
+        //[Input("targetDocument", "Target document for the process, the document that elements are collected from. Can be the same as host document, a document linked in the host document or null.")]
+        //[Output("context", "Context used to extract elements visible in the active view of the host document if that view is of 2d type.")]
+        public View2DVisibilityContext(View view, Document targetDocument) : base(view, targetDocument)
         {
         }
 

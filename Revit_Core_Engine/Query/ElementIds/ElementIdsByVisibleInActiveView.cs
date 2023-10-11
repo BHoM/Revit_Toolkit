@@ -44,11 +44,11 @@ namespace BH.Revit.Engine.Core
 
             Document hostDocument = document.IsLinked ? document.HostDocument() : document;
 
-            ActiveViewVisibilityContext context;
+            ViewVisibilityContext context;
             if (hostDocument.ActiveView is View3D)
-                context = new ActiveViewVisibilityContext(hostDocument, document);
+                context = new ViewVisibilityContext(hostDocument.ActiveView, document);
             else
-                context = new Active2dViewVisibilityContext(hostDocument, document);
+                context = new View2DVisibilityContext(hostDocument.ActiveView, document);
 
             CustomExporter exporter = new CustomExporter(hostDocument, context);
             exporter.IncludeGeometricObjects = false;
@@ -70,7 +70,7 @@ namespace BH.Revit.Engine.Core
                     throw;
             }
 
-            HashSet<ElementId> result = context.GetElementsVisibleInActiveView(document);
+            HashSet<ElementId> result = context.GetElementsVisibleInView(document);
             if (ids != null)
                 result.IntersectWith(ids);
 
