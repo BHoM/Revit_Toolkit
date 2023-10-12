@@ -39,7 +39,8 @@ namespace BH.oM.Adapters.Revit.Enums
         Unplaced,
         NotEnclosed,
         Overlapping,
-        NoGeometry
+        NoGeometry,
+        Unknown
     }
 
     /***************************************************/
