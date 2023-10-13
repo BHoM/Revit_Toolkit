@@ -21,10 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Structure;
+using Autodesk.Revit.DB.Architecture;
+using Autodesk.Revit.DB.Mechanical;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base.Attributes;
-using System;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
@@ -38,10 +38,10 @@ namespace BH.Revit.Engine.Core
         [Description("Check if a room/space/area is bounded, unplaced, redundant, or not enclosed.")]
         [Input("elem", "A spatial element to be check if it's bounded, unplaced, redundant, or not enclosed.")]
         [Output("BoundCondition", "The bound condition of the spatial element to be checked.")]
-        public static BoundCondition? SpatialBoundCondition(this SpatialElement elem)
+        public static BoundCondition SpatialBoundCondition(this SpatialElement elem)
         {
             if (elem == null)
-                return null;
+                return BoundCondition.Unknown;
 
             if (elem.Area == 0)
             {
@@ -51,13 +51,23 @@ namespace BH.Revit.Engine.Core
                 }
                 else if (elem.GetBoundarySegments(new SpatialElementBoundaryOptions()).Count > 0)
                 {
-                    return BoundCondition.Redundant;
+                    return BoundCondition.Overlapping;
                 }
                 else
                 {
                     return BoundCondition.NotEnclosed;
                 }
             }
+            else if (AreaVolumeSettings.GetAreaVolumeSettings(elem.Document).ComputeVolumes)
+            {
+                if (elem is Room room && room.Volume == 0
+                    || elem is Space space && space.Volume == 0)
+                {
+                    //Revit can fail to create the geometry for a room or space with very complex boundary.
+                    return BoundCondition.NoGeometry;
+                }
+            }
+
             return BoundCondition.Bounded;
         }
 
