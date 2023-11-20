@@ -106,6 +106,50 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        [Description("Returns the combined bounding box of a given collection of points.")]
+        [Input("points", "A collection of points to find the bounds for.")]
+        [Output("bounds", "Combined bounding box of the input collection of points.")]
+        public static BoundingBoxXYZ Bounds(this IEnumerable<XYZ> points)
+        {
+            if (points == null)
+                return null;
+
+            double minX = double.MaxValue;
+            double maxX = double.MinValue;
+            double minY = double.MaxValue;
+            double maxY = double.MinValue;
+            double minZ = double.MaxValue;
+            double maxZ = double.MinValue;
+
+            foreach (var point in points)
+            {
+                if (point.X < minX)
+                    minX = point.X;
+
+                if (point.X > maxX)
+                    maxX = point.X;
+
+                if (point.Y < minY)
+                    minY = point.Y;
+
+                if (point.Y > maxY)
+                    maxY = point.Y;
+
+                if (point.Z < minZ)
+                    minZ = point.Z;
+
+                if (point.Z > maxZ)
+                    maxZ = point.Z;
+            }
+
+            BoundingBoxXYZ result = new BoundingBoxXYZ();
+            result.Min = new XYZ(minX, minY, minZ);
+            result.Max = new XYZ(maxX, maxY, maxZ);
+            return result;
+        }
+
+        /***************************************************/
     }
 }
 
