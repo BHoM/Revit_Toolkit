@@ -110,6 +110,63 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        [Description("Check if point intersects with element.")]
+        [Input("point", "Point to check the intersection for.")]
+        [Input("element", "Element to check the intersection for.")]
+        [Output("bool", "Result of the intersect checking.")]
+        public static bool DoesIntersect(this XYZ point, Element element)
+        {
+            if (point == null || element == null)
+            {
+                return false;
+            }
+
+            List<Solid> solids = element.Solids(new Options());
+            Transform transform = element.Document.IsLinked ? element.Document.LinkTransform() : Transform.Identity;
+
+            if (!transform.IsIdentity)
+                solids = solids.Select(x => SolidUtils.CreateTransformed(x, transform)).ToList();
+
+            foreach (var solid in solids)
+            {
+                if (DoesIntersect(point, solid))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /***************************************************/
+
+        [Description("Check if point intersects with solid.")]
+        [Input("point", "Point to check the intersection for.")]
+        [Input("solid", "Solid to check the intersection for.")]
+        [Output("bool", "Result of the intersect checking.")]
+        public static bool DoesIntersect(this XYZ point, Solid solid)
+        {
+            if (point == null || solid == null)
+            {
+                return false;
+            }
+
+            Line line = Line.CreateBound(point, point.Add(XYZ.BasisZ));
+            SolidCurveIntersection sci = solid.IntersectWithCurve(line, new SolidCurveIntersectionOptions());
+
+            for (int i = 0; i < sci.SegmentCount; i++)
+            {
+                Curve c = sci.GetCurveSegment(i);
+
+                if (point.IsAlmostEqualTo(c.GetEndPoint(0), BH.oM.Geometry.Tolerance.Distance) || point.IsAlmostEqualTo(c.GetEndPoint(1), BH.oM.Geometry.Tolerance.Distance))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /***************************************************/
         /****              Private methods              ****/
         /***************************************************/
 
