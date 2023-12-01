@@ -23,6 +23,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -164,6 +165,23 @@ namespace BH.Revit.Engine.Core
             }
 
             return false;
+        }
+
+        /***************************************************/
+
+        [Description("Check if solid intersects with another solid.")]
+        [Input("solid1", "First solid to check the intersection for.")]
+        [Input("solid2", "Second solid to check the intersection for.")]
+        [Output("bool", "Result of the intersect checking.")]
+        public static bool DoesIntersect(this Solid solid1, Solid solid2)
+        {
+            if (solid1 == null || solid2 == null)
+            {
+                return false;
+            }
+
+            Solid intersectSolid = BooleanOperationsUtils.ExecuteBooleanOperation(solid1, solid2, BooleanOperationsType.Intersect);
+            return Math.Abs(intersectSolid.Volume) > BH.oM.Geometry.Tolerance.Distance;
         }
 
         /***************************************************/
