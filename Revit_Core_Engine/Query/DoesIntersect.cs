@@ -181,7 +181,7 @@ namespace BH.Revit.Engine.Core
             }
 
             Solid intersectSolid = BooleanOperationsUtils.ExecuteBooleanOperation(solid1, solid2, BooleanOperationsType.Intersect);
-            return Math.Abs(intersectSolid.Volume) > BH.oM.Geometry.Tolerance.Distance;
+            return Math.Abs(intersectSolid.Volume) > Math.Pow(BH.oM.Geometry.Tolerance.Distance, 3);
         }
 
         /***************************************************/
