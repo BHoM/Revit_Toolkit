@@ -38,7 +38,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("url", "Fully qualified URL for the Revit Toolkit wiki.")]
         public static string RevitToolkitWiki(string page = null)
         {
-            string url = "https://github.com/BHoM/Revit_Toolkit/wiki";
+            string url = "https://bhom.xyz/documentation/Guides-and-Tutorials/Visual-Programming-with-BHoM/Revit%20Toolkit/";
 
             if (!string.IsNullOrEmpty(page))
             {
