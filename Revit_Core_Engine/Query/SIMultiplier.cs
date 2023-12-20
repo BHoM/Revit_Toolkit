@@ -29,7 +29,7 @@ namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
-#if (REVIT2018 || REVIT2019 || REVIT2020)
+#if (REVIT2020)
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/

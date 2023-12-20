@@ -78,7 +78,7 @@ namespace BH.Revit.Engine.Core
             BH.oM.Geometry.Plane slabPlane = planarSurface.FitPlane();
             if (1 - Math.Abs(Vector.ZAxis.DotProduct(slabPlane.Normal)) <= settings.AngleTolerance)
             {
-#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
+#if (REVIT2020 || REVIT2021)
                 if (floorType.Category.Id.IntegerValue == (int)BuiltInCategory.OST_StructuralFoundation)
                     revitFloor = document.Create.NewFoundationSlab(curve.ToRevitCurveArray(), floorType, level, true, XYZ.BasisZ);
                 else
@@ -103,7 +103,7 @@ namespace BH.Revit.Engine.Core
                 XYZ start = ln.ClosestPoint(curve.IStartPoint(), true).ToRevit();
                 Autodesk.Revit.DB.Line line = Autodesk.Revit.DB.Line.CreateBound(start, start + dir);
 
-#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021)
+#if (REVIT2020 || REVIT2021)
                 revitFloor = document.Create.NewSlab(curve.ToRevitCurveArray(), level, line, -tan, true);
 #else
                 revitFloor = Floor.Create(document, new List<CurveLoop> { curve.ToRevitCurveLoop() }, floorType.Id, level.Id, true, line, -tan);

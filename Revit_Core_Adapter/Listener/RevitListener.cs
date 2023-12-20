@@ -384,7 +384,7 @@ namespace BH.Revit.Adapter.Core
 
             string alwaysAvailable = typeof(AlwaysAvailable).ToText(true);
 
-            m_ActivateButton = panel.AddItem(new PushButtonData("Activate", "Activate", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".Activate")) as PushButton;
+            m_ActivateButton = panel.AddItem(new PushButtonData("Activate", "Activate", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(Activate).FullName)) as PushButton;
             m_ActivateButton.ToolTip = "Activate the BHoM Revit Adapter plugin to allow data exchange with Grasshopper, Dynamo or Excel. The port numbers on both sides must match (default ports: 14128 input and 14129 output).";
             m_ActivateButton.LongDescription = "Checking and updating ports on the Revit side: navigate to the BHoM ribbon tab in Revit, click Activate (if not active) and then Update Ports." +
                         "\nChecking and updating ports on the BHoM side: extract the RevitSettings property of RevitAdapter object, then ConnectionSettings of RevitSettings, then extract/overwrite PushPort and PullPort properties." +
@@ -395,7 +395,7 @@ namespace BH.Revit.Adapter.Core
             m_ActivateButton.Visible = true;
             m_ActivateButton.AvailabilityClassName = alwaysAvailable;
 
-            m_UpdatePortsButton = panel.AddItem(new PushButtonData("Update Ports", "Update\nPorts", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".SetPorts")) as PushButton;
+            m_UpdatePortsButton = panel.AddItem(new PushButtonData("Update Ports", "Update\nPorts", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(SetPorts).FullName)) as PushButton;
             m_UpdatePortsButton.ToolTip = "Update ports used by the BHoM Adapter Revit plugin to allow data exchange with Grasshopper, Dynamo or Excel. The port numbers on both sides must match (default ports: 14128 input and 14129 output).";
             m_UpdatePortsButton.LongDescription = "Checking and updating ports on the Revit side: navigate to the BHoM ribbon tab in Revit, click Activate (if not active) and then Update Ports." +
                         "\nChecking and updating ports on the BHoM side: extract the RevitSettings property of RevitAdapter object, then ConnectionSettings of RevitSettings, then extract/overwrite PushPort and PullPort properties." +
@@ -406,7 +406,7 @@ namespace BH.Revit.Adapter.Core
             m_UpdatePortsButton.Visible = false;
             m_UpdatePortsButton.AvailabilityClassName = alwaysAvailable;
 
-            m_DeactivateButton = panel.AddItem(new PushButtonData("Deactivate", "Deactivate", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".Deactivate")) as PushButton;
+            m_DeactivateButton = panel.AddItem(new PushButtonData("Deactivate", "Deactivate", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(Deactivate).FullName)) as PushButton;
             m_DeactivateButton.ToolTip = "Deactivate the BHoM Revit Adapter plugin to disallow data exchange with Grasshopper, Dynamo or Excel.";
             m_DeactivateButton.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterDeactivate32.png")));
             m_DeactivateButton.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "AdapterDeactivate16.png")));
@@ -414,7 +414,7 @@ namespace BH.Revit.Adapter.Core
             m_DeactivateButton.Visible = false;
             m_DeactivateButton.AvailabilityClassName = alwaysAvailable;
 
-            PushButton button = panel.AddItem(new PushButtonData("Adapter Wiki", "Adapter Wiki", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".RevitToolkitWiki")) as PushButton;
+            PushButton button = panel.AddItem(new PushButtonData("Adapter Wiki", "Adapter Wiki", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitToolkitWiki).FullName)) as PushButton;
             button.ToolTip = "Visit the BHoM Revit Toolkit (BHoM adapter for Revit) Wiki page.";
             button.LargeImage = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info32.png")));
             button.Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info16.png")));
@@ -444,9 +444,9 @@ namespace BH.Revit.Adapter.Core
 
             string alwaysAvailable = typeof(AlwaysAvailable).ToText(true);
 
-            PushButtonData bHoMInfoButton = new PushButtonData("BHoM Wiki", "BHoM Wiki", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".BHoMWiki");
-            PushButtonData bHoMWebsiteButton = new PushButtonData("bhom.xyz", "bhom.xyz", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".BHoMWebsite");
-            PushButtonData bHoMVersionButton = new PushButtonData("BHoM Version", "BHoM Version", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(RevitListener).Namespace + ".BHoMVersion");
+            PushButtonData bHoMInfoButton = new PushButtonData("BHoM Wiki", "BHoM Wiki", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(BHoMWiki).FullName);
+            PushButtonData bHoMWebsiteButton = new PushButtonData("bhom.xyz", "bhom.xyz", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(BHoMWebsite).FullName);
+            PushButtonData bHoMVersionButton = new PushButtonData("BHoM Version", "BHoM Version", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(BHoMVersion).FullName);
             
             List<PushButton> infoButtons = panel.AddStackedItems(bHoMInfoButton, bHoMWebsiteButton, bHoMVersionButton).Cast<PushButton>().ToList();
             infoButtons[0].ToolTip = "Visit the BHoM Wiki page.";

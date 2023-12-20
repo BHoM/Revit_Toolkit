@@ -35,13 +35,13 @@ namespace BH.Revit.Engine.Core
         [Description("Returns the human-readable label of a given Revit parameter type.")]
         [Input("parameterType", "Parameter type to get the label for.")]
         [Output("label", "Human-readable label of the input Revit parameter type.")]
-#if (REVIT2018 || REVIT2019 || REVIT2020 || REVIT2021 || REVIT2022)
+#if (REVIT2020 || REVIT2021 || REVIT2022)
         public static string Label(this ParameterType parameterType)
         {
             return LabelUtils.GetLabelFor(parameterType);
         }
 #endif
-#if (!REVIT2018 && !REVIT2019 && !REVIT2020)
+#if (!REVIT2020)
         public static string Label(this ForgeTypeId parameterType)
         {
             if (parameterType != null)

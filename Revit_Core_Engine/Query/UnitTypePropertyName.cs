@@ -36,7 +36,7 @@ namespace BH.Revit.Engine.Core
         [Description("Returns name of SpecTypeId property that contains a given Revit unit type object (enum for Revit up to 2020 or ForgeTypeId for later versions).")]
         [Input("unitType", "Unit type object to be queried for the correspondent SpecTypeId property name.")]
         [Output("identifier", "Name of SpecTypeId property that contains the input unit type object.")]
-#if (REVIT2018 || REVIT2019 || REVIT2020)
+#if (REVIT2020)
         public static string UnitTypePropertyName(this UnitType unitType)
 #else
         public static string UnitTypePropertyName(this ForgeTypeId unitType)
