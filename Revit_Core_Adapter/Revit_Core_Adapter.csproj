@@ -13,7 +13,7 @@
   <PropertyGroup>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <OutputPath>..\Build\</OutputPath>
-    <Configurations>Debug;Release;Debug2020;Release2020;Debug2021;Release2021;Debug2022;Release2022;Debug2023;Release2023</Configurations>
+    <Configurations>Debug;Release;Debug2020;Release2020;Debug2021;Release2021;Debug2022;Release2022;Debug2023;Release2023;Debug2024;Release2024</Configurations>
     <TargetFramework>net480</TargetFramework>
   </PropertyGroup>
 
@@ -37,6 +37,10 @@
     <AssemblyName>Revit_Core_Adapter_2023</AssemblyName>
 	<DefineConstants>REVIT2023</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug2024' Or '$(Configuration)'=='Release2024'">
+    <AssemblyName>Revit_Core_Adapter_2024</AssemblyName>
+	<DefineConstants>REVIT2024</DefineConstants>
+  </PropertyGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
     <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2020.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2020\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E" />
@@ -52,6 +56,9 @@
   </Target>
   <Target Name="PostBuild2023" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Debug2023' Or '$(Configuration)'=='Release2023'">
     <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2023.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2023\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E" />
+  </Target>
+  <Target Name="PostBuild2024" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Debug2024' Or '$(Configuration)'=='Release2024'">
+    <Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_2024.Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\2024\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E" />
   </Target>
 
   <ItemGroup>
@@ -159,6 +166,14 @@
       <HintPath>..\libs\2023\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2024' Or '$(Configuration)'=='Release2024'">
+      <HintPath>..\libs\2024\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2024' Or '$(Configuration)'=='Release2024'">
+      <HintPath>..\libs\2024\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Socket_Adapter">
       <HintPath>$(ProgramData)\BHoM\Assemblies\Socket_Adapter.dll</HintPath>
       <Private>False</Private>
@@ -193,6 +208,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Listener\Files\BHoM_2023.Addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+    <None Include="Listener\Files\BHoM_2024.Addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</None>
   </ItemGroup>
