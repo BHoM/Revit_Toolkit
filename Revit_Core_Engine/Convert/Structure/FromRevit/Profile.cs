@@ -199,7 +199,7 @@ namespace BH.Revit.Engine.Core
             options.DetailLevel = ViewDetailLevel.Fine;
             options.IncludeNonVisibleObjects = false;
             GeometryInstance instance = representativeMullion.get_Geometry(options).FirstOrDefault(x => x is GeometryInstance) as GeometryInstance;
-            MullionType instanceSymbol = instance.Symbol as MullionType;
+            MullionType instanceSymbol = instance.Symbol() as MullionType;
             if (instanceSymbol != null)
                 profile = instanceSymbol.FreeFormProfileFromRevit(settings);
 
