@@ -37,7 +37,7 @@ namespace BH.oM.Adapters.Revit
         /***************************************************/
 
         [Description("Names of any Revit Parameter that should not be considered for the comparison.")]
-        public virtual List<string> ParametersExceptions { get; set; } = new List<string>() { };
+        public virtual List<string> ParametersExceptions { get; set; } = new List<string>() { "Edited by" };
 
         [Description("Names of the Revit Parameters that will be considered for the comparison." +
             "By default, this list is empty, so all parameters are considered (except possibly those included in the other property `ParametersExceptions`)." +
