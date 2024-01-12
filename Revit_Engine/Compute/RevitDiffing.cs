@@ -235,7 +235,7 @@ namespace BH.Engine.Adapters.Revit
                 if (originalDiffConfig.CustomObjectDifferencesComparers != null && originalDiffConfig.CustomObjectDifferencesComparers.Any())
                     result.CustomObjectDifferencesComparers.AddRange(originalDiffConfig.CustomObjectDifferencesComparers.Except(result.CustomObjectDifferencesComparers));
 
-                result.AllowDuplicateIds = originalDiffConfig.AllowDuplicateIds;
+                result.AllowDuplicateIDs = originalDiffConfig.AllowDuplicateIDs;
                 result.EnablePropertyDiffing = originalDiffConfig.EnablePropertyDiffing;
                 result.IncludeUnchangedObjects = originalDiffConfig.IncludeUnchangedObjects;
                 result.ComparisonConfig = originalDiffConfig.ComparisonConfig;
