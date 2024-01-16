@@ -103,9 +103,16 @@ namespace BH.Revit.Engine.Core
             //host vs link
             else
             {
+                BoundingBoxXYZ linkedElementBBox = element.get_BoundingBox(null);
+                linkedElementBBox.Transform = linkedElementBBox.Transform.Multiply(transform);
+
+                if (!bbox.IsInRange(linkedElementBBox))
+                    return false;
+
                 Solid bboxSolid = bbox.ToSolid();
                 Solid transformedBBoxSolid = SolidUtils.CreateTransformed(bboxSolid, transform.Inverse);
                 ElementIntersectsSolidFilter intersectFilter = new ElementIntersectsSolidFilter(transformedBBoxSolid);
+
                 return intersectFilter.PassesFilter(element);
             }
         }
