@@ -82,31 +82,23 @@ namespace BH.Revit.Engine.Core
             }
 
             Transform transform = element.Document.LinkTransform();
+            Outline outline = new Outline(bbox.Min, bbox.Max);
 
-            //host vs host
-            if (transform == null)
+            if (transform == null || transform.IsIdentity)
             {
-                Outline outline = new Outline(bbox.Min, bbox.Max);
-
-                if (bbox.Transform.IsTranslation)
-                {
-                    outline.MinimumPoint += bbox.Transform.Origin;
-                    outline.MaximumPoint += bbox.Transform.Origin;
-                }
-
-                BoundingBoxIntersectsFilter bboxIntersect = new BoundingBoxIntersectsFilter(outline);
-                BoundingBoxIsInsideFilter bboxInside = new BoundingBoxIsInsideFilter(outline);
-                LogicalOrFilter bboxFilter = new LogicalOrFilter(new List<ElementFilter> { bboxIntersect, bboxInside });
-
-                return bboxFilter.PassesFilter(element);
+                return element.DoesIntersectWithOutline(outline);
             }
-            //host vs link
+
+            outline.MinimumPoint = transform.Inverse.OfPoint(outline.MinimumPoint);
+            outline.MaximumPoint = transform.Inverse.OfPoint(outline.MaximumPoint);
+
+            if (transform.IsTranslation)
+            {
+                return element.DoesIntersectWithOutline(outline);
+            }
             else
             {
-                BoundingBoxXYZ linkedElementBBox = element.get_BoundingBox(null);
-                linkedElementBBox.Transform = linkedElementBBox.Transform.Multiply(transform);
-
-                if (!bbox.IsInRange(linkedElementBBox))
+                if (!element.DoesIntersectWithOutline(outline))
                     return false;
 
                 Solid bboxSolid = bbox.ToSolid();
@@ -213,6 +205,19 @@ namespace BH.Revit.Engine.Core
             }
 
             return false;
+        }
+
+        /***************************************************/
+
+
+        [Description("Check intersection between element and outline.")]
+        private static bool DoesIntersectWithOutline(this Element element, Outline outline)
+        {
+            BoundingBoxIntersectsFilter bboxIntersect = new BoundingBoxIntersectsFilter(outline);
+            BoundingBoxIsInsideFilter bboxInside = new BoundingBoxIsInsideFilter(outline);
+            LogicalOrFilter bboxFilter = new LogicalOrFilter(new List<ElementFilter> { bboxIntersect, bboxInside });
+
+            return bboxFilter.PassesFilter(element);
         }
 
         /***************************************************/
