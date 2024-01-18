@@ -98,7 +98,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             if ((element is Room || element is Space) && double.IsNaN(element.LookupParameterDouble(BuiltInParameter.ROOM_VOLUME)))
-                return null;
+                return new List<GeometryObject>();
 
             if (element.ViewSpecific)
             {
