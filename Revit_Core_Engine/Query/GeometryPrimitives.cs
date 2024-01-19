@@ -21,6 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Architecture;
+using Autodesk.Revit.DB.Mechanical;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
@@ -94,6 +96,9 @@ namespace BH.Revit.Engine.Core
         {
             if (element == null)
                 return null;
+
+            if ((element is Room || element is Space) && double.IsNaN(element.LookupParameterDouble(BuiltInParameter.ROOM_VOLUME)))
+                return new List<GeometryObject>();
 
             if (element.ViewSpecific)
             {
