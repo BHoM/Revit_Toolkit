@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
             {
                 try
                 {
-                    meshElement.Mesh = element.MeshedGeometry(meshOptions, settings)?.Join(false);
+                    meshElement.Mesh = element.MeshedGeometry(meshOptions, settings)?.Join(true, settings.DistanceTolerance);
                 }
                 catch
                 {
