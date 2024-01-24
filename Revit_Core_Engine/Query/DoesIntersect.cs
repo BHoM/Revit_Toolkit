@@ -93,16 +93,19 @@ namespace BH.Revit.Engine.Core
             {
                 return element.DoesIntersectWithOutline(outline);
             }
-
-            outline.MinimumPoint = transform.Inverse.OfPoint(outline.MinimumPoint);
-            outline.MaximumPoint = transform.Inverse.OfPoint(outline.MaximumPoint);
-
-            if (transform.IsTranslation)
+            else if (transform.IsTranslation)
             {
+                outline.MinimumPoint = transform.Inverse.OfPoint(outline.MinimumPoint);
+                outline.MaximumPoint = transform.Inverse.OfPoint(outline.MaximumPoint);
+
                 return element.DoesIntersectWithOutline(outline);
             }
             else
             {
+                BoundingBoxXYZ transformedBBox = BoundsOfTransformed(bbox, transform.Inverse);
+                outline.MinimumPoint = transformedBBox.Min;
+                outline.MaximumPoint = transformedBBox.Max;
+
                 if (!element.DoesIntersectWithOutline(outline))
                     return false;
 
