@@ -75,14 +75,19 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
-            if (!bbox.Transform.IsTranslation)
+            Transform transform = element.Document.LinkTransform();
+            Outline outline = new Outline(bbox.Min, bbox.Max);
+
+            if (bbox.Transform.IsTranslation)
+            {
+                outline.MinimumPoint += bbox.Transform.Origin;
+                outline.MaximumPoint += bbox.Transform.Origin;
+            }
+            else
             {
                 BH.Engine.Base.Compute.RecordWarning("Intersection of the bounding boxes could not be checked. Only translation and identity transformation is currently supported.");
                 return false;
             }
-
-            Transform transform = element.Document.LinkTransform();
-            Outline outline = new Outline(bbox.Min, bbox.Max);
 
             if (transform == null || transform.IsIdentity)
             {
