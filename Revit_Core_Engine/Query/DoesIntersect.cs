@@ -75,37 +75,44 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
-            if (!bbox.Transform.IsTranslation)
+            Transform transform = element.Document.LinkTransform();
+            Outline outline = new Outline(bbox.Min, bbox.Max);
+
+            if (bbox.Transform.IsTranslation)
+            {
+                outline.MinimumPoint += bbox.Transform.Origin;
+                outline.MaximumPoint += bbox.Transform.Origin;
+            }
+            else
             {
                 BH.Engine.Base.Compute.RecordWarning("Intersection of the bounding boxes could not be checked. Only translation and identity transformation is currently supported.");
                 return false;
             }
 
-            Transform transform = element.Document.LinkTransform();
-
-            //host vs host
-            if (transform == null)
+            if (transform == null || transform.IsIdentity)
             {
-                Outline outline = new Outline(bbox.Min, bbox.Max);
-
-                if (bbox.Transform.IsTranslation)
-                {
-                    outline.MinimumPoint += bbox.Transform.Origin;
-                    outline.MaximumPoint += bbox.Transform.Origin;
-                }
-
-                BoundingBoxIntersectsFilter bboxIntersect = new BoundingBoxIntersectsFilter(outline);
-                BoundingBoxIsInsideFilter bboxInside = new BoundingBoxIsInsideFilter(outline);
-                LogicalOrFilter bboxFilter = new LogicalOrFilter(new List<ElementFilter> { bboxIntersect, bboxInside });
-
-                return bboxFilter.PassesFilter(element);
+                return element.DoesIntersectWithOutline(outline);
             }
-            //host vs link
+            else if (transform.IsTranslation)
+            {
+                outline.MinimumPoint = transform.Inverse.OfPoint(outline.MinimumPoint);
+                outline.MaximumPoint = transform.Inverse.OfPoint(outline.MaximumPoint);
+
+                return element.DoesIntersectWithOutline(outline);
+            }
             else
             {
+                BoundingBoxXYZ transformedBBox = BoundsOfTransformed(bbox, transform.Inverse);
+                outline.MinimumPoint = transformedBBox.Min;
+                outline.MaximumPoint = transformedBBox.Max;
+
+                if (!element.DoesIntersectWithOutline(outline))
+                    return false;
+
                 Solid bboxSolid = bbox.ToSolid();
                 Solid transformedBBoxSolid = SolidUtils.CreateTransformed(bboxSolid, transform.Inverse);
                 ElementIntersectsSolidFilter intersectFilter = new ElementIntersectsSolidFilter(transformedBBoxSolid);
+
                 return intersectFilter.PassesFilter(element);
             }
         }
@@ -206,6 +213,19 @@ namespace BH.Revit.Engine.Core
             }
 
             return false;
+        }
+
+        /***************************************************/
+
+
+        [Description("Check intersection between element and outline.")]
+        private static bool DoesIntersectWithOutline(this Element element, Outline outline)
+        {
+            BoundingBoxIntersectsFilter bboxIntersect = new BoundingBoxIntersectsFilter(outline);
+            BoundingBoxIsInsideFilter bboxInside = new BoundingBoxIsInsideFilter(outline);
+            LogicalOrFilter bboxFilter = new LogicalOrFilter(new List<ElementFilter> { bboxIntersect, bboxInside });
+
+            return bboxFilter.PassesFilter(element);
         }
 
         /***************************************************/
