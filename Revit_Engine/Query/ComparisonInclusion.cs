@@ -72,7 +72,8 @@ namespace BH.Engine.Adapters.Revit
             }
 
             // Check the difference in the RevitParameters is a numerical difference, and if so whether it should be included given the input tolerances/significantFigures.
-            if (!BH.Engine.Diffing.Query.NumericalDifferenceInclusion(parameter1?.Value, parameter2?.Value, parameterName, rcc.ParameterNumericTolerances, rcc.NumericTolerance, rcc.ParameterSignificantFigures, rcc.SignificantFigures))
+            RevitNumericalApproximationConfig revitNumApproxConfig = rcc.NumericalApproximationConfig as RevitNumericalApproximationConfig ?? new RevitNumericalApproximationConfig();
+            if (!BH.Engine.Diffing.Query.NumericalDifferenceInclusion(parameter1?.Value, parameter2?.Value, parameterName, revitNumApproxConfig.ParameterNumericTolerances, revitNumApproxConfig.NumericTolerance, revitNumApproxConfig.ParameterSignificantFigures, revitNumApproxConfig.SignificantFigures))
             {
                 result.Include = false; // RevitParameter must be skipped
                 return result;

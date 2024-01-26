@@ -64,14 +64,16 @@ namespace BH.Engine.Adapters.Revit
                 // If the RevitParameter is numeric, take care of custom tolerances/significant figures.
                 if (revitParameter.Value.GetType().IsNumeric())
                 {
+                    RevitNumericalApproximationConfig rNumApproxConfig = rcc.NumericalApproximationConfig as RevitNumericalApproximationConfig ?? new RevitNumericalApproximationConfig();
+
                     // If we didn't specify any custom tolerance/significant figures, just return the input.
-                    if (rcc.NumericTolerance == double.MinValue && rcc.SignificantFigures == int.MaxValue
-                        && (!rcc.ParameterNumericTolerances?.Any() ?? true) && (!rcc.ParameterSignificantFigures?.Any() ?? true))
+                    if (rNumApproxConfig.NumericTolerance == double.MinValue && rNumApproxConfig.SignificantFigures == int.MaxValue
+                        && (!rNumApproxConfig.ParameterNumericTolerances?.Any() ?? true) && (!rNumApproxConfig.ParameterSignificantFigures?.Any() ?? true))
                         return hashString;
 
                     // Otherwise, return the approximated value.
                     return BH.Engine.Base.Query.NumericalApproximation(
-                        double.Parse(revitParameter.Value.ToString()), propertyFullName, rcc.ParameterNumericTolerances, rcc.NumericTolerance, rcc.ParameterSignificantFigures, rcc.SignificantFigures)
+                        double.Parse(revitParameter.Value.ToString()), propertyFullName, rNumApproxConfig.ParameterNumericTolerances, rNumApproxConfig.NumericTolerance, rNumApproxConfig.ParameterSignificantFigures, rNumApproxConfig.SignificantFigures)
                         .ToString();
                 }
             }
@@ -81,8 +83,3 @@ namespace BH.Engine.Adapters.Revit
         }
     }
 }
-
-
-
-
-
