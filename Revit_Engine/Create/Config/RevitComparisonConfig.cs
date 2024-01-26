@@ -37,7 +37,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("parametersToConsider", "Names of the Revit Parameters that will be considered for the comparison." +
             "By default, this list is empty, so all parameters are considered (except possibly those included in the other property `ParametersExceptions`).")]
         [Input("propertiesToConsider", "(Optional) If one or more entries are specified here, only objects/properties that match them will be considered." +
-           "\nE.g. Given input objects BH.oM.Structure.Elements.Bar, specifying `StartNode` will only check that property of the Bar." +
+           "\nE.g. Given input objects BH.oM.Structure.Elements.Bar, specifying `Start` will only check that property of the Bar." +
            "\nSupports * wildcard." +
            "\nNote that using this will incur in a general slowdown because it is computationally heavy. See the wiki for more details.")]
         [Output("rcc", "RevitComparisonConfig that can be used to configure the Comparison/Diffing process.")]
@@ -45,8 +45,8 @@ namespace BH.Engine.Adapters.Revit
         {
             RevitComparisonConfig rcc = new RevitComparisonConfig()
             {
-                PropertiesToConsider = propertiesToConsider,
-                ParametersToConsider = parametersToConsider
+                PropertiesToConsider = new HashSet<string>(propertiesToConsider),
+                ParametersToConsider = new HashSet<string>(parametersToConsider)
             };
 
             return rcc;
@@ -63,8 +63,8 @@ namespace BH.Engine.Adapters.Revit
         {
             RevitComparisonConfig rcc = new RevitComparisonConfig()
             {
-                ParametersToConsider = parametersToConsider,
-                PropertiesToConsider = considerOnlyParameterDifferences ? new List<string>() { "Considering only Revit Parameter Differences" } : new List<string>() // using a very improbable PropertyToConsider name to exclude all differences that are not Revit Parameter differences.
+                ParametersToConsider = new HashSet<string>(parametersToConsider),
+                PropertiesToConsider = considerOnlyParameterDifferences ? new HashSet<string>() { "Considering only Revit Parameter Differences" } : new HashSet<string>() // using a very improbable PropertyToConsider name to exclude all differences that are not Revit Parameter differences.
             };
 
             return rcc;
@@ -76,7 +76,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("parametersToConsider", "Names of the Revit Parameters that will be considered for the comparison." +
             "By default, this list is empty, so all parameters are considered (except possibly those included in the other property `ParametersExceptions`).")]
         [Input("propertiesToConsider", "If one or more entries are specified here, only objects/properties that match them will be considered." +
-           "\nE.g. Given input objects BH.oM.Structure.Elements.Bar, specifying `StartNode` will only check that property of the Bar." +
+           "\nE.g. Given input objects BH.oM.Structure.Elements.Bar, specifying `Start` will only check that property of the Bar." +
            "\nSupports * wildcard." +
            "\nNote that using this will incur in a general slowdown because it is computationally heavy. See the wiki for more details.")]
         [Input("params_ConsiderOnlyParameterDifferences", "(Optional, defaults to `false`) If `true`, objects will be considered 'Modified' only if their RevitParameter changed (as per the options below), and only RevitParameterDifferences will be returned.")]
@@ -101,8 +101,8 @@ namespace BH.Engine.Adapters.Revit
                 RevitParams_ConsiderRemovedAssigned = params_ConsiderRemovedAssigned,
                 RevitParams_ConsiderRemovedUnassigned = params_ConsiderRemovedUnassigned,
 
-                ParametersToConsider = parametersToConsider,
-                PropertiesToConsider = params_ConsiderOnlyParameterDifferences ? new List<string>() { "Considering only Revit Parameter Differences" } : propertiesToConsider // using a very improbable PropertyToConsider name to exclude all differences that are not Revit Parameter differences.
+                ParametersToConsider = new HashSet<string>(parametersToConsider),
+                PropertiesToConsider = params_ConsiderOnlyParameterDifferences ? new HashSet<string>() { "Considering only Revit Parameter Differences" } : propertiesToConsider // using a very improbable PropertyToConsider name to exclude all differences that are not Revit Parameter differences.
             };
 
             return rcc;

@@ -37,24 +37,12 @@ namespace BH.oM.Adapters.Revit
         /***************************************************/
 
         [Description("Names of any Revit Parameter that should not be considered for the comparison.")]
-        public virtual List<string> ParametersExceptions { get; set; } = new List<string>() { "Edited by" };
+        public virtual HashSet<string> ParametersExceptions { get; set; } = new HashSet<string>() { "Edited by" };
 
         [Description("Names of the Revit Parameters that will be considered for the comparison." +
             "By default, this list is empty, so all parameters are considered (except possibly those included in the other property `ParametersExceptions`)." +
             "If this list is populated with one or more values, it takes higher priority over `ParametersExceptions`.")]
-        public virtual List<string> ParametersToConsider { get; set; } = new List<string>() { };
-
-        [Description("Tolerance used for individual RevitParameters. When computing Hash or the property Diffing, if the analysed property name is found in this collection, the corresponding tolerance is applied." +
-            "\nSupports * wildcard in the property name matching. E.g. `StartNode.Point.*, 2`." +
-            "\nIf a match is found, this take precedence over the global `NumericTolerance`." +
-            "\nIf conflicting values/multiple matches are found among the Configurations on numerical precision, the largest approximation among all (least precise number) is registered.")]
-        public virtual HashSet<NamedNumericTolerance> ParameterNumericTolerances { get; set; } = new HashSet<NamedNumericTolerance>();
-
-        [Description("Number of significant figures allowed for numerical data on a per-RevitParameter base. " +
-             "\nSupports * wildcard in the property name matching. E.g. `StartNode.Point.*, 2`." +
-             "\nIf a match is found, this take precedence over the global `SignificantFigures`." +
-             "\nIf conflicting values/multiple matches are found among the Configurations on numerical precision, the largest approximation among all (least precise number) is registered.")]
-        public virtual HashSet<NamedSignificantFigures> ParameterSignificantFigures { get; set; } = new HashSet<NamedSignificantFigures>();
+        public virtual HashSet<string> ParametersToConsider { get; set; } = new HashSet<string>() { };
 
         [Description("(Defaults to `true`) If false, if an object gets a new RevitParameter with a non-null Value added to it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
         public virtual bool RevitParams_ConsiderAddedAssigned { get; set; } = true;
@@ -68,11 +56,12 @@ namespace BH.oM.Adapters.Revit
         [Description("(Defaults to `true`) If false, if an object has a RevitParameter with a null Value deleted from it, then the owner object is NOT considered 'Modified' and the Comparison will NOT return this difference.")]
         public virtual bool RevitParams_ConsiderRemovedUnassigned { get; set; } = true;
 
-        [Description("Numeric tolerance for property values, applied to all numerical properties. Defaults to 1e-6." +
-                     "\nApplies rounding for numbers smaller than this." +
-                     "\nYou can override on a per-property basis by using `PropertyNumericTolerances`." +
+        [Description("Numeric approximation configurations for numerical property and revit parameter values." +
+                     "\nThe default Numeric Tolerance for Revit is 1e-6; a rounding is applied to numbers smaller than this." +
+                     "\nYou can always change this by modifying `NumericalApproximationConfig.NumericTolerance`." +
+                     "\nAlso, you override this Numeric Tolerance on a per-property basis by using `NumericalApproximationConfig.PropertyNumericTolerances`." +
                      "\nIf conflicting values/multiple matches are found among the Configurations on numerical precision, the largest approximation among all (least precise number) is registered.")]
-        public override double NumericTolerance { get; set; } = 1e-6;
+        public override NumericalApproximationConfig NumericalApproximationConfig { get; set; } = new RevitNumericalApproximationConfig() { NumericTolerance = 1e-6 };
 
         /***************************************************/
     }

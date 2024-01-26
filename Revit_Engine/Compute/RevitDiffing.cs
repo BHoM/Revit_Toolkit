@@ -62,8 +62,8 @@ namespace BH.Engine.Adapters.Revit
         {
             RevitComparisonConfig rcc = new RevitComparisonConfig()
             {
-                ParametersToConsider = parametersToConsider?.ToList(),
-                PropertiesToConsider = onlyParameterDifferences ? new List<string>() { "Considering only Revit Parameter Differnces" } : new List<string>() // using a very improbable PropertyToConsider name to exclude all differences that are not Revit Parameter differences.
+                ParametersToConsider = new HashSet<string>(parametersToConsider),
+                PropertiesToConsider = onlyParameterDifferences ? new HashSet<string>() { "Considering only Revit Parameter Differnces" } : new HashSet<string>() // using a very improbable PropertyToConsider name to exclude all differences that are not Revit Parameter differences.
             };
 
             return Diffing(pastObjects, followingObjects, null, GetRevitDiffingConfig(rcc));
@@ -81,8 +81,8 @@ namespace BH.Engine.Adapters.Revit
         {
             RevitComparisonConfig rcc = new RevitComparisonConfig()
             {
-                PropertiesToConsider = propertiesToConsider?.ToList(),
-                ParametersToConsider = parametersToConsider?.ToList()
+                PropertiesToConsider = new HashSet<string>(propertiesToConsider),
+                ParametersToConsider = new HashSet<string>(parametersToConsider)
             };
 
             return Diffing(pastObjects, followingObjects, null, GetRevitDiffingConfig(rcc));
