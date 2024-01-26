@@ -36,7 +36,8 @@ namespace BH.Revit.Engine.Core
 
         [Description("Returns project and model guids of a model hosted in the cloud. Null if the model is not hosted in the Autodesk cloud.")]
         [Input("document", "Cloud model to query for guids.")]
-        [Output("guids", "Project and model guids of a model hosted in the cloud.")]
+        [MultiOutput(0, "projectGuid", "Project guid of a model hosted in the cloud.")]
+        [MultiOutput(1, "modelGuid", "Model guid of a model hosted in the cloud.")]
         public static Output<Guid, Guid> CloudGuids(this Document document)
         {
             try
