@@ -164,8 +164,9 @@ namespace BH.Revit.Engine.Core
 
                 if (!transform.IsIdentity)
                 {
-                    points.Add(transform.OfPoint(bbox.Min));
-                    points.Add(transform.OfPoint(bbox.Max));
+                    BoundingBoxXYZ transformedBbox = bbox.BoundsOfTransformed(transform);
+                    points.Add(transformedBbox.Min);
+                    points.Add(transformedBbox.Max);
                 }
                 else
                 {
