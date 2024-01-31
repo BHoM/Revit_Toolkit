@@ -68,14 +68,16 @@ namespace BH.Revit.Engine.Core
         [Input("bbox", "Bounding box to check the intersection for.")]
         [Input("element", "Element to check the intersection for.")]
         [Output("bool", "Result of the intersect checking.")]
-        public static bool DoesIntersect(this BoundingBoxXYZ bbox, Element element)
+        public static bool DoesIntersect(this BoundingBoxXYZ bbox, Element element, Transform transform = null)
         {
             if (bbox == null || element == null)
             {
                 return false;
             }
 
-            Transform transform = element.Document.LinkTransform();
+            if (transform == null)
+                transform = element.Document.IsLinked ? element.Document.LinkTransform() : Transform.Identity;
+
             Outline outline = new Outline(bbox.Min, bbox.Max);
 
             if (bbox.Transform.IsTranslation)
