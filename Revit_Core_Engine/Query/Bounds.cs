@@ -153,29 +153,10 @@ namespace BH.Revit.Engine.Core
 
         [Description("Returns combined bounding box of the given collection of bounding boxes.")]
         [Input("bboxes", "A collection of the bounding boxes to get the bounds for.")]
-        [Output("bounds", "Combined bounding box of the bounding boxes.")]
+        [Output("bounds", "Combined bounding box of given bounding boxes.")]
         public static BoundingBoxXYZ Bounds(this IEnumerable<BoundingBoxXYZ> bboxes)
         {
-            List<XYZ> points = new List<XYZ>();
-
-            foreach (BoundingBoxXYZ bbox in bboxes)
-            {
-                Transform transform = bbox.Transform;
-
-                if (!transform.IsIdentity)
-                {
-                    BoundingBoxXYZ transformedBbox = bbox.BoundsOfTransformed(transform);
-                    points.Add(transformedBbox.Min);
-                    points.Add(transformedBbox.Max);
-                }
-                else
-                {
-                    points.Add(bbox.Min);
-                    points.Add(bbox.Max);
-                }
-            }
-
-            return points.Bounds();
+            return bboxes.SelectMany(x => x.CornerPoints()).Bounds();
         }
 
         /***************************************************/
