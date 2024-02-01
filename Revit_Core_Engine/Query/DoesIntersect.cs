@@ -76,7 +76,7 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
-            if (transform == null || !element.Document.IsLinked)
+            if (transform == null)
                 transform = Transform.Identity;
 
             Outline outline = new Outline(bbox.Min, bbox.Max);
