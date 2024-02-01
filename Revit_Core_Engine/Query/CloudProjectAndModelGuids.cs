@@ -38,7 +38,7 @@ namespace BH.Revit.Engine.Core
         [Input("document", "Cloud model to query for guids.")]
         [MultiOutput(0, "projectGuid", "Project guid of a model hosted in the cloud.")]
         [MultiOutput(1, "modelGuid", "Model guid of a model hosted in the cloud.")]
-        public static Output<Guid, Guid> CloudGuids(this Document document)
+        public static Output<Guid, Guid> CloudProjectAndModelGuids(this Document document)
         {
             if (document.IsModelInCloud)
             {
