@@ -72,7 +72,7 @@ namespace BH.Revit.Engine.Core
                 if (loops == null || loops.Count == 0)
                     return null;
 
-                Line range = view.ViewDepth();
+                Line range = view.ViewDepthLine();
                 Plane pln = Plane.CreateByNormalAndOrigin(range.Direction, range.GetEndPoint(0));
                 List<List<XYZ>> pts = loops.Select(x => x.Tessellate()).ToList();
                 foreach (List<XYZ> list in pts)
@@ -92,7 +92,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static Line ViewDepth(this View view)
+        private static Line ViewDepthLine(this View view)
         {
             if (view is ViewPlan)
             {
