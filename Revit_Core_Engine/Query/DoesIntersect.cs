@@ -67,7 +67,7 @@ namespace BH.Revit.Engine.Core
         [Description("Check if bounding box intersects with element.")]
         [Input("bbox", "Bounding box to check the intersection for.")]
         [Input("element", "Element to check the intersection for.")]
-        [Input("transform", "Transform of the element. If null, it will be calculated from the first link instance matching the element document.")]
+        [Input("transform", "Transform of the element. If element is from revit link, revit link instance transform should be used.")]
         [Output("bool", "Result of the intersect checking.")]
         public static bool DoesIntersect(this BoundingBoxXYZ bbox, Element element, Transform transform = null)
         {
@@ -76,8 +76,8 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
-            if (transform == null)
-                transform = element.Document.IsLinked ? element.Document.LinkTransform() : Transform.Identity;
+            if (transform == null || !element.Document.IsLinked)
+                transform = Transform.Identity;
 
             Outline outline = new Outline(bbox.Min, bbox.Max);
 
