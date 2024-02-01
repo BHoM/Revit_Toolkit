@@ -22,6 +22,8 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base;
+using System;
+using System.Collections.Generic;
 
 namespace BH.Revit.Engine.Core
 {
@@ -37,21 +39,33 @@ namespace BH.Revit.Engine.Core
 
             PlanViewRange viewRange = view.GetViewRange();
             Level topLevel = doc.GetElement(viewRange.GetLevelId(PlanViewPlane.TopClipPlane)) as Level;
-            Level bottomLevel = doc.GetElement(viewRange.GetLevelId(PlanViewPlane.ViewDepthPlane)) as Level;
-
             double topOffset = viewRange.GetOffset(PlanViewPlane.TopClipPlane);
-            double bottomOffset = viewRange.GetOffset(PlanViewPlane.ViewDepthPlane);
-
             double topZ = (topLevel == null)
                 ? m_DefaultExtents
                 : topLevel.ProjectElevation + topOffset;
 
-            double bottomZ = (bottomLevel == null)
-                ? -m_DefaultExtents
-                : bottomLevel.ProjectElevation + bottomOffset;
+            Level depthLevel = doc.GetElement(viewRange.GetLevelId(PlanViewPlane.ViewDepthPlane)) as Level;
+            Level bottomLevel = doc.GetElement(viewRange.GetLevelId(PlanViewPlane.BottomClipPlane)) as Level;
+            double depthOffset = viewRange.GetOffset(PlanViewPlane.ViewDepthPlane);
+            double bottomOffset = viewRange.GetOffset(PlanViewPlane.BottomClipPlane);
+
+            double bottomZ;
+            if (depthLevel != null && bottomLevel != null)
+                bottomZ = Math.Min(depthLevel.ProjectElevation + depthOffset, bottomLevel.ProjectElevation + bottomOffset);
+            else if (bottomLevel != null)
+                bottomZ = bottomLevel.ProjectElevation + bottomOffset;
+            else if (depthLevel != null)
+                bottomZ = depthLevel.ProjectElevation + depthOffset;
+            else
+                bottomZ = -m_DefaultExtents;
 
             return new Output<double, double> { Item1 = bottomZ, Item2 = topZ };
         }
+
+
+        /***************************************************/
+        /****              Private fields               ****/
+        /***************************************************/
 
         private static double m_DefaultExtents = 1e+4;
 
