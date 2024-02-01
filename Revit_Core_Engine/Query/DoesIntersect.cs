@@ -67,7 +67,7 @@ namespace BH.Revit.Engine.Core
         [Description("Check if bounding box intersects with element.")]
         [Input("bbox", "Bounding box to check the intersection for.")]
         [Input("element", "Element to check the intersection for.")]
-        [Input("transform", "Transform of the element. If element is from revit link, revit link instance transform should be used.")]
+        [Input("transform", "Transform of the element. In most usual case of a linked element being checked against a bounding box in host document's coordinate system, Revit link instance transform should be used.")]
         [Output("bool", "Result of the intersect checking.")]
         public static bool DoesIntersect(this BoundingBoxXYZ bbox, Element element, Transform transform = null)
         {
