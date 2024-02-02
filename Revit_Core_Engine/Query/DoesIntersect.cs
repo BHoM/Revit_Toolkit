@@ -64,6 +64,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("7.1", "BH.Revit.Engine.Core.Query.DoesIntersect(Autodesk.Revit.DB.BoundingBoxXYZ, Autodesk.Revit.DB.Element)")]
         [Description("Check if bounding box intersects with element.")]
         [Input("bbox", "Bounding box to check the intersection for.")]
         [Input("element", "Element to check the intersection for.")]
