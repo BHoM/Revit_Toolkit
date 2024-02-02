@@ -64,18 +64,22 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("7.1", "BH.Revit.Engine.Core.Query.DoesIntersect(Autodesk.Revit.DB.BoundingBoxXYZ, Autodesk.Revit.DB.Element)")]
         [Description("Check if bounding box intersects with element.")]
         [Input("bbox", "Bounding box to check the intersection for.")]
         [Input("element", "Element to check the intersection for.")]
+        [Input("transform", "Transform of the element. In most usual case of a linked element being checked against a bounding box in host document's coordinate system, Revit link instance transform should be used.")]
         [Output("bool", "Result of the intersect checking.")]
-        public static bool DoesIntersect(this BoundingBoxXYZ bbox, Element element)
+        public static bool DoesIntersect(this BoundingBoxXYZ bbox, Element element, Transform transform = null)
         {
             if (bbox == null || element == null)
             {
                 return false;
             }
 
-            Transform transform = element.Document.LinkTransform();
+            if (transform == null)
+                transform = Transform.Identity;
+
             Outline outline = new Outline(bbox.Min, bbox.Max);
 
             if (bbox.Transform.IsTranslation)
