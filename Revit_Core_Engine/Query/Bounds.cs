@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
@@ -122,7 +123,7 @@ namespace BH.Revit.Engine.Core
             double minZ = double.MaxValue;
             double maxZ = double.MinValue;
 
-            foreach (var point in points)
+            foreach (XYZ point in points)
             {
                 if (point.X < minX)
                     minX = point.X;
@@ -157,6 +158,56 @@ namespace BH.Revit.Engine.Core
         public static BoundingBoxXYZ Bounds(this IEnumerable<BoundingBoxXYZ> bboxes)
         {
             return bboxes.SelectMany(x => x.CornerPoints()).Bounds();
+        }
+
+        /***************************************************/
+
+        [Description("Returns the bounding box of view extents.")]
+        [Input("view", "View to find the bounds.")]
+        [Output("bounds", "Bounding box of the input view extents.")]
+        public static BoundingBoxXYZ Bounds(this View view)
+        {
+            if (view == null)
+                return null;
+
+            if (view is View3D)
+            {
+                Solid viewSolid = view.ViewSolid();
+                return viewSolid?.GetBoundingBox() ?? UnlimitedViewBounds();
+            }
+
+            BoundingBoxXYZ bbox = view.BoundsOfCropBox() ?? UnlimitedViewBounds();
+            if (view is ViewPlan)
+            {
+                Output<double, double> range = (view as ViewPlan).PlanViewRange();
+                bbox.Min = new XYZ(bbox.Min.X, bbox.Min.Y, range.Item1);
+                bbox.Max = new XYZ(bbox.Max.X, bbox.Max.Y, range.Item2);
+            }
+
+            return bbox;
+        }
+
+
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        private static BoundingBoxXYZ BoundsOfCropBox(this View view)
+        {
+            if (view.CropBoxActive)
+                return view.CropBox.CornerPoints().Select(x => view.CropBox.Transform.OfPoint(x)).ToList().Bounds();
+            else
+                return null;
+        }
+
+        /***************************************************/
+        
+        private static BoundingBoxXYZ UnlimitedViewBounds()
+        {
+            BoundingBoxXYZ bbox = new BoundingBoxXYZ();
+            bbox.Min = new XYZ(-m_DefaultExtents, -m_DefaultExtents, -m_DefaultExtents);
+            bbox.Max = new XYZ(m_DefaultExtents, m_DefaultExtents, m_DefaultExtents);
+            return bbox;
         }
 
         /***************************************************/
