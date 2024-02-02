@@ -44,21 +44,20 @@ namespace BH.Revit.Engine.Core
                 ? m_DefaultExtents
                 : topLevel.ProjectElevation + topOffset;
 
-            Level depthLevel = doc.GetElement(viewRange.GetLevelId(PlanViewPlane.ViewDepthPlane)) as Level;
-            Level bottomLevel = doc.GetElement(viewRange.GetLevelId(PlanViewPlane.BottomClipPlane)) as Level;
-            double depthOffset = viewRange.GetOffset(PlanViewPlane.ViewDepthPlane);
-            double bottomOffset = viewRange.GetOffset(PlanViewPlane.BottomClipPlane);
-
-            double bottomZ;
-            if (depthLevel != null && bottomLevel != null)
-                bottomZ = Math.Min(depthLevel.ProjectElevation + depthOffset, bottomLevel.ProjectElevation + bottomOffset);
-            else if (bottomLevel != null)
-                bottomZ = bottomLevel.ProjectElevation + bottomOffset;
-            else if (depthLevel != null)
-                bottomZ = depthLevel.ProjectElevation + depthOffset;
+            Level bottomLevel;
+            double bottomOffset;
+            if (view.ViewType == Autodesk.Revit.DB.ViewType.CeilingPlan)
+            {
+                bottomLevel = doc.GetElement(viewRange.GetLevelId(PlanViewPlane.CutPlane)) as Level;
+                bottomOffset = viewRange.GetOffset(PlanViewPlane.CutPlane);
+            }
             else
-                bottomZ = -m_DefaultExtents;
+            {
+                bottomLevel = doc.GetElement(viewRange.GetLevelId(PlanViewPlane.ViewDepthPlane)) as Level;
+                bottomOffset = viewRange.GetOffset(PlanViewPlane.ViewDepthPlane);
+            }
 
+            double bottomZ = bottomLevel != null ? bottomLevel.ProjectElevation + bottomOffset : -m_DefaultExtents;
             return new Output<double, double> { Item1 = bottomZ, Item2 = topZ };
         }
 
