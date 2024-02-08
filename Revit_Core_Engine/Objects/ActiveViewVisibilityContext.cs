@@ -100,6 +100,8 @@ namespace BH.Revit.Engine.Core
             if (element is RevitLinkInstance linkInstance)
             {
                 Document linkDoc = linkInstance.GetLinkDocument();
+                if (linkDoc == null)
+                    return RenderNodeAction.Skip;
 
                 if (m_TargetDocument == null || m_TargetDocument.PathName == linkDoc.PathName)
                 {
