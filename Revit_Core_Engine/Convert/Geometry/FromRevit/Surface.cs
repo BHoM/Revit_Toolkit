@@ -45,7 +45,6 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             IList<CurveLoop> crvLoops = face.GetEdgesAsCurveLoops();
-
             if (crvLoops.Count > 1)
             {
                 IEnumerable<IEnumerable<oM.Geometry.Point>> loopPoints = crvLoops
@@ -54,10 +53,9 @@ namespace BH.Revit.Engine.Core
                             .Select(point => point.PointFromRevit())));
 
                 oM.Geometry.Polyline convexHull = BH.Engine.Geometry.Compute.ConvexHull(loopPoints.SelectMany(x => x).ToList());
-
                 List<int> hullPointCounts = loopPoints.Select(points => points.Where(pnt => pnt.IsOnCurve(convexHull)).Count()).ToList();
 
-                //Make sure the first loop has the most number of control points on the convex hull, so it will always be the main external boundary.
+                //The main external boundary will have the most number of control points on the convex hull.
                 crvLoops = crvLoops.OrderByDescending(loop => hullPointCounts[crvLoops.IndexOf(loop)]).ToList();
             }
 
