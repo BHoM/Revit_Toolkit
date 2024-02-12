@@ -43,9 +43,9 @@ namespace BH.Revit.Engine.Core
             if (face == null)
                 return null;
 
-            IList<CurveLoop> crvLoop = face.GetEdgesAsCurveLoops();
-            oM.Geometry.ICurve externalBoundary = crvLoop[0].FromRevit();
-            List<oM.Geometry.ICurve> internalBoundary = crvLoop.Skip(1).Select(x => x.FromRevit() as oM.Geometry.ICurve).ToList();                           
+            IList<CurveLoop> crvLoops = face.GetEdgesAsCurveLoops().OrderByDescending(x => x.GetExactLength()).ToList();
+            oM.Geometry.ICurve externalBoundary = crvLoops[0].FromRevit();
+            List<oM.Geometry.ICurve> internalBoundary = crvLoops.Skip(1).Select(x => x.FromRevit() as oM.Geometry.ICurve).ToList();
 
             return new oM.Geometry.PlanarSurface(externalBoundary, internalBoundary);
         }
@@ -60,20 +60,20 @@ namespace BH.Revit.Engine.Core
         [Output("surface", "BH.oM.Geometry.ISurface resulting from converting the input Revit Face.")]
         public static oM.Geometry.ISurface IFromRevit(this Face face)
         {
-            return FromRevit(face as dynamic);                        
+            return FromRevit(face as dynamic);
         }
 
 
         /***************************************************/
         /****              Fallback Methods             ****/
         /***************************************************/
-        
+
         private static oM.Geometry.ISurface FromRevit(this Face face)
         {
             BH.Engine.Base.Compute.RecordError(String.Format("Revit face of type {0} could not be converted to BHoM due to a missing convert method.", face.GetType()));
             return null;
         }
-        
+
         /***************************************************/
     }
 }
