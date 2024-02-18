@@ -243,6 +243,45 @@ namespace BH.Revit.Engine.Core
             return true;
         }
 
+        /***************************************************/
+
+        //[Description("Updates the existing Revit Assembly instance based on the given BHoM Assembly.")]
+        //[Input("element", "Revit Assembly instance to be updated.")]
+        //[Input("bHoMObject", "BHoM Assembly, based on which the Revit element will be updated.")]
+        //[Input("settings", "Revit adapter settings to be used while performing the action.")]
+        //[Input("setLocationOnUpdate", "Revit Assembly instance does not have location property, therefore this parameter is irrelevant.")]
+        //[Output("success", "True if the Revit Assembly instance has been updated successfully based on the input BHoM Assembly.")]
+        public static bool Update(this View element, BH.oM.Adapters.Revit.Views.View bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            //TODO: fill in with logic
+            // update the filter overrides based on the BHoM view
+            // update name
+            // update parameteres (done below)
+            // otherhers as the class grows
+
+            element.CopyParameters(bHoMObject, settings);
+            return true;
+        }
+
+        /***************************************************/
+
+        //[Description("Updates the existing Revit Assembly instance based on the given BHoM Assembly.")]
+        //[Input("element", "Revit Assembly instance to be updated.")]
+        //[Input("bHoMObject", "BHoM Assembly, based on which the Revit element will be updated.")]
+        //[Input("settings", "Revit adapter settings to be used while performing the action.")]
+        //[Input("setLocationOnUpdate", "Revit Assembly instance does not have location property, therefore this parameter is irrelevant.")]
+        //[Output("success", "True if the Revit Assembly instance has been updated successfully based on the input BHoM Assembly.")]
+        public static bool Update(this ParameterFilterElement element, BH.oM.Adapters.Revit.Elements.ViewFilter bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            //TODO: fill in with logic
+            // update categories
+            // update parameteres (done below)
+            // maybe name?
+
+            element.CopyParameters(bHoMObject, settings);
+            return true;
+        }
+
 
         /***************************************************/
         /****             Disallowed Types              ****/
