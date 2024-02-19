@@ -37,8 +37,9 @@ namespace BH.Revit.Engine.Core
 
         [Description("Returns unique parameter names for the collection of the elements.")]
         [Input("elements", "Elements to get the parameter names from.")]
-        [Output("paramterNames", "Output containing instance parameter names as Item1 and type paramter names as Item2.")]
-        public static Output<HashSet<string>, HashSet<string>> UniqueParametersNames(this IEnumerable<Element> elements)
+        [MultiOutput(0, "instanceParameterNames", "Unique names of the instance parameters for the collection of the elements.")]
+        [MultiOutput(1, "typeParameterNames", "Unique names of the type parameters for the collection of the elements.")]
+        public static Output<HashSet<string>, HashSet<string>> UniqueParameterNames(this IEnumerable<Element> elements)
         {
             Output<HashSet<string>, HashSet<string>> parameterNames = new Output<HashSet<string>, HashSet<string>>
             {
@@ -49,37 +50,25 @@ namespace BH.Revit.Engine.Core
             if (elements == null || !elements.Any())
                 return parameterNames;
 
-            Dictionary<Document, List<Element>> elementsByDocumentDictionary = elements.ElementsByDocumentDictionary();
+            Dictionary<Document, List<Element>> elementsByDocument = elements.GroupBy(x => x.Document).ToDictionary(x => x.Key, x => x.ToList());
 
-            foreach (var elementsInDocPair in elementsByDocumentDictionary)
+            foreach (var elementsInDocPair in elementsByDocument)
             {
                 Document doc = elementsInDocPair.Key;
                 List<Element> elementsFromOneDocument = elementsInDocPair.Value;
+                Dictionary<ElementId, List<Element>> elementsByCategory = elementsFromOneDocument.GroupBy(x => x.Category.Id).ToDictionary(x => x.Key, x => x.ToList());
 
-                if (!elementsFromOneDocument.Any())
-                    continue;
-
-                Dictionary<ElementId, List<Element>> elementsByCategoryDictionary = elementsFromOneDocument.ElementsByCategoryDictionary();
-
-                foreach (var elementsByCat in elementsByCategoryDictionary)
+                foreach (var elementsByCatPair in elementsByCategory)
                 {
-                    List<Element> elementsOfCat = elementsByCat.Value;
-
-                    if (!elementsOfCat.Any()) 
-                        continue;
-
+                    List<Element> elementsOfCat = elementsByCatPair.Value;
                     HashSet<int> instanceParameterIds = elementsOfCat.UniqueParametersIds();
                     IEnumerable<string> instanceParameterNames = instanceParameterIds.Select(x => doc.ParameterName(x));
-
-                    foreach (string name in instanceParameterNames)
-                        parameterNames.Item1.Add(name);
+                    parameterNames.Item1.UnionWith(instanceParameterNames);
 
                     IEnumerable<Element> elementTypes = elementsOfCat.UniqueTypeIds().Select(x => doc.GetElement(new ElementId(x)));
                     HashSet<int> typeParametereIds = elementTypes.UniqueParametersIds();
                     IEnumerable<string> typeParameterNames = typeParametereIds.Select(x => doc.ParameterName(x));
-
-                    foreach (string name in typeParameterNames)
-                        parameterNames.Item2.Add(name);
+                    parameterNames.Item2.UnionWith(typeParameterNames);
                 }
             }
 
@@ -88,26 +77,8 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Creates dictionary for elements per document.")]
-        private static Dictionary<Document, List<Element>> ElementsByDocumentDictionary(this IEnumerable<Element> elements)
-        {
-            Dictionary<Document, List<Element>> elementsByDoc = new Dictionary<Document, List<Element>>();
-
-            foreach (Element element in elements)
-            {
-                if (elementsByDoc.ContainsKey(element.Document))
-                    elementsByDoc[element.Document].Add(element);
-                else
-                    elementsByDoc.Add(element.Document, new List<Element> { element });
-            }
-
-            return elementsByDoc;
-        }
-
-        /***************************************************/
-
         [Description("Creates dictionary for elements per category.")]
-        private static Dictionary<ElementId, List<Element>> ElementsByCategoryDictionary(this IEnumerable<Element> elements)
+        private static Dictionary<ElementId, List<Element>> ElementsByCategory(this IEnumerable<Element> elements)
         {
             Dictionary<ElementId, List<Element>> elementsByCat = new Dictionary<ElementId, List<Element>>();
 
@@ -128,9 +99,20 @@ namespace BH.Revit.Engine.Core
         private static HashSet<int> UniqueParametersIds(this IEnumerable<Element> elementsFromOneDocument)
         {
             HashSet<int> ids = new HashSet<int>();
-            
+            HashSet<string> visitedFamilies = new HashSet<string>();
+
             foreach (Element element in elementsFromOneDocument)
             {
+                if (element is ElementType)
+                {
+                    string familyName = ((ElementType)element).FamilyName;
+
+                    if (visitedFamilies.Contains(familyName))
+                        continue;
+                    else
+                        visitedFamilies.Add(familyName);
+                }
+
                 foreach (Parameter parameter in element.ParametersMap)
                 {
                     ids.Add(parameter.Id.IntegerValue);
@@ -146,14 +128,13 @@ namespace BH.Revit.Engine.Core
         private static HashSet<int> UniqueTypeIds(this IEnumerable<Element> elementsFromOneDocument)
         {
             HashSet<int> ids = new HashSet<int>();
-            Document doc = elementsFromOneDocument.FirstOrDefault().Document;
 
             foreach (Element element in elementsFromOneDocument)
             {
-                Element elementType = doc.GetElement(element.GetTypeId());
+                int elementTypeId = element.GetTypeId().IntegerValue;
 
-                if (elementType != null)
-                    ids.Add(elementType.Id.IntegerValue);
+                if (elementTypeId != -1)
+                    ids.Add(elementTypeId);
             }
 
             return ids;
@@ -169,7 +150,7 @@ namespace BH.Revit.Engine.Core
             if (id < 0)
                 parameterName = LabelUtils.GetLabelFor((BuiltInParameter)id);
             else
-                parameterName = (doc.GetElement(new ElementId(id)) as ParameterElement).GetDefinition().Name;
+                parameterName = (doc.GetElement(new ElementId(id)) as ParameterElement).Name;
 
             return parameterName;
         }
