@@ -10,7 +10,6 @@ namespace BH.oM.Adapters.Revit.Elements
     public class ViewFilter : BHoMObject
     {
         public virtual List<string> Categories {  get; set; }
-
-        //public List<FilterRule> Rules { get; set; }
+        public List<FilterRule> Rules { get; set; }
     }
 }
