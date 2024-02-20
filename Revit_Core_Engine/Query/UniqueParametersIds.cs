@@ -35,13 +35,13 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns unique parameter ids for the all elements of category.")]
+        [Description("Returns unique parameter ids for all elements of category.")]
         [Input("document", "Document where elements belong.")]
         [Input("category", "Category of the elements.")]
         [Input("instanceParameters", "True to return instance parameter ids, false otherwise.")]
         [Input("typeParameters", "True to return type parameter ids, false otherwise.")]
-        [MultiOutput(0, "instanceParameterNames", "Unique ids of the instance parameters for the collection of the elements.")]
-        [MultiOutput(1, "typeParameterNames", "Unique ids of the type parameters for the collection of the elements.")]
+        [MultiOutput(0, "instanceParameterNames", "Unique ids of the instance parameters for all elements of category.")]
+        [MultiOutput(1, "typeParameterNames", "Unique ids of the type parameters for all elements of category.")]
         public static Output<HashSet<int>, HashSet<int>> UniqueParametersIds(this Document document, BuiltInCategory category, bool instanceParameters, bool typeParameters)
         {
             IEnumerable<Element> elements = new FilteredElementCollector(document).OfCategory(category).WhereElementIsNotElementType();

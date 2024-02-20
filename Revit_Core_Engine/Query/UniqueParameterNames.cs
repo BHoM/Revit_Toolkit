@@ -37,8 +37,8 @@ namespace BH.Revit.Engine.Core
 
         [Description("Returns unique parameter names for the collection of the elements.")]
         [Input("elements", "Elements to get the parameter names from.")]
-        [Input("instanceParameters", "True to return instance parameter ids, false otherwise.")]
-        [Input("typeParameters", "True to return type parameter ids, false otherwise.")]
+        [Input("instanceParameters", "True to return instance parameter names, false otherwise.")]
+        [Input("typeParameters", "True to return type parameter names, false otherwise.")]
         [MultiOutput(0, "instanceParameterNames", "Unique names of the instance parameters for the collection of the elements.")]
         [MultiOutput(1, "typeParameterNames", "Unique names of the type parameters for the collection of the elements.")]
         public static Output<HashSet<string>, HashSet<string>> UniqueParameterNames(this IEnumerable<Element> elements, bool instanceParameters, bool typeParameters)
