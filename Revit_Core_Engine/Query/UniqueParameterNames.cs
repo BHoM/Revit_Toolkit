@@ -37,9 +37,11 @@ namespace BH.Revit.Engine.Core
 
         [Description("Returns unique parameter names for the collection of the elements.")]
         [Input("elements", "Elements to get the parameter names from.")]
+        [Input("instanceParameters", "True to return instance parameter ids, false otherwise.")]
+        [Input("typeParameters", "True to return type parameter ids, false otherwise.")]
         [MultiOutput(0, "instanceParameterNames", "Unique names of the instance parameters for the collection of the elements.")]
         [MultiOutput(1, "typeParameterNames", "Unique names of the type parameters for the collection of the elements.")]
-        public static Output<HashSet<string>, HashSet<string>> UniqueParameterNames(this IEnumerable<Element> elements)
+        public static Output<HashSet<string>, HashSet<string>> UniqueParameterNames(this IEnumerable<Element> elements, bool instanceParameters, bool typeParameters)
         {
             Output<HashSet<string>, HashSet<string>> parameterNames = new Output<HashSet<string>, HashSet<string>>
             {
@@ -56,20 +58,10 @@ namespace BH.Revit.Engine.Core
             {
                 Document doc = elementsInDocPair.Key;
                 List<Element> elementsFromOneDocument = elementsInDocPair.Value;
-                Dictionary<ElementId, List<Element>> elementsByCategory = elementsFromOneDocument.GroupBy(x => x.Category.Id).ToDictionary(x => x.Key, x => x.ToList());
 
-                foreach (var elementsByCatPair in elementsByCategory)
-                {
-                    List<Element> elementsOfCat = elementsByCatPair.Value;
-                    HashSet<int> instanceParameterIds = elementsOfCat.UniqueParametersIds();
-                    IEnumerable<string> instanceParameterNames = instanceParameterIds.Select(x => doc.ParameterName(x));
-                    parameterNames.Item1.UnionWith(instanceParameterNames);
-
-                    IEnumerable<Element> elementTypes = elementsOfCat.UniqueTypeIds().Select(x => doc.GetElement(new ElementId(x)));
-                    HashSet<int> typeParametereIds = elementTypes.UniqueParametersIds();
-                    IEnumerable<string> typeParameterNames = typeParametereIds.Select(x => doc.ParameterName(x));
-                    parameterNames.Item2.UnionWith(typeParameterNames);
-                }
+                Output<HashSet<int>, HashSet<int>> parameterIds = UniqueParametersIds(elements, instanceParameters, typeParameters);
+                parameterNames.Item1.UnionWith(parameterIds.Item1.Select(x => doc.ParameterName(x)));
+                parameterNames.Item2.UnionWith(parameterIds.Item2.Select(x => doc.ParameterName(x)));
             }
 
             return parameterNames;
