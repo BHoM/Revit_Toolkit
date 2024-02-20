@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.oM.Revit.Elements
+namespace BH.oM.Revit.Views
 {
     public enum FillPattern
     {
