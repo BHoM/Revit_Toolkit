@@ -115,7 +115,7 @@ namespace BH.Revit.Engine.Core
         [Description("Returns unique parameter ids for the collection of the elements.")]
         [Input("elementsFromOneDocument", "Elements to get the unique parameter ids from.")]
         [Output("ids", "Unique ids for the collection of the elements.")]
-        private static HashSet<int> UniqueParametersIds(this IEnumerable<Element> elementsFromOneDocument)
+        public static HashSet<int> UniqueParametersIds(this IEnumerable<Element> elementsFromOneDocument)
         {
             HashSet<int> ids = new HashSet<int>();
             HashSet<string> visitedFamilies = new HashSet<string>();

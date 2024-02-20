@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
             if (id < 0)
                 parameterName = LabelUtils.GetLabelFor((BuiltInParameter)id);
             else
-                parameterName = (doc.GetElement(new ElementId(id)) as ParameterElement).Name;
+                parameterName = (doc.GetElement(new ElementId(id)) as ParameterElement)?.Name;
 
             return parameterName;
         }
