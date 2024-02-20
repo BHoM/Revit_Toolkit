@@ -9,6 +9,6 @@ namespace BH.oM.Adapters.Revit.Views
 {
     public class View : BHoMObject
     {
-        public virtual List<FilterWithOverrides> FiltersWithOverrides { get; set; }
+        public virtual List<ViewFilterWithOverrides> FiltersWithOverrides { get; set; }
     }
 }
