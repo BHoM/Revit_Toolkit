@@ -102,8 +102,15 @@ namespace BH.Revit.Engine.Core
             else
             {
                 XYZ mid = (view.CropBox.Min + view.CropBox.Max) / 2;
-                XYZ bottom = new XYZ(mid.X, mid.Y, view.CropBox.Min.Z);
                 XYZ top = new XYZ(mid.X, mid.Y, view.CropBox.Max.Z);
+
+                // If far clip is set to no clipping, set bottom Z to minimum value
+                XYZ bottom;
+                if (view.LookupParameterInteger(BuiltInParameter.VIEWER_BOUND_FAR_CLIPPING)==0)
+                    bottom = new XYZ(mid.X, mid.Y, -m_DefaultExtents);
+                else
+                    bottom = new XYZ(mid.X, mid.Y, view.CropBox.Min.Z);
+
                 return Line.CreateBound(view.CropBox.Transform.OfPoint(bottom), view.CropBox.Transform.OfPoint(top));
             }
         }

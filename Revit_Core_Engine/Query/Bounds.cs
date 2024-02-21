@@ -170,7 +170,7 @@ namespace BH.Revit.Engine.Core
             if (view == null)
                 return null;
 
-            if (view is View3D)
+            if (view is View3D || view is ViewSection)
             {
                 Solid viewSolid = view.ViewSolid();
                 return viewSolid?.GetBoundingBox() ?? UnlimitedViewBounds();
