@@ -33,8 +33,8 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns unique element types for the collection of the elements.")]
-        [Input("elementsFromOneDocument", "Elements to get the unique types from.")]
+        [Description("Extracts element types of the input elements and returns a set of unique integer values of their ElementIds.")]
+        [Input("elementsFromOneDocument", "Elements to get the unique types from. Should belong to a single document to avoid ambiguity between same ElementIds in different documents.")]
         [Output("ids", "Unique element type ids for the collection of the elements.")]
         public static HashSet<int> UniqueTypeIds(this IEnumerable<Element> elementsFromOneDocument)
         {

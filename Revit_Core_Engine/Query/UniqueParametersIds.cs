@@ -38,7 +38,7 @@ namespace BH.Revit.Engine.Core
         [Description("Returns unique instance parameter ids for all elements of category.")]
         [Input("document", "Document where elements belong.")]
         [Input("category", "Category of the elements.")]
-        [Output("parameterIds", "Unique instance parameters ids for the collection of the elements.")]
+        [Output("parameterIds", "Unique parameter ids of elements that belong to the input document and category.")]
         public static HashSet<int> UniqueInstanceParametersIds(this Document document, BuiltInCategory category)
         {
             IEnumerable<Element> elements = new FilteredElementCollector(document).OfCategory(category).WhereElementIsNotElementType();
@@ -51,19 +51,21 @@ namespace BH.Revit.Engine.Core
         [Description("Returns unique type parameter ids for all elements of category.")]
         [Input("document", "Document where elements belong.")]
         [Input("category", "Category of the elements.")]
-        [Output("parameterIds", "Unique type parameters ids for the collection of the elements.")]
-        public static HashSet<int> UniqueTypeParametersIds(this Document document, BuiltInCategory category)
+        [Input("includeNotInstantinated", "True to include all element types of category from the model, false for only instanited.")]
+        [Output("parameterIds", "Unique parameter ids of types that belong to the input document and category.")]
+        public static HashSet<int> UniqueTypeParametersIds(this Document document, BuiltInCategory category, bool includeNotInstantinated = false)
         {
-            IEnumerable<Element> elements = new FilteredElementCollector(document).OfCategory(category).WhereElementIsNotElementType();
-
-            return UniqueTypeParametersIds(elements);
+            if (includeNotInstantinated)
+                return UniqueInstanceParametersIds(new FilteredElementCollector(document).OfCategory(category).WhereElementIsElementType());
+            else
+                return UniqueTypeParametersIds(new FilteredElementCollector(document).OfCategory(category).WhereElementIsNotElementType());
         }
 
         /***************************************************/
 
         [Description("Returns unique instance parameter ids for the collection of the elements.")]
         [Input("elementsFromOneDocument", "Elements from the same document to get the unique parameter ids from.")]
-        [Output("parameterIds", "Unique ids of the instance parameters for the collection of the elements.")]
+        [Output("parameterIds", "Unique ids of instance parameters for the input collection of the elements.")]
         public static HashSet<int> UniqueInstanceParametersIds(this IEnumerable<Element> elementsFromOneDocument)
         {
             HashSet<int> parameterIds = new HashSet<int>();
@@ -87,7 +89,7 @@ namespace BH.Revit.Engine.Core
 
         [Description("Returns unique type parameter ids for the collection of the elements.")]
         [Input("elementsFromOneDocument", "Elements from the same document to get the unique type parameter ids from.")]
-        [Output("parameterIds", "Unique ids of the instance parameters for the collection of the elements.")]
+        [Output("parameterIds", "Unique ids of type parameters for the input collection of elements.")]
         public static HashSet<int> UniqueTypeParametersIds(this IEnumerable<Element> elementsFromOneDocument)
         {
             HashSet<int> parameterIds = new HashSet<int>();
