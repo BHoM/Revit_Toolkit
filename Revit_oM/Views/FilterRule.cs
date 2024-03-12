@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BH.oM.Revit.Views
 {
-    public abstract class FilterRule : BHoMObject
+    public class FilterRule : BHoMObject
     {
         public virtual FilterRuleType RuleType { get; set; }
         public virtual string ParameterName { get; set; }

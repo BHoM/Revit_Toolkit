@@ -94,7 +94,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static Autodesk.Revit.DB.FilterRule filterRuleToRevit(Document document,FilterRule filterRule) {
+        public static Autodesk.Revit.DB.FilterRule filterRuleToRevit(Document document,FilterRule filterRule) {
 
             Autodesk.Revit.DB.FilterRule revitFilterRule = null;
 
