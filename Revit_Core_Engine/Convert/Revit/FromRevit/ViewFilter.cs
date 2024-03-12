@@ -27,6 +27,7 @@ using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -36,11 +37,11 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        //[Description("Converts a Revit ViewPlan to BH.oM.Adapters.Revit.Elements.ViewPlan.")]
-        //[Input("revitViewPlan", "Revit ViewPlan to be converted.")]
-        //[Input("settings", "Revit adapter settings to be used while performing the convert.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("viewPlan", "BH.oM.Adapters.Revit.Elements.ViewPlan resulting from converting the input Revit ViewPlan.")]
+        [Description("Converts a Revit ParameterFilterElement to BH.oM.Adapters.Revit.Elements.ViewFilter.")]
+        [Input("revitViewFilter", "Revit ParameterFilterElement to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("viewFilter", "BH.oM.Adapters.Revit.Elements.ViewFilter resulting from converting the input Revit ParameterFilterElement.")]
         public static oM.Adapters.Revit.Elements.ViewFilter ViewFilterFromRevit(this ParameterFilterElement revitViewFilter, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
@@ -49,11 +50,20 @@ namespace BH.Revit.Engine.Core
             if (viewFilter != null)
                 return viewFilter;
 
+            /* 1. Transfer Filter NAME */
             viewFilter = new oM.Adapters.Revit.Elements.ViewFilter { Name = revitViewFilter.Name };
-            //TODO: here goes the convertion method
+            /* 2. Transfer List of CATEGORY NAMES */
+            viewFilter.Categories = revitViewFilter.GetCategories().Select(catId => revitViewFilter.Document.GetElement(catId).Name).ToList<string>();
+            /* 3. Transfer List of FILTER RULES */
+            ((ElementParameterFilter)revitViewFilter.GetElementFilter()).GetRules()
+                        .Select(rule => { string parameterName = revitViewFilter.Document.GetElement(rule.GetRuleParameter()).Name.ToString();
+                                          )
+                        .ToList<string>();
+                
 
-            //Set identifiers, parameters & custom data
-            viewFilter.SetIdentifiers(revitViewFilter);
+
+        //Set identifiers, parameters & custom data
+        viewFilter.SetIdentifiers(revitViewFilter);
             viewFilter.CopyParameters(revitViewFilter, settings.MappingSettings);
             viewFilter.SetProperties(revitViewFilter, settings.MappingSettings);
 

@@ -22,11 +22,19 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
+using BH.oM.Revit.Views;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using System.Xml.Linq;
+using FilterRule = BH.oM.Revit.Views.FilterRule;
+using OverrideGraphicSettings = BH.oM.Adapters.Revit.Elements.OverrideGraphicSettings;
+using View = Autodesk.Revit.DB.View;
 
 namespace BH.Revit.Engine.Core
 {
@@ -36,20 +44,52 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        //[Description("Converts a Revit ViewPlan to BH.oM.Adapters.Revit.Elements.ViewPlan.")]
-        //[Input("revitViewPlan", "Revit ViewPlan to be converted.")]
-        //[Input("settings", "Revit adapter settings to be used while performing the convert.")]
-        //[Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        //[Output("viewPlan", "BH.oM.Adapters.Revit.Elements.ViewPlan resulting from converting the input Revit ViewPlan.")]
-        public static oM.Adapters.Revit.Views.View ViewFromRevit(this View revitView, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Description("Converts a Revit View to BH.oM.Adapters.Revit.Elements.View.")]
+        [Input("revitView", "Revit View to be converted.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("view", "BH.oM.Adapters.Revit.Elements.View resulting from converting the input Revit View.")]
+        public static oM.Adapters.Revit.Elements.View ViewFromRevit(this View revitView, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
-            oM.Adapters.Revit.Views.View view = refObjects.GetValue<oM.Adapters.Revit.Views.View>(revitView.Id.IntegerValue);
+            oM.Adapters.Revit.Elements.View view = refObjects.GetValue<oM.Adapters.Revit.Elements.View>(revitView.Id.IntegerValue);
             if (view != null)
                 return view;
 
-            view = new oM.Adapters.Revit.Views.View { Name = revitView.Name };
+            /* 1. Transfer NAME */
+            view = new oM.Adapters.Revit.Elements.View { Name = revitView.Name };
+
+            List<ViewFilterWithOverrides> filtersWithOverrides;
+            List<ViewFilter> viewFilters;
+            List<OverrideGraphicSettings> overrides;
+
+            List<List<string>> categoriesNames=revitView.GetFilters()
+                .Select(elId => revitView.Document.GetElement(elId))
+                .Cast<ParameterFilterElement>()
+                .Select(pfe => pfe.GetCategories().ToList<ElementId>())
+                .Select(catIdsList => catIdsList.Select(catId => revitView.Document.GetElement(catId).Name).ToList<string>())
+                .ToList<List<string>>();
+
+            List<FilterRule> filterRules = revitView.GetFilters()
+                .Select(elId => revitView.Document.GetElement(elId))
+                .Cast<ElementParameterFilter>()
+                .Select(epf => epf.GetRules())
+                .ToDictionary<System.Type, string[]>(fvr => fvr.GetType(),
+                                                     fvr =>
+                                                     {
+                                                         Element param = revitView.Document.GetElement(fvr.GetRuleParameter());
+                                                         string paramName = param.Name;
+                                                         string value = fvr.ToString();
+                                                         return new Array<string> { paramName, value };
+                                                     })
+                .ToList<KeyValuePair<System.Type, string[]>>()
+                .Select(kvp => new FilterRule { RuleType = FilterRuleType.BEGINSWITH, 
+                                                ParameterName = kvp.Value[0], 
+                                                Value = kvp.Value[1] })
+                .
+
+
             //TODO: here goes the convertion method
 
             //Set identifiers, parameters & custom data

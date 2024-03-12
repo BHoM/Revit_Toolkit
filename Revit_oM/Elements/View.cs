@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BH.oM.Revit.Views;
 
-namespace BH.oM.Adapters.Revit.Views
+namespace BH.oM.Adapters.Revit.Elements
 {
     public class View : BHoMObject
     {
