@@ -21,7 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Geometry;
+using BH.Engine.Base;
 using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
@@ -44,19 +44,15 @@ namespace BH.Revit.Engine.Core
             if (face == null)
                 return null;
 
-            IList<CurveLoop> crvLoops = face.GetEdgesAsCurveLoops();
+            List<CurveLoop> crvLoops = face.GetEdgesAsCurveLoops().ToList();
             if (crvLoops.Count > 1)
             {
-                IEnumerable<IEnumerable<oM.Geometry.Point>> loopPoints = crvLoops
-                    .Select(loop => loop
-                        .SelectMany(curve => curve.Tessellate()
-                            .Select(point => point.PointFromRevit())));
-
-                oM.Geometry.Polyline convexHull = BH.Engine.Geometry.Compute.ConvexHull(loopPoints.SelectMany(x => x).ToList());
-                List<int> hullPointCounts = loopPoints.Select(points => points.Where(pnt => pnt.IsOnCurve(convexHull)).Count()).ToList();
-
-                //The main external boundary will have the most number of control points on the convex hull.
-                crvLoops = crvLoops.OrderByDescending(loop => hullPointCounts[crvLoops.IndexOf(loop)]).ToList();
+                //By convention, the main boundary must be counter-clockwise relative to the normal vector.
+                while (crvLoops[0].IsCounterclockwise(face.FaceNormal) == false)
+                {
+                    //Shift in reverse because if the main boundary isn't at the list start, it tends to be at the end.
+                    crvLoops = crvLoops.ShiftList(-1);
+                }
             }
 
             oM.Geometry.ICurve externalBoundary = crvLoops[0].FromRevit();
