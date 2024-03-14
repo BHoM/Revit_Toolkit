@@ -44,10 +44,18 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             List<CurveLoop> crvLoops = face.GetEdgesAsCurveLoops().ToList();
-            oM.Geometry.ICurve externalBoundary = crvLoops.FirstOrDefault(x => x.IsCounterclockwise(face.FaceNormal))?.FromRevit();
-            List<oM.Geometry.ICurve> internalBoundary = crvLoops.Where(x => x != externalBoundary).Select(x => x.FromRevit() as oM.Geometry.ICurve).ToList();
+            CurveLoop externalLoop = crvLoops.FirstOrDefault(x => x.IsCounterclockwise(face.FaceNormal));
 
-            return new oM.Geometry.PlanarSurface(externalBoundary, internalBoundary);
+            if (externalLoop == null)
+            {
+                BH.Engine.Base.Compute.RecordError($"A Revit face has no counter-clockwise boundary loop. Its conversion to a BHoM surface may be inaccurate.");
+                externalLoop = crvLoops[0];
+            }
+
+            oM.Geometry.ICurve externalBoundary = externalLoop.FromRevit();
+            List<oM.Geometry.ICurve> internalBoundaries = crvLoops.Where(x => x != externalLoop).Select(x => x.FromRevit() as oM.Geometry.ICurve).ToList();
+
+            return new oM.Geometry.PlanarSurface(externalBoundary, internalBoundaries);
         }
 
 
