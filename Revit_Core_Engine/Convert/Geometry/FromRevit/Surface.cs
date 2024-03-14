@@ -44,10 +44,8 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             List<CurveLoop> crvLoops = face.GetEdgesAsCurveLoops().ToList();
-            crvLoops.SortBoundaryLoops(face.FaceNormal);
-
-            oM.Geometry.ICurve externalBoundary = crvLoops[0].FromRevit();
-            List<oM.Geometry.ICurve> internalBoundary = crvLoops.Skip(1).Select(x => x.FromRevit() as oM.Geometry.ICurve).ToList();
+            oM.Geometry.ICurve externalBoundary = crvLoops.FirstOrDefault(x => x.IsCounterclockwise(face.FaceNormal))?.FromRevit();
+            List<oM.Geometry.ICurve> internalBoundary = crvLoops.Where(x => x != externalBoundary).Select(x => x.FromRevit() as oM.Geometry.ICurve).ToList();
 
             return new oM.Geometry.PlanarSurface(externalBoundary, internalBoundary);
         }
