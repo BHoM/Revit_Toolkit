@@ -22,58 +22,50 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Convert
+    public static partial class Modify
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Converts a Revit PlanarFace to BH.oM.Geometry.PlanarSurface.")]
-        [Input("face", "Revit PlanarFace to be converted.")]
-        [Output("surface", "BH.oM.Geometry.PlanarSurface resulting from converting the input Revit PlanarFace.")]
-        public static oM.Geometry.PlanarSurface FromRevit(this PlanarFace face)
+        [Description("Sort a list of curve loops (from a spatial element) so that the first one corresponds to the main loop that contains all others.")]
+        [Input("loops", "Boundary curve loops from a spatial element like a room or space.")]
+        [Output("normal", "Normal vector of the surface the curve loops come from, usually come from face.ComputeNormal or face.FaceNormal if it's a planar face.")]
+        public static void SortBoundaryLoops(this List<CurveLoop> loops, XYZ normal)
         {
-            if (face == null)
-                return null;
+            if (loops.Count < 2)
+                return;
 
-            List<CurveLoop> crvLoops = face.GetEdgesAsCurveLoops().ToList();
-            crvLoops.SortBoundaryLoops(face.FaceNormal);
-
-            oM.Geometry.ICurve externalBoundary = crvLoops[0].FromRevit();
-            List<oM.Geometry.ICurve> internalBoundary = crvLoops.Skip(1).Select(x => x.FromRevit() as oM.Geometry.ICurve).ToList();
-
-            return new oM.Geometry.PlanarSurface(externalBoundary, internalBoundary);
+            //By convention, the main boundary must be counter-clockwise relative to the normal vector.
+            while (loops[0].IsCounterclockwise(normal) == false)
+            {
+                //Shift in reverse because if the main boundary isn't at the list start, it tends to be at the end.
+                loops.ShiftListInPlace(-1);
+            }
         }
 
-
         /***************************************************/
-        /****             Interface Methods             ****/
+        /****              Private methods              ****/
         /***************************************************/
 
-        [Description("Converts a Revit Face to BH.oM.Geometry.ISurface.")]
-        [Input("face", "Revit Face to be converted.")]
-        [Output("surface", "BH.oM.Geometry.ISurface resulting from converting the input Revit Face.")]
-        public static oM.Geometry.ISurface IFromRevit(this Face face)
+        private static void ShiftListInPlace<T>(this List<T> list, int offset)
         {
-            return FromRevit(face as dynamic);
-        }
+            //Get the number of full shifts (0 if Abs(offset) < list.Count)
+            int fullShiftsCount = offset / list.Count;
+            if (offset < 0)
+                fullShiftsCount--;
 
+            //Get the effective offset within the list's range
+            offset -= fullShiftsCount * list.Count;
 
-        /***************************************************/
-        /****              Fallback Methods             ****/
-        /***************************************************/
-
-        private static oM.Geometry.ISurface FromRevit(this Face face)
-        {
-            BH.Engine.Base.Compute.RecordError(String.Format("Revit face of type {0} could not be converted to BHoM due to a missing convert method.", face.GetType()));
-            return null;
+            List<T> elementsToShift = list.GetRange(0, offset);
+            list.AddRange(elementsToShift);
+            list.RemoveRange(0, offset);
         }
 
         /***************************************************/
