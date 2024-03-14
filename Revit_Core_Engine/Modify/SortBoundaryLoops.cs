@@ -41,38 +41,15 @@ namespace BH.Revit.Engine.Core
             if (loops.Count < 2)
                 return;
 
-            //By convention, the main boundary must be counter-clockwise relative to the normal vector.
-            while (loops[0].IsCounterclockwise(normal) == false)
-            {
-                //Shift in reverse because if the main boundary isn't at the list start, it tends to be at the end.
-                loops.ShiftListInPlace(-1);
-            }
-        }
+            int externalLoopIndex = loops.FindIndex(x => x.IsCounterclockwise(normal));
+            if (externalLoopIndex == -1)
+                return;
 
-        /***************************************************/
-        /****              Private methods              ****/
-        /***************************************************/
-
-        private static void ShiftListInPlace<T>(this List<T> list, int offset)
-        {
-            //Get the number of full shifts (0 if Abs(offset) < list.Count)
-            int fullShiftsCount = offset / list.Count;
-            if (offset < 0)
-                fullShiftsCount--;
-
-            //Get the effective offset within the list's range
-            offset -= fullShiftsCount * list.Count;
-
-            List<T> elementsToShift = list.GetRange(0, offset);
-            list.AddRange(elementsToShift);
-            list.RemoveRange(0, offset);
+            CurveLoop externalLoop = loops[externalLoopIndex];
+            loops.RemoveAt(externalLoopIndex);
+            loops.Insert(0, externalLoop);
         }
 
         /***************************************************/
     }
 }
-
-
-
-
-
