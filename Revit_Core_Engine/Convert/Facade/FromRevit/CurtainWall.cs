@@ -65,7 +65,7 @@ namespace BH.Revit.Engine.Core
             if (wall.StackedWallOwnerId != null && wall.StackedWallOwnerId != ElementId.InvalidElementId)
                 return null;
 
-            IEnumerable<oM.Facade.Elements.Opening> curtainPanels = wall.CurtainGrid.FacadeCurtainPanels(wall.Document, settings, refObjects);
+            IEnumerable<oM.Facade.Elements.Opening> curtainPanels = wall.FacadeCurtainPanels(settings, refObjects);
 
             if (curtainPanels == null || !curtainPanels.Any())
                 BH.Engine.Base.Compute.RecordError(String.Format("Processing of panels of Revit curtain wall failed. BHoM curtain wall without location has been returned. Revit ElementId: {0}", wall.Id.IntegerValue));
@@ -106,7 +106,7 @@ namespace BH.Revit.Engine.Core
             if (bHoMCurtainWall != null)
                 return bHoMCurtainWall;
 
-            IEnumerable<oM.Facade.Elements.Opening> curtainPanels = system.ICurtainGrids().SelectMany(x => x.FacadeCurtainPanels(system.Document, settings, refObjects)).ToList();
+            IEnumerable<oM.Facade.Elements.Opening> curtainPanels = system.FacadeCurtainPanels(settings, refObjects);
 
             if (curtainPanels == null || !curtainPanels.Any())
                 BH.Engine.Base.Compute.RecordError(String.Format("Processing of panels of Revit curtain wall failed. BHoM curtain wall without location has been returned. Revit ElementId: {0}", system.Id.IntegerValue));

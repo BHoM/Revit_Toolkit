@@ -58,8 +58,8 @@ namespace BH.Revit.Engine.Core
                 return opening;
 
             List<FrameEdge> edges = new List<FrameEdge>();
-            CurtainGrid hostGrid = familyInstance.HostCurtainGrid();
-            if (hostGrid != null)
+            HostObject host = familyInstance.Host as HostObject;
+            if (host?.ICurtainGrids()?.Count > 0)
             {
                 List<PolyCurve> edgeLoops = familyInstance.EdgeLoops();
 
@@ -68,7 +68,7 @@ namespace BH.Revit.Engine.Core
                     if (edgeLoops.Count != 1)
                         BH.Engine.Base.Compute.RecordWarning($"Opening has more than one closed outline. Revit ElementId: {familyInstance.Id.IntegerValue}");
 
-                    List<FrameEdge> mullions = hostGrid.CurtainWallMullions(familyInstance.Document, settings, refObjects);
+                    List<FrameEdge> mullions = host.CurtainWallMullions(settings, refObjects);
                     foreach (var curve in edgeLoops.SelectMany(x => x.SubParts()))
                     {
                         BH.oM.Geometry.Point mid = curve.IPointAtParameter(0.5);
@@ -85,7 +85,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                ISurface openingSurface = familyInstance.OpeningSurface(familyInstance.Host as HostObject, settings);
+                ISurface openingSurface = familyInstance.OpeningSurface(host, settings);
                 if (openingSurface != null)
                 {
                     List<ICurve> extCrvs = openingSurface.IExternalEdges().SelectMany(x => x.ISubParts()).ToList();
