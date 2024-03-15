@@ -49,7 +49,8 @@ namespace BH.Revit.Engine.Core
             if (element == null)
                 return null;
 
-            List<FrameEdge> edges = refObjects.GetValues<FrameEdge>(element.Id);
+            string refId = $"{element.Id}_Mullions";
+            List<FrameEdge> edges = refObjects.GetValues<FrameEdge>(refId);
             if (edges != null)
                 return edges;
 
@@ -60,7 +61,7 @@ namespace BH.Revit.Engine.Core
                 edges.Add(mullion.FrameEdgeFromRevit(settings, refObjects));
             }
 
-            refObjects.AddOrReplace(element.Id, edges);
+            refObjects.AddOrReplace(refId, edges);
             return edges;
         }
 
