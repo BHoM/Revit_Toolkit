@@ -43,11 +43,19 @@ namespace BH.Revit.Engine.Core
             if (face == null)
                 return null;
 
-            IList<CurveLoop> crvLoop = face.GetEdgesAsCurveLoops();
-            oM.Geometry.ICurve externalBoundary = crvLoop[0].FromRevit();
-            List<oM.Geometry.ICurve> internalBoundary = crvLoop.Skip(1).Select(x => x.FromRevit() as oM.Geometry.ICurve).ToList();                           
+            List<CurveLoop> crvLoops = face.GetEdgesAsCurveLoops().ToList();
+            CurveLoop externalLoop = crvLoops.FirstOrDefault(x => x.IsCounterclockwise(face.FaceNormal));
 
-            return new oM.Geometry.PlanarSurface(externalBoundary, internalBoundary);
+            if (externalLoop == null)
+            {
+                BH.Engine.Base.Compute.RecordError($"Converting a Revit planar face to a BHoM planar surface failed because it has no counter-clockwise boundary loop.");
+                return null;
+            }
+
+            oM.Geometry.ICurve externalBoundary = externalLoop.FromRevit();
+            List<oM.Geometry.ICurve> internalBoundaries = crvLoops.Where(x => x != externalLoop).Select(x => x.FromRevit() as oM.Geometry.ICurve).ToList();
+
+            return new oM.Geometry.PlanarSurface(externalBoundary, internalBoundaries);
         }
 
 
@@ -60,20 +68,20 @@ namespace BH.Revit.Engine.Core
         [Output("surface", "BH.oM.Geometry.ISurface resulting from converting the input Revit Face.")]
         public static oM.Geometry.ISurface IFromRevit(this Face face)
         {
-            return FromRevit(face as dynamic);                        
+            return FromRevit(face as dynamic);
         }
 
 
         /***************************************************/
         /****              Fallback Methods             ****/
         /***************************************************/
-        
+
         private static oM.Geometry.ISurface FromRevit(this Face face)
         {
             BH.Engine.Base.Compute.RecordError(String.Format("Revit face of type {0} could not be converted to BHoM due to a missing convert method.", face.GetType()));
             return null;
         }
-        
+
         /***************************************************/
     }
 }
