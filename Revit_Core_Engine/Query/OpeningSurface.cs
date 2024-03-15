@@ -203,39 +203,8 @@ namespace BH.Revit.Engine.Core
 
         private static List<ISurface> OpeningSurfaces_Curtain(this FamilyInstance familyInstance)
         {
-            List<ISurface> surfaces = new List<ISurface>();
-            HostObject curtainHost = familyInstance.Host as HostObject;
-            if (curtainHost == null)
-                return null;
-
-            List<CurtainGrid> curtainGrids = curtainHost.ICurtainGrids();
-            if (curtainGrids.Count != 0)
-            {
-                foreach (CurtainGrid cg in curtainGrids)
-                {
-                    List<ElementId> ids = cg.GetPanelIds().ToList();
-                    List<CurtainCell> cells = cg.GetCurtainCells().ToList();
-                    if (ids.Count != cells.Count)
-                        return null;
-
-                    for (int i = 0; i < ids.Count; i++)
-                    {
-                        if (ids[i].IntegerValue == familyInstance.Id.IntegerValue)
-                        {
-                            foreach (PolyCurve curve in cells[i].CurveLoops.FromRevit())
-                            {
-                                PlanarSurface surface = BH.Engine.Geometry.Create.PlanarSurface(curve, null);
-                                if (surface == null)
-                                    return null;
-
-                                surfaces.Add(surface);
-                            }
-                        }
-                    }
-                }
-            }
-
-            return surfaces;
+            List<PolyCurve> loops = familyInstance?.EdgeLoops();
+            return loops?.Select(x => BH.Engine.Geometry.Create.PlanarSurface(x, null) as ISurface).Where(x => x != null).ToList();
         }
 
         /***************************************************/
