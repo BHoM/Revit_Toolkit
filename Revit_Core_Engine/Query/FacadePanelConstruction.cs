@@ -22,12 +22,11 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Physical.Constructions;
+using BH.oM.Base;
 using BH.oM.Base.Attributes;
-using System;
+using BH.oM.Physical.Constructions;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -41,7 +40,34 @@ namespace BH.Revit.Engine.Core
         [Input("familyInstance", "Revit FamilyInstance to be queried for its glazing property.")]
         [Input("settings", "Revit adapter settings to be used while performing the query.")]
         [Output("construction", "Glazing property of the input Revit FamilyInstance, in a form of Physical.Constructions.Construction.")]
-        public static oM.Physical.Constructions.Construction GlazingConstruction(this FamilyInstance familyInstance, RevitSettings settings = null)
+        public static BH.oM.Physical.Constructions.Construction FacadePanelConstruction(this FamilyInstance panel, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects)
+        {
+            if ((panel as Panel)?.FindHostPanel() is ElementId hostId && panel.Document.GetElement(hostId) is Wall wall)
+            {
+                HostObjAttributes hostObjAttributes = wall.Document.GetElement(wall.GetTypeId()) as HostObjAttributes;
+                string materialGrade = wall.MaterialGrade(settings);
+                return hostObjAttributes.ConstructionFromRevit(materialGrade, settings, refObjects);
+            }
+            else
+            {
+                int category = panel.Category.Id.IntegerValue;
+                if (category == (int)Autodesk.Revit.DB.BuiltInCategory.OST_Walls)
+                {
+                    HostObjAttributes hostObjAttributes = panel.Document.GetElement(panel.GetTypeId()) as HostObjAttributes;
+                    string materialGrade = panel.MaterialGrade(settings);
+                    return hostObjAttributes.ConstructionFromRevit(materialGrade, settings, refObjects);
+                }
+                else
+                    return panel.OpeningConstruction();
+            }
+        }
+
+
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        private static oM.Physical.Constructions.Construction OpeningConstruction(this FamilyInstance familyInstance, RevitSettings settings = null)
         {
             if (familyInstance == null)
                 return null;
@@ -49,51 +75,24 @@ namespace BH.Revit.Engine.Core
             BH.oM.Physical.Materials.Material bhomMat = null;
             string constName = "";
 
-            //Try to get glazing material name from parameters
-            ElementType elementType = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as ElementType;
-            List<string> materialParams = new List<string>();
-
-            // Try to find the glazing material based on params that may contain it. Expected param to contain glazing material varies
-            // depending on if it is a system panel with a single material, or any other type with potentially many materials applied.
-            if (familyInstance.Symbol.Family.Name.Contains("System"))
+            Material glazingMaterial = familyInstance.FacadeOpeningMaterial();
+            if (glazingMaterial != null)
             {
-                materialParams = new List<string> { "Material" };
+                bhomMat = glazingMaterial.MaterialFromRevit(settings);
+                constName = bhomMat.Name;
             }
             else
             {
-                materialParams = new List<string> { "Glass", "Glazing" };
-            }
-
-            foreach (Parameter p in elementType.Parameters)
-            {
-                    if (materialParams.Any(p.Definition.Name.Contains) && p.StorageType == StorageType.ElementId && familyInstance.Document.GetElement(p.AsElementId()) is Material)
-                    {
-                        Material materialElem = familyInstance.Document.GetElement(p.AsElementId()) as Material;
-                        bhomMat = materialElem.MaterialFromRevit(settings);
-                        constName = bhomMat.Name;
-                        break;
-                    }
-            }
-
-            if (bhomMat == null)
-            {
-                BH.Engine.Base.Compute.RecordWarning(String.Format("The Construction of this Opening could not be found, and a default construction has been used. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
-                constName = "Default Glazing Construction";
-                bhomMat = new oM.Physical.Materials.Material { Name = "Default Glazing Material" };
+                BH.Engine.Base.Compute.RecordWarning($"Construction of Opening could not be found, therefore default construction has been used. Revit ElementId: {familyInstance.Id.IntegerValue}");
+                constName = "Default Opening Construction";
+                bhomMat = new oM.Physical.Materials.Material { Name = "Default Opening Material" };
             }
 
             List<Layer> bhomLayers = new List<Layer> { new Layer { Name = constName, Material = bhomMat, Thickness = 0 } };
-
-            BH.oM.Physical.Constructions.Construction glazingConstruction = new oM.Physical.Constructions.Construction { Name = constName, Layers = bhomLayers };
-
-            return glazingConstruction;
+            return new oM.Physical.Constructions.Construction { Name = constName, Layers = bhomLayers };
         }
 
         /***************************************************/
 
     }
 }
-
-
-
-
