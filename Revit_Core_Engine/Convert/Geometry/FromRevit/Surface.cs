@@ -48,8 +48,8 @@ namespace BH.Revit.Engine.Core
 
             if (externalLoop == null)
             {
-                BH.Engine.Base.Compute.RecordError($"A Revit face has no counter-clockwise boundary loop. Its conversion to a BHoM surface may be inaccurate.");
-                externalLoop = crvLoops[0];
+                BH.Engine.Base.Compute.RecordError($"A Revit face's conversion to a BHoM surface failed because it has no counter-clockwise boundary loop.");
+                return null;
             }
 
             oM.Geometry.ICurve externalBoundary = externalLoop.FromRevit();
