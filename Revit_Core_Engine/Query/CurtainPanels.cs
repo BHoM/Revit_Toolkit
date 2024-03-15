@@ -95,7 +95,8 @@ namespace BH.Revit.Engine.Core
             if (element == null)
                 return null;
 
-            List<oM.Facade.Elements.Opening> openings = refObjects.GetValues<oM.Facade.Elements.Opening>(element.Id);
+            string refId = $"{element.Id}_CurtainPanels";
+            List<oM.Facade.Elements.Opening> openings = refObjects.GetValues<oM.Facade.Elements.Opening>(refId);
             if (openings != null)
                 return openings;
 
@@ -105,7 +106,7 @@ namespace BH.Revit.Engine.Core
                 openings.AddRange(grid.GetPanelIds().Select(x => element.Document.GetElement(x)).OfType<FamilyInstance>().Select(x => x.FacadeOpeningFromRevit(settings, refObjects)));
             }
 
-            refObjects.AddOrReplace(element.Id, openings);
+            refObjects.AddOrReplace(refId, openings);
             return openings;
         }
 
