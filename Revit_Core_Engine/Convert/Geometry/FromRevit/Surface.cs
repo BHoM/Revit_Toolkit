@@ -48,7 +48,7 @@ namespace BH.Revit.Engine.Core
 
             if (externalLoop == null)
             {
-                BH.Engine.Base.Compute.RecordError($"A Revit face's conversion to a BHoM surface failed because it has no counter-clockwise boundary loop.");
+                BH.Engine.Base.Compute.RecordError($"Converting a Revit planar face to a BHoM planar surface failed because it has no counter-clockwise boundary loop.");
                 return null;
             }
 
