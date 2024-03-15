@@ -78,7 +78,7 @@ namespace BH.Revit.Engine.Core
                         result.Add(panel.WindowFromRevit(BH.Engine.Geometry.Create.PlanarSurface(pc), settings, refObjects));
                 }
             }
-            
+
             return result;
         }
 
@@ -103,7 +103,17 @@ namespace BH.Revit.Engine.Core
             openings = new List<oM.Facade.Elements.Opening>();
             foreach (CurtainGrid grid in element.ICurtainGrids())
             {
-                openings.AddRange(grid.GetPanelIds().Select(x => element.Document.GetElement(x)).OfType<FamilyInstance>().Select(x => x.FacadeOpeningFromRevit(settings, refObjects)));
+                List<CurtainCell> cells = grid.GetCurtainCells().ToList();
+                List<ElementId> panelIds = grid.GetPanelIds().ToList();
+                for (int i = 0; i < panelIds.Count; i++)
+                {
+                    if (cells[i].HasValidLocation())
+                    {
+                        oM.Facade.Elements.Opening opening = (element.Document.GetElement(panelIds[i]) as FamilyInstance)?.FacadeOpeningFromRevit(settings, refObjects);
+                        if (opening != null)
+                            openings.Add(opening);
+                    }
+                }
             }
 
             refObjects.AddOrReplace(refId, openings);
@@ -113,6 +123,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

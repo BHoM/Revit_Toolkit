@@ -89,6 +89,24 @@ namespace BH.Revit.Engine.Core
             if (curtainPanels == null || !curtainPanels.Any())
                 BH.Engine.Base.Compute.RecordError($"Processing of panels of a Revit curtain wall failed. BHoM curtain wall without location has been returned. Revit ElementId: {element.Id.IntegerValue}");
 
+            // Unify edges
+            double sqTol = settings.DistanceTolerance * settings.DistanceTolerance;
+            List<(FrameEdge, BH.oM.Geometry.Point)> edges = new List<(FrameEdge, BH.oM.Geometry.Point)>();
+            foreach (oM.Facade.Elements.Opening panel in curtainPanels)
+            {
+                for (int i = 0; i < panel.Edges.Count; i++)
+                {
+                    FrameEdge edge = panel.Edges[i];
+                    BH.oM.Geometry.Point midPoint = edge.Curve.IPointAtParameter(0.5);
+                    
+                    FrameEdge existing = edges.FirstOrDefault(x => x.Item2.SquareDistance(midPoint) <= sqTol).Item1;
+                    if (existing != null)
+                        panel.Edges[i] = existing;
+                    else
+                        edges.Add((edge, midPoint));
+                }
+            }
+
             // Get external edges of whole curtain wall
             List<FrameEdge> allEdges = curtainPanels.SelectMany(x => x.Edges).ToList();
             List<FrameEdge> extEdges = allEdges.Distinct().Where(x => allEdges.Count(y => x == y) == 1).ToList();
