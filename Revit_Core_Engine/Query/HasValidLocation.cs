@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
@@ -21,11 +21,6 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Base.Attributes;
-using BH.oM.Geometry;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -35,46 +30,19 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<PolyCurve> EdgeLoops(this FamilyInstance curtainCell)
+        public static bool HasValidLocation(this CurtainCell curtainCell)
         {
-            HostObject curtainHost = curtainCell.Host as HostObject;
-            if (curtainHost == null)
-                return null;
-
-            foreach (CurtainGrid cg in curtainHost.ICurtainGrids())
+            // This catches when PlanarizedCurveLoops throws an exception due to the cell having no loops, meaning in Revit it exists in the database but is no longer a valid CurtainWall cell
+            try
             {
-                List<ElementId> ids = cg.GetPanelIds().ToList();
-                List<CurtainCell> cells = cg.GetCurtainCells().ToList();
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    if (ids[i].IntegerValue == curtainCell.Id.IntegerValue)
-                    {
-                        if (!cells[i].HasValidLocation())
-                            return null;
-
-                        // Collapse nonlinear edges of a cell to lines - valid because mullions are linear anyways
-                        List<PolyCurve> outlines = new List<PolyCurve>();
-                        foreach (CurveArray array in cells[i].CurveLoops)
-                        {
-                            PolyCurve outline = new PolyCurve();
-                            foreach (Curve curve in array)
-                            {
-                                outline.Curves.Add(new BH.oM.Geometry.Line { Start = curve.GetEndPoint(0).PointFromRevit(), End = curve.GetEndPoint(1).PointFromRevit() });
-                            }
-
-                            outlines.Add(outline);
-                        }
-
-                        return outlines;
-                    }
-                }
+                return curtainCell.PlanarizedCurveLoops?.IsEmpty == false;
             }
-
-            return new List<PolyCurve>();
+            catch
+            {
+                return false;
+            }
         }
 
         /***************************************************/
     }
 }
-
-
