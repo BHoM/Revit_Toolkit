@@ -160,7 +160,7 @@ namespace BH.Revit.Engine.Core
             bool partFailed = false;
             foreach (CurtainGrid cg in curtainGrids)
             {
-                List<BH.oM.Physical.Elements.IOpening> curtainPanels = cg.CurtainPanels(roof.Document, settings, refObjects);
+                List<BH.oM.Physical.Elements.IOpening> curtainPanels = cg.PhysicalCurtainPanels(roof.Document, settings, refObjects);
                 if (curtainPanels == null)
                     partFailed = true;
                 else
