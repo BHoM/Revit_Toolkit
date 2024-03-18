@@ -54,30 +54,40 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             object value = null;
-            switch (parameter.StorageType)
+            try
             {
-                case StorageType.Double:
-                    value = parameter.AsDouble().ToSI(parameter.Definition.GetDataType());
-                    break;
-                case StorageType.ElementId:
-                    ElementId elementID = parameter.AsElementId();
-                    if (elementID != null)
-                        value = elementID.IntegerValue;
-                    break;
-                case StorageType.Integer:
-                    if (parameter.IsBooleanParameter())
-                        value = parameter.AsInteger() == 1;
-                    else if (parameter.Definition.ParameterType() == null)
+                switch (parameter.StorageType)
+                {
+                    case StorageType.Double:
+                        value = parameter.AsDouble().ToSI(parameter.Definition.GetDataType());
+                        break;
+                    case StorageType.ElementId:
+                        ElementId elementID = parameter.AsElementId();
+                        if (elementID != null)
+                            value = elementID.IntegerValue;
+                        break;
+                    case StorageType.Integer:
+                        if (parameter.IsBooleanParameter())
+                            value = parameter.AsInteger() == 1;
+                        else if (parameter.Definition.ParameterType() == null)
+                            value = parameter.AsValueString();
+                        else
+                            value = parameter.AsInteger();
+                        break;
+                    case StorageType.String:
+                        value = parameter.AsString();
+                        break;
+                    case StorageType.None:
                         value = parameter.AsValueString();
-                    else
-                        value = parameter.AsInteger();
-                    break;
-                case StorageType.String:
-                    value = parameter.AsString();
-                    break;
-                case StorageType.None:
-                    value = parameter.AsValueString();
-                    break;
+                        break;
+                }
+            }
+            catch
+            {
+                if (parameter.StorageType == StorageType.Double || parameter.StorageType == StorageType.ElementId || parameter.StorageType == StorageType.Integer)
+                    value = -1;
+                else if (parameter.StorageType == StorageType.String)
+                    value = "";
             }
 
             string unitTypeIdentifier = parameter.UnitTypePropertyName();
