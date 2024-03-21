@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Geometry;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -44,12 +46,27 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             List<CurveLoop> crvLoops = face.GetEdgesAsCurveLoops().ToList();
-            CurveLoop externalLoop = crvLoops.FirstOrDefault(x => x.IsCounterclockwise(face.FaceNormal));
+            CurveLoop externalLoop = crvLoops.FirstOrDefault(x => !x.IsOpen() && x.IsCounterclockwise(face.FaceNormal));
 
+            //The face may violate conventional winding directions, or Revit may see a complex curve loop as 'Open' and refuses to calculate IsCounterclockwise
             if (externalLoop == null)
             {
-                BH.Engine.Base.Compute.RecordError($"Converting a Revit planar face to a BHoM planar surface failed because it has no counter-clockwise boundary loop.");
-                return null;
+                //Checking areas is slower but these problematic faces rarely exist, so performance hit isn't bad.
+                double maxArea = double.MinValue;
+
+                foreach (CurveLoop loop in crvLoops)
+                {
+                    List<BH.oM.Geometry.Point> controlPoints = new List<BH.oM.Geometry.Point>();
+                    foreach (Curve curve in loop)
+                        controlPoints.AddRange(curve.Tessellate().Select(x => x.PointFromRevit()));
+
+                    double area = new Polyline { ControlPoints = controlPoints }.Area();
+                    if (area > maxArea)
+                    {
+                        maxArea = area;
+                        externalLoop = loop;
+                    }
+                }
             }
 
             oM.Geometry.ICurve externalBoundary = externalLoop.FromRevit();
