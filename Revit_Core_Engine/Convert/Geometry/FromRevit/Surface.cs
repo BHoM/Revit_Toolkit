@@ -40,7 +40,7 @@ namespace BH.Revit.Engine.Core
         [Description("Converts a Revit PlanarFace to BH.oM.Geometry.PlanarSurface.")]
         [Input("face", "Revit PlanarFace to be converted.")]
         [Output("surface", "BH.oM.Geometry.PlanarSurface resulting from converting the input Revit PlanarFace.")]
-        public static oM.Geometry.PlanarSurface FromRevit(this PlanarFace face)
+        public static PlanarSurface FromRevit(this PlanarFace face)
         {
             if (face == null)
                 return null;
@@ -72,10 +72,10 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            oM.Geometry.ICurve externalBoundary = externalLoop.FromRevit();
-            List<oM.Geometry.ICurve> internalBoundaries = crvLoops.Where(x => x != externalLoop).Select(x => x.FromRevit() as oM.Geometry.ICurve).ToList();
+            ICurve externalBoundary = externalLoop.FromRevit();
+            List<ICurve> internalBoundaries = crvLoops.Where(x => x != externalLoop).Select(x => x.FromRevit() as ICurve).ToList();
 
-            return new oM.Geometry.PlanarSurface(externalBoundary, internalBoundaries);
+            return new PlanarSurface(externalBoundary, internalBoundaries);
         }
 
 
@@ -86,7 +86,7 @@ namespace BH.Revit.Engine.Core
         [Description("Converts a Revit Face to BH.oM.Geometry.ISurface.")]
         [Input("face", "Revit Face to be converted.")]
         [Output("surface", "BH.oM.Geometry.ISurface resulting from converting the input Revit Face.")]
-        public static oM.Geometry.ISurface IFromRevit(this Face face)
+        public static oM.Geometry.ISurface IFromRevit(this Autodesk.Revit.DB.Face face)
         {
             return FromRevit(face as dynamic);
         }
@@ -96,7 +96,7 @@ namespace BH.Revit.Engine.Core
         /****              Fallback Methods             ****/
         /***************************************************/
 
-        private static oM.Geometry.ISurface FromRevit(this Face face)
+        private static oM.Geometry.ISurface FromRevit(this Autodesk.Revit.DB.Face face)
         {
             BH.Engine.Base.Compute.RecordError(String.Format("Revit face of type {0} could not be converted to BHoM due to a missing convert method.", face.GetType()));
             return null;
