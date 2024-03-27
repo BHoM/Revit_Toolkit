@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -64,48 +64,59 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("7.1", "BH.Revit.Engine.Core.Query.DoesIntersect(Autodesk.Revit.DB.BoundingBoxXYZ, Autodesk.Revit.DB.Element)")]
         [Description("Check if bounding box intersects with element.")]
         [Input("bbox", "Bounding box to check the intersection for.")]
         [Input("element", "Element to check the intersection for.")]
+        [Input("transform", "Transform of the element. In most usual case of a linked element being checked against a bounding box in host document's coordinate system, Revit link instance transform should be used.")]
         [Output("bool", "Result of the intersect checking.")]
-        public static bool DoesIntersect(this BoundingBoxXYZ bbox, Element element)
+        public static bool DoesIntersect(this BoundingBoxXYZ bbox, Element element, Transform transform = null)
         {
             if (bbox == null || element == null)
             {
                 return false;
             }
 
-            if (!bbox.Transform.IsTranslation)
+            if (transform == null)
+                transform = Transform.Identity;
+
+            Outline outline = new Outline(bbox.Min, bbox.Max);
+
+            if (bbox.Transform.IsTranslation)
+            {
+                outline.MinimumPoint += bbox.Transform.Origin;
+                outline.MaximumPoint += bbox.Transform.Origin;
+            }
+            else
             {
                 BH.Engine.Base.Compute.RecordWarning("Intersection of the bounding boxes could not be checked. Only translation and identity transformation is currently supported.");
                 return false;
             }
 
-            Transform transform = element.Document.LinkTransform();
-
-            //host vs host
-            if (transform == null)
+            if (transform == null || transform.IsIdentity)
             {
-                Outline outline = new Outline(bbox.Min, bbox.Max);
-
-                if (bbox.Transform.IsTranslation)
-                {
-                    outline.MinimumPoint += bbox.Transform.Origin;
-                    outline.MaximumPoint += bbox.Transform.Origin;
-                }
-
-                BoundingBoxIntersectsFilter bboxIntersect = new BoundingBoxIntersectsFilter(outline);
-                BoundingBoxIsInsideFilter bboxInside = new BoundingBoxIsInsideFilter(outline);
-                LogicalOrFilter bboxFilter = new LogicalOrFilter(new List<ElementFilter> { bboxIntersect, bboxInside });
-
-                return bboxFilter.PassesFilter(element);
+                return element.DoesIntersectWithOutline(outline);
             }
-            //host vs link
+            else if (transform.IsTranslation)
+            {
+                outline.MinimumPoint = transform.Inverse.OfPoint(outline.MinimumPoint);
+                outline.MaximumPoint = transform.Inverse.OfPoint(outline.MaximumPoint);
+
+                return element.DoesIntersectWithOutline(outline);
+            }
             else
             {
+                BoundingBoxXYZ transformedBBox = BoundsOfTransformed(bbox, transform.Inverse);
+                outline.MinimumPoint = transformedBBox.Min;
+                outline.MaximumPoint = transformedBBox.Max;
+
+                if (!element.DoesIntersectWithOutline(outline))
+                    return false;
+
                 Solid bboxSolid = bbox.ToSolid();
                 Solid transformedBBoxSolid = SolidUtils.CreateTransformed(bboxSolid, transform.Inverse);
                 ElementIntersectsSolidFilter intersectFilter = new ElementIntersectsSolidFilter(transformedBBoxSolid);
+
                 return intersectFilter.PassesFilter(element);
             }
         }
@@ -210,5 +221,19 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+
+        [Description("Check intersection between element and outline.")]
+        private static bool DoesIntersectWithOutline(this Element element, Outline outline)
+        {
+            BoundingBoxIntersectsFilter bboxIntersect = new BoundingBoxIntersectsFilter(outline);
+            BoundingBoxIsInsideFilter bboxInside = new BoundingBoxIsInsideFilter(outline);
+            LogicalOrFilter bboxFilter = new LogicalOrFilter(new List<ElementFilter> { bboxIntersect, bboxInside });
+
+            return bboxFilter.PassesFilter(element);
+        }
+
+        /***************************************************/
+
     }
 }
+

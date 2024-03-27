@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -37,7 +37,7 @@ namespace BH.oM.Adapters.Revit
         /***************************************************/
 
         [Description("Names of any Revit Parameter that should not be considered for the comparison.")]
-        public virtual List<string> ParametersExceptions { get; set; } = new List<string>() { };
+        public virtual List<string> ParametersExceptions { get; set; } = new List<string>() { "Edited by" };
 
         [Description("Names of the Revit Parameters that will be considered for the comparison." +
             "By default, this list is empty, so all parameters are considered (except possibly those included in the other property `ParametersExceptions`)." +
@@ -77,6 +77,7 @@ namespace BH.oM.Adapters.Revit
         /***************************************************/
     }
 }
+
 
 
 

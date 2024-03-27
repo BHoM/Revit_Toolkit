@@ -6,13 +6,13 @@
     <Authors>BHoM</Authors>
     <Copyright>Copyright © https://github.com/BHoM</Copyright>
     <RootNamespace>BH.Revit.Engine.Core</RootNamespace>
-    <FileVersion>7.0.0.0</FileVersion>
+    <FileVersion>7.1.0.0</FileVersion>
   </PropertyGroup>
   
   <PropertyGroup>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <OutputPath>..\Build\</OutputPath>
-    <Configurations>Debug;Release;Debug2020;Release2020;Debug2021;Release2021;Debug2022;Release2022;Debug2023;Release2023</Configurations>
+    <Configurations>Debug;Release;Debug2020;Release2020;Debug2021;Release2021;Debug2022;Release2022;Debug2023;Release2023;Debug2024;Release2024</Configurations>
 	<TargetFramework>net480</TargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
@@ -35,9 +35,12 @@
     <AssemblyName>Revit_Core_Engine_2023</AssemblyName>
 	<DefineConstants>REVIT2023</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug2024' Or '$(Configuration)'=='Release2024'">
+    <AssemblyName>Revit_Core_Engine_2024</AssemblyName>
+	<DefineConstants>REVIT2024</DefineConstants>
+  </PropertyGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="	xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\ProgramData\BHoM\Assemblies&quot; /Y
-					xcopy &quot;$(ProjectDir)Files\Families&quot; &quot;C:\ProgramData\BHoM\Resources\Revit\Families&quot; /Y /I /E" />
+    <Exec Command="	xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProgramData)\BHoM\Assemblies&quot; /Y&#xD;&#xA;					xcopy &quot;$(ProjectDir)Files\Families&quot; &quot;$(ProgramData)\BHoM\Resources\Revit\Families&quot; /Y /I /E" />
    </Target>
   <ItemGroup>
     <ProjectReference Include="..\Revit_Engine\Revit_Engine.csproj" />
@@ -190,6 +193,14 @@
     </Reference>
     <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2023' Or '$(Configuration)'=='Release2023'">
       <HintPath>..\libs\2023\RevitAPIUI.dll</HintPath>
+      <private>False</private>
+    </Reference>
+    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2024' Or '$(Configuration)'=='Release2024'">
+      <HintPath>..\libs\2024\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2024' Or '$(Configuration)'=='Release2024'">
+      <HintPath>..\libs\2024\RevitAPIUI.dll</HintPath>
       <private>False</private>
     </Reference>
     <Reference Include="Spatial_Engine">

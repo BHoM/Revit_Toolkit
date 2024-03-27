@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -21,6 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Architecture;
+using Autodesk.Revit.DB.Mechanical;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
@@ -95,6 +97,9 @@ namespace BH.Revit.Engine.Core
             if (element == null)
                 return null;
 
+            if ((element is Room || element is Space) && double.IsNaN(element.LookupParameterDouble(BuiltInParameter.ROOM_VOLUME)))
+                return new List<GeometryObject>();
+
             if (element.ViewSpecific)
             {
                 bool includeNonVisible = options.IncludeNonVisibleObjects;
@@ -115,4 +120,5 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
+
 

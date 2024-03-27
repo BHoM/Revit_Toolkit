@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -37,7 +37,7 @@ namespace BH.Revit.Engine.Core
         [Description("hostDocument refers to the document that owns the active view. targetDocument can take three values:" +
                      "\n- same as hostDocument - visible elements of the host document are then collected" +
                      "\n- document linked in the host document - elements of that linked document visible in the active view of the host document are then collected" +
-                     "\n- null - all elements of all documents, host and links, are then collected")]
+                     "\n- null - all elements of all documents, host and links, are then collected.")]
         public ActiveViewVisibilityContext(Document hostDocument, Document targetDocument)
         {
             m_HostDocument = hostDocument;
@@ -100,6 +100,8 @@ namespace BH.Revit.Engine.Core
             if (element is RevitLinkInstance linkInstance)
             {
                 Document linkDoc = linkInstance.GetLinkDocument();
+                if (linkDoc == null)
+                    return RenderNodeAction.Skip;
 
                 if (m_TargetDocument == null || m_TargetDocument.PathName == linkDoc.PathName)
                 {
@@ -223,4 +225,5 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
+
 

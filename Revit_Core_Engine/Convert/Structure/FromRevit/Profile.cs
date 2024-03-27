@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -199,7 +199,7 @@ namespace BH.Revit.Engine.Core
             options.DetailLevel = ViewDetailLevel.Fine;
             options.IncludeNonVisibleObjects = false;
             GeometryInstance instance = representativeMullion.get_Geometry(options).FirstOrDefault(x => x is GeometryInstance) as GeometryInstance;
-            MullionType instanceSymbol = instance.Symbol as MullionType;
+            MullionType instanceSymbol = instance.Symbol() as MullionType;
             if (instanceSymbol != null)
                 profile = instanceSymbol.FreeFormProfileFromRevit(settings);
 
@@ -886,6 +886,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
+
 
 
 
