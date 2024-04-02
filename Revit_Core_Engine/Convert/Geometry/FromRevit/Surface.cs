@@ -46,9 +46,6 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             List<CurveLoop> crvLoops = face.GetEdgesAsCurveLoops().ToList();
-            if (crvLoops.Count == 1)
-                return new PlanarSurface(crvLoops[0].FromRevit(), new List<ICurve>());
-
             CurveLoop externalLoop = crvLoops.FirstOrDefault(x => !x.IsOpen() && x.IsCounterclockwise(face.FaceNormal));
 
             //The face may violate conventional winding directions, or Revit may see a complex curve loop as 'Open' and refuses to calculate IsCounterclockwise
@@ -72,10 +69,9 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            ICurve externalBoundary = externalLoop.FromRevit();
             List<ICurve> internalBoundaries = crvLoops.Where(x => x != externalLoop).Select(x => x.FromRevit() as ICurve).ToList();
 
-            return new PlanarSurface(externalBoundary, internalBoundaries);
+            return new PlanarSurface(externalLoop.FromRevit(), internalBoundaries);
         }
 
 

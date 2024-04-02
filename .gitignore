@@ -58,3 +58,4 @@ bld/
 *.user
 .vs/
 .idea/
+**/launchSettings.json
