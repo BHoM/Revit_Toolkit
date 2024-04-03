@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Geometry;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -38,24 +40,38 @@ namespace BH.Revit.Engine.Core
         [Description("Converts a Revit PlanarFace to BH.oM.Geometry.PlanarSurface.")]
         [Input("face", "Revit PlanarFace to be converted.")]
         [Output("surface", "BH.oM.Geometry.PlanarSurface resulting from converting the input Revit PlanarFace.")]
-        public static oM.Geometry.PlanarSurface FromRevit(this PlanarFace face)
+        public static PlanarSurface FromRevit(this PlanarFace face)
         {
             if (face == null)
                 return null;
 
             List<CurveLoop> crvLoops = face.GetEdgesAsCurveLoops().ToList();
-            CurveLoop externalLoop = crvLoops.FirstOrDefault(x => x.IsCounterclockwise(face.FaceNormal));
+            CurveLoop externalLoop = crvLoops.FirstOrDefault(x => !x.IsOpen() && x.IsCounterclockwise(face.FaceNormal));
 
+            //The face may violate conventional winding directions, or Revit may see a complex curve loop as 'Open' and refuses to calculate IsCounterclockwise
             if (externalLoop == null)
             {
-                BH.Engine.Base.Compute.RecordError($"Converting a Revit planar face to a BHoM planar surface failed because it has no counter-clockwise boundary loop.");
-                return null;
+                //Checking areas is slower but these problematic faces rarely exist, so performance hit isn't bad.
+                double maxArea = double.MinValue;
+
+                foreach (CurveLoop loop in crvLoops)
+                {
+                    List<BH.oM.Geometry.Point> controlPoints = new List<BH.oM.Geometry.Point>();
+                    foreach (Curve curve in loop)
+                        controlPoints.AddRange(curve.Tessellate().Select(x => x.PointFromRevit()));
+
+                    double area = new Polyline { ControlPoints = controlPoints }.Area();
+                    if (area > maxArea)
+                    {
+                        maxArea = area;
+                        externalLoop = loop;
+                    }
+                }
             }
 
-            oM.Geometry.ICurve externalBoundary = externalLoop.FromRevit();
-            List<oM.Geometry.ICurve> internalBoundaries = crvLoops.Where(x => x != externalLoop).Select(x => x.FromRevit() as oM.Geometry.ICurve).ToList();
+            List<ICurve> internalBoundaries = crvLoops.Where(x => x != externalLoop).Select(x => x.FromRevit() as ICurve).ToList();
 
-            return new oM.Geometry.PlanarSurface(externalBoundary, internalBoundaries);
+            return new PlanarSurface(externalLoop.FromRevit(), internalBoundaries);
         }
 
 
@@ -66,7 +82,7 @@ namespace BH.Revit.Engine.Core
         [Description("Converts a Revit Face to BH.oM.Geometry.ISurface.")]
         [Input("face", "Revit Face to be converted.")]
         [Output("surface", "BH.oM.Geometry.ISurface resulting from converting the input Revit Face.")]
-        public static oM.Geometry.ISurface IFromRevit(this Face face)
+        public static oM.Geometry.ISurface IFromRevit(this Autodesk.Revit.DB.Face face)
         {
             return FromRevit(face as dynamic);
         }
@@ -76,7 +92,7 @@ namespace BH.Revit.Engine.Core
         /****              Fallback Methods             ****/
         /***************************************************/
 
-        private static oM.Geometry.ISurface FromRevit(this Face face)
+        private static oM.Geometry.ISurface FromRevit(this Autodesk.Revit.DB.Face face)
         {
             BH.Engine.Base.Compute.RecordError(String.Format("Revit face of type {0} could not be converted to BHoM due to a missing convert method.", face.GetType()));
             return null;
