@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit;
 using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
@@ -44,6 +45,28 @@ namespace BH.Revit.Engine.Core
             XYZ toOrigin = plane.Origin - point;
             double multiplier = plane.Normal.DotProduct(toOrigin);
             return point + plane.Normal * multiplier;
+        }
+
+        /***************************************************/
+
+        [Description("Projects a line on a given plane.")]
+        [Input("line", "Line to project on the plane.")]
+        [Input("plane", "Plane to project the line on.")]
+        [Output("projected", "Line projected on the input plane.")]
+        public static Line Project(this Line line, Plane plane)
+        {
+            if (line == null || plane == null)
+                return null;
+
+            XYZ newStart = line.GetEndPoint(0).Project(plane);
+            XYZ newEnd = line.GetEndPoint(1).Project(plane);
+            if (newStart.DistanceTo(newEnd) > Tolerance.ShortCurve / 0.3048)
+                return Line.CreateBound(newStart, newEnd);
+            else
+            {
+                BH.Engine.Base.Compute.RecordWarning("Projection of a line on plane resulted in zero length curve.");
+                return null;
+            }    
         }
 
         /***************************************************/
