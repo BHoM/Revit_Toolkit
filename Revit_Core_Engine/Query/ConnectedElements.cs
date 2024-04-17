@@ -34,7 +34,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns all elements connected to the MEP element. Works for Family Instances and MEPCurve objects.")]
+        [Description("Returns elements connected directly to the MEP element connectors. Works for Family Instances and MEPCurve objects.")]
         [Input("element", "MEP element to get the connected elements for.")]
         [Output("connectedElements", "List of the elements that are connected to the input element.")]
         public static List<Element> ConnectedElements(this Element element)
@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            HashSet<Element> connectedElements = new HashSet<Element>();
+            HashSet<int> connectedElementIds = new HashSet<int>();
             foreach (Connector conn in connSet)
             {
                 ConnectorSet allRefs = conn.AllRefs;
@@ -69,11 +69,13 @@ namespace BH.Revit.Engine.Core
                 {
                     Element el = refConn?.Owner;
                     if (el != null)
-                        connectedElements.Add(el);
+                        connectedElementIds.Add(el.Id.IntegerValue);
                 }
             }
 
-            return connectedElements.ToList();
+            Document doc = element.Document;
+
+            return connectedElementIds.Select(x => doc.GetElement(new ElementId(x))).ToList();
         }
 
         /***************************************************/
