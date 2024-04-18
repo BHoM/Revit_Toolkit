@@ -20,16 +20,23 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using Autodesk.Revit.Creation;
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Adapters.Revit.Views;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
+using BH.oM.MEP.Equipment.Parts;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
+using Color = Autodesk.Revit.DB.Color;
+using OverrideGraphicSettings = Autodesk.Revit.DB.OverrideGraphicSettings;
+using View = Autodesk.Revit.DB.View;
 
 namespace BH.Revit.Engine.Core
 {
@@ -243,6 +250,91 @@ namespace BH.Revit.Engine.Core
             return true;
         }
 
+        /***************************************************/
+
+        [Description("Updates the existing Revit View based on the given BHoM View.")]
+        [Input("element", "Revit View instance to be updated.")]
+        [Input("bHoMObject", "BHoM View, based on which the Revit View will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Input("setLocationOnUpdate", "Revit View instance does not have location property, therefore this parameter is irrelevant.")]
+        [Output("success", "True if the Revit View instance has been updated successfully based on the input BHoM View.")]
+        public static bool Update(this View element, BH.oM.Adapters.Revit.Elements.View bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            /* ADD FILTERS WITH OVERRIDES TO REVIT VIEW */
+
+            // Via Streams...
+            bHoMObject.FiltersWithOverrides
+                // 1. Turn Filters and Overrides into Keys and Values of a Dictionary
+                .ToDictionary(x => x.Filter, x => x.Overrides)
+                // 2. Turn the Dictionary into a List of KeyValue Pairs (to allow use of ForEach()
+                .ToList<KeyValuePair<ViewFilter, BH.oM.Adapters.Revit.Elements.OverrideGraphicSettings>>()
+                // 3. Assign Filters to View and Set their Overrides
+                .ForEach(kvp => { ParameterFilterElement pfe = kvp.Key.ToRevitParameterFilterElement(element.Document, settings);
+                    // 3.1 Add ViewFilter to the View
+                    element.AddFilter(pfe.Id);
+                    // 3.2 Get the Revit FillPatternElement Objects for CutPattern and SurfacePattern
+                    FillPatternElement revitCutPattern = new FilteredElementCollector(element.Document)
+                        .OfClass(typeof(FillPatternElement))
+                        .Cast<FillPatternElement>()
+                        .FirstOrDefault(pattern => pattern.Name.Contains(kvp.Value.CutPattern.ToString()));
+                    FillPatternElement revitSurfacePattern = new FilteredElementCollector(element.Document)
+                        .OfClass(typeof(FillPatternElement))
+                        .Cast<FillPatternElement>()
+                        .FirstOrDefault(pattern => pattern.Name.Contains(kvp.Value.SurfacePattern.ToString()));
+                    // 3.3 Create the OverrideGraphics by Properties
+                    OverrideGraphicSettings overrideGraphicsSettings = new OverrideGraphicSettings();
+                    Color revitLineColor = new Color(kvp.Value.LineColor.R, kvp.Value.LineColor.G, kvp.Value.LineColor.B);
+                    Color revitCutColor = new Color(kvp.Value.CutColor.R, kvp.Value.CutColor.G, kvp.Value.CutColor.B);
+                    Color revitSurfaceColor = new Color(kvp.Value.SurfaceColor.R, kvp.Value.SurfaceColor.G, kvp.Value.SurfaceColor.B);
+                    overrideGraphicsSettings.SetCutLineColor(revitLineColor);
+                    overrideGraphicsSettings.SetProjectionLineColor(revitLineColor);
+                    overrideGraphicsSettings.SetCutBackgroundPatternId(revitCutPattern.Id);
+                    overrideGraphicsSettings.SetCutBackgroundPatternColor(revitCutColor);
+                    overrideGraphicsSettings.SetCutForegroundPatternId(revitCutPattern.Id);
+                    overrideGraphicsSettings.SetCutForegroundPatternColor(revitCutColor);
+                    overrideGraphicsSettings.SetSurfaceBackgroundPatternId(revitSurfacePattern.Id);
+                    overrideGraphicsSettings.SetSurfaceBackgroundPatternColor(revitSurfaceColor);
+                    overrideGraphicsSettings.SetSurfaceForegroundPatternId(revitSurfacePattern.Id);
+                    overrideGraphicsSettings.SetSurfaceForegroundPatternColor(revitSurfaceColor);
+                    // 3.4 Assign Overrides to the ViewFilter
+                    element.SetFilterOverrides(pfe.Id, overrideGraphicsSettings); });
+
+            element.CopyParameters(bHoMObject, settings);
+            return true;
+        }
+
+        /***************************************************/
+
+        [Description("Updates the existing Revit ParameterFilterElement based on the given BHoM ViewFilter.")]
+        [Input("element", "Revit ParameterFilterElement to be updated.")]
+        [Input("bHoMObject", "BHoM ViewFilter, based on which the Revit element will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Input("setLocationOnUpdate", "Revit ParameterFilterElement instance does not have location property, therefore this parameter is irrelevant.")]
+        [Output("success", "True if the Revit ParameterFilterElement instance has been updated successfully based on the input BHoM ViewFilter.")]
+        public static bool Update(this ParameterFilterElement element, BH.oM.Adapters.Revit.Elements.ViewFilter bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            // 1. Collect the ElementIds of the filter's categories - via Streams
+            List<ElementId> builtInCategoryIds= bHoMObject.Categories.Select(catName => { BuiltInCategory builtInCat;
+                                                                                          Enum.TryParse<BuiltInCategory>(catName, out builtInCat);
+                                                                                          return builtInCat; })
+                                                                      .Select(builtInCat=> new ElementId(builtInCat))
+                                                                      .ToList<ElementId>();
+            // 2. Assign Categories' Ids to the ParameterFilterElement
+            element.SetCategories(builtInCategoryIds);
+            // 3. Assign Name to the ParameterFilterElement 
+            element.Name = bHoMObject.Name;
+            // 4. Assign Filter Rules to the ParameterFilterElement - via Streams
+            element.SetElementFilter(new LogicalAndFilter(bHoMObject.Rules
+                .Select(filterRule =>  Convert.filterRuleToRevit(element.Document, filterRule))
+                .Select(revitFilterRule => new ElementParameterFilter(revitFilterRule))
+                .Cast<ElementFilter>()
+                .ToList()));
+
+            // 5. Copy parameters to ParameterElementFilter
+            element.CopyParameters(bHoMObject, settings);
+            return true;
+        }
+
 
         /***************************************************/
         /****             Disallowed Types              ****/
@@ -323,6 +415,9 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+
+      
     }
 }
 

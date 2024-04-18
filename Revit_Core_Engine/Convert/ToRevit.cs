@@ -40,6 +40,19 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Converts BH.oM.Adapters.Revit.Elements.ViewFilter to a Revit ParameterFilterElement.")]
+        [Input("filter", "BH.oM.Adapters.Revit.Elements.ViewFilter to be converted.")]
+        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("parameterFilterElement", "Revit ParameterFilterElement resulting from converting the input BH.oM.Adapters.Revit.Elements.ViewFilter.")]
+        public static Element ToRevit(this BH.oM.Adapters.Revit.Elements.ViewFilter filter, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        {
+            return filter.ToRevitParameterFilterElement(document, settings, refObjects);
+        }
+
+        /***************************************************/
+
         [Description("Converts BH.oM.Spatial.SettingOut.Grid to a Revit Grid or MultiSegmentGrid.")]
         [Input("grid", "BH.oM.Spatial.SettingOut.Grid to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
