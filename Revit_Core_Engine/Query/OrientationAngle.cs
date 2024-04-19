@@ -49,9 +49,13 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
             double rotation = double.NaN;
 
-            if (typeof(Column).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+            if (familyInstance is Mullion)
+                return familyInstance.OrientationAngleMullion(settings);
+
+            BuiltInCategory category = (BuiltInCategory)familyInstance.Category.Id.IntegerValue;
+            if (typeof(Column).BuiltInCategories().Contains(category))
                 rotation = familyInstance.OrientationAngleColumn(settings);
-            else if (typeof(IFramingElement).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+            else if (familyInstance is Mullion || typeof(IFramingElement).BuiltInCategories().Contains(category))
                 rotation = familyInstance.OrientationAngleFraming(settings);
 
             return rotation;
@@ -173,6 +177,26 @@ namespace BH.Revit.Engine.Core
                 if (familyInstance.Mirrored)
                     rotation *= -1;
             }
+
+            return rotation.NormalizeAngleDomain();
+        }
+
+        /***************************************************/
+
+        [Description("Extracts a BHoM-representative mullion orientation angle from a given Revit family instance.")]
+        [Input("familyInstance", "Revit family instance to extract the orientation angle from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("angle", "BHoM-representative mullion orientation angle extracted from the input Revit family instance.")]
+        public static double OrientationAngleMullion(this FamilyInstance familyInstance, RevitSettings settings = null)
+        {
+            double rotation;
+            settings = settings.DefaultIfNull();
+
+            Transform transform = familyInstance.GetTotalTransform();
+            if (1 - Math.Abs(transform.BasisZ.DotProduct(XYZ.BasisZ)) <= settings.AngleTolerance)
+                rotation = XYZ.BasisY.AngleOnPlaneTo(transform.BasisY, transform.BasisZ);
+            else
+                rotation = XYZ.BasisZ.AngleOnPlaneTo(transform.BasisX, transform.BasisZ);
 
             return rotation.NormalizeAngleDomain();
         }
