@@ -45,24 +45,10 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
             
-            ConnectorSet connSet = null;
-            if (element is FamilyInstance)
-            {
-                connSet = (element as FamilyInstance).MEPModel?.ConnectorManager?.Connectors;
-            }
-            else if (element is MEPCurve)
-            {
-                connSet = (element as MEPCurve).ConnectorManager?.Connectors;
-            }
-            
-            if (connSet == null)
-            {
-                BH.Engine.Base.Compute.RecordError("Input element is not supported by the method. Check if element is a valid MEP object.");
-                return null;
-            }
-
+            List<Connector> connectors = element.Connectors();
             List<Element> connectedElements = new List<Element>();
-            foreach (Connector conn in connSet)
+
+            foreach (Connector conn in connectors)
             {
                 ConnectorSet allRefs = conn.AllRefs;
                 foreach (Connector refConn in allRefs)
