@@ -25,6 +25,7 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
+using BH.oM.Revit.Views;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -55,18 +56,20 @@ namespace BH.Revit.Engine.Core
             /* 2. Transfer List of CATEGORY NAMES */
             viewFilter.Categories = revitViewFilter.GetCategories().Select(catId => revitViewFilter.Document.GetElement(catId).Name).ToList<string>();
             /* 3. Transfer List of FILTER RULES */
-            ((ElementParameterFilter)revitViewFilter.GetElementFilter()).GetRules()
-                        .Select(rule => { string parameterName = revitViewFilter.Document.GetElement(rule.GetRuleParameter()).Name.ToString();
-                                          )
+            //viewFilter.Rules
+            List<string> parameterNames= ((ElementParameterFilter)revitViewFilter.GetElementFilter()).GetRules()
+                        .Select(rule => revitViewFilter.Document.GetElement(rule.GetRuleParameter()).Name.ToString())
                         .ToList<string>();
-                
+            List<string> ruleTypeNames = ((ElementParameterFilter)revitViewFilter.GetElementFilter()).GetRules()
+                        .Select(rule => rule.GetType().ToString())
+                        .ToList<string>();
 
 
-        //Set identifiers, parameters & custom data
-        viewFilter.SetIdentifiers(revitViewFilter);
+
+            //Set identifiers, parameters & custom data
+            viewFilter.SetIdentifiers(revitViewFilter);
             viewFilter.CopyParameters(revitViewFilter, settings.MappingSettings);
             viewFilter.SetProperties(revitViewFilter, settings.MappingSettings);
-
             refObjects.AddOrReplace(revitViewFilter.Id, viewFilter);
             return viewFilter;
         }
