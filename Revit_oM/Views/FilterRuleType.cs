@@ -8,16 +8,15 @@ namespace BH.oM.Revit.Views
 {
     public enum FilterRuleType
     {
-        EQUALS,
-        GREATER,
-        GREATER_OR_EQUAL,
-        LESS,
-        LESS_OR_EQUAL,
-        CONTAINS,
-        NOT_CONTAINS,
-        BEGINSWITH,
-        NOT_BEGINSWITH,
-        ENDSWITH,
-        NOT_ENDSWITH
+        VALUE_STRINGRULE,
+        VALUE_NUMERICRULE_DOUBLE,
+        VALUE_NUMERICRULE_ELEMENTID,
+        VALUE_NUMERICRULE_INTEGER,
+        VALUE_GLOBALPARAMASSOCIATION,
+        INVERSE,
+        CATEGORY,
+        PARAMVALUEPRESENCE_NOVALUE,
+        PARAMVALUEPRESENCE_VALUE,
+        SHAREDPARAM_APPLICABLE
     }
 }
