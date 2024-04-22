@@ -68,8 +68,6 @@ namespace BH.Revit.Engine.Core
             foreach (Connector conn in connSet)
                 connList.Add(conn);
 
-            connList = connList.OrderByDescending(x => x.GetMEPConnectorInfo().IsPrimary).ToList();
-
             return connList;
         }
 
