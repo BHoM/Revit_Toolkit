@@ -1,0 +1,48 @@
+{
+  "Namespace": {
+    "ToNew": {
+
+    },
+    "ToOld": {
+
+    }
+  },
+  "Type": {
+    "ToNew": {
+    },
+    "ToOld": {
+    }
+  },
+  "Method": {
+    "ToNew": {
+    },
+    "ToOld": {
+
+    }
+  },
+  "Property": {
+    "ToNew": {
+    },
+    "ToOld": {
+    }
+  },
+  "Dataset": {
+    "ToNew": {
+
+    },
+    "ToOld": {
+
+    },
+    "MessageForDeleted": {
+
+    }
+  },
+  "MessageForDeleted": {
+    "BH.Revit.Engine.Core.Convert.FacadeOpeningFromRevit(Autodesk.Revit.DB.FamilyInstance, Autodesk.Revit.DB.HostObject, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>)": "That method had been removed as it is covered with an overload that does not take host input. Please contact the developers if you still need it in the original form."
+  },
+  "MessageForNoUpgrade": {
+    "BH.Revit.Engine.Core.Query.CurtainWallMullions(Autodesk.Revit.DB.CurtainGrid, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>)": "That method had been refactored resulting in a change of its signature that cannot be versioned (method takes HostObject now). Please contact the developers if you still need it in the original form.",
+    "BH.Revit.Engine.Core.Query.GlazingConstruction(Autodesk.Revit.DB.FamilyInstance, BH.oM.Adapters.Revit.Settings.RevitSettings)": "Please use BH.Revit.Engine.Core.Query.FacadePanelConstruction method instead.",
+    "BH.Revit.Engine.Core.Query.FacadeCurtainPanels(Autodesk.Revit.DB.CurtainGrid, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>)": "That method had been refactored resulting in a change of its signature that cannot be versioned (method takes HostObject now). Please contact the developers if you still need it in the original form."
+  }
+}

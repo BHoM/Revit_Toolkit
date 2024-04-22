@@ -40,6 +40,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("7.2", "BH.Revit.Engine.Core.Query.CurtainPanels(Autodesk.Revit.DB.CurtainGrid, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>)")]
         [Description("Extracts the panels from a Revit curtain grid and returns them in a form of BHoM physical IOpenings.")]
         [Input("curtainGrid", "Revit curtain grid to extract the panels from.")]
         [Input("document", "Revit document, to which the curtain grid belongs.")]
