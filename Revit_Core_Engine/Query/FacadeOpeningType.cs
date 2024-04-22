@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Base.Attributes;
 using BH.oM.Facade.Elements;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,6 +33,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Deducts facade opening type from a FamilyInstance representing a curtain panel.")]
+        [Input("panel", "FamilyInstance representing a curtain panel.")]
+        [Output("openingType", "Facade opening type deducted from the input curtain panel represented by a FamilyInstance.")]
         public static OpeningType FacadeOpeningType(this FamilyInstance panel)
         {
             BuiltInCategory category = (BuiltInCategory)panel.Category.Id.IntegerValue;

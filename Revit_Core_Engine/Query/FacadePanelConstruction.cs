@@ -36,9 +36,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts the glazing property in a form of Physical.Constructions.Construction from the given FamilyInstance.")]
-        [Input("familyInstance", "Revit FamilyInstance to be queried for its glazing property.")]
+        [Description("Extracts the glazing property in a form of Physical.Constructions.Construction from the given curtain panel represented by a FamilyInstance.")]
+        [Input("panel", "Revit FamilyInstance representing the curtain panel to be queried for its glazing property.")]
         [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("construction", "Glazing property of the input Revit FamilyInstance, in a form of Physical.Constructions.Construction.")]
         public static BH.oM.Physical.Constructions.Construction FacadePanelConstruction(this FamilyInstance panel, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects)
         {

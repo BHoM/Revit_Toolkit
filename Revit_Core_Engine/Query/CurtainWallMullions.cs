@@ -38,12 +38,11 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts the mullions from a Revit curtain grid and returns them in a form of BHoM FrameEdges.")]
-        [Input("curtainGrid", "Revit curtain grid to extract the mullions from.")]
-        [Input("document", "Revit document, to which the curtain grid belongs.")]
+        [Description("Extracts the mullions from a Revit curtain element and returns them in a form of BHoM FrameEdges.")]
+        [Input("element", "Revit curtain element to extract the mullions from.")]
         [Input("settings", "Revit adapter settings to be used while performing the query.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("mullions", "Mullions extracted from the input Revit curtain grid and converted to BHoM FrameEdges.")]
+        [Output("mullions", "Mullions extracted from the input Revit curtain element and converted to BHoM FrameEdges.")]
         public static List<FrameEdge> CurtainWallMullions(this HostObject element, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (element == null)

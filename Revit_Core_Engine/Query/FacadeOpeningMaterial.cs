@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,6 +33,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the material that covers largest area of a given facade opening represented by FamilyInstance." +
+                     "\nLargest area is meant to be glazing or spandrel, but may give inconsistent results for elements with very low glazing to frame area ratio.")]
+        [Input("opening", "Facade opening to query for dominating material.")]
+        [Output("material", "Material that covers largest area of the input FamilyInstance representing a facade opening.")]
         public static Material FacadeOpeningMaterial(this FamilyInstance opening)
         {
             List<Solid> solids = opening?.Solids(new Options());

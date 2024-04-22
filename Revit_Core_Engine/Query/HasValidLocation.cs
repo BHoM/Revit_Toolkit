@@ -21,6 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -30,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Checks whether a given curtain cell has valid location (exists in space).")]
+        [Input("curtainCell", "Curtain cell to check.")]
+        [Output("isValid", "True if the input curtain cell has valid location (exists in space), otherwise false.")]
         public static bool HasValidLocation(this CurtainCell curtainCell)
         {
             // This catches when PlanarizedCurveLoops throws an exception due to the cell having no loops, meaning in Revit it exists in the database but is no longer a valid CurtainWall cell

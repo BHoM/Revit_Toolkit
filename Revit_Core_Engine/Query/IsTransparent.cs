@@ -21,8 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using System.Collections.Generic;
-using System.Linq;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,6 +32,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Checks whether glazing of a given curtain panel is transparent (>50%).")]
+        [Input("panel", "Curtain panel to check for transparency.")]
+        [Output("isTransparent", "True if glazing of the input curtain panel is transparent (>50%), otherwise false.")]
         public static bool IsTransparent(this FamilyInstance panel)
         {
             return panel?.FacadeOpeningMaterial()?.IsTransparent() == true;
@@ -39,6 +42,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Checks whether a given material is transparent (>50%).")]
+        [Input("material", "Material to check for transparency.")]
+        [Output("isTransparent", "True if the input material is transparent (>50%), otherwise false.")]
         public static bool IsTransparent(this Material material)
         {
             return material != null && material.Transparency >= 50;

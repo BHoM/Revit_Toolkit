@@ -35,6 +35,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts edge loops of a given curtain cell.")]
+        [Input("curtainCell", "Curtain cell to query for edge loops.")]
+        [Output("edgeLoops", "Edge loops extracted from the input curtain cell.")]
         public static List<PolyCurve> EdgeLoops(this FamilyInstance curtainCell)
         {
             HostObject curtainHost = curtainCell.Host as HostObject;
@@ -76,5 +79,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-

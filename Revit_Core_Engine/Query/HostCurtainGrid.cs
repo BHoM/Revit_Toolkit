@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -32,6 +34,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Finds CurtainGrid that hosts a given facade element.")]
+        [Input("familyInstance", "Curtain element to query for host CurtainGrid.")]
+        [Output("host", "Host CurtainGrid of the input facade element. Null if the element is not hosted by any parent element.")]
         public static CurtainGrid HostCurtainGrid(this FamilyInstance familyInstance)
         {
             List<CurtainGrid> curtainGrids = (familyInstance?.Host as HostObject)?.ICurtainGrids();
