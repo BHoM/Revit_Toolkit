@@ -36,20 +36,25 @@ namespace BH.Revit.Engine.Core
 
         [Description("Returns connectors of the MEP element. MEPCurve connectors are sorted by distance from the startpoint, FamilyInstace connectors by IsPrimary property.")]
         [Input("element", "MEP element to get the connectors from.")]
-        [Output("cconnectors", "MEP Element connectors.")]
+        [Output("connectors", "MEP Element connectors.")]
         public static List<Connector> Connectors(this Element element)
         {
             return SortedConnectors(element as dynamic);
         }
 
         /***************************************************/
+        /****             Private methods               ****/
+        /***************************************************/
 
         private static List<Connector> SortedConnectors(this MEPCurve mepCurve)
         {
             XYZ startPoint = (mepCurve.Location as LocationCurve).Curve.GetEndPoint(0);
             ConnectorSet connSet = mepCurve.ConnectorManager?.Connectors;
-
             List<Connector> connList = new List<Connector>();
+
+            if (connSet == null)
+                return connList;
+
             foreach (Connector conn in connSet)
                 connList.Add(conn);
 
@@ -63,8 +68,11 @@ namespace BH.Revit.Engine.Core
         private static List<Connector> SortedConnectors(this FamilyInstance familyInstance)
         {
             ConnectorSet connSet = familyInstance.MEPModel?.ConnectorManager?.Connectors;
-
             List<Connector> connList = new List<Connector>();
+
+            if (connSet == null)
+                return connList;
+
             foreach (Connector conn in connSet)
                 connList.Add(conn);
 
@@ -75,7 +83,7 @@ namespace BH.Revit.Engine.Core
 
         private static List<Connector> SortedConnectors(this Element element)
         {
-            BH.Engine.Base.Compute.RecordError("Input element is not supported by the method. Check if element is a valid MEP object.");
+            BH.Engine.Base.Compute.RecordError("Input element is not supported by the connector query method. Check if element is a valid MEP object.");
             return null;
         }
 

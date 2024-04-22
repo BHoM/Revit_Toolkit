@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
             }
             
             List<Connector> connectors = element.Connectors();
-            List<Element> connectedElements = new List<Element>();
+            HashSet<ElementId> connectedElements = new HashSet<ElementId>();
 
             foreach (Connector conn in connectors)
             {
@@ -54,15 +54,14 @@ namespace BH.Revit.Engine.Core
                 foreach (Connector refConn in allRefs)
                 {
                     Element el = refConn?.Owner;
-                    if (el != null)
-                        connectedElements.Add(el);
+                    if (el != null && el.Id != element.Id)
+                        connectedElements.Add(el.Id);
                 }
             }
 
-            //remove duplicates and host element
-            connectedElements = connectedElements.Where(x => x.Id.IntegerValue != element.Id.IntegerValue).GroupBy(x => x.Id.IntegerValue).Select(x => x.First()).ToList();
+            Document doc = element.Document;
 
-            return connectedElements;
+            return connectedElements.Select(x => doc.GetElement(x)).ToList();
         }
 
         /***************************************************/
