@@ -21,14 +21,11 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using BH.oM.Facade.Elements;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using BH.oM.Physical.Elements;
 
 namespace BH.Revit.Engine.Core
 {
@@ -38,35 +35,47 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts the mullions from a Revit curtain element and returns them in a form of BHoM FrameEdges.")]
-        [Input("element", "Revit curtain element to extract the mullions from.")]
-        [Input("settings", "Revit adapter settings to be used while performing the query.")]
-        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("mullions", "Mullions extracted from the input Revit curtain element and converted to BHoM FrameEdges.")]
-        public static List<FrameEdge> CurtainWallMullions(this HostObject element, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Description("Extracts edge loops of a given curtain cell.")]
+        [Input("curtainCell", "Curtain cell to query for edge loops.")]
+        [Output("edgeLoops", "Edge loops extracted from the input curtain cell.")]
+        public static List<PolyCurve> EdgeLoops(this FamilyInstance curtainCell)
         {
-            if (element == null)
+            HostObject curtainHost = curtainCell.Host as HostObject;
+            if (curtainHost == null)
                 return null;
 
-            string refId = $"{element.Id}_Mullions";
-            List<FrameEdge> edges = refObjects.GetValues<FrameEdge>(refId);
-            if (edges != null)
-                return edges;
-
-            edges = new List<FrameEdge>();
-            List<Element> mullions = element.ICurtainGrids().SelectMany(x => x.GetMullionIds()).Select(x => element.Document.GetElement(x)).ToList();
-            foreach (Mullion mullion in mullions.Where(x => x.get_BoundingBox(null) != null))
+            foreach (CurtainGrid cg in curtainHost.ICurtainGrids())
             {
-                edges.Add(mullion.FrameEdgeFromRevit(settings, refObjects));
+                List<ElementId> ids = cg.GetPanelIds().ToList();
+                List<CurtainCell> cells = cg.GetCurtainCells().ToList();
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    if (ids[i].IntegerValue == curtainCell.Id.IntegerValue)
+                    {
+                        if (!cells[i].HasValidLocation())
+                            return null;
+
+                        // Collapse nonlinear edges of a cell to lines - valid because mullions are linear anyways
+                        List<PolyCurve> outlines = new List<PolyCurve>();
+                        foreach (CurveArray array in cells[i].CurveLoops)
+                        {
+                            PolyCurve outline = new PolyCurve();
+                            foreach (Curve curve in array)
+                            {
+                                outline.Curves.Add(new BH.oM.Geometry.Line { Start = curve.GetEndPoint(0).PointFromRevit(), End = curve.GetEndPoint(1).PointFromRevit() });
+                            }
+
+                            outlines.Add(outline);
+                        }
+
+                        return outlines;
+                    }
+                }
             }
 
-            refObjects.AddOrReplace(refId, edges);
-            return edges;
+            return new List<PolyCurve>();
         }
 
         /***************************************************/
     }
 }
-
-
-

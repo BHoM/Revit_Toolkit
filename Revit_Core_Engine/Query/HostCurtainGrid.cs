@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
@@ -21,14 +21,10 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using BH.oM.Facade.Elements;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using BH.oM.Physical.Elements;
 
 namespace BH.Revit.Engine.Core
 {
@@ -38,35 +34,15 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts the mullions from a Revit curtain element and returns them in a form of BHoM FrameEdges.")]
-        [Input("element", "Revit curtain element to extract the mullions from.")]
-        [Input("settings", "Revit adapter settings to be used while performing the query.")]
-        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("mullions", "Mullions extracted from the input Revit curtain element and converted to BHoM FrameEdges.")]
-        public static List<FrameEdge> CurtainWallMullions(this HostObject element, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Description("Finds CurtainGrid that hosts a given facade element.")]
+        [Input("familyInstance", "Curtain element to query for host CurtainGrid.")]
+        [Output("host", "Host CurtainGrid of the input facade element. Null if the element is not hosted by any parent element.")]
+        public static CurtainGrid HostCurtainGrid(this FamilyInstance familyInstance)
         {
-            if (element == null)
-                return null;
-
-            string refId = $"{element.Id}_Mullions";
-            List<FrameEdge> edges = refObjects.GetValues<FrameEdge>(refId);
-            if (edges != null)
-                return edges;
-
-            edges = new List<FrameEdge>();
-            List<Element> mullions = element.ICurtainGrids().SelectMany(x => x.GetMullionIds()).Select(x => element.Document.GetElement(x)).ToList();
-            foreach (Mullion mullion in mullions.Where(x => x.get_BoundingBox(null) != null))
-            {
-                edges.Add(mullion.FrameEdgeFromRevit(settings, refObjects));
-            }
-
-            refObjects.AddOrReplace(refId, edges);
-            return edges;
+            List<CurtainGrid> curtainGrids = (familyInstance?.Host as HostObject)?.ICurtainGrids();
+            return curtainGrids?.FirstOrDefault(x => x.GetPanelIds().Any(y => y == familyInstance.Id));
         }
 
         /***************************************************/
     }
 }
-
-
-

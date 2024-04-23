@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using BH.oM.Facade.Elements;
 
 namespace BH.Revit.Engine.Core
 {
@@ -39,13 +40,14 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts the panels from a Revit curtain grid and returns them in a form of BHoM IOpenings.")]
+        [PreviousVersion("7.2", "BH.Revit.Engine.Core.Query.CurtainPanels(Autodesk.Revit.DB.CurtainGrid, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>)")]
+        [Description("Extracts the panels from a Revit curtain grid and returns them in a form of BHoM physical IOpenings.")]
         [Input("curtainGrid", "Revit curtain grid to extract the panels from.")]
         [Input("document", "Revit document, to which the curtain grid belongs.")]
         [Input("settings", "Revit adapter settings to be used while performing the query.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("panels", "Panels extracted from the input Revit curtain grid and converted to BHoM IOpenings.")]
-        public static List<IOpening> CurtainPanels(this CurtainGrid curtainGrid, Document document, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("panels", "Panels extracted from the input Revit curtain grid and converted to BHoM physical IOpenings.")]
+        public static List<IOpening> PhysicalCurtainPanels(this CurtainGrid curtainGrid, Document document, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (curtainGrid == null)
                 return null;
@@ -64,7 +66,7 @@ namespace BH.Revit.Engine.Core
 
                 if (panel.get_BoundingBox(null) == null)
                 {
-                    ElementId hostPanelId = (panel as Panel)?.FindHostPanel();
+                    ElementId hostPanelId = (panel as Autodesk.Revit.DB.Panel)?.FindHostPanel();
                     if (hostPanelId == null || document.GetElement(hostPanelId)?.get_BoundingBox(null) == null)
                         continue;
                 }
@@ -77,13 +79,47 @@ namespace BH.Revit.Engine.Core
                         result.Add(panel.WindowFromRevit(BH.Engine.Geometry.Create.PlanarSurface(pc), settings, refObjects));
                 }
             }
-            
+
             return result;
+        }
+
+        /***************************************************/
+
+        [Description("Extracts the panels from a Revit curtain element and returns them in a form of BHoM facade Openings.")]
+        [Input("element", "Revit curtain element to extract the panels from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("panels", "Panels extracted from the input Revit curtain element and converted to BHoM facade Openings.")]
+        public static List<oM.Facade.Elements.Opening> FacadeCurtainPanels(this HostObject element, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            if (element == null)
+                return null;
+
+            string refId = $"{element.Id}_CurtainPanels";
+            List<oM.Facade.Elements.Opening> openings = refObjects.GetValues<oM.Facade.Elements.Opening>(refId);
+            if (openings != null)
+                return openings;
+
+            openings = new List<oM.Facade.Elements.Opening>();
+            foreach (CurtainGrid grid in element.ICurtainGrids())
+            {
+                List<CurtainCell> cells = grid.GetCurtainCells().ToList();
+                List<ElementId> panelIds = grid.GetPanelIds().ToList();
+                for (int i = 0; i < panelIds.Count; i++)
+                {
+                    if (cells[i].HasValidLocation())
+                    {
+                        oM.Facade.Elements.Opening opening = (element.Document.GetElement(panelIds[i]) as FamilyInstance)?.FacadeOpeningFromRevit(settings, refObjects);
+                        if (opening != null)
+                            openings.Add(opening);
+                    }
+                }
+            }
+
+            refObjects.AddOrReplace(refId, openings);
+            return openings;
         }
 
         /***************************************************/
     }
 }
-
-
-

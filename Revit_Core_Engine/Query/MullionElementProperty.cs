@@ -62,7 +62,10 @@ namespace BH.Revit.Engine.Core
             if (profile == null)
                 BH.Engine.Base.Compute.RecordWarning($"Mullion profile could not be extracted. ElementId: {mullion.Id.IntegerValue}");
 
-            List<ConstantFramingProperty> sectionProperties = new List<ConstantFramingProperty> { BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, 0, mullion.Symbol.Name) };
+            // Get rotation
+            double rotation = mullion.OrientationAngle(settings);
+
+            List<ConstantFramingProperty> sectionProperties = new List<ConstantFramingProperty> { BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, rotation, mullion.Symbol.Name) };
             frameEdgeProperty = new FrameEdgeProperty { Name = mullion.Symbol.Name, SectionProperties = sectionProperties };
 
             //Set identifiers, parameters & custom data

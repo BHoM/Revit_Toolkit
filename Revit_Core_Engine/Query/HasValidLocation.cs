@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
@@ -21,14 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using BH.oM.Facade.Elements;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using BH.oM.Physical.Elements;
 
 namespace BH.Revit.Engine.Core
 {
@@ -38,35 +32,22 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts the mullions from a Revit curtain element and returns them in a form of BHoM FrameEdges.")]
-        [Input("element", "Revit curtain element to extract the mullions from.")]
-        [Input("settings", "Revit adapter settings to be used while performing the query.")]
-        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("mullions", "Mullions extracted from the input Revit curtain element and converted to BHoM FrameEdges.")]
-        public static List<FrameEdge> CurtainWallMullions(this HostObject element, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Description("Checks whether a given curtain cell has valid location (exists in space).")]
+        [Input("curtainCell", "Curtain cell to check.")]
+        [Output("isValid", "True if the input curtain cell has valid location (exists in space), otherwise false.")]
+        public static bool HasValidLocation(this CurtainCell curtainCell)
         {
-            if (element == null)
-                return null;
-
-            string refId = $"{element.Id}_Mullions";
-            List<FrameEdge> edges = refObjects.GetValues<FrameEdge>(refId);
-            if (edges != null)
-                return edges;
-
-            edges = new List<FrameEdge>();
-            List<Element> mullions = element.ICurtainGrids().SelectMany(x => x.GetMullionIds()).Select(x => element.Document.GetElement(x)).ToList();
-            foreach (Mullion mullion in mullions.Where(x => x.get_BoundingBox(null) != null))
+            // This catches when PlanarizedCurveLoops throws an exception due to the cell having no loops, meaning in Revit it exists in the database but is no longer a valid CurtainWall cell
+            try
             {
-                edges.Add(mullion.FrameEdgeFromRevit(settings, refObjects));
+                return curtainCell.PlanarizedCurveLoops?.IsEmpty == false;
             }
-
-            refObjects.AddOrReplace(refId, edges);
-            return edges;
+            catch
+            {
+                return false;
+            }
         }
 
         /***************************************************/
     }
 }
-
-
-

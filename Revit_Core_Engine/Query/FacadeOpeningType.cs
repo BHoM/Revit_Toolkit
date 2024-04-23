@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
@@ -21,14 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using BH.oM.Facade.Elements;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
+using BH.oM.Facade.Elements;
 using System.ComponentModel;
-using System.Linq;
-using BH.oM.Physical.Elements;
 
 namespace BH.Revit.Engine.Core
 {
@@ -38,35 +33,27 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts the mullions from a Revit curtain element and returns them in a form of BHoM FrameEdges.")]
-        [Input("element", "Revit curtain element to extract the mullions from.")]
-        [Input("settings", "Revit adapter settings to be used while performing the query.")]
-        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("mullions", "Mullions extracted from the input Revit curtain element and converted to BHoM FrameEdges.")]
-        public static List<FrameEdge> CurtainWallMullions(this HostObject element, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Description("Deducts facade opening type from a FamilyInstance representing a curtain panel.")]
+        [Input("panel", "FamilyInstance representing a curtain panel.")]
+        [Output("openingType", "Facade opening type deducted from the input curtain panel represented by a FamilyInstance.")]
+        public static OpeningType FacadeOpeningType(this FamilyInstance panel)
         {
-            if (element == null)
-                return null;
-
-            string refId = $"{element.Id}_Mullions";
-            List<FrameEdge> edges = refObjects.GetValues<FrameEdge>(refId);
-            if (edges != null)
-                return edges;
-
-            edges = new List<FrameEdge>();
-            List<Element> mullions = element.ICurtainGrids().SelectMany(x => x.GetMullionIds()).Select(x => element.Document.GetElement(x)).ToList();
-            foreach (Mullion mullion in mullions.Where(x => x.get_BoundingBox(null) != null))
+            BuiltInCategory category = (BuiltInCategory)panel.Category.Id.IntegerValue;
+            if (category == Autodesk.Revit.DB.BuiltInCategory.OST_Windows)
+                return BH.oM.Facade.Elements.OpeningType.Window;
+            else if (category == Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanels)
             {
-                edges.Add(mullion.FrameEdgeFromRevit(settings, refObjects));
+                if (panel.IsTransparent())
+                    return BH.oM.Facade.Elements.OpeningType.Window;
+                else
+                    return BH.oM.Facade.Elements.OpeningType.CurtainWallSpandrel;
             }
-
-            refObjects.AddOrReplace(refId, edges);
-            return edges;
+            else if (category == Autodesk.Revit.DB.BuiltInCategory.OST_Doors)
+                return BH.oM.Facade.Elements.OpeningType.Door;
+            else
+                return BH.oM.Facade.Elements.OpeningType.Undefined;
         }
 
         /***************************************************/
     }
 }
-
-
-

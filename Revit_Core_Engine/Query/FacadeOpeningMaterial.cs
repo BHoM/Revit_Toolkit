@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
@@ -21,14 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using BH.oM.Facade.Elements;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using BH.oM.Physical.Elements;
 
 namespace BH.Revit.Engine.Core
 {
@@ -38,35 +33,29 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts the mullions from a Revit curtain element and returns them in a form of BHoM FrameEdges.")]
-        [Input("element", "Revit curtain element to extract the mullions from.")]
-        [Input("settings", "Revit adapter settings to be used while performing the query.")]
-        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("mullions", "Mullions extracted from the input Revit curtain element and converted to BHoM FrameEdges.")]
-        public static List<FrameEdge> CurtainWallMullions(this HostObject element, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Description("Extracts the material that covers largest area of a given facade opening represented by FamilyInstance." +
+                     "\nLargest area is meant to be glazing or spandrel, but may give inconsistent results for elements with very low glazing to frame area ratio.")]
+        [Input("opening", "Facade opening to query for dominating material.")]
+        [Output("material", "Material that covers largest area of the input FamilyInstance representing a facade opening.")]
+        public static Material FacadeOpeningMaterial(this FamilyInstance opening)
         {
-            if (element == null)
+            List<Solid> solids = opening?.Solids(new Options());
+            if (solids == null)
                 return null;
 
-            string refId = $"{element.Id}_Mullions";
-            List<FrameEdge> edges = refObjects.GetValues<FrameEdge>(refId);
-            if (edges != null)
-                return edges;
-
-            edges = new List<FrameEdge>();
-            List<Element> mullions = element.ICurtainGrids().SelectMany(x => x.GetMullionIds()).Select(x => element.Document.GetElement(x)).ToList();
-            foreach (Mullion mullion in mullions.Where(x => x.get_BoundingBox(null) != null))
+            Face maxAreaFace = null;
+            foreach (Solid solid in solids)
             {
-                edges.Add(mullion.FrameEdgeFromRevit(settings, refObjects));
+                foreach (Face face in solid.Faces)
+                {
+                    if (maxAreaFace == null || maxAreaFace.Area < face.Area)
+                        maxAreaFace = face;
+                }
             }
 
-            refObjects.AddOrReplace(refId, edges);
-            return edges;
+            return maxAreaFace != null ? opening.Document.GetElement(maxAreaFace.MaterialElementId) as Material : null;
         }
 
         /***************************************************/
     }
 }
-
-
-
