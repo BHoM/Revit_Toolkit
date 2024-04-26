@@ -33,14 +33,18 @@ namespace BH.oM.Adapters.Revit.Enums
         Equal,
         [Description("Check if input string and reference string are different.")]
         NotEqual,
-        [Description("Check if the input input string contains reference string.")]
+        [Description("Check if the input string contains the reference string.")]
         Contains,
-        [Description("Check if the input input string does not contain reference string.")]
+        [Description("Check if the input string does not contain the reference string.")]
         ContainsNot,
-        [Description("Check if the input input string starts with reference string.")]
+        [Description("Check if the input string starts with the reference string.")]
         StartsWith,
-        [Description("Check if the input input string ends with reference string.")]
+        [Description("Check if the input string does not start with the reference string ")]
+        NotStartsWith,
+        [Description("Check if the input string ends with the reference string.")]
         EndsWith,
+        [Description("Check if the input string does not end with the reference string")]
+        NotEndsWith
     }
 
     /***************************************************/
