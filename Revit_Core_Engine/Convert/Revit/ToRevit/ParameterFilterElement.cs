@@ -278,6 +278,22 @@ namespace BH.Revit.Engine.Core
                         revitFilterRule = ParameterFilterRuleFactory
                             .CreateNotEndsWithRule(parameterId, (string)filterStringValueRule.Value, false);
                         break;
+                    case TextComparisonType.Greater:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateGreaterRule(parameterId, (string)filterStringValueRule.Value, false);
+                        break;
+                    case TextComparisonType.GreaterOrEqual:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateGreaterOrEqualRule(parameterId, (string)filterStringValueRule.Value, false);
+                        break;
+                    case TextComparisonType.Less:
+                        revitFilterRule=ParameterFilterRuleFactory
+                            .CreateLessRule(parameterId,(string)filterStringValueRule.Value, false);
+                        break;
+                    case TextComparisonType.LessOrEqual:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateLessOrEqualRule(parameterId, (string)filterStringValueRule.Value, false);
+                        break;
                     default:
                         break;
                 }
