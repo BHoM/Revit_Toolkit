@@ -44,7 +44,15 @@ namespace BH.oM.Adapters.Revit.Enums
         [Description("Check if the input string ends with the reference string.")]
         EndsWith,
         [Description("Check if the input string does not end with the reference string")]
-        NotEndsWith
+        NotEndsWith,
+        [Description("Check if the input string is greater than the reference string.")]
+        Greater,
+        [Description("Check if the input string is greater or equal to the reference string")]
+        GreaterOrEqual,
+        [Description("Check if the input string is smaller to the reference string")]
+        Less,
+        [Description("Check if the input string is smaller or equal to the reference string")]
+        LessOrEqual
     }
 
     /***************************************************/
