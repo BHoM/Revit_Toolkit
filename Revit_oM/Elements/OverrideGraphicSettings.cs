@@ -1,5 +1,5 @@
 ﻿using BH.oM.Base;
-using BH.oM.Revit.Views;
+using BH.oM.Revit.Enums;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

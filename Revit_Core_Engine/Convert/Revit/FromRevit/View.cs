@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Xml.Linq;
-using FilterRule = BH.oM.Revit.Views.FilterRule;
+using FilterRule = BH.oM.Revit.Elements.FilterRule;
 using OverrideGraphicSettings = BH.oM.Adapters.Revit.Elements.OverrideGraphicSettings;
 using View = Autodesk.Revit.DB.View;
 

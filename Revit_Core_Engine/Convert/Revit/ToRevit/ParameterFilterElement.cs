@@ -37,6 +37,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Document = Autodesk.Revit.DB.Document;
 using FilterRule = BH.oM.Revit.Elements.FilterRule;
+using FilterStringRule = BH.oM.Revit.Elements.FilterStringRule;
 
 namespace BH.Revit.Engine.Core
 {
@@ -98,23 +99,94 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static Autodesk.Revit.DB.FilterValueRule filterValueRuleToRevit(Document document,BH.oM.Revit.Elements.FilterValueRule filterValueRule) {
-
+        public static Autodesk.Revit.DB.FilterRule filterMaterialRuleToRevit(Document document,BH.oM.Revit.Elements.FilterMaterialRule filterMaterialRule)
+        {
+            /* 1. INITIALIZE FILTERRULE AND BUILTINPARAMETER INSTANCES */
             Autodesk.Revit.DB.FilterRule revitFilterRule = null;
+            BuiltInParameter parameter = BuiltInParameter.MATERIAL_NAME;
 
+
+            //ParameterValueProvider provider = new ParameterValueProvider(new ElementId(parameter));
+            revitFilterRule = ParameterFilterRuleFactory.CreateEqualsRule(new ElementId(parameter), filterMaterialRule.MaterialName, true);
+
+
+            return revitFilterRule;
+        }
+
+
+        public static Autodesk.Revit.DB.FilterRule filterLevelRuleToRevit(Document document, BH.oM.Revit.Elements.FilterLevelRule filterLevelRule)
+        {
+            /* 1. INITIALIZE FILTERRULE AND BUILTINPARAMETER INSTANCES */
+            Autodesk.Revit.DB.FilterRule revitFilterRule = null;
+            BuiltInParameter elevationParam = BuiltInParameter.LEVEL_ELEV;
+            ElementId elevParamId=new ElementId(elevationParam);
+            Double levelElevation;
+
+            try {
+                levelElevation=new FilteredElementCollector(document)
+                                     .OfCategory(BuiltInCategory.OST_Levels)
+                                     .Where(level => level.Name.ToUpper() == filterLevelRule.LevelName.ToUpper())
+                                     .Cast<Level>()
+                                     .Select(level => level.Elevation)
+                                     .First();
+            } catch (Exception ex){
+                return null;}
+
+            switch (filterLevelRule.Evaluator)
+            {
+                case LevelComparisonType.Equal:
+                    revitFilterRule = ParameterFilterRuleFactory
+                        .CreateEqualsRule(elevParamId,(double)levelElevation, 0.001);
+                    break;
+                case LevelComparisonType.NotEqual:
+                    revitFilterRule = ParameterFilterRuleFactory
+                        .CreateNotEqualsRule(elevParamId, (double)levelElevation, 0.001);
+                    break;
+                case LevelComparisonType.Above:
+                    revitFilterRule = ParameterFilterRuleFactory
+                        .CreateGreaterRule(elevParamId, (double)levelElevation, 0.001);
+                    break;
+                case LevelComparisonType.AtOrAbove:
+                    revitFilterRule = ParameterFilterRuleFactory
+                        .CreateGreaterOrEqualRule(elevParamId, (double)levelElevation, 0.001);
+                    break;
+                case LevelComparisonType.Below:
+                    revitFilterRule = ParameterFilterRuleFactory
+                        .CreateLessRule(elevParamId, (double)levelElevation, 0.001);
+                    break;
+                case LevelComparisonType.AtOrBelow:
+                    revitFilterRule = ParameterFilterRuleFactory
+                        .CreateLessOrEqualRule(elevParamId, (double)levelElevation, 0.001);
+                    break; 
+                default:
+                    break;
+            }
+
+            return revitFilterRule;
+
+
+        }
+
+
+        public static Autodesk.Revit.DB.FilterRule filterValueRuleToRevit(Document document,BH.oM.Revit.Elements.FilterValueRule filterValueRule) {
+
+            /* 1. INITIALIZE FILTERRULE AND LOGICALFILTER CLASS INSTANCES */
+            Autodesk.Revit.DB.FilterRule revitFilterRule = null;
             ElementClassFilter paramFilter = new ElementClassFilter(typeof(Parameter));
             ElementClassFilter builtInParamFilter = new ElementClassFilter(typeof(BuiltInParameter));
             LogicalOrFilter logicalOrFilter = new LogicalOrFilter(paramFilter, builtInParamFilter);
 
-
+            /* 2. GET THE ELEMENT ID OF THE PARAMETER OBJECT */
             ElementId parameterId = new FilteredElementCollector(document)
                             .WherePasses(logicalOrFilter)
                             .Where(par => par.Name.Equals(filterValueRule.ParameterName))
                             .First()
                             .Id;
-            
 
-            try
+            /* 3. CREATE FILTER-RULES */
+
+            // Based on FilterStringRule...
+            if (filterValueRule.GetType().IsSubclassOf(typeof(FilterStringRule)))
             {
                 BH.oM.Revit.Elements.FilterStringRule filterStringValueRule = (BH.oM.Revit.Elements.FilterStringRule)filterValueRule;
 
@@ -128,7 +200,6 @@ namespace BH.Revit.Engine.Core
                         revitFilterRule = ParameterFilterRuleFactory
                             .CreateNotEqualsRule(parameterId, (string)filterStringValueRule.Value, false);
                         break;
-
                     case TextComparisonType.Contains:
                         revitFilterRule = ParameterFilterRuleFactory
                             .CreateContainsRule(parameterId, (string)filterStringValueRule.Value, false);
@@ -141,49 +212,58 @@ namespace BH.Revit.Engine.Core
                         revitFilterRule = ParameterFilterRuleFactory
                             .CreateBeginsWithRule(parameterId, (string)filterStringValueRule.Value, false);
                         break;
+                    case TextComparisonType.NotStartsWith:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateNotBeginsWithRule(parameterId, (string)filterStringValueRule.Value, false);
+                        break;
                     case TextComparisonType.EndsWith:
                         revitFilterRule = ParameterFilterRuleFactory
                             .CreateEndsWithRule(parameterId, (string)filterStringValueRule.Value, false);
                         break;
-                    case FilterRuleType.GREATER:
+                    case TextComparisonType.NotEndsWith:
                         revitFilterRule = ParameterFilterRuleFactory
-                            .CreateGreaterRule(parameterId, (ElementId)filterRule.Value);
-                        break;
-                    case FilterRuleType.GREATER_OR_EQUAL:
-                        revitFilterRule = ParameterFilterRuleFactory
-                            .CreateGreaterOrEqualRule(parameterId, (ElementId)filterRule.Value);
-                        break;
-                    case FilterRuleType.LESS:
-                        revitFilterRule = ParameterFilterRuleFactory
-                            .CreateLessRule(parameterId, (ElementId)filterRule.Value);
-                        break;
-                    case FilterRuleType.LESS_OR_EQUAL:
-                        revitFilterRule = ParameterFilterRuleFactory
-                            .CreateLessOrEqualRule(parameterId, (ElementId)filterRule.Value);
-                        break;
-                    case FilterRuleType.NOT_BEGINSWITH:
-                        revitFilterRule = ParameterFilterRuleFactory
-                            .CreateNotBeginsWithRule(parameterId, (string)filterRule.Value, false);
-                        break;
-                    case FilterRuleType.NOT_CONTAINS:
-                        revitFilterRule = ParameterFilterRuleFactory
-                            .CreateNotContainsRule(parameterId, (string)filterRule.Value, false);
-                        break;
-                    case FilterRuleType.NOT_ENDSWITH:
-                        revitFilterRule = ParameterFilterRuleFactory
-                            .CreateNotEndsWithRule(parameterId, (string)filterRule.Value, false);
+                            .CreateNotEndsWithRule(parameterId, (string)filterStringValueRule.Value, false);
                         break;
                     default:
                         break;
                 }
 
-            } catch (Exception ex)
+            // Based on FilterNumericValueRule...
+            } else if (filterValueRule.GetType().IsSubclassOf(typeof(oM.Revit.Elements.FilterNumericValueRule)))
             {
+                BH.oM.Revit.Elements.FilterNumericValueRule filterNumericValueRule = (BH.oM.Revit.Elements.FilterNumericValueRule)filterValueRule;
 
-            }
+                switch (filterNumericValueRule.Evaluator)
+                {
+                    case NumberComparisonType.Equal:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateEqualsRule(parameterId,(string)filterNumericValueRule.Value, false);
+                        break;
+                    case NumberComparisonType.NotEqual:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateNotEqualsRule(parameterId, (string)filterNumericValueRule.Value, false);
+                        break;
+                    case NumberComparisonType.Greater:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateGreaterRule(parameterId, (string)filterNumericValueRule.Value, false);
+                        break;
+                    case NumberComparisonType.GreaterOrEqual:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateGreaterOrEqualRule(parameterId, (string)filterNumericValueRule.Value, false);
+                        break;
+                    case NumberComparisonType.Less:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateLessRule(parameterId, (string)filterNumericValueRule.Value, false);
+                        break;
+                    case NumberComparisonType.LessOrEqual:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateLessOrEqualRule(parameterId, (string)filterNumericValueRule.Value, false);
+                        break;
+                    default:
+                        break;
+                }
 
-
-   
+            } else { return null; }
 
 
             return revitFilterRule;

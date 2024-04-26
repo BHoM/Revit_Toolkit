@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.oM.Revit.Views
+namespace BH.oM.Revit.Elements
 {
     public abstract class FilterValueRule : FilterRule
     {
-        public virtual String parameterName { get; set; }
-        public virtual String value { get; set; }
+        public virtual string ParameterName { get; set; }
+        public virtual string Value { get; set; }
 
     }
 }
