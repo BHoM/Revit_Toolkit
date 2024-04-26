@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace BH.oM.Revit.Views
 {
-    internal class RuleEvaluatorType
+    public abstract class FilterValueRule : FilterRule
     {
+        public virtual String parameterName { get; set; }
+        public virtual String value { get; set; }
+
     }
 }

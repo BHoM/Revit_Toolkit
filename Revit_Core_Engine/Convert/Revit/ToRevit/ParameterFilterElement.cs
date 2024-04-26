@@ -22,19 +22,21 @@
 
 using Autodesk.Revit.Creation;
 using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.MEP.Equipment.Parts;
 using BH.oM.Physical.Elements;
-using BH.oM.Revit.Views;
+using BH.oM.Revit.Elements;
+using BH.oM.Revit.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Document = Autodesk.Revit.DB.Document;
-using FilterRule = BH.oM.Revit.Views.FilterRule;
+using FilterRule = BH.oM.Revit.Elements.FilterRule;
 
 namespace BH.Revit.Engine.Core
 {
@@ -82,7 +84,9 @@ namespace BH.Revit.Engine.Core
 
             /* Via use of Streams*/
             revitFilter.SetElementFilter(new LogicalAndFilter(filter.Rules
-                            .Select(filterRule => filterRuleToRevit(document, filterRule))
+                            .Where(filterRule=> filterRule.GetType().IsSubclassOf(typeof(FilterValueRule)))
+                            .Cast<BH.oM.Revit.Elements.FilterValueRule>()
+                            .Select(filterValueRule => filterValueRuleToRevit(document, filterValueRule))
                             .Select(revitFilterRule => new ElementParameterFilter(revitFilterRule))
                             .Cast<ElementFilter>()
                             .ToList()));
@@ -94,7 +98,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static Autodesk.Revit.DB.FilterRule filterRuleToRevit(Document document,FilterRule filterRule) {
+        public static Autodesk.Revit.DB.FilterValueRule filterValueRuleToRevit(Document document,BH.oM.Revit.Elements.FilterValueRule filterValueRule) {
 
             Autodesk.Revit.DB.FilterRule revitFilterRule = null;
 
@@ -105,57 +109,82 @@ namespace BH.Revit.Engine.Core
 
             ElementId parameterId = new FilteredElementCollector(document)
                             .WherePasses(logicalOrFilter)
-                            .Where(par => par.Name.Equals(filterRule.ParameterName))
+                            .Where(par => par.Name.Equals(filterValueRule.ParameterName))
                             .First()
                             .Id;
+            
 
-            switch (filterRule.RuleType) { 
-                case FilterRuleType.BEGINSWITH:
-                    revitFilterRule=ParameterFilterRuleFactory
-                        .CreateBeginsWithRule(parameterId, (string) filterRule.Value, false);
-                    break;
-                case FilterRuleType.CONTAINS:
-                    revitFilterRule = ParameterFilterRuleFactory
-                        .CreateContainsRule(parameterId, (string) filterRule.Value, false);
-                    break;
-                case FilterRuleType.ENDSWITH:
-                    revitFilterRule = ParameterFilterRuleFactory
-                        .CreateEndsWithRule(parameterId, (string) filterRule.Value, false);
-                    break;
-                case FilterRuleType.EQUALS:
-                    revitFilterRule = ParameterFilterRuleFactory
-                        .CreateEqualsRule(parameterId, (int) filterRule.Value);
-                    break;
-                case FilterRuleType.GREATER:
-                    revitFilterRule = ParameterFilterRuleFactory
-                        .CreateGreaterRule(parameterId, (ElementId) filterRule.Value);
-                    break;
-                case FilterRuleType.GREATER_OR_EQUAL:
-                    revitFilterRule = ParameterFilterRuleFactory
-                        .CreateGreaterOrEqualRule(parameterId, (ElementId) filterRule.Value);
-                    break;
-                case FilterRuleType.LESS:
-                    revitFilterRule = ParameterFilterRuleFactory
-                        .CreateLessRule(parameterId, (ElementId) filterRule.Value);
-                    break;
-                case FilterRuleType.LESS_OR_EQUAL:
-                    revitFilterRule = ParameterFilterRuleFactory
-                        .CreateLessOrEqualRule(parameterId, (ElementId) filterRule.Value);
-                    break;
-                case FilterRuleType.NOT_BEGINSWITH:
-                    revitFilterRule = ParameterFilterRuleFactory
-                        .CreateNotBeginsWithRule(parameterId, (string) filterRule.Value, false);
-                    break;
-                case FilterRuleType.NOT_CONTAINS:
-                    revitFilterRule = ParameterFilterRuleFactory
-                        .CreateNotContainsRule(parameterId, (string) filterRule.Value, false);
-                    break;
-                case FilterRuleType.NOT_ENDSWITH:
-                    revitFilterRule = ParameterFilterRuleFactory
-                        .CreateNotEndsWithRule(parameterId, (string) filterRule.Value, false);
-                    break;
-                default:
-                    break;}
+            try
+            {
+                BH.oM.Revit.Elements.FilterStringRule filterStringValueRule = (BH.oM.Revit.Elements.FilterStringRule)filterValueRule;
+
+                switch (filterStringValueRule.Evaluator)
+                {
+                    case TextComparisonType.Equal:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateEqualsRule(parameterId, (string)filterStringValueRule.Value, false);
+                        break;
+                    case TextComparisonType.NotEqual:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateNotEqualsRule(parameterId, (string)filterStringValueRule.Value, false);
+                        break;
+
+                    case TextComparisonType.Contains:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateContainsRule(parameterId, (string)filterStringValueRule.Value, false);
+                        break;
+                    case TextComparisonType.ContainsNot:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateNotContainsRule(parameterId, (string)filterStringValueRule.Value, false);
+                        break;
+                    case TextComparisonType.StartsWith:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateBeginsWithRule(parameterId, (string)filterStringValueRule.Value, false);
+                        break;
+                    case TextComparisonType.EndsWith:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateEndsWithRule(parameterId, (string)filterStringValueRule.Value, false);
+                        break;
+                    case FilterRuleType.GREATER:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateGreaterRule(parameterId, (ElementId)filterRule.Value);
+                        break;
+                    case FilterRuleType.GREATER_OR_EQUAL:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateGreaterOrEqualRule(parameterId, (ElementId)filterRule.Value);
+                        break;
+                    case FilterRuleType.LESS:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateLessRule(parameterId, (ElementId)filterRule.Value);
+                        break;
+                    case FilterRuleType.LESS_OR_EQUAL:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateLessOrEqualRule(parameterId, (ElementId)filterRule.Value);
+                        break;
+                    case FilterRuleType.NOT_BEGINSWITH:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateNotBeginsWithRule(parameterId, (string)filterRule.Value, false);
+                        break;
+                    case FilterRuleType.NOT_CONTAINS:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateNotContainsRule(parameterId, (string)filterRule.Value, false);
+                        break;
+                    case FilterRuleType.NOT_ENDSWITH:
+                        revitFilterRule = ParameterFilterRuleFactory
+                            .CreateNotEndsWithRule(parameterId, (string)filterRule.Value, false);
+                        break;
+                    default:
+                        break;
+                }
+
+            } catch (Exception ex)
+            {
+
+            }
+
+
+   
+
 
             return revitFilterRule;
         }
