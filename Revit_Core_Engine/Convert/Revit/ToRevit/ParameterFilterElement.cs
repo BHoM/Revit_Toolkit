@@ -22,6 +22,8 @@
 
 using Autodesk.Revit.Creation;
 using Autodesk.Revit.DB;
+using BH.Engine.Base;
+using BH.Engine.Data;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
@@ -80,26 +82,70 @@ namespace BH.Revit.Engine.Core
             /* 1.2 Create the ParameterFilterElement in the current Revit Document */
             revitFilter = ParameterFilterElement.Create(document, filter.Name, categoryIdsList);
 
-
             // 2. BUILD THE REVIT FILTER RULES and ASSIGN THEM TO THE PARAMETERFILTERELEMENT
 
             /* Via use of Streams*/
             revitFilter.SetElementFilter(new LogicalAndFilter(filter.Rules
-                            .Where(filterRule=> filterRule.GetType().IsSubclassOf(typeof(FilterValueRule)))
-                            .Cast<BH.oM.Revit.Elements.FilterValueRule>()
-                            .Select(filterValueRule => filterValueRuleToRevit(document, filterValueRule))
-                            .Select(revitFilterRule => new ElementParameterFilter(revitFilterRule))
+                            .GroupBy(rule => rule.GetType())
+                            .ToDictionary(grp => grp.Key, grp => grp.ToList())
+                            .ToList()
+                            .Select(kvp =>{
+
+                                List<Autodesk.Revit.DB.FilterRule> filterRules = new List<Autodesk.Revit.DB.FilterRule>();
+
+                                if (kvp.Key.IsSubclassOf(typeof(oM.Revit.Elements.FilterCategoryRule))){
+                                    filterRules = kvp.Value.Cast<BH.oM.Revit.Elements.FilterCategoryRule>()
+                                                        .Select(filterCategoryRule => filterCategoryRuleToRevit(document, filterCategoryRule))
+                                                        .ToList();}
+                                else if (kvp.Key.IsSubclassOf(typeof(oM.Revit.Elements.FilterValueRule))){
+                                    filterRules = kvp.Value.Cast<BH.oM.Revit.Elements.FilterValueRule>()
+                                                         .Select(filterValueRule => filterValueRuleToRevit(document, filterValueRule))
+                                                         .ToList();}
+                                else if (kvp.Key.IsSubclassOf(typeof(oM.Revit.Elements.FilterMaterialRule))){
+                                    filterRules = kvp.Value.Cast<BH.oM.Revit.Elements.FilterMaterialRule>()
+                                                         .Select(filterMaterialRule => filterMaterialRuleToRevit(document, filterMaterialRule))
+                                                         .ToList();}
+                                return filterRules; })
+                            .Select(filterRulesList => new ElementParameterFilter(filterRulesList))
                             .Cast<ElementFilter>()
                             .ToList()));
+
 
             revitFilter.CopyParameters(filter, settings);
             refObjects.AddOrReplace(filter, revitFilter);
             return revitFilter;
         }
 
+
         /***************************************************/
 
-        public static Autodesk.Revit.DB.FilterRule filterMaterialRuleToRevit(Document document,BH.oM.Revit.Elements.FilterMaterialRule filterMaterialRule)
+        public static Autodesk.Revit.DB.FilterRule filterCategoryRuleToRevit(Document document, BH.oM.Revit.Elements.FilterCategoryRule filterCategoryRule)
+            {
+                /* 1. INITIALIZE FILTERRULE AND BUILTINPARAMETER INSTANCES */
+                Autodesk.Revit.DB.FilterRule revitFilterRule = null;
+
+                /* 2. GET THE ELEMENT IDS OF THE CATEGORIES STORED IN THE FILTERCATEGORYRULE */
+                List<ElementId> categoryIds = new FilteredElementCollector(document)
+                        // Get all the Categories (INTERMEDIATE OPERATION)
+                        .OfClass(typeof(Autodesk.Revit.DB.Category))
+                        // Retain only the Categories having name appearing in the filter's list (INTERMEDIATE OPERATION)
+                        .Where(elem => filterCategoryRule.CategoryNames.Contains(elem.Name))
+                        // Cast down to Category Class Instances (INTERMEDIATE OPERATION)
+                        .Cast<Autodesk.Revit.DB.Category>()
+                        // Get the ids of the retain categories (INTERMEDIATE OPERATION)
+                        .Select(cat => cat.Id)
+                        // Turn the Stream into a List (TERMINAL OPERATION)
+                        .ToList();
+
+                /* 3. CREATE THE FILTER RULE */
+                revitFilterRule = new Autodesk.Revit.DB.FilterCategoryRule(categoryIds);
+
+                return revitFilterRule;
+            }
+
+            /***************************************************/
+
+            public static Autodesk.Revit.DB.FilterRule filterMaterialRuleToRevit(Document document,BH.oM.Revit.Elements.FilterMaterialRule filterMaterialRule)
         {
             /* 1. INITIALIZE FILTERRULE AND BUILTINPARAMETER INSTANCES */
             Autodesk.Revit.DB.FilterRule revitFilterRule = null;
@@ -113,6 +159,7 @@ namespace BH.Revit.Engine.Core
             return revitFilterRule;
         }
 
+        /***************************************************/
 
         public static Autodesk.Revit.DB.FilterRule filterLevelRuleToRevit(Document document, BH.oM.Revit.Elements.FilterLevelRule filterLevelRule)
         {
@@ -122,6 +169,9 @@ namespace BH.Revit.Engine.Core
             ElementId elevParamId=new ElementId(elevationParam);
             Double levelElevation;
 
+            /* 2. GET ELEVATION OF LEVEL CORRESPONDING TO INPUT LEVEL NAME */
+            // Via Streams and withing a Try-Catch statement to make sure the code is compact and if the level is not found, we prevent any error
+            // being thrown when executing .First() while returning null instead.
             try {
                 levelElevation=new FilteredElementCollector(document)
                                      .OfCategory(BuiltInCategory.OST_Levels)
@@ -132,6 +182,9 @@ namespace BH.Revit.Engine.Core
             } catch (Exception ex){
                 return null;}
 
+            /* 3. CREATE FILTERS RULE */
+
+            // Based on level's elevation and LevelComparisonType...
             switch (filterLevelRule.Evaluator)
             {
                 case LevelComparisonType.Equal:
@@ -163,9 +216,10 @@ namespace BH.Revit.Engine.Core
             }
 
             return revitFilterRule;
-
-
         }
+
+
+        /***************************************************/
 
 
         public static Autodesk.Revit.DB.FilterRule filterValueRuleToRevit(Document document,BH.oM.Revit.Elements.FilterValueRule filterValueRule) {
@@ -183,7 +237,7 @@ namespace BH.Revit.Engine.Core
                             .First()
                             .Id;
 
-            /* 3. CREATE FILTER-RULES */
+            /* 3. CREATE FILTER-RULE */
 
             // Based on FilterStringRule...
             if (filterValueRule.GetType().IsSubclassOf(typeof(FilterStringRule)))
