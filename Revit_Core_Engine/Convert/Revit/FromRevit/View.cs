@@ -60,16 +60,18 @@ namespace BH.Revit.Engine.Core
             /* 1. Transfer NAME */
             view = new oM.Adapters.Revit.Elements.View { Name = revitView.Name };
 
-            List<ViewFilterWithOverrides> filtersWithOverrides;
-            List<ViewFilter> viewFilters;
-            List<OverrideGraphicSettings> overrides;
-
+            /* 2. Collect FILTER CATEGORY NAMES */
             List<List<string>> categoriesNames=revitView.GetFilters()
                 .Select(elId => revitView.Document.GetElement(elId))
                 .Cast<ParameterFilterElement>()
                 .Select(pfe => pfe.GetCategories().ToList<ElementId>())
                 .Select(catIdsList => catIdsList.Select(catId => revitView.Document.GetElement(catId).Name).ToList<string>())
                 .ToList<List<string>>();
+
+
+            List<ViewFilterWithOverrides> filtersWithOverrides;
+            List<ViewFilter> viewFilters;
+            List<OverrideGraphicSettings> overrides;
 
             List<FilterRule> filterRules = revitView.GetFilters()
                 .Select(elId => revitView.Document.GetElement(elId))
