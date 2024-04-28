@@ -71,6 +71,28 @@ namespace BH.Revit.Engine.Core
         /****      Convert Revit elements to BHoM       ****/
         /***************************************************/
 
+        [Description("Converts a Revit ParameterFilterElement to a BHoM object based on the requested engineering discipline.")]
+        [Input("parameterFilterElement", "Revit ParameterFilterElement to be converted.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("transform", "Optional, a transform to apply to the converted object.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("fromRevit", "Resulted BHoM object converted from a Revit ParameterFilterElement.")]
+        public static List<IBHoMObject> FromRevit(this ParameterFilterElement parameterFilterElement, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            if (parameterFilterElement == null)
+            {
+                BH.Engine.Base.Compute.RecordWarning("BHoM object could not be read because Revit Parameter Filter Element is null.");
+                return null;
+            }
+            else
+            {
+                return new List<IBHoMObject> { ViewFilterFromRevit(parameterFilterElement, settings, refObjects) };
+            }
+        }
+        
+        /***************************************************/
+
         [Description("Converts a Revit EnergyAnalysisDetailModel to a BHoM object based on the requested engineering discipline.")]
         [Input("energyAnalysisModel", "Revit EnergyAnalysisDetailModel to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
