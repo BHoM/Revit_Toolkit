@@ -245,6 +245,18 @@ namespace BH.Revit.Engine.Core
                                                                     return bhomFilterCategoryRule;
                                                                 }
 
+                                                                // FILTER PARAMETER VALUE PRESENCE RULE
+                                                                else if (revitRule.GetType().IsSubclassOf(typeof(Autodesk.Revit.DB.ParameterValuePresenceRule)))
+                                                                {
+                                                                    BH.oM.Adapters.Revit.Elements.ParameterValuePresenceRule bhomParamValuePresenceRule;
+                                                                    bhomParamValuePresenceRule = new BH.oM.Adapters.Revit.Elements.ParameterValuePresenceRule();
+
+                                                                    bhomParamValuePresenceRule.ParameterName= revitViewFilter.Document.GetElement(((Autodesk.Revit.DB.ParameterValuePresenceRule)revitRule).Parameter).Name;
+                                                                    bhomParamValuePresenceRule.IsPresent = (revitRule.GetType() == typeof(HasValueFilterRule)) ? true : false;
+
+                                                                    return bhomParamValuePresenceRule;
+                                                                }
+
                                                                 // FILTER INVERSE RULE
                                                                 else if (revitRule.GetType().IsSubclassOf(typeof(Autodesk.Revit.DB.FilterInverseRule)))
                                                                 {

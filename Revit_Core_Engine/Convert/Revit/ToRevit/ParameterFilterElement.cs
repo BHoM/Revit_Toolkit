@@ -333,6 +333,18 @@ namespace BH.Revit.Engine.Core
                     default:
                         break;
                 }
+            }
+
+            // Based on ParameterValuePresenceRule...
+            else if (filterValueRule.GetType().IsSubclassOf(typeof(BH.oM.Adapters.Revit.Elements.ParameterValuePresenceRule)))
+            {
+                BH.oM.Adapters.Revit.Elements.ParameterValuePresenceRule parameterValuePresenceRule = (BH.oM.Adapters.Revit.Elements.ParameterValuePresenceRule)filterValueRule;
+
+                if (parameterValuePresenceRule.IsPresent) {
+                    revitFilterRule = ParameterFilterRuleFactory.CreateHasValueParameterRule(parameterId);}
+                else {
+                    revitFilterRule = ParameterFilterRuleFactory.CreateHasNoValueParameterRule(parameterId);}
+
 
             } else { return null; }
 
