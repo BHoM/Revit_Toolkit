@@ -93,16 +93,16 @@ namespace BH.Revit.Engine.Core
 
                                 List<Autodesk.Revit.DB.FilterRule> filterRules = new List<Autodesk.Revit.DB.FilterRule>();
 
-                                if (kvp.Key.IsSubclassOf(typeof(oM.Revit.Elements.FilterCategoryRule))){
-                                    filterRules = kvp.Value.Cast<BH.oM.Revit.Elements.FilterCategoryRule>()
+                                if (kvp.Key.IsSubclassOf(typeof(BH.oM.Adapters.Revit.Elements.FilterCategoryRule))){
+                                    filterRules = kvp.Value.Cast<BH.oM.Adapters.Revit.Elements.FilterCategoryRule>()
                                                         .Select(filterCategoryRule => filterCategoryRuleToRevit(document, filterCategoryRule))
                                                         .ToList();}
-                                else if (kvp.Key.IsSubclassOf(typeof(oM.Revit.Elements.FilterValueRule))){
-                                    filterRules = kvp.Value.Cast<BH.oM.Revit.Elements.FilterValueRule>()
+                                else if (kvp.Key.IsSubclassOf(typeof(BH.oM.Adapters.Revit.Elements.FilterValueRule))){
+                                    filterRules = kvp.Value.Cast<BH.oM.Adapters.Revit.Elements.FilterValueRule>()
                                                          .Select(filterValueRule => filterValueRuleToRevit(document, filterValueRule))
                                                          .ToList();}
-                                else if (kvp.Key.IsSubclassOf(typeof(oM.Revit.Elements.FilterMaterialRule))){
-                                    filterRules = kvp.Value.Cast<BH.oM.Revit.Elements.FilterMaterialRule>()
+                                else if (kvp.Key.IsSubclassOf(typeof(BH.oM.Adapters.Revit.Elements.FilterMaterialRule))){
+                                    filterRules = kvp.Value.Cast< BH.oM.Adapters.Revit.Elements.FilterMaterialRule >()
                                                          .Select(filterMaterialRule => filterMaterialRuleToRevit(document, filterMaterialRule))
                                                          .ToList();}
                                 return filterRules; })
@@ -119,9 +119,34 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-            /***************************************************/
 
-            public static Autodesk.Revit.DB.FilterRule filterMaterialRuleToRevit(Document document,BH.oM.Revit.Elements.FilterMaterialRule filterMaterialRule)
+        public static Autodesk.Revit.DB.FilterRule filterCategoryRuleToRevit(Document document, BH.oM.Adapters.Revit.Elements.FilterCategoryRule filterCategoryRule)
+        {
+            /* 1. INITIALIZE FILTERRULE AND BUILTINPARAMETER INSTANCES */
+            Autodesk.Revit.DB.FilterRule revitFilterRule = null;
+
+            /* 2. GET THE ELEMENT IDS OF THE CATEGORIES STORED IN THE FILTERCATEGORYRULE */
+            List<ElementId> categoryIds = new FilteredElementCollector(document)
+                    // Get all the Categories (INTERMEDIATE OPERATION)
+                    .OfClass(typeof(Autodesk.Revit.DB.Category))
+                    // Retain only the Categories having name appearing in the filter's list (INTERMEDIATE OPERATION)
+                    .Where(elem => filterCategoryRule.CategoryNames.Contains(elem.Name))
+                    // Cast down to Category Class Instances (INTERMEDIATE OPERATION)
+                    .Cast<Autodesk.Revit.DB.Category>()
+                    // Get the ids of the retain categories (INTERMEDIATE OPERATION)
+                    .Select(cat => cat.Id)
+                    // Turn the Stream into a List (TERMINAL OPERATION)
+                    .ToList();
+
+            /* 3. CREATE THE FILTER RULE */
+            revitFilterRule = new Autodesk.Revit.DB.FilterCategoryRule(categoryIds);
+
+            return revitFilterRule;
+        }
+
+        /***************************************************/
+
+        public static Autodesk.Revit.DB.FilterRule filterMaterialRuleToRevit(Document document, BH.oM.Adapters.Revit.Elements.FilterMaterialRule filterMaterialRule)
         {
             /* 1. INITIALIZE FILTERRULE AND BUILTINPARAMETER INSTANCES */
             Autodesk.Revit.DB.FilterRule revitFilterRule = null;
@@ -137,7 +162,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static Autodesk.Revit.DB.FilterRule filterLevelRuleToRevit(Document document, BH.oM.Revit.Elements.FilterLevelRule filterLevelRule)
+        public static Autodesk.Revit.DB.FilterRule filterLevelRuleToRevit(Document document, BH.oM.Adapters.Revit.Elements.FilterLevelRule filterLevelRule)
         {
             /* 1. INITIALIZE FILTERRULE AND BUILTINPARAMETER INSTANCES */
             Autodesk.Revit.DB.FilterRule revitFilterRule = null;
@@ -198,7 +223,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
 
-        public static Autodesk.Revit.DB.FilterRule filterValueRuleToRevit(Document document,BH.oM.Revit.Elements.FilterValueRule filterValueRule) {
+        public static Autodesk.Revit.DB.FilterRule filterValueRuleToRevit(Document document,BH.oM.Adapters.Revit.Elements.FilterValueRule filterValueRule) {
 
             /* 1. INITIALIZE FILTERRULE AND LOGICALFILTER CLASS INSTANCES */
             Autodesk.Revit.DB.FilterRule revitFilterRule = null;
@@ -218,7 +243,7 @@ namespace BH.Revit.Engine.Core
             // Based on FilterStringRule...
             if (filterValueRule.GetType().IsSubclassOf(typeof(FilterStringRule)))
             {
-                BH.oM.Revit.Elements.FilterStringRule filterStringValueRule = (BH.oM.Revit.Elements.FilterStringRule)filterValueRule;
+                BH.oM.Revit.Elements.FilterStringRule filterStringValueRule = (BH.oM.Adapters.Revit.Elements.FilterStringRule)filterValueRule;
 
                 switch (filterStringValueRule.Evaluator)
                 {
@@ -275,9 +300,9 @@ namespace BH.Revit.Engine.Core
                 }
 
             // Based on FilterNumericValueRule...
-            } else if (filterValueRule.GetType().IsSubclassOf(typeof(oM.Revit.Elements.FilterNumericValueRule)))
+            } else if (filterValueRule.GetType().IsSubclassOf(typeof(BH.oM.Adapters.Revit.Elements.FilterNumericValueRule)))
             {
-                BH.oM.Revit.Elements.FilterNumericValueRule filterNumericValueRule = (BH.oM.Revit.Elements.FilterNumericValueRule)filterValueRule;
+                BH.oM.Revit.Elements.FilterNumericValueRule filterNumericValueRule = (BH.oM.Adapters.Revit.Elements.FilterNumericValueRule)filterValueRule;
 
                 switch (filterNumericValueRule.Evaluator)
                 {
