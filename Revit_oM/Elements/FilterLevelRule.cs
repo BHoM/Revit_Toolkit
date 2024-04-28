@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Revit.Enums;
 
-namespace BH.oM.Revit.Elements
+namespace BH.oM.Adapters.Revit.Elements
 {
     public class FilterLevelRule : FilterRule
     {

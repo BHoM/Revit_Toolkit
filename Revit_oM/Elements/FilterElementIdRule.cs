@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.oM.Revit.Elements
+namespace BH.oM.Adapters.Revit.Elements
 {
-    internal class FilterElementIdRule
+    public class FilterElementIdRule : FilterNumericValueRule
     {
     }
 }
