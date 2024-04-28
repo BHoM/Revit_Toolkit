@@ -30,7 +30,7 @@ using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.MEP.Equipment.Parts;
 using BH.oM.Physical.Elements;
-using BH.oM.Revit.Elements;
+using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Revit.Enums;
 using System;
 using System.Collections.Generic;
@@ -38,8 +38,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Document = Autodesk.Revit.DB.Document;
-using FilterRule = BH.oM.Revit.Elements.FilterRule;
-using FilterStringRule = BH.oM.Revit.Elements.FilterStringRule;
+using FilterRule = BH.oM.Adapters.Revit.Elements.FilterRule;
+using FilterStringRule = BH.oM.Adapters.Revit.Elements.FilterStringRule;
 
 namespace BH.Revit.Engine.Core
 {
@@ -243,7 +243,7 @@ namespace BH.Revit.Engine.Core
             // Based on FilterStringRule...
             if (filterValueRule.GetType().IsSubclassOf(typeof(FilterStringRule)))
             {
-                BH.oM.Revit.Elements.FilterStringRule filterStringValueRule = (BH.oM.Adapters.Revit.Elements.FilterStringRule)filterValueRule;
+                BH.oM.Adapters.Revit.Elements.FilterStringRule filterStringValueRule = (BH.oM.Adapters.Revit.Elements.FilterStringRule)filterValueRule;
 
                 switch (filterStringValueRule.Evaluator)
                 {
@@ -302,7 +302,7 @@ namespace BH.Revit.Engine.Core
             // Based on FilterNumericValueRule...
             } else if (filterValueRule.GetType().IsSubclassOf(typeof(BH.oM.Adapters.Revit.Elements.FilterNumericValueRule)))
             {
-                BH.oM.Revit.Elements.FilterNumericValueRule filterNumericValueRule = (BH.oM.Adapters.Revit.Elements.FilterNumericValueRule)filterValueRule;
+                BH.oM.Adapters.Revit.Elements.FilterNumericValueRule filterNumericValueRule = (BH.oM.Adapters.Revit.Elements.FilterNumericValueRule)filterValueRule;
 
                 switch (filterNumericValueRule.Evaluator)
                 {
