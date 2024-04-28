@@ -119,30 +119,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static Autodesk.Revit.DB.FilterRule filterCategoryRuleToRevit(Document document, BH.oM.Revit.Elements.FilterCategoryRule filterCategoryRule)
-            {
-                /* 1. INITIALIZE FILTERRULE AND BUILTINPARAMETER INSTANCES */
-                Autodesk.Revit.DB.FilterRule revitFilterRule = null;
-
-                /* 2. GET THE ELEMENT IDS OF THE CATEGORIES STORED IN THE FILTERCATEGORYRULE */
-                List<ElementId> categoryIds = new FilteredElementCollector(document)
-                        // Get all the Categories (INTERMEDIATE OPERATION)
-                        .OfClass(typeof(Autodesk.Revit.DB.Category))
-                        // Retain only the Categories having name appearing in the filter's list (INTERMEDIATE OPERATION)
-                        .Where(elem => filterCategoryRule.CategoryNames.Contains(elem.Name))
-                        // Cast down to Category Class Instances (INTERMEDIATE OPERATION)
-                        .Cast<Autodesk.Revit.DB.Category>()
-                        // Get the ids of the retain categories (INTERMEDIATE OPERATION)
-                        .Select(cat => cat.Id)
-                        // Turn the Stream into a List (TERMINAL OPERATION)
-                        .ToList();
-
-                /* 3. CREATE THE FILTER RULE */
-                revitFilterRule = new Autodesk.Revit.DB.FilterCategoryRule(categoryIds);
-
-                return revitFilterRule;
-            }
-
             /***************************************************/
 
             public static Autodesk.Revit.DB.FilterRule filterMaterialRuleToRevit(Document document,BH.oM.Revit.Elements.FilterMaterialRule filterMaterialRule)
