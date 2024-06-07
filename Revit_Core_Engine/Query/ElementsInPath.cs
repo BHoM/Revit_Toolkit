@@ -37,7 +37,7 @@ namespace BH.Revit.Engine.Core
         /****               Public methods              ****/
         /***************************************************/
 
-        [Description("Returns list of elements connected to each other between starting and ending element in MEP network. For elements not connected in the system the result is null")]
+        [Description("Returns list of elements connected to each other between starting and ending element in MEP network. For elements not connected in the system the result is null.")]
         [Input("startingElement", "Starting element in the path of the elements.")]
         [Input("endingElement", "Ending element in the path of the elements.")]
         [Output("elementPath", "Elements in path between starting and ending element.")]
@@ -96,8 +96,8 @@ namespace BH.Revit.Engine.Core
 
         private static List<Element> ConnectedNetworkElements(this Element element)
         {
-            List<Element> connectedElemnets = element.ConnectedElements();
-            return connectedElemnets.Where(x => x is FamilyInstance || x is Duct || x is FlexDuct || x is Pipe || x is FlexPipe || x is CableTrayConduitBase || x is Wire).ToList();
+            List<Element> connectedElements = element.ConnectedElements();
+            return connectedElements.Where(x => x is FamilyInstance || x is Duct || x is FlexDuct || x is Pipe || x is FlexPipe || x is CableTrayConduitBase || x is Wire).ToList();
         }
 
         /***************************************************/
