@@ -190,8 +190,16 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
-            Solid intersectSolid = BooleanOperationsUtils.ExecuteBooleanOperation(solid1, solid2, BooleanOperationsType.Intersect);
-            return Math.Abs(intersectSolid.Volume) > Math.Pow(BH.oM.Geometry.Tolerance.Distance, 3);
+            try
+            {
+                Solid intersectSolid = BooleanOperationsUtils.ExecuteBooleanOperation(solid1, solid2, BooleanOperationsType.Intersect);
+                return Math.Abs(intersectSolid.Volume) > Math.Pow(BH.oM.Geometry.Tolerance.Distance, 3);
+            }
+            catch (Exception ex)
+            {
+                BH.Engine.Base.Compute.RecordWarning($"Intersection of the solids could not be checked due to following error: '{ex.Message}'.");
+                return false;
+            }
         }
 
         /***************************************************/
