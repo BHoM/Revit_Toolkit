@@ -43,10 +43,10 @@ namespace BH.Revit.Engine.Core
         [Input("request", "An IRequest to be split into a dictionary of Revit documents and the IRequests relevant to them.")]
         [Input("document", "Host document to be used as the basis of the splitting routine.")]
         [Output("splitRequests", "A dictionary of Revit documents (both host and linked) and the IRequests relevant to them, which in total represents the same request as the input IRequest.")]
-        public static Dictionary<Document, IRequest> SplitRequestTreeByLinks(this IRequest request, Document document)
+        public static Dictionary<ElementId, IRequest> SplitRequestTreeByLinks(this IRequest request, Document document)
         {
 
-            Dictionary<Document, IRequest> requestsByLinks = new Dictionary<Document, IRequest>();
+            Dictionary<ElementId, IRequest> requestsByLinks = new Dictionary<ElementId, IRequest>();
             List<IRequest> splitPerDoc = request.SplitRequestTreeByType(typeof(FilterByLink));
             foreach (IRequest splitRequest in splitPerDoc)
             {
@@ -62,7 +62,7 @@ namespace BH.Revit.Engine.Core
         /****              Private Methods              ****/
         /***************************************************/
 
-        private static bool TryOrganizeByLink(this IRequest request, Document document, Dictionary<Document, IRequest> requestsByLinks)
+        private static bool TryOrganizeByLink(this IRequest request, Document document, Dictionary<ElementId, IRequest> requestsByLinks)
         {
             if (request == null)
                 return false;
@@ -78,7 +78,7 @@ namespace BH.Revit.Engine.Core
             List<IRequest> linkRequests = request.AllRequestsOfType(typeof(FilterByLink));
             if (linkRequests.Count == 0)
             {
-                requestsByLinks.AddRequestByLink(request, document);
+                requestsByLinks.AddRequestByLink(request, new ElementId(-1));
                 return true;
             }
             else if (linkRequests.Count == 1)
@@ -86,29 +86,47 @@ namespace BH.Revit.Engine.Core
                 FilterByLink linkRequest = (FilterByLink)linkRequests[0];
                 List<ElementId> linkInstanceIds = document.ElementIdsOfLinkInstances(linkRequest.LinkName, linkRequest.CaseSensitive);
 
-                if (linkInstanceIds.Count == 1)
+                if (linkInstanceIds.Count == 0)
+                {
+                    BH.Engine.Base.Compute.RecordError($"Active Revit document does not contain links with neither name nor path nor ElementId equal to {linkRequest.LinkName}.");
+                    return false;
+                }
+                else if (linkInstanceIds.Count > 1)
+                    BH.Engine.Base.Compute.RecordWarning($"There is more than one link document named {linkRequest.LinkName} - elements will be pulled from all unique instances of the links." +
+                                                         $"\nPlease use full link path or its ElementId instead of link name to pull specifically from a chosen instance.");
+
+                foreach (ElementId linkInstanceId in linkInstanceIds)
                 {
                     request.RemoveSubRequest(linkRequest);
                     request = request.SimplifyRequestTree();
-                    requestsByLinks.AddRequestByLink(request, ((RevitLinkInstance)document.GetElement(linkInstanceIds[0])).GetLinkDocument());
-                    return true;
+                    requestsByLinks.AddRequestByLink(request, linkInstanceId);
                 }
-                else if (linkInstanceIds.Count == 0)
-                    BH.Engine.Base.Compute.RecordError($"Active Revit document does not contain links with neither name nor path nor ElementId equal to {linkRequest.LinkName}.");
-                else
-                    BH.Engine.Base.Compute.RecordError($"There is more than one link document named {linkRequest.LinkName} - please use full link path or its ElementId instead of link name to pull.");
-            }
 
-            return false;
+                return true;
+
+                //if (linkInstanceIds.Count == 1)
+                //{
+                //    request.RemoveSubRequest(linkRequest);
+                //    request = request.SimplifyRequestTree();
+                //    requestsByLinks.AddRequestByLink(request, ((RevitLinkInstance)document.GetElement(linkInstanceIds[0])).Id);
+                //    return true;
+                //}
+                //else if (linkInstanceIds.Count == 0)
+                //    BH.Engine.Base.Compute.RecordError($"Active Revit document does not contain links with neither name nor path nor ElementId equal to {linkRequest.LinkName}.");
+                //else
+                //    BH.Engine.Base.Compute.RecordError($"There is more than one link document named {linkRequest.LinkName} - please use full link path or its ElementId instead of link name to pull.");
+            }
+            else
+                return false;
         }
 
         /***************************************************/
 
-        private static void AddRequestByLink(this Dictionary<Document, IRequest> requestsByLinks, IRequest request, Document document)
+        private static void AddRequestByLink(this Dictionary<ElementId, IRequest> requestsByLinks, IRequest request, ElementId linkId)
         {
-            if (requestsByLinks.ContainsKey(document))
+            if (requestsByLinks.ContainsKey(linkId))
             {
-                IRequest requestByLink = requestsByLinks[document];
+                IRequest requestByLink = requestsByLinks[linkId];
                 if (requestByLink is LogicalOrFilter)
                     ((LogicalOrRequest)requestByLink).Requests.Add(request);
                 else
@@ -116,11 +134,11 @@ namespace BH.Revit.Engine.Core
                     LogicalOrRequest newHead = new LogicalOrRequest();
                     newHead.Requests.Add(requestByLink);
                     newHead.Requests.Add(request);
-                    requestsByLinks[document] = newHead;
+                    requestsByLinks[linkId] = newHead;
                 }
             }
             else
-                requestsByLinks[document] = request;
+                requestsByLinks[linkId] = request;
         }
 
         /***************************************************/

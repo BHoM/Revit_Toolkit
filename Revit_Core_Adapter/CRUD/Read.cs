@@ -87,7 +87,7 @@ namespace BH.Revit.Adapter.Core
                 }
             }
 
-            Dictionary<Document, IRequest> requestsByLinks = request.SplitRequestTreeByLinks(this.Document);
+            Dictionary<ElementId, IRequest> requestsByLinks = request.SplitRequestTreeByLinks(this.Document);
             if (requestsByLinks == null)
             {
                 BH.Engine.Base.Compute.RecordError($"Pull failed due to issues with the request containing {nameof(FilterByLink)}. Please try to restructure the used Request and try again.");
@@ -96,11 +96,41 @@ namespace BH.Revit.Adapter.Core
 
             RevitSettings settings = RevitSettings.DefaultIfNull();
 
-            List<IBHoMObject> result = new List<IBHoMObject>();
-            foreach (KeyValuePair<Document, IRequest> requestByLink in requestsByLinks)
+            Dictionary<(Document, Transform), List<IRequest>> requestsByDocumentAndTransform = new Dictionary<(Document, Transform), List<IRequest>>();
+            foreach (KeyValuePair<ElementId, IRequest> requestByLink in requestsByLinks)
             {
-                result.AddRange(Read(requestByLink.Key, requestByLink.Value, pullConfig, settings));
+                Document doc;
+                Transform transform = null;
+                if (requestByLink.Key.IntegerValue == -1)
+                    doc = this.Document;
+                else
+                {
+                    var rli = this.Document.GetElement(requestByLink.Key) as RevitLinkInstance;
+                    doc = rli.GetLinkDocument();
+                    
+                    Transform t = rli.GetTotalTransform();
+                    if (!t.IsIdentity)
+                        transform = t;
+                }
+
+                var tuple = (doc, transform);
+                if (!requestsByDocumentAndTransform.ContainsKey(tuple))
+                    requestsByDocumentAndTransform.Add(tuple, new List<IRequest>());
+
+                requestsByDocumentAndTransform[tuple].Add(requestByLink.Value);
             }
+
+            Dictionary<string, Dictionary<string, List<IBHoMObject>>> globalRefObjects = new Dictionary<string, Dictionary<string, List<IBHoMObject>>>();
+            List<IBHoMObject> result = new List<IBHoMObject>();
+            foreach (var kvp in requestsByDocumentAndTransform)
+            {
+                result.AddRange(Read(kvp.Key.Item1, kvp.Key.Item2, kvp.Value, pullConfig, settings, globalRefObjects));
+            }
+
+            //foreach (KeyValuePair<ElementId, IRequest> requestByLink in requestsByLinks)
+            //{
+            //    result.AddRange(Read(requestByLink.Key, requestByLink.Value, pullConfig, settings));
+            //}
 
             this.UIDocument.Selection.SetElementIds(selected);
 
@@ -112,7 +142,7 @@ namespace BH.Revit.Adapter.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        public static List<IBHoMObject> Read(Document document, IRequest request, RevitPullConfig pullConfig = null, RevitSettings settings = null)
+        public static List<IBHoMObject> Read(Document document, Transform transform, List<IRequest> requests, RevitPullConfig pullConfig = null, RevitSettings settings = null, Dictionary<string, Dictionary<string, List<IBHoMObject>>> globalRefObjects = null)
         {
             if (document == null)
             {
@@ -120,11 +150,13 @@ namespace BH.Revit.Adapter.Core
                 return new List<IBHoMObject>();
             }
 
-            if (request == null)
-            {
-                BH.Engine.Base.Compute.RecordError("BHoM objects could not be read because provided IRequest is null.");
-                return new List<IBHoMObject>();
-            }
+            //TODO: union requests and if any duplicates then warning!!
+
+            //if (request == null)
+            //{
+            //    BH.Engine.Base.Compute.RecordError("BHoM objects could not be read because provided IRequest is null.");
+            //    return new List<IBHoMObject>();
+            //}
 
             pullConfig = pullConfig.DefaultIfNull();
             settings = settings.DefaultIfNull();
@@ -133,9 +165,11 @@ namespace BH.Revit.Adapter.Core
             if (!pullConfig.IncludeClosedWorksets)
                 worksetPrefilter = document.OpenWorksetsPrefilter();
 
-            List<ElementId> elementIds = request.IElementIds(document, pullConfig.Discipline, settings, worksetPrefilter).RemoveGridSegmentIds(document)?.ToList();
-            if (elementIds == null)
-                return new List<IBHoMObject>();
+            HashSet<ElementId> elementIds = new HashSet<ElementId>();
+            foreach (IRequest request in requests)
+            {
+                elementIds.UnionWith(request.IElementIds(document, pullConfig.Discipline, settings, worksetPrefilter)?.RemoveGridSegmentIds(document) ?? new List<ElementId>());
+            }
 
             if (pullConfig.IncludeNestedElements)
             {
@@ -150,15 +184,15 @@ namespace BH.Revit.Adapter.Core
                         elemIds.AddRange(nestedElemIds);
                     }
                 }
-                elementIds.AddRange(elemIds);
+                elementIds.UnionWith(elemIds);
             }
 
-            return Read(document, elementIds, pullConfig, settings);
+            return Read(document, transform, elementIds.ToList(), pullConfig, settings, globalRefObjects);
         }
 
         /***************************************************/
 
-        public static List<IBHoMObject> Read(Document document, List<ElementId> elementIds, RevitPullConfig pullConfig = null, RevitSettings settings = null)
+        public static List<IBHoMObject> Read(Document document, Transform transform, List<ElementId> elementIds, RevitPullConfig pullConfig = null, RevitSettings settings = null, Dictionary<string, Dictionary<string, List<IBHoMObject>>> globalRefObjects = null)
         {
             if (document == null)
             {
@@ -194,29 +228,51 @@ namespace BH.Revit.Adapter.Core
             Options meshOptions = BH.Revit.Engine.Core.Create.Options(geometryConfig.MeshDetailLevel.ViewDetailLevel(), geometryConfig.IncludeNonVisible, false);
             Options renderMeshOptions = BH.Revit.Engine.Core.Create.Options(representationConfig.DetailLevel.ViewDetailLevel(), representationConfig.IncludeNonVisible, false);
 
-            Transform linkTransform = null;
-            TransformMatrix bHoMTransform = null;
-            if (document.IsLinked)
-            {
-                linkTransform = document.LinkTransform();
-                if (linkTransform?.IsIdentity == false)
-                    bHoMTransform = linkTransform.FromRevit();
-            }
+            //TODO: that does not work for multiple links!
+            // would rather get LinkTransforms(), find unique ones and work with these?
+            // NOT GOING TO WORK FOR LINKS FILTERED BY ID
+            //Transform linkTransform = null;
+            //TransformMatrix bHoMTransform = null;
+            //if (document.IsLinked)
+            //{
+            //    linkTransform = document.LinkTransform();
+            //    if (linkTransform?.IsIdentity == false)
+            //        bHoMTransform = linkTransform.FromRevit();
+            //}
 
-            Dictionary<string, List<IBHoMObject>> refObjects = new Dictionary<string, List<IBHoMObject>>();
+            var bHoMTransform = transform.FromRevit();
+            if (globalRefObjects == null)
+                globalRefObjects = new Dictionary<string, Dictionary<string, List<IBHoMObject>>>();
+
+            if (!globalRefObjects.ContainsKey(document.Title))
+                globalRefObjects.Add(document.Title, new Dictionary<string, List<IBHoMObject>>());
+
+            Dictionary<string, List<IBHoMObject>> refObjects = globalRefObjects[document.Title];
+
+            List<IBHoMObject> result = new List<IBHoMObject>();
+            List<ElementId> remainingElementIds = elementIds.ToList();
+            for (int i = 0; i < remainingElementIds.Count; i++)
+            {
+                ElementId id = remainingElementIds[i];
+                var existing = refObjects.GetValues<IBHoMObject>(id);
+                if (existing != null)
+                {
+                    result.AddRange(existing.Select(x => x.IPostprocess(transform, settings)));
+                    remainingElementIds.RemoveAt(i);
+                }    
+            }
 
             // Extract panel geometry of walls, floors, slabs and roofs prior to running the converts (this is an optimisation aimed to reduce the number of view regenerations)
             if (!document.IsLinked)
-                document.CachePanelGeometry(elementIds, discipline, settings, refObjects);
+                document.CachePanelGeometry(remainingElementIds, discipline, settings, refObjects);
             
-            List<IBHoMObject> result = new List<IBHoMObject>();
-            foreach (ElementId id in elementIds)
+            foreach (ElementId id in remainingElementIds)
             {
                 Element element = document.GetElement(id);
                 if (element == null)
                     continue;
 
-                IEnumerable<IBHoMObject> iBHoMObjects = Read(element, discipline, linkTransform, settings, refObjects);
+                IEnumerable<IBHoMObject> iBHoMObjects = Read(element, discipline, transform, settings, refObjects);
 
                 if (iBHoMObjects != null && iBHoMObjects.Any())
                 {
