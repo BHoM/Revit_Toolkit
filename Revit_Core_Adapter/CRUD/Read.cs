@@ -224,23 +224,6 @@ namespace BH.Revit.Adapter.Core
                 discipline = Discipline.Physical;
             }
 
-            Options geometryOptions = BH.Revit.Engine.Core.Create.Options(ViewDetailLevel.Fine, geometryConfig.IncludeNonVisible, false);
-            Options meshOptions = BH.Revit.Engine.Core.Create.Options(geometryConfig.MeshDetailLevel.ViewDetailLevel(), geometryConfig.IncludeNonVisible, false);
-            Options renderMeshOptions = BH.Revit.Engine.Core.Create.Options(representationConfig.DetailLevel.ViewDetailLevel(), representationConfig.IncludeNonVisible, false);
-
-            //TODO: that does not work for multiple links!
-            // would rather get LinkTransforms(), find unique ones and work with these?
-            // NOT GOING TO WORK FOR LINKS FILTERED BY ID
-            //Transform linkTransform = null;
-            //TransformMatrix bHoMTransform = null;
-            //if (document.IsLinked)
-            //{
-            //    linkTransform = document.LinkTransform();
-            //    if (linkTransform?.IsIdentity == false)
-            //        bHoMTransform = linkTransform.FromRevit();
-            //}
-
-            var bHoMTransform = transform.FromRevit();
             if (globalRefObjects == null)
                 globalRefObjects = new Dictionary<string, Dictionary<string, List<IBHoMObject>>>();
 
@@ -250,89 +233,75 @@ namespace BH.Revit.Adapter.Core
             Dictionary<string, List<IBHoMObject>> refObjects = globalRefObjects[document.Title];
 
             List<IBHoMObject> result = new List<IBHoMObject>();
-            List<ElementId> remainingElementIds = elementIds.ToList();
-            for (int i = 0; i < remainingElementIds.Count; i++)
+            List<ElementId> remainingElementIds = new List<ElementId>();
+            foreach (ElementId id in elementIds)
             {
-                ElementId id = remainingElementIds[i];
                 var existing = refObjects.GetValues<IBHoMObject>(id);
                 if (existing != null)
-                {
-                    result.AddRange(existing.Select(x => x.IPostprocess(transform, settings)));
-                    remainingElementIds.RemoveAt(i);
-                }    
+                    result.AddRange(existing);
+                else
+                    remainingElementIds.Add(id);
             }
 
             // Extract panel geometry of walls, floors, slabs and roofs prior to running the converts (this is an optimisation aimed to reduce the number of view regenerations)
             if (!document.IsLinked)
                 document.CachePanelGeometry(remainingElementIds, discipline, settings, refObjects);
-            
+
+            Options geometryOptions = BH.Revit.Engine.Core.Create.Options(ViewDetailLevel.Fine, geometryConfig.IncludeNonVisible, false);
+            Options meshOptions = BH.Revit.Engine.Core.Create.Options(geometryConfig.MeshDetailLevel.ViewDetailLevel(), geometryConfig.IncludeNonVisible, false);
+            Options renderMeshOptions = BH.Revit.Engine.Core.Create.Options(representationConfig.DetailLevel.ViewDetailLevel(), representationConfig.IncludeNonVisible, false);
+
             foreach (ElementId id in remainingElementIds)
             {
                 Element element = document.GetElement(id);
                 if (element == null)
                     continue;
 
-                IEnumerable<IBHoMObject> iBHoMObjects = Read(element, discipline, transform, settings, refObjects);
-
-                if (iBHoMObjects != null && iBHoMObjects.Any())
+                IEnumerable<IBHoMObject> converted = Read(element, discipline, settings, refObjects);
+                if (converted != null)
                 {
                     if (pullConfig.PullMaterialTakeOff)
                     {
-                        foreach (IBHoMObject iBHoMObject in iBHoMObjects)
+                        foreach (IBHoMObject obj in converted)
                         {
                             oM.Physical.Materials.VolumetricMaterialTakeoff takeoff = element.VolumetricMaterialTakeoff(settings, refObjects);
                             if (takeoff != null)
-                                iBHoMObject.Fragments.AddOrReplace(takeoff);
+                                obj.Fragments.AddOrReplace(takeoff);
                         }
                     }
 
                     List<ICurve> edges = null;
                     if (geometryConfig.PullEdges)
-                    {
                         edges = element.Curves(geometryOptions, settings, true).FromRevit();
-                        if (bHoMTransform != null)
-                            edges = edges.Select(x => x?.ITransform(bHoMTransform)).ToList();
-                    }
 
                     List<ISurface> surfaces = null;
                     if (geometryConfig.PullSurfaces)
-                    {
                         surfaces = element.Faces(geometryOptions, settings).Select(x => x.IFromRevit()).ToList();
-                        if (bHoMTransform != null)
-                            surfaces = surfaces.Select(x => x?.ITransform(bHoMTransform)).ToList();
-                    }
 
                     List<oM.Geometry.Mesh> meshes = null;
                     if (geometryConfig.PullMeshes)
-                    {
                         meshes = element.MeshedGeometry(meshOptions, settings);
-                        if (bHoMTransform != null)
-                            meshes = meshes.Select(x => x?.Transform(bHoMTransform)).ToList();
-                    }
 
                     if (geometryConfig.PullEdges || geometryConfig.PullSurfaces || geometryConfig.PullMeshes)
                     {
                         RevitGeometry geometry = new RevitGeometry(edges, surfaces, meshes);
-                        foreach (IBHoMObject iBHoMObject in iBHoMObjects)
+                        foreach (IBHoMObject obj in converted)
                         {
-                            iBHoMObject.Fragments.AddOrReplace(geometry);
+                            obj.Fragments.AddOrReplace(geometry);
                         }
                     }
 
                     if (representationConfig.PullRenderMesh)
                     {
                         List<RenderMesh> renderMeshes = element.RenderMeshes(renderMeshOptions, settings);
-                        if (bHoMTransform != null)
-                            renderMeshes = renderMeshes.Select(x => x?.Transform(bHoMTransform)).ToList();
-
                         RevitRepresentation representation = new RevitRepresentation(renderMeshes);
-                        foreach (IBHoMObject iBHoMObject in iBHoMObjects)
+                        foreach (IBHoMObject obj in converted)
                         {
-                            iBHoMObject.Fragments.AddOrReplace(representation);
+                            obj.Fragments.AddOrReplace(representation);
                         }
                     }
 
-                    result.AddRange(iBHoMObjects);
+                    result.AddRange(converted);
                 }
             }
 
@@ -340,12 +309,12 @@ namespace BH.Revit.Adapter.Core
             if (activePulls.Count(x => x) > 1)
                 BH.Engine.Base.Compute.RecordWarning("Pull of more than one geometry/representation type has been specified in RevitPullConfig. Please consider this can be time consuming due to the amount of conversions.");
 
-            return result;
+            return result.Select(x => x.IPostprocess(transform, settings)).Where(x => x != null).ToList();
         }
 
         /***************************************************/
 
-        public static List<IBHoMObject> Read(Element element, Discipline discipline, Transform transform, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<IBHoMObject> Read(Element element, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (element == null || !element.IsValidObject)
                 return new List<IBHoMObject>();
@@ -353,7 +322,7 @@ namespace BH.Revit.Adapter.Core
             List<IBHoMObject> result = null;
             try
             {
-                result = element.IFromRevit(discipline, transform, settings, refObjects);
+                result = element.IFromRevit(discipline, settings, refObjects);
             }
             catch (Exception exception)
             {
