@@ -42,10 +42,9 @@ namespace BH.Revit.Engine.Core
         [Description("Decomposes a tree created by a set of nested ILogicalRequests into a dictionary of Revit documents (both host and linked) and the IRequests relevant to them, which in total represents the same request as the original IRequest.")]
         [Input("request", "An IRequest to be split into a dictionary of Revit documents and the IRequests relevant to them.")]
         [Input("document", "Host document to be used as the basis of the splitting routine.")]
-        [Output("splitRequests", "A dictionary of Revit documents (both host and linked) and the IRequests relevant to them, which in total represents the same request as the input IRequest.")]
+        [Output("splitRequests", "A dictionary of elementIds representing Revit documents (both host as -1 and linked as link Id) and the IRequests relevant to them, which in total represents the same request as the input IRequest.")]
         public static Dictionary<ElementId, IRequest> SplitRequestTreeByLinks(this IRequest request, Document document)
         {
-
             Dictionary<ElementId, IRequest> requestsByLinks = new Dictionary<ElementId, IRequest>();
             List<IRequest> splitPerDoc = request.SplitRequestTreeByType(typeof(FilterByLink));
             foreach (IRequest splitRequest in splitPerDoc)
@@ -103,18 +102,6 @@ namespace BH.Revit.Engine.Core
                 }
 
                 return true;
-
-                //if (linkInstanceIds.Count == 1)
-                //{
-                //    request.RemoveSubRequest(linkRequest);
-                //    request = request.SimplifyRequestTree();
-                //    requestsByLinks.AddRequestByLink(request, ((RevitLinkInstance)document.GetElement(linkInstanceIds[0])).Id);
-                //    return true;
-                //}
-                //else if (linkInstanceIds.Count == 0)
-                //    BH.Engine.Base.Compute.RecordError($"Active Revit document does not contain links with neither name nor path nor ElementId equal to {linkRequest.LinkName}.");
-                //else
-                //    BH.Engine.Base.Compute.RecordError($"There is more than one link document named {linkRequest.LinkName} - please use full link path or its ElementId instead of link name to pull.");
             }
             else
                 return false;
@@ -226,6 +213,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-

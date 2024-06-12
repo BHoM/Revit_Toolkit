@@ -24,7 +24,6 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Base;
 using BH.Engine.Geometry;
-using BH.Engine.Graphics;
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Enums;
@@ -87,6 +86,7 @@ namespace BH.Revit.Adapter.Core
                 }
             }
 
+            // Split the request into separate requests per each link model
             Dictionary<ElementId, IRequest> requestsByLinks = request.SplitRequestTreeByLinks(this.Document);
             if (requestsByLinks == null)
             {
@@ -96,6 +96,10 @@ namespace BH.Revit.Adapter.Core
 
             RevitSettings settings = RevitSettings.DefaultIfNull();
 
+            // Group links that hold the same document and have same transform
+            // Addresses the case when there is a nested link being loaded via more than one parent link
+            // Same document linked in multiple locations is being pulled per each location
+            // Performance is not affected by multiple converts of same elements thanks to refObjects
             Dictionary<(Document, Transform), List<IRequest>> requestsByDocumentAndTransform = new Dictionary<(Document, Transform), List<IRequest>>();
             foreach (KeyValuePair<ElementId, IRequest> requestByLink in requestsByLinks)
             {
@@ -105,21 +109,28 @@ namespace BH.Revit.Adapter.Core
                     doc = this.Document;
                 else
                 {
-                    var rli = this.Document.GetElement(requestByLink.Key) as RevitLinkInstance;
-                    doc = rli.GetLinkDocument();
+                    var linkInstance = this.Document.GetElement(requestByLink.Key) as RevitLinkInstance;
+                    doc = linkInstance.GetLinkDocument();
                     
-                    Transform t = rli.GetTotalTransform();
-                    if (!t.IsIdentity)
-                        transform = t;
+                    Transform linkTransform = linkInstance.GetTotalTransform();
+                    if (!linkTransform.IsIdentity)
+                        transform = linkTransform;
                 }
 
-                var tuple = (doc, transform);
-                if (!requestsByDocumentAndTransform.ContainsKey(tuple))
+                (Document doc, Transform transform) tuple;
+                if (requestsByDocumentAndTransform.Keys.All(x => x.Item1.Title != doc.Title || !x.Item2.AlmostEqual(transform)))
+                {
+                    tuple = (doc, transform);
                     requestsByDocumentAndTransform.Add(tuple, new List<IRequest>());
+                }
+                else
+                    tuple = requestsByDocumentAndTransform.Keys.First(x => x.Item1.Title == doc.Title && x.Item2.AlmostEqual(transform));
 
                 requestsByDocumentAndTransform[tuple].Add(requestByLink.Value);
             }
 
+            // Global refObjects help sharing the refObjects when pulling from same document linked in a few different locations (e.g. copy-pasted link)
+            // Thanks to sharing refObjects, an element is processed only once even if FromRevit is called against it multiple times
             Dictionary<string, Dictionary<string, List<IBHoMObject>>> globalRefObjects = new Dictionary<string, Dictionary<string, List<IBHoMObject>>>();
             List<IBHoMObject> result = new List<IBHoMObject>();
             foreach (var kvp in requestsByDocumentAndTransform)
@@ -127,11 +138,7 @@ namespace BH.Revit.Adapter.Core
                 result.AddRange(Read(kvp.Key.Item1, kvp.Key.Item2, kvp.Value, pullConfig, settings, globalRefObjects));
             }
 
-            //foreach (KeyValuePair<ElementId, IRequest> requestByLink in requestsByLinks)
-            //{
-            //    result.AddRange(Read(requestByLink.Key, requestByLink.Value, pullConfig, settings));
-            //}
-
+            // Restore selection
             this.UIDocument.Selection.SetElementIds(selected);
 
             return result;
@@ -150,27 +157,18 @@ namespace BH.Revit.Adapter.Core
                 return new List<IBHoMObject>();
             }
 
-            //TODO: union requests and if any duplicates then warning!!
-
-            //if (request == null)
-            //{
-            //    BH.Engine.Base.Compute.RecordError("BHoM objects could not be read because provided IRequest is null.");
-            //    return new List<IBHoMObject>();
-            //}
-
             pullConfig = pullConfig.DefaultIfNull();
             settings = settings.DefaultIfNull();
 
+            // Prefilter only elements from open worksets if requested
             IEnumerable<ElementId> worksetPrefilter = null;
             if (!pullConfig.IncludeClosedWorksets)
                 worksetPrefilter = document.OpenWorksetsPrefilter();
 
-            HashSet<ElementId> elementIds = new HashSet<ElementId>();
-            foreach (IRequest request in requests)
-            {
-                elementIds.UnionWith(request.IElementIds(document, pullConfig.Discipline, settings, worksetPrefilter)?.RemoveGridSegmentIds(document) ?? new List<ElementId>());
-            }
+            // Get elementIds from all requests 
+            List<ElementId> elementIds = new LogicalOrRequest { Requests = requests }.ElementIds(document, pullConfig.Discipline, settings, worksetPrefilter).ToList();
 
+            // Get elementIds of nested elements if requested
             if (pullConfig.IncludeNestedElements)
             {
                 List<ElementId> elemIds = new List<ElementId>();
@@ -184,7 +182,7 @@ namespace BH.Revit.Adapter.Core
                         elemIds.AddRange(nestedElemIds);
                     }
                 }
-                elementIds.UnionWith(elemIds);
+                elementIds.AddRange(elemIds);
             }
 
             return Read(document, transform, elementIds.ToList(), pullConfig, settings, globalRefObjects);
@@ -209,14 +207,6 @@ namespace BH.Revit.Adapter.Core
             pullConfig = pullConfig.DefaultIfNull();
             settings = settings.DefaultIfNull();
 
-            PullGeometryConfig geometryConfig = pullConfig.GeometryConfig;
-            if (geometryConfig == null)
-                geometryConfig = new PullGeometryConfig();
-
-            PullRepresentationConfig representationConfig = pullConfig.RepresentationConfig;
-            if (representationConfig == null)
-                representationConfig = new PullRepresentationConfig();
-
             Discipline discipline = pullConfig.Discipline;
             if (discipline == Discipline.Undefined)
             {
@@ -224,6 +214,7 @@ namespace BH.Revit.Adapter.Core
                 discipline = Discipline.Physical;
             }
 
+            // Set up refObjects
             if (globalRefObjects == null)
                 globalRefObjects = new Dictionary<string, Dictionary<string, List<IBHoMObject>>>();
 
@@ -232,6 +223,9 @@ namespace BH.Revit.Adapter.Core
 
             Dictionary<string, List<IBHoMObject>> refObjects = globalRefObjects[document.Title];
 
+            // Get the elements already processed for a given document
+            // Only relevant in case of same document linked in multiple locations
+            // Helps avoid getting same element processed multiple times
             List<IBHoMObject> result = new List<IBHoMObject>();
             List<ElementId> remainingElementIds = new List<ElementId>();
             foreach (ElementId id in elementIds)
@@ -247,10 +241,21 @@ namespace BH.Revit.Adapter.Core
             if (!document.IsLinked)
                 document.CachePanelGeometry(remainingElementIds, discipline, settings, refObjects);
 
+            // Set up all geometry/representation configs
+            PullGeometryConfig geometryConfig = pullConfig.GeometryConfig;
+            if (geometryConfig == null)
+                geometryConfig = new PullGeometryConfig();
+
+            PullRepresentationConfig representationConfig = pullConfig.RepresentationConfig;
+            if (representationConfig == null)
+                representationConfig = new PullRepresentationConfig();
+
             Options geometryOptions = BH.Revit.Engine.Core.Create.Options(ViewDetailLevel.Fine, geometryConfig.IncludeNonVisible, false);
             Options meshOptions = BH.Revit.Engine.Core.Create.Options(geometryConfig.MeshDetailLevel.ViewDetailLevel(), geometryConfig.IncludeNonVisible, false);
             Options renderMeshOptions = BH.Revit.Engine.Core.Create.Options(representationConfig.DetailLevel.ViewDetailLevel(), representationConfig.IncludeNonVisible, false);
 
+            // Convert each element in coordinate system of the document that owns it
+            // Transformation from that document's coordinate system to the coordinate system of host document done further downstream
             foreach (ElementId id in remainingElementIds)
             {
                 Element element = document.GetElement(id);
@@ -309,6 +314,7 @@ namespace BH.Revit.Adapter.Core
             if (activePulls.Count(x => x) > 1)
                 BH.Engine.Base.Compute.RecordWarning("Pull of more than one geometry/representation type has been specified in RevitPullConfig. Please consider this can be time consuming due to the amount of conversions.");
 
+            // Postprocess clones the output and transforms it to the coordinate system of the host model
             return result.Select(x => x.IPostprocess(transform, settings)).Where(x => x != null).ToList();
         }
 
@@ -348,6 +354,3 @@ namespace BH.Revit.Adapter.Core
         /***************************************************/
     }
 }
-
-
-
