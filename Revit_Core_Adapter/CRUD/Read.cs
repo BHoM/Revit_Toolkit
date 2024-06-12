@@ -166,7 +166,7 @@ namespace BH.Revit.Adapter.Core
                 worksetPrefilter = document.OpenWorksetsPrefilter();
 
             // Get elementIds from all requests 
-            List<ElementId> elementIds = new LogicalOrRequest { Requests = requests }.ElementIds(document, pullConfig.Discipline, settings, worksetPrefilter).ToList();
+            List<ElementId> elementIds = new LogicalOrRequest { Requests = requests }.ElementIds(document, pullConfig.Discipline, settings, worksetPrefilter).RemoveGridSegmentIds(document).ToList();
 
             // Get elementIds of nested elements if requested
             if (pullConfig.IncludeNestedElements)
