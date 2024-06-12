@@ -104,7 +104,7 @@ namespace BH.Revit.Adapter.Core
             foreach (KeyValuePair<ElementId, IRequest> requestByLink in requestsByLinks)
             {
                 Document doc;
-                Transform transform = null;
+                Transform transform = Transform.Identity;
                 if (requestByLink.Key.IntegerValue == -1)
                     doc = this.Document;
                 else
