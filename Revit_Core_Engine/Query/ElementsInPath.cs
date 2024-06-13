@@ -47,7 +47,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             Document doc = startingElement.Document;
-            List<ElementId> result = ElementPath(startingElement, endingElement, new HashSet<int>()).Select(x => new ElementId(x)).ToList();
+            List<ElementId> result = ElementPath(startingElement, endingElement, new HashSet<int>())?.Select(x => new ElementId(x)).ToList();
 
             return result;
         }
