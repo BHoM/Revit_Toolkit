@@ -37,32 +37,35 @@ namespace BH.Revit.Engine.Core
         /****               Public methods              ****/
         /***************************************************/
 
-        [Description("Returns list of elements connected to each other between starting and ending element in MEP network. For elements not connected in the system the result is null.")]
+        [Description("Returns list of element ids connected to each other between starting and ending element in MEP network. For elements not connected in the system the result is null.")]
         [Input("startingElement", "Starting element in the path of the elements.")]
         [Input("endingElement", "Ending element in the path of the elements.")]
-        [Output("elementPath", "Elements in path between starting and ending element.")]
-        public static List<Element> ElementsInPath(this Element startingElement, Element endingElement)
+        [Output("elementPath", "Element ids in path between starting and ending element.")]
+        public static List<ElementId> ElementsInPath(this Element startingElement, Element endingElement)
         {
             if (startingElement == null || endingElement == null) 
                 return null;
 
-            return ElementPath(startingElement, endingElement, new List<Element>());
+            Document doc = startingElement.Document;
+            List<ElementId> result = ElementPath(startingElement, endingElement, new HashSet<int>())?.Select(x => new ElementId(x)).ToList();
+
+            return result;
         }
 
         /***************************************************/
         /****               Private methods             ****/
         /***************************************************/
 
-        private static List<Element> ElementPath(this Element element, Element endingElement, List<Element> visitedElements)
+        private static HashSet<int> ElementPath(this Element element, Element endingElement, HashSet<int> visitedElementIds)
         {
             if (element.Id.IntegerValue == endingElement.Id.IntegerValue)
-                return visitedElements;
+                return visitedElementIds;
 
-            if (!visitedElements.Any())
-                visitedElements.Add(element);
+            if (!visitedElementIds.Any())
+                visitedElementIds.Add(element.Id.IntegerValue);
 
             List<Element> connectedElements = element.ConnectedNetworkElements();
-            List<Element> nextElements = connectedElements.Where(x => !visitedElements.Select(y => y.Id.IntegerValue).Contains(x.Id.IntegerValue)).ToList();
+            List<Element> nextElements = connectedElements.Where(x => !visitedElementIds.Contains(x.Id.IntegerValue)).OrderBy(x => x.LocationPoint().DistanceTo(endingElement.LocationPoint())).ToList();
 
             if (nextElements.Count == 0)
             {
@@ -70,8 +73,8 @@ namespace BH.Revit.Engine.Core
             }
             else if (nextElements.Count == 1)
             {
-                visitedElements.Add(nextElements[0]);
-                var result = ElementPath(nextElements[0], endingElement, visitedElements);
+                visitedElementIds.Add(nextElements[0].Id.IntegerValue);
+                var result = ElementPath(nextElements[0], endingElement, visitedElementIds);
 
                 if (result != null)
                     return result;
@@ -80,9 +83,9 @@ namespace BH.Revit.Engine.Core
             {
                 foreach (Element el in nextElements)
                 {
-                    List<Element> childNetwork = visitedElements.ToList();
-                    childNetwork.Add(el);
-                    List<Element> result = ElementPath(el, endingElement, childNetwork);
+                    HashSet<int> childNetwork = visitedElementIds.ToHashSet();
+                    childNetwork.Add(el.Id.IntegerValue);
+                    HashSet<int> result = ElementPath(el, endingElement, childNetwork);
 
                     if (result != null)
                         return result;
@@ -98,6 +101,20 @@ namespace BH.Revit.Engine.Core
         {
             List<Element> connectedElements = element.ConnectedElements();
             return connectedElements.Where(x => x is FamilyInstance || x is Duct || x is FlexDuct || x is Pipe || x is FlexPipe || x is CableTrayConduitBase || x is Wire).ToList();
+        }
+
+        /***************************************************/
+
+        private static XYZ LocationPoint(this Element element)
+        {
+            Location location = element.Location;
+
+            if (location is LocationPoint locationPoint)
+                return locationPoint.Point;
+            else if (location is LocationCurve locationCurve)
+                return locationCurve.Curve.Evaluate(0.5, true);
+
+            return null;
         }
 
         /***************************************************/
