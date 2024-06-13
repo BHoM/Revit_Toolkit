@@ -65,7 +65,7 @@ namespace BH.Revit.Engine.Core
                 visitedElementIds.Add(element.Id.IntegerValue);
 
             List<Element> connectedElements = element.ConnectedNetworkElements();
-            List<Element> nextElements = connectedElements.Where(x => !visitedElementIds.Contains(x.Id.IntegerValue)).ToList();
+            List<Element> nextElements = connectedElements.Where(x => !visitedElementIds.Contains(x.Id.IntegerValue)).OrderBy(x => x.LocationPoint().DistanceTo(endingElement.LocationPoint())).ToList();
 
             if (nextElements.Count == 0)
             {
@@ -101,6 +101,21 @@ namespace BH.Revit.Engine.Core
         {
             List<Element> connectedElements = element.ConnectedElements();
             return connectedElements.Where(x => x is FamilyInstance || x is Duct || x is FlexDuct || x is Pipe || x is FlexPipe || x is CableTrayConduitBase || x is Wire).ToList();
+        }
+
+
+        /***************************************************/
+
+        private static XYZ LocationPoint(this Element element)
+        {
+            Location location = element.Location;
+
+            if (location is LocationPoint locationPoint)
+                return locationPoint.Point;
+            else if (location is LocationCurve locationCurve)
+                return locationCurve.Curve.Evaluate(0.5, true);
+
+            return null;
         }
 
         /***************************************************/
