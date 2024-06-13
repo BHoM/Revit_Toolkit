@@ -23,14 +23,19 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Base;
-using BH.Engine.Spatial;
+using BH.Engine.Geometry;
+using BH.Engine.Graphics;
+using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Base.Attributes;
 using BH.oM.Dimensional;
 using BH.oM.Geometry;
-using BH.oM.Base.Attributes;
+using BH.oM.MEP.Fragments;
+using BH.oM.Spatial.SettingOut;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -71,7 +76,17 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             if (transform?.IsIdentity == false)
-                element = element.ITransform(transform.FromRevit(), settings.DistanceTolerance);
+            {
+                TransformMatrix bhomTransform = transform.FromRevit();
+                element = BH.Engine.Spatial.Modify.ITransform(element, bhomTransform, settings.DistanceTolerance);
+
+                if (element is IBHoMObject)
+                {
+                    IBHoMObject obj = (IBHoMObject)element;
+                    obj.TransformGeometry(bhomTransform);
+                    obj.TransformRepresentation(bhomTransform);
+                }
+            }
 
             return element;
         }
@@ -94,7 +109,12 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             if (transform?.IsIdentity == false)
-                instance = instance.Transform(transform.FromRevit(), settings.DistanceTolerance) as ModelInstance;
+            {
+                TransformMatrix bhomTransform = transform.FromRevit();
+                instance = instance.Transform(bhomTransform, settings.DistanceTolerance) as ModelInstance;
+                instance.TransformGeometry(bhomTransform);
+                instance.TransformRepresentation(bhomTransform);
+            }
 
             return instance;
         }
@@ -118,6 +138,9 @@ namespace BH.Revit.Engine.Core
             {
                 level = level.ShallowClone();
                 level.Elevation += transform.Origin.Z.ToSI(SpecTypeId.Length);
+                TransformMatrix bhomTransform = transform.FromRevit();
+                level.TransformGeometry(bhomTransform);
+                level.TransformRepresentation(bhomTransform);
             }
 
             return level;
@@ -125,9 +148,44 @@ namespace BH.Revit.Engine.Core
 
 
         /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        private static void TransformGeometry(this IBHoMObject obj, TransformMatrix transform)
+        {
+            RevitGeometry geometryFragment = obj.FindFragment<RevitGeometry>();
+            if (geometryFragment != null)
+            {
+                obj.Fragments.Remove(geometryFragment);
+                obj.Fragments.Add(new RevitGeometry
+                (
+                    geometryFragment.Edges?.Select(x => x.ITransform(transform)).ToList(),
+                    geometryFragment.Surfaces?.Select(x => x.ITransform(transform)).ToList(),
+                    geometryFragment.Meshes?.Select(x => x.Transform(transform)).ToList()
+                ));
+            }
+        }
+
+        /***************************************************/
+
+        private static void TransformRepresentation(this IBHoMObject obj, TransformMatrix transform)
+        {
+            RevitRepresentation representationFragment = obj.FindFragment<RevitRepresentation>();
+            if (representationFragment != null)
+            {
+                obj.Fragments.Remove(representationFragment);
+                obj.Fragments.Add(new RevitRepresentation
+                (
+                    representationFragment.RenderMeshes?.Select(x => x.Transform(transform))
+                ));
+            }
+        }
+
+
+        /***************************************************/
         /****             Fallback methods              ****/
         /***************************************************/
-        
+
         private static IObject Postprocess(this IObject obj, Transform transform, RevitSettings settings)
         {
             return obj;
@@ -136,7 +194,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-
-

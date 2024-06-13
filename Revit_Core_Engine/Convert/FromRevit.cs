@@ -41,16 +41,16 @@ namespace BH.Revit.Engine.Core
         /****             Interface Methods             ****/
         /***************************************************/
 
+        [PreviousVersion("7.2", "BH.Revit.Engine.Core.Convert.IFromRevit(Autodesk.Revit.DB.Element, BH.oM.Adapters.Revit.Enums.Discipline, Autodesk.Revit.DB.Transform, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>)")]
         [Description("Interface method that tries to find a suitable FromRevit convert for any Revit Element.")]
         [Input("element", "Revit Element to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        [Input("transform", "Optional, a transform to apply to the converted object.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("fromRevit", "Resulted BHoM object converted from a Revit Element.")]
-        public static List<IBHoMObject> IFromRevit(this Element element, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<IBHoMObject> IFromRevit(this Element element, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            return FromRevit(element as dynamic, discipline, transform, settings, refObjects);
+            return FromRevit(element as dynamic, discipline, settings, refObjects);
         }
 
         /***************************************************/
@@ -71,14 +71,14 @@ namespace BH.Revit.Engine.Core
         /****      Convert Revit elements to BHoM       ****/
         /***************************************************/
 
+        [PreviousVersion("7.2", "BH.Revit.Engine.Core.Convert.FromRevit(Autodesk.Revit.DB.Analysis.EnergyAnalysisDetailModel, BH.oM.Adapters.Revit.Enums.Discipline, Autodesk.Revit.DB.Transform, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>)")]
         [Description("Converts a Revit EnergyAnalysisDetailModel to a BHoM object based on the requested engineering discipline.")]
         [Input("energyAnalysisModel", "Revit EnergyAnalysisDetailModel to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        [Input("transform", "Optional, a transform to apply to the converted object.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("fromRevit", "Resulted BHoM object converted from a Revit EnergyAnalysisDetailModel.")]
-        public static List<IBHoMObject> FromRevit(this EnergyAnalysisDetailModel energyAnalysisModel, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<IBHoMObject> FromRevit(this EnergyAnalysisDetailModel energyAnalysisModel, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (energyAnalysisModel == null)
             {
@@ -97,14 +97,14 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("7.2", "BH.Revit.Engine.Core.Convert.FromRevit(Autodesk.Revit.DB.AssemblyInstance, BH.oM.Adapters.Revit.Enums.Discipline, Autodesk.Revit.DB.Transform, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>)")]
         [Description("Converts a Revit AssemblyInstance to a BHoM object based on the requested engineering discipline.")]
         [Input("assemblyInstance", "Revit AssemblyInstance to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        [Input("transform", "Optional, a transform to apply to the converted object. Irrelevant in case of assembly instances.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("fromRevit", "Resulted BHoM object converted from a Revit AssemblyInstance.")]
-        public static List<IBHoMObject> FromRevit(this AssemblyInstance assemblyInstance, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<IBHoMObject> FromRevit(this AssemblyInstance assemblyInstance, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (assemblyInstance == null)
             {
@@ -114,7 +114,7 @@ namespace BH.Revit.Engine.Core
 
             foreach (ElementId memberId in assemblyInstance.GetMemberIds())
             {
-                assemblyInstance.Document.GetElement(memberId).IFromRevit(discipline, transform, settings, refObjects);
+                assemblyInstance.Document.GetElement(memberId).IFromRevit(discipline, settings, refObjects);
             }
 
             return new List<IBHoMObject> { assemblyInstance.AssemblyFromRevit(settings, refObjects) };
@@ -122,14 +122,14 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("7.2", "BH.Revit.Engine.Core.Convert.FromRevit(Autodesk.Revit.DB.Element, BH.oM.Adapters.Revit.Enums.Discipline, Autodesk.Revit.DB.Transform, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>)")]
         [Description("Converts a Revit Element to a BHoM object based on the requested engineering discipline.")]
         [Input("element", "Revit EnergyAnalysisDetailModel to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        [Input("transform", "Optional, a transform to apply to the converted object.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("fromRevit", "Resulted BHoM object converted from a Revit Element.")]
-        public static List<IBHoMObject> FromRevit(this Element element, Discipline discipline, Transform transform = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static List<IBHoMObject> FromRevit(this Element element, Discipline discipline, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             if (element == null)
             {
@@ -159,12 +159,11 @@ namespace BH.Revit.Engine.Core
 
             List<IBHoMObject> result = null;
             if (converted is IBHoMObject)
-                result = new List<IBHoMObject> { ((IBHoMObject)converted).IPostprocess(transform, settings) };
+                result = new List<IBHoMObject> { ((IBHoMObject)converted) };
             else if (converted is IEnumerable<IBHoMObject>)
             {
                 result = new List<IBHoMObject>(((IEnumerable<IBHoMObject>)converted)
-                    .Where(x => x != null)
-                    .Select(x => x.IPostprocess(transform, settings)));
+                    .Where(x => x != null));
             }
 
             return result;
