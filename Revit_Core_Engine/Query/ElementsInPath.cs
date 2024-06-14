@@ -34,7 +34,7 @@ namespace BH.Revit.Engine.Core
     public static partial class Query
     {
         /***************************************************/
-        /****                Private field              ****/
+        /****                Private fields             ****/
         /***************************************************/
 
         private static List<Domain> m_CommonDomains;
