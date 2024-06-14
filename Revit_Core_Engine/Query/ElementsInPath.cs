@@ -34,6 +34,12 @@ namespace BH.Revit.Engine.Core
     public static partial class Query
     {
         /***************************************************/
+        /****                Private field              ****/
+        /***************************************************/
+
+        private static List<Domain> m_CommonDomains;
+
+        /***************************************************/
         /****               Public methods              ****/
         /***************************************************/
 
@@ -44,6 +50,10 @@ namespace BH.Revit.Engine.Core
         public static List<ElementId> ElementsInPath(this Element startingElement, Element endingElement)
         {
             if (startingElement == null || endingElement == null) 
+                return null;
+
+            m_CommonDomains = startingElement.CommonDomains(endingElement);
+            if (m_CommonDomains == null || !m_CommonDomains.Any())
                 return null;
 
             return ElementPath(startingElement, endingElement, new List<ElementId>());
@@ -62,7 +72,9 @@ namespace BH.Revit.Engine.Core
                 visitedElementIds.Add(element.Id);
 
             List<Element> connectedElements = element.ConnectedNetworkElements();
-            List<Element> nextElements = connectedElements.Where(x => !visitedElementIds.Select(y => y.IntegerValue).Contains(x.Id.IntegerValue)).OrderBy(x => x.LocationPoint().DistanceTo(endingElement.LocationPoint())).ToList();
+            List<Element> nextElements = connectedElements.
+                Where(x => !visitedElementIds.Select(y => y.IntegerValue).Contains(x.Id.IntegerValue)).
+                OrderBy(x => x.LocationPoint().DistanceTo(endingElement.LocationPoint())).ToList();
 
             if (nextElements.Count == 0)
             {
@@ -97,7 +109,17 @@ namespace BH.Revit.Engine.Core
         private static List<Element> ConnectedNetworkElements(this Element element)
         {
             List<Element> connectedElements = element.ConnectedElements();
-            return connectedElements.Where(x => x is FamilyInstance || x is Duct || x is FlexDuct || x is Pipe || x is FlexPipe || x is CableTrayConduitBase || x is Wire).ToList();
+            connectedElements = connectedElements.Where(x => x is FamilyInstance || x is Duct || x is FlexDuct || x is Pipe || x is FlexPipe || x is CableTrayConduitBase || x is Wire).ToList();
+            List<Element> sameDomainElements = new List<Element>();
+
+            foreach (Element el in connectedElements)
+            {
+                List<Domain> domains = el.Connectors().Select(x => x.Domain).ToList();
+                if (m_CommonDomains.Intersect(domains).Any())
+                    sameDomainElements.Add(el);
+            }
+
+            return sameDomainElements;
         }
 
         /***************************************************/
@@ -112,6 +134,20 @@ namespace BH.Revit.Engine.Core
                 return locationCurve.Curve.Evaluate(0.5, true);
 
             return null;
+        }
+
+
+        /***************************************************/
+
+        private static List<Domain> CommonDomains(this Element element1, Element element2)
+        {
+            List<Domain> el1Domains = element1.Connectors()?.Select(x => x.Domain).ToList();
+            List<Domain> el2Domains = element2.Connectors()?.Select(x => x.Domain).ToList();
+
+            if (el1Domains == null || el2Domains == null)
+                return null;
+
+            return el1Domains.Intersect(el2Domains).ToList();
         }
 
         /***************************************************/
