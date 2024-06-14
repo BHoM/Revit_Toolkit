@@ -46,26 +46,23 @@ namespace BH.Revit.Engine.Core
             if (startingElement == null || endingElement == null) 
                 return null;
 
-            Document doc = startingElement.Document;
-            List<ElementId> result = ElementPath(startingElement, endingElement, new HashSet<int>())?.Select(x => new ElementId(x)).ToList();
-
-            return result;
+            return ElementPath(startingElement, endingElement, new List<ElementId>());
         }
 
         /***************************************************/
         /****               Private methods             ****/
         /***************************************************/
 
-        private static HashSet<int> ElementPath(this Element element, Element endingElement, HashSet<int> visitedElementIds)
+        private static List<ElementId> ElementPath(this Element element, Element endingElement, List<ElementId> visitedElementIds)
         {
             if (element.Id.IntegerValue == endingElement.Id.IntegerValue)
                 return visitedElementIds;
 
             if (!visitedElementIds.Any())
-                visitedElementIds.Add(element.Id.IntegerValue);
+                visitedElementIds.Add(element.Id);
 
             List<Element> connectedElements = element.ConnectedNetworkElements();
-            List<Element> nextElements = connectedElements.Where(x => !visitedElementIds.Contains(x.Id.IntegerValue)).OrderBy(x => x.LocationPoint().DistanceTo(endingElement.LocationPoint())).ToList();
+            List<Element> nextElements = connectedElements.Where(x => !visitedElementIds.Select(y => y.IntegerValue).Contains(x.Id.IntegerValue)).OrderBy(x => x.LocationPoint().DistanceTo(endingElement.LocationPoint())).ToList();
 
             if (nextElements.Count == 0)
             {
@@ -73,7 +70,7 @@ namespace BH.Revit.Engine.Core
             }
             else if (nextElements.Count == 1)
             {
-                visitedElementIds.Add(nextElements[0].Id.IntegerValue);
+                visitedElementIds.Add(nextElements[0].Id);
                 var result = ElementPath(nextElements[0], endingElement, visitedElementIds);
 
                 if (result != null)
@@ -83,9 +80,9 @@ namespace BH.Revit.Engine.Core
             {
                 foreach (Element el in nextElements)
                 {
-                    HashSet<int> childNetwork = visitedElementIds.ToHashSet();
-                    childNetwork.Add(el.Id.IntegerValue);
-                    HashSet<int> result = ElementPath(el, endingElement, childNetwork);
+                    List<ElementId> childNetwork = visitedElementIds.ToList();
+                    childNetwork.Add(el.Id);
+                    List<ElementId> result = ElementPath(el, endingElement, childNetwork);
 
                     if (result != null)
                         return result;
