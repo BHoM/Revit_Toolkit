@@ -22,7 +22,10 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,24 +35,47 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the quality factor to be used by the meshing algorithm, depending on the Revit view detail level.")]
-        [Input("viewDetailLevel", "Revit view detail level to find the meshing quality factor for.")]
-        [Output("factor", "Meshing quality factor correspondent to the input Revit view detail level.")]
-        public static double FaceTriangulationFactor(this ViewDetailLevel viewDetailLevel)
+        [Description("Extracts edge loops of a given curtain cell.")]
+        [Input("curtainCell", "Curtain cell to query for edge loops.")]
+        [Output("edgeLoops", "Edge loops extracted from the input curtain cell.")]
+        public static List<PolyCurve> EdgeLoops(this FamilyInstance curtainCell)
         {
-            switch (viewDetailLevel)
+            HostObject curtainHost = curtainCell.Host as HostObject;
+            if (curtainHost == null)
+                return null;
+
+            foreach (CurtainGrid cg in curtainHost.ICurtainGrids())
             {
-                case Autodesk.Revit.DB.ViewDetailLevel.Coarse:
-                    return 0;
-                case Autodesk.Revit.DB.ViewDetailLevel.Fine:
-                    return 1;
-                default:
-                    return 0.3;
+                List<ElementId> ids = cg.GetPanelIds().ToList();
+                List<CurtainCell> cells = cg.GetCurtainCells().ToList();
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    if (ids[i].IntegerValue == curtainCell.Id.IntegerValue)
+                    {
+                        if (!cells[i].HasValidLocation())
+                            return null;
+
+                        // Collapse nonlinear edges of a cell to lines - valid because mullions are linear anyways
+                        List<PolyCurve> outlines = new List<PolyCurve>();
+                        foreach (CurveArray array in cells[i].CurveLoops)
+                        {
+                            PolyCurve outline = new PolyCurve();
+                            foreach (Curve curve in array)
+                            {
+                                outline.Curves.Add(new BH.oM.Geometry.Line { Start = curve.GetEndPoint(0).PointFromRevit(), End = curve.GetEndPoint(1).PointFromRevit() });
+                            }
+
+                            outlines.Add(outline);
+                        }
+
+                        return outlines;
+                    }
+                }
             }
+
+            return new List<PolyCurve>();
         }
 
         /***************************************************/
     }
 }
-
-

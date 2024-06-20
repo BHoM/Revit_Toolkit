@@ -79,11 +79,10 @@ namespace BH.Revit.Engine.Core
                 hostId = host.Id.IntegerValue;
                 if (host.Document.IsLinked)
                 {
-                    RevitLinkInstance linkInstance = host.Document.LinkInstance(new UIApplication(host.Document.Application).ActiveUIDocument.Document);
-                    if (linkInstance != null)
-                        hostLink = (familyInstance.Document.GetElement(linkInstance.GetTypeId()) as RevitLinkType)?.Name;
-                    else
-                        BH.Engine.Base.Compute.RecordWarning("The Revit element has been identified as hosted on a linked element, but the link document could not be identified.");
+                    if (host.Document.IsDetached)
+                        BH.Engine.Base.Compute.RecordWarning($"Host document name could not be scraped from a detached document.");
+             
+                    hostLink = host.Document.Title + ".rvt";
                 }
             }
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
@@ -32,24 +32,24 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the quality factor to be used by the meshing algorithm, depending on the Revit view detail level.")]
-        [Input("viewDetailLevel", "Revit view detail level to find the meshing quality factor for.")]
-        [Output("factor", "Meshing quality factor correspondent to the input Revit view detail level.")]
-        public static double FaceTriangulationFactor(this ViewDetailLevel viewDetailLevel)
+        [Description("Checks whether glazing of a given curtain panel is transparent (>50%).")]
+        [Input("panel", "Curtain panel to check for transparency.")]
+        [Output("isTransparent", "True if glazing of the input curtain panel is transparent (>50%), otherwise false.")]
+        public static bool IsTransparent(this FamilyInstance panel)
         {
-            switch (viewDetailLevel)
-            {
-                case Autodesk.Revit.DB.ViewDetailLevel.Coarse:
-                    return 0;
-                case Autodesk.Revit.DB.ViewDetailLevel.Fine:
-                    return 1;
-                default:
-                    return 0.3;
-            }
+            return panel?.FacadeOpeningMaterial()?.IsTransparent() == true;
+        }
+
+        /***************************************************/
+
+        [Description("Checks whether a given material is transparent (>50%).")]
+        [Input("material", "Material to check for transparency.")]
+        [Output("isTransparent", "True if the input material is transparent (>50%), otherwise false.")]
+        public static bool IsTransparent(this Material material)
+        {
+            return material != null && material.Transparency >= 50;
         }
 
         /***************************************************/
     }
 }
-
-

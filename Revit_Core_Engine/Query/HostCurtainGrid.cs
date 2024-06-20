@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
@@ -22,7 +22,9 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -32,24 +34,15 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the quality factor to be used by the meshing algorithm, depending on the Revit view detail level.")]
-        [Input("viewDetailLevel", "Revit view detail level to find the meshing quality factor for.")]
-        [Output("factor", "Meshing quality factor correspondent to the input Revit view detail level.")]
-        public static double FaceTriangulationFactor(this ViewDetailLevel viewDetailLevel)
+        [Description("Finds CurtainGrid that hosts a given facade element.")]
+        [Input("familyInstance", "Curtain element to query for host CurtainGrid.")]
+        [Output("host", "Host CurtainGrid of the input facade element. Null if the element is not hosted by any parent element.")]
+        public static CurtainGrid HostCurtainGrid(this FamilyInstance familyInstance)
         {
-            switch (viewDetailLevel)
-            {
-                case Autodesk.Revit.DB.ViewDetailLevel.Coarse:
-                    return 0;
-                case Autodesk.Revit.DB.ViewDetailLevel.Fine:
-                    return 1;
-                default:
-                    return 0.3;
-            }
+            List<CurtainGrid> curtainGrids = (familyInstance?.Host as HostObject)?.ICurtainGrids();
+            return curtainGrids?.FirstOrDefault(x => x.GetPanelIds().Any(y => y == familyInstance.Id));
         }
 
         /***************************************************/
     }
 }
-
-

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
@@ -32,24 +33,29 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the quality factor to be used by the meshing algorithm, depending on the Revit view detail level.")]
-        [Input("viewDetailLevel", "Revit view detail level to find the meshing quality factor for.")]
-        [Output("factor", "Meshing quality factor correspondent to the input Revit view detail level.")]
-        public static double FaceTriangulationFactor(this ViewDetailLevel viewDetailLevel)
+        [Description("Extracts the material that covers largest area of a given facade opening represented by FamilyInstance." +
+                     "\nLargest area is meant to be glazing or spandrel, but may give inconsistent results for elements with very low glazing to frame area ratio.")]
+        [Input("opening", "Facade opening to query for dominating material.")]
+        [Output("material", "Material that covers largest area of the input FamilyInstance representing a facade opening.")]
+        public static Material FacadeOpeningMaterial(this FamilyInstance opening)
         {
-            switch (viewDetailLevel)
+            List<Solid> solids = opening?.Solids(new Options());
+            if (solids == null)
+                return null;
+
+            Face maxAreaFace = null;
+            foreach (Solid solid in solids)
             {
-                case Autodesk.Revit.DB.ViewDetailLevel.Coarse:
-                    return 0;
-                case Autodesk.Revit.DB.ViewDetailLevel.Fine:
-                    return 1;
-                default:
-                    return 0.3;
+                foreach (Face face in solid.Faces)
+                {
+                    if (maxAreaFace == null || maxAreaFace.Area < face.Area)
+                        maxAreaFace = face;
+                }
             }
+
+            return maxAreaFace != null ? opening.Document.GetElement(maxAreaFace.MaterialElementId) as Material : null;
         }
 
         /***************************************************/
     }
 }
-
-

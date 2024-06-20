@@ -25,11 +25,9 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Facade.Elements;
-using BH.oM.Facade.SectionProperties;
-using BH.oM.Geometry;
 using BH.oM.Base.Attributes;
-using System;
+using BH.oM.Facade.Elements;
+using BH.oM.Geometry;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -49,75 +47,58 @@ namespace BH.Revit.Engine.Core
         [Output("opening", "BH.oM.Facade.Elements.Opening resulting from converting the input Revit FamilyInstance.")]
         public static oM.Facade.Elements.Opening FacadeOpeningFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            return familyInstance.FacadeOpeningFromRevit(null, settings, refObjects);
-        }
-
-        /***************************************************/
-
-        [Description("Converts a Revit FamilyInstance to BH.oM.Facade.Elements.Opening.")]
-        [Input("familyInstance", "Revit FamilyInstance to be converted.")]
-        [Input("host", "Revit Element hosting the FamilyInstance to be converted.")]
-        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
-        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("opening", "BH.oM.Facade.Elements.Opening resulting from converting the input Revit FamilyInstance.")]
-        public static oM.Facade.Elements.Opening FacadeOpeningFromRevit(this FamilyInstance familyInstance, HostObject host = null, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
-        {
             if (familyInstance == null)
                 return null;
 
             settings = settings.DefaultIfNull();
 
-            string refId = familyInstance.Id.ReferenceIdentifier(host);
+            string refId = familyInstance.Id.ReferenceIdentifier(familyInstance.Host);
             oM.Facade.Elements.Opening opening = refObjects.GetValue<oM.Facade.Elements.Opening>(refId);
             if (opening != null)
                 return opening;
 
-            // Extraction of frame edge property from Revit FamilyInstance is not implemented yet
-            BH.Engine.Base.Compute.RecordWarning($"Extraction of frame edge property from a Revit opening is currently not supported, property set to null. ElementId: {familyInstance.Id.IntegerValue}");
-            FrameEdgeProperty frameEdgeProperty = null;
-            
-            BH.oM.Geometry.ISurface location = familyInstance.OpeningSurface(host, settings);
-
             List<FrameEdge> edges = new List<FrameEdge>();
-            if (location == null)
+            HostObject host = familyInstance.Host as HostObject;
+            if (host?.ICurtainGrids()?.Count > 0)
             {
-                if (host == null)
+                List<PolyCurve> edgeLoops = familyInstance.EdgeLoops();
+
+                if (edgeLoops != null && edgeLoops.Count != 0)
                 {
-                    BH.Engine.Base.Compute.RecordWarning(String.Format("Location of the opening could not be retrieved from the model (possibly it has zero area or lies on a non-planar face). An opening object without location has been returned. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
+                    if (edgeLoops.Count != 1)
+                        BH.Engine.Base.Compute.RecordWarning($"Opening has more than one closed outline. Revit ElementId: {familyInstance.Id.IntegerValue}");
+
+                    List<FrameEdge> mullions = host.CurtainWallMullions(settings, refObjects);
+                    foreach (var curve in edgeLoops.SelectMany(x => x.SubParts()))
+                    {
+                        BH.oM.Geometry.Point mid = curve.IPointAtParameter(0.5);
+                        FrameEdge mullion = mullions.FirstOrDefault(x => x.Curve != null && mid.IDistance(x.Curve) <= settings.DistanceTolerance);
+                        
+                        if (mullion == null)
+                            BH.Engine.Base.Compute.RecordWarning($"Mullion information is missing for some edges of a curtain Opening. Revit ElementId: {{familyInstance.Id.IntegerValue}}\"");
+                     
+                        edges.Add(new FrameEdge { Curve = curve, FrameEdgeProperty = mullion?.FrameEdgeProperty });
+                    }
                 }
                 else
+                    BH.Engine.Base.Compute.RecordWarning($"Edge curves of the opening could not be retrieved from the model (possibly it has zero area). An opening object without frame edges has been returned. Revit ElementId: {familyInstance.Id.IntegerValue}");
+            }
+            else
+            {
+                ISurface openingSurface = familyInstance.OpeningSurface(host, settings);
+                if (openingSurface != null)
                 {
-                    BH.Engine.Base.Compute.RecordError(String.Format("Location of the opening could not be retrieved from the model (possibly it has zero area or lies on a non-planar face), the opening has been skipped. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
-                    return null;
+                    List<ICurve> extCrvs = openingSurface.IExternalEdges().SelectMany(x => x.ISubParts()).ToList();
+                    edges.AddRange(extCrvs.Select(x => new FrameEdge { Curve = x, FrameEdgeProperty = null }));
+                    BH.Engine.Base.Compute.RecordWarning($"Frame edge properties of the opening could not be retrieved from the model. Revit ElementId: {familyInstance.Id.IntegerValue}");
                 }
-            }
-            else
-            {
-                List<ICurve> extCrvs = location.IExternalEdges().SelectMany(x => x.ISubParts()).ToList();
-                edges = extCrvs.Select( x => new FrameEdge { Curve = x, FrameEdgeProperty = frameEdgeProperty }).ToList();
+                else
+                    BH.Engine.Base.Compute.RecordWarning($"Edge curves of the opening could not be retrieved from the model (possibly it has zero area or complex geometry). An opening object without frame edges has been returned. Revit ElementId: {familyInstance.Id.IntegerValue}");
             }
 
-            int category = familyInstance.Category.Id.IntegerValue;
-            oM.Physical.Constructions.Construction glazingConstruction = null;
-            if (category == (int)BuiltInCategory.OST_Walls)
-            {
-                HostObjAttributes hostObjAttributes = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as HostObjAttributes;
-                string materialGrade = familyInstance.MaterialGrade(settings);
-                glazingConstruction = hostObjAttributes.ConstructionFromRevit(materialGrade, settings, refObjects);
-            }
-            else
-            {
-                glazingConstruction = familyInstance.GlazingConstruction();
-            }
-
-            opening = new BH.oM.Facade.Elements.Opening { Name = familyInstance.FamilyTypeFullName(), Edges = edges, OpeningConstruction = glazingConstruction };
-
-            if (category == (int)BuiltInCategory.OST_Windows || category == (int)BuiltInCategory.OST_CurtainWallPanels)
-                opening.Type = OpeningType.Window;
-            else if (category == (int)BuiltInCategory.OST_Doors)
-                opening.Type = OpeningType.Door;
-            else if (category == (int)BuiltInCategory.OST_Walls)
-                opening.Type = OpeningType.Undefined;
+            oM.Physical.Constructions.Construction construction = familyInstance.FacadePanelConstruction(settings, refObjects);
+            OpeningType openingType = familyInstance.FacadeOpeningType();
+            opening = new BH.oM.Facade.Elements.Opening { Name = familyInstance.Name, Edges = edges, OpeningConstruction = construction, Type = openingType };
 
             //Set identifiers, parameters & custom data
             opening.SetIdentifiers(familyInstance);

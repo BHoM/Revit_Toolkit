@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
+using BH.oM.Facade.Elements;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
@@ -32,24 +33,27 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the quality factor to be used by the meshing algorithm, depending on the Revit view detail level.")]
-        [Input("viewDetailLevel", "Revit view detail level to find the meshing quality factor for.")]
-        [Output("factor", "Meshing quality factor correspondent to the input Revit view detail level.")]
-        public static double FaceTriangulationFactor(this ViewDetailLevel viewDetailLevel)
+        [Description("Deducts facade opening type from a FamilyInstance representing a curtain panel.")]
+        [Input("panel", "FamilyInstance representing a curtain panel.")]
+        [Output("openingType", "Facade opening type deducted from the input curtain panel represented by a FamilyInstance.")]
+        public static OpeningType FacadeOpeningType(this FamilyInstance panel)
         {
-            switch (viewDetailLevel)
+            BuiltInCategory category = (BuiltInCategory)panel.Category.Id.IntegerValue;
+            if (category == Autodesk.Revit.DB.BuiltInCategory.OST_Windows)
+                return BH.oM.Facade.Elements.OpeningType.Window;
+            else if (category == Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanels)
             {
-                case Autodesk.Revit.DB.ViewDetailLevel.Coarse:
-                    return 0;
-                case Autodesk.Revit.DB.ViewDetailLevel.Fine:
-                    return 1;
-                default:
-                    return 0.3;
+                if (panel.IsTransparent())
+                    return BH.oM.Facade.Elements.OpeningType.Window;
+                else
+                    return BH.oM.Facade.Elements.OpeningType.CurtainWallSpandrel;
             }
+            else if (category == Autodesk.Revit.DB.BuiltInCategory.OST_Doors)
+                return BH.oM.Facade.Elements.OpeningType.Door;
+            else
+                return BH.oM.Facade.Elements.OpeningType.Undefined;
         }
 
         /***************************************************/
     }
 }
-
-

@@ -38,7 +38,7 @@ namespace BH.oM.Adapters.Revit.Elements
         public virtual InstanceProperties Properties { get; set; } = new InstanceProperties();
 
         [Description("Location of the instance in three dimensional space.")]
-        public virtual IGeometry Location { get; set; } = new Point();
+        public virtual IGeometry Location { get; set; } = null;
 
         [Description("Orientation of the instance in 2 dimensional space (only X and Y vectors are relevant). Applicable only to point-based DraftingInstances. If null, a default orientation will be applied.")]
         public virtual Basis Orientation { get; set; } = null;

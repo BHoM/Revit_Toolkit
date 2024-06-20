@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
@@ -32,24 +32,22 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the quality factor to be used by the meshing algorithm, depending on the Revit view detail level.")]
-        [Input("viewDetailLevel", "Revit view detail level to find the meshing quality factor for.")]
-        [Output("factor", "Meshing quality factor correspondent to the input Revit view detail level.")]
-        public static double FaceTriangulationFactor(this ViewDetailLevel viewDetailLevel)
+        [Description("Checks whether a given curtain cell has valid location (exists in space).")]
+        [Input("curtainCell", "Curtain cell to check.")]
+        [Output("isValid", "True if the input curtain cell has valid location (exists in space), otherwise false.")]
+        public static bool HasValidLocation(this CurtainCell curtainCell)
         {
-            switch (viewDetailLevel)
+            // This catches when PlanarizedCurveLoops throws an exception due to the cell having no loops, meaning in Revit it exists in the database but is no longer a valid CurtainWall cell
+            try
             {
-                case Autodesk.Revit.DB.ViewDetailLevel.Coarse:
-                    return 0;
-                case Autodesk.Revit.DB.ViewDetailLevel.Fine:
-                    return 1;
-                default:
-                    return 0.3;
+                return curtainCell.PlanarizedCurveLoops?.IsEmpty == false;
+            }
+            catch
+            {
+                return false;
             }
         }
 
         /***************************************************/
     }
 }
-
-

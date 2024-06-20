@@ -156,7 +156,7 @@ namespace BH.Revit.Engine.Core
         [Output("wall", "BH.oM.Physical.Elements.Wall resulting from converting the input Revit Wall.")]
         private static oM.Physical.Elements.Wall WallFromRevit_Curtain(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            List<BH.oM.Physical.Elements.IOpening> curtainPanels = wall.CurtainGrid.CurtainPanels(wall.Document, settings, refObjects);
+            List<BH.oM.Physical.Elements.IOpening> curtainPanels = wall.CurtainGrid.PhysicalCurtainPanels(wall.Document, settings, refObjects);
             
             ISurface location = null;
             if (curtainPanels == null || curtainPanels.Count == 0)

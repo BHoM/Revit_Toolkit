@@ -28,6 +28,7 @@ using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using BH.oM.Physical.Elements;
 
 namespace BH.Revit.Engine.Core
 {
@@ -37,26 +38,30 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts the mullions from a Revit curtain grid and returns them in a form of BHoM FrameEdges.")]
-        [Input("curtainGrid", "Revit curtain grid to extract the mullions from.")]
-        [Input("document", "Revit document, to which the curtain grid belongs.")]
+        [Description("Extracts the mullions from a Revit curtain element and returns them in a form of BHoM FrameEdges.")]
+        [Input("element", "Revit curtain element to extract the mullions from.")]
         [Input("settings", "Revit adapter settings to be used while performing the query.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("mullions", "Mullions extracted from the input Revit curtain grid and converted to BHoM FrameEdges.")]
-        public static List<FrameEdge> CurtainWallMullions(this CurtainGrid curtainGrid, Document document, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("mullions", "Mullions extracted from the input Revit curtain element and converted to BHoM FrameEdges.")]
+        public static List<FrameEdge> CurtainWallMullions(this HostObject element, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (curtainGrid == null)
+            if (element == null)
                 return null;
 
-            List<FrameEdge> result = new List<FrameEdge>();
-            List<Element> mullions = curtainGrid.GetMullionIds().Select(x => document.GetElement(x)).ToList();
+            string refId = $"{element.Id}_Mullions";
+            List<FrameEdge> edges = refObjects.GetValues<FrameEdge>(refId);
+            if (edges != null)
+                return edges;
 
+            edges = new List<FrameEdge>();
+            List<Element> mullions = element.ICurtainGrids().SelectMany(x => x.GetMullionIds()).Select(x => element.Document.GetElement(x)).ToList();
             foreach (Mullion mullion in mullions.Where(x => x.get_BoundingBox(null) != null))
             {
-                result.Add(mullion.FrameEdgeFromRevit(settings, refObjects));
+                edges.Add(mullion.FrameEdgeFromRevit(settings, refObjects));
             }
 
-            return result;
+            refObjects.AddOrReplace(refId, edges);
+            return edges;
         }
 
         /***************************************************/

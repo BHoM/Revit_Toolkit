@@ -53,39 +53,7 @@ namespace BH.Revit.Engine.Core
         [Output("curtainWall", "BH.oM.Facade.Elements.CurtainWall resulting from converting the input Revit Wall.")]
         public static CurtainWall CurtainWallFromRevit(this Wall wall, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (wall == null)
-                return null;
-
-            settings = settings.DefaultIfNull();
-
-            CurtainWall bHoMCurtainWall = refObjects.GetValue<CurtainWall>(wall.Id);
-            if (bHoMCurtainWall != null)
-                return bHoMCurtainWall;
-
-            if (wall.StackedWallOwnerId != null && wall.StackedWallOwnerId != ElementId.InvalidElementId)
-                return null;
-
-            IEnumerable<oM.Facade.Elements.Opening> curtainPanels = wall.CurtainGrid.FacadeCurtainPanels(wall.Document, settings, refObjects);
-
-            if (curtainPanels == null || !curtainPanels.Any())
-                BH.Engine.Base.Compute.RecordError(String.Format("Processing of panels of Revit curtain wall failed. BHoM curtain wall without location has been returned. Revit ElementId: {0}", wall.Id.IntegerValue));
-
-            // Get external edges of whole curtain wall
-            List<FrameEdge> allEdges = curtainPanels.SelectMany(x => x.Edges).ToList();
-            List<FrameEdge> extEdges = allEdges.Distinct().Where(x => allEdges.Count(y => x.ElementId() == y.ElementId()) == 1).ToList();
-
-            bHoMCurtainWall = new CurtainWall { ExternalEdges = extEdges, Openings = curtainPanels.ToList(), Name = wall.WallType.Name };
-
-            bHoMCurtainWall.Name = wall.FamilyTypeFullName();
-
-            //Set identifiers, parameters & custom data
-            bHoMCurtainWall.SetIdentifiers(wall);
-            bHoMCurtainWall.CopyParameters(wall, settings.MappingSettings);
-            bHoMCurtainWall.SetProperties(wall, settings.MappingSettings);
-
-            refObjects.AddOrReplace(wall.Id, bHoMCurtainWall);
-
-            return bHoMCurtainWall;
+            return ((HostObject)wall).CurtainWallFromRevit(settings, refObjects);
         }
 
         /***************************************************/
@@ -97,32 +65,60 @@ namespace BH.Revit.Engine.Core
         [Output("curtainWall", "BH.oM.Facade.Elements.CurtainWall resulting from converting the input Revit CurtainSystem.")]
         public static CurtainWall CurtainWallFromRevit(this CurtainSystem system, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (system == null)
+            return ((HostObject)system).CurtainWallFromRevit(settings, refObjects);
+        }
+
+
+        /***************************************************/
+        /****               Private Methods             ****/
+        /***************************************************/
+
+        private static CurtainWall CurtainWallFromRevit(this HostObject element, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            if (element == null)
                 return null;
 
             settings = settings.DefaultIfNull();
 
-            CurtainWall bHoMCurtainWall = refObjects.GetValue<CurtainWall>(system.Id);
+            CurtainWall bHoMCurtainWall = refObjects.GetValue<CurtainWall>(element.Id);
             if (bHoMCurtainWall != null)
                 return bHoMCurtainWall;
 
-            IEnumerable<oM.Facade.Elements.Opening> curtainPanels = system.ICurtainGrids().SelectMany(x => x.FacadeCurtainPanels(system.Document, settings, refObjects)).ToList();
+            IEnumerable<oM.Facade.Elements.Opening> curtainPanels = element.FacadeCurtainPanels(settings, refObjects);
 
             if (curtainPanels == null || !curtainPanels.Any())
-                BH.Engine.Base.Compute.RecordError(String.Format("Processing of panels of Revit curtain wall failed. BHoM curtain wall without location has been returned. Revit ElementId: {0}", system.Id.IntegerValue));
+                BH.Engine.Base.Compute.RecordError($"Processing of panels of a Revit curtain wall failed. BHoM curtain wall without location has been returned. Revit ElementId: {element.Id.IntegerValue}");
+
+            // Unify edges
+            double sqTol = settings.DistanceTolerance * settings.DistanceTolerance;
+            List<(FrameEdge, BH.oM.Geometry.Point)> edges = new List<(FrameEdge, BH.oM.Geometry.Point)>();
+            foreach (oM.Facade.Elements.Opening panel in curtainPanels)
+            {
+                for (int i = 0; i < panel.Edges.Count; i++)
+                {
+                    FrameEdge edge = panel.Edges[i];
+                    BH.oM.Geometry.Point midPoint = edge.Curve.IPointAtParameter(0.5);
+                    
+                    FrameEdge existing = edges.FirstOrDefault(x => x.Item2.SquareDistance(midPoint) <= sqTol).Item1;
+                    if (existing != null)
+                        panel.Edges[i] = existing;
+                    else
+                        edges.Add((edge, midPoint));
+                }
+            }
 
             // Get external edges of whole curtain wall
             List<FrameEdge> allEdges = curtainPanels.SelectMany(x => x.Edges).ToList();
             List<FrameEdge> extEdges = allEdges.Distinct().Where(x => allEdges.Count(y => x == y) == 1).ToList();
 
-            bHoMCurtainWall = new CurtainWall { ExternalEdges = extEdges, Openings = curtainPanels.ToList(), Name = system.FamilyTypeFullName() };
+            bHoMCurtainWall = new CurtainWall { ExternalEdges = extEdges, Openings = curtainPanels.ToList(), Name = element.FamilyTypeFullName() };
 
             //Set identifiers, parameters & custom data
-            bHoMCurtainWall.SetIdentifiers(system);
-            bHoMCurtainWall.CopyParameters(system, settings.MappingSettings);
-            bHoMCurtainWall.SetProperties(system, settings.MappingSettings);
+            bHoMCurtainWall.SetIdentifiers(element);
+            bHoMCurtainWall.CopyParameters(element, settings.MappingSettings);
+            bHoMCurtainWall.SetProperties(element, settings.MappingSettings);
 
-            refObjects.AddOrReplace(system.Id, bHoMCurtainWall);
+            refObjects.AddOrReplace(element.Id, bHoMCurtainWall);
 
             return bHoMCurtainWall;
         }
@@ -130,7 +126,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-
-
