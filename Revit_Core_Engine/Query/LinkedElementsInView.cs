@@ -97,14 +97,12 @@ namespace BH.Revit.Engine.Core
             Solid viewSolid;
             if (view is ViewPlan viewplan && !viewplan.CropBoxActive)
             {
-                Output<double, double> range = (view as ViewPlan).PlanViewRange();
-
-                BoundingBoxXYZ viewBBox = view.CropBox;
-                if (!view.CropBoxActive)
+                Output<double, double> range = viewplan.PlanViewRange();
+                BoundingBoxXYZ viewBBox = new BoundingBoxXYZ
                 {
-                    viewBBox.Min = new XYZ(-1e6, -1e6, range.Item1);
-                    viewBBox.Max = new XYZ(1e6, 1e6, range.Item2);
-                }
+                    Min = new XYZ(-1e6, -1e6, range.Item1),
+                    Max = new XYZ(1e6, 1e6, range.Item2)
+                };
 
                 viewSolid = viewBBox.ToSolid();
             }
