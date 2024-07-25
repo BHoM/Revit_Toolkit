@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
         [Output("elements", "Elements of link instance in given view.")]
         public static List<Element> LinkedElementsInView(this ViewPlan view, RevitLinkInstance linkInstance, List<ElementFilter> elementFilters = null)
         {
-            if (view == null || linkInstance == null || elementFilters.Count == 0)
+            if (view == null || linkInstance == null || elementFilters?.Count == 0)
                 return null;
 
             Document linkDoc = linkInstance.GetLinkDocument();
@@ -57,6 +57,49 @@ namespace BH.Revit.Engine.Core
             LogicalAndFilter elementSolidFilter = new LogicalAndFilter(elementFilter, solidFilter);
 
             return new FilteredElementCollector(linkDoc).WherePasses(elementSolidFilter).WhereElementIsNotElementType().ToElements().ToList();
+        }
+
+        /***************************************************/
+
+        [Description("Return elements from the revit link instance visible in the view.")]
+        [Input("view", "View to get visible elements from.")]
+        [Input("linkInstance", "Revit link instance to get the elements from.")]
+        [Input("elementFilters", "Additional filters for the element collector. If null, no additional filters will be applied.")]
+        [Output("elements", "Elements of link instance in given view.")]
+        public static IEnumerable<ElementId> LinkedElementsInView(this View view, RevitLinkInstance linkInstance, List<ElementFilter> elementFilters = null)
+        {
+            if (view == null || linkInstance == null)
+                return null;
+
+            Document linkDoc = linkInstance.GetLinkDocument();
+            Solid viewSolid = view.TransformedViewSolid(linkInstance);
+            ElementIntersectsSolidFilter solidFilter = new ElementIntersectsSolidFilter(viewSolid);
+            
+            IEnumerable<Element> elements; 
+            if (elementFilters == null)
+                elements = new FilteredElementCollector(linkDoc).WherePasses(solidFilter).WhereElementIsNotElementType().ToElements();
+            else
+            {
+                LogicalOrFilter elementFilter = new LogicalOrFilter(elementFilters);
+                LogicalAndFilter elementSolidFilter = new LogicalAndFilter(elementFilter, solidFilter);
+                elements = new FilteredElementCollector(linkDoc).WherePasses(elementSolidFilter).WhereElementIsNotElementType().ToElements();
+            }
+
+            return elements.Where(x => x.DesignOption == null || x.DesignOption.IsPrimary).Select(x => x.Id).ToHashSet();
+        }
+
+        /***************************************************/
+
+        [Description("Return view solid corrected by link instnace transform.")]
+        private static Solid TransformedViewSolid(this View view, RevitLinkInstance linkInstance)
+        {
+            Solid viewSolid = view.ViewSolid();
+            Transform linkTransform = linkInstance.GetTotalTransform();
+
+            if (linkTransform.IsIdentity)
+                return viewSolid;
+
+            return SolidUtils.CreateTransformed(viewSolid, linkTransform.Inverse);
         }
 
         /***************************************************/
