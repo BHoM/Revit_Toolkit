@@ -38,12 +38,12 @@ namespace BH.Revit.Engine.Core
         [Description("Returns a solid that represents the 3-dimensional extents of a given view.")]
         [Input("view", "View to compute the solids.")]
         [Output("solid", "Solid that represents the 3-dimensional extents of the input view.")]
-        public static Solid ViewSolid(this View view)
+        public static Solid ViewSolid(this View view, bool createIfNoCropBox = false)
         {
             if (view == null)
                 return null;
 
-            Solid solid = view.CropBoxSolid();
+            Solid solid = view.CropBoxSolid(createIfNoCropBox);
             if (view is View3D)
             {
                 View3D view3D = (View3D)view;
@@ -58,12 +58,11 @@ namespace BH.Revit.Engine.Core
             return solid;
         }
 
-
         /***************************************************/
         /****              Private methods              ****/
         /***************************************************/
 
-        private static Solid CropBoxSolid(this View view)
+        private static Solid CropBoxSolid(this View view, bool createIfNoCropBox)
         {
             if (view.CropBoxActive)
             {
@@ -87,7 +86,45 @@ namespace BH.Revit.Engine.Core
                 return GeometryCreationUtilities.CreateExtrusionGeometry(loops, range.Direction, range.Length);
             }
             else
+            {
+                if (createIfNoCropBox)
+                    return NoCropBoxSolid(view);
+
                 return null;
+            }
+        }
+
+        /***************************************************/
+
+        private static Solid NoCropBoxSolid(this View view)
+        {
+            if (view is ViewPlan viewplan)
+            {
+                Output<double, double> range = viewplan.PlanViewRange();
+                BoundingBoxXYZ viewBBox = new BoundingBoxXYZ
+                {
+                    Min = new XYZ(-1e6, -1e6, range.Item1),
+                    Max = new XYZ(1e6, 1e6, range.Item2)
+                };
+
+                return viewBBox.ToSolid();
+            }
+            else if (view is ViewSection viewSection)
+            {
+
+            }
+            else if (view is View3D)
+            {
+                BoundingBoxXYZ viewBBox = new BoundingBoxXYZ
+                {
+                    Min = new XYZ(-1e6, -1e6, -1e6),
+                    Max = new XYZ(1e6, 1e6, 1e6)
+                };
+
+                return viewBBox.ToSolid();
+            }
+
+            return null;
         }
 
         /***************************************************/

@@ -21,11 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -33,33 +31,6 @@ namespace BH.Revit.Engine.Core
     {
         /***************************************************/
         /****              Public methods               ****/
-        /***************************************************/
-
-        [Description("Return elements from link instance located in given view. Method returns all instance elements in the view scope (including hidden elements).")]
-        [Input("view", "ViewPlan to get the elements from.")]
-        [Input("linkInstance", "Revit Link Instance to get the elements from.")]
-        [Input("elementFilters", "Additional filters for the element collector. If null, no additional filters will be applied.")]
-        [Output("elements", "Elements of link instance in given view.")]
-        public static List<Element> LinkedElementsInView(this ViewPlan view, RevitLinkInstance linkInstance, List<ElementFilter> elementFilters = null)
-        {
-            if (view == null || linkInstance == null || elementFilters?.Count == 0)
-                return null;
-
-            Document linkDoc = linkInstance.GetLinkDocument();
-            Transform linkTransform = linkInstance.GetTotalTransform();
-            Solid viewSolid = view.Solid(linkTransform);
-
-            ElementIntersectsSolidFilter solidFilter = new ElementIntersectsSolidFilter(viewSolid);
-
-            if (elementFilters == null)
-                return new FilteredElementCollector(linkDoc).WherePasses(solidFilter).WhereElementIsNotElementType().ToElements().ToList();
-
-            LogicalOrFilter elementFilter = new LogicalOrFilter(elementFilters);
-            LogicalAndFilter elementSolidFilter = new LogicalAndFilter(elementFilter, solidFilter);
-
-            return new FilteredElementCollector(linkDoc).WherePasses(elementSolidFilter).WhereElementIsNotElementType().ToElements().ToList();
-        }
-
         /***************************************************/
 
         [Description("Return elements from the revit link instance visible in the view.")]
@@ -76,17 +47,17 @@ namespace BH.Revit.Engine.Core
             Solid viewSolid = view.TransformedViewSolid(linkInstance);
             ElementIntersectsSolidFilter solidFilter = new ElementIntersectsSolidFilter(viewSolid);
             
-            IEnumerable<Element> elements; 
+            IEnumerable<ElementId> elementIds; 
             if (elementFilters == null)
-                elements = new FilteredElementCollector(linkDoc).WherePasses(solidFilter).WhereElementIsNotElementType().ToElements();
+                elementIds = new FilteredElementCollector(linkDoc).WherePasses(solidFilter).WhereElementIsNotElementType().ToElementIds();
             else
             {
                 LogicalOrFilter elementFilter = new LogicalOrFilter(elementFilters);
                 LogicalAndFilter elementSolidFilter = new LogicalAndFilter(elementFilter, solidFilter);
-                elements = new FilteredElementCollector(linkDoc).WherePasses(elementSolidFilter).WhereElementIsNotElementType().ToElements();
+                elementIds = new FilteredElementCollector(linkDoc).WherePasses(elementSolidFilter).WhereElementIsNotElementType().ToElementIds();
             }
 
-            return elements.Where(x => x.DesignOption == null || x.DesignOption.IsPrimary).Select(x => x.Id).ToHashSet();
+            return elementIds;
         }
 
         /***************************************************/
@@ -94,20 +65,7 @@ namespace BH.Revit.Engine.Core
         [Description("Return view solid corrected by link instnace transform.")]
         private static Solid TransformedViewSolid(this View view, RevitLinkInstance linkInstance)
         {
-            Solid viewSolid;
-            if (view is ViewPlan viewplan && !viewplan.CropBoxActive)
-            {
-                Output<double, double> range = viewplan.PlanViewRange();
-                BoundingBoxXYZ viewBBox = new BoundingBoxXYZ
-                {
-                    Min = new XYZ(-1e6, -1e6, range.Item1),
-                    Max = new XYZ(1e6, 1e6, range.Item2)
-                };
-
-                viewSolid = viewBBox.ToSolid();
-            }
-            else
-                viewSolid = view.ViewSolid();
+            Solid viewSolid = view.ViewSolid(true);
 
             Transform linkTransform = linkInstance.GetTotalTransform();
             if (linkTransform.IsIdentity)
