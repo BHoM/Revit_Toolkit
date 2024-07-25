@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -93,9 +94,24 @@ namespace BH.Revit.Engine.Core
         [Description("Return view solid corrected by link instnace transform.")]
         private static Solid TransformedViewSolid(this View view, RevitLinkInstance linkInstance)
         {
-            Solid viewSolid = view.ViewSolid();
-            Transform linkTransform = linkInstance.GetTotalTransform();
+            Solid viewSolid;
+            if (view is ViewPlan viewplan && !viewplan.CropBoxActive)
+            {
+                Output<double, double> range = (view as ViewPlan).PlanViewRange();
 
+                BoundingBoxXYZ viewBBox = view.CropBox;
+                if (!view.CropBoxActive)
+                {
+                    viewBBox.Min = new XYZ(-1e6, -1e6, range.Item1);
+                    viewBBox.Max = new XYZ(1e6, 1e6, range.Item2);
+                }
+
+                viewSolid = viewBBox.ToSolid();
+            }
+            else
+                viewSolid = view.ViewSolid();
+
+            Transform linkTransform = linkInstance.GetTotalTransform();
             if (linkTransform.IsIdentity)
                 return viewSolid;
 
