@@ -37,13 +37,14 @@ namespace BH.Revit.Engine.Core
 
         [Description("Returns a solid that represents the 3-dimensional extents of a given view.")]
         [Input("view", "View to compute the solids.")]
+        [Input("createIfUncropped", "Create solid if crop view property is inactive. New solid will be extended by default extens value (1e+4) in directions per perpendicular to the view type.")]
         [Output("solid", "Solid that represents the 3-dimensional extents of the input view.")]
-        public static Solid ViewSolid(this View view, bool createIfNoCropBox = false)
+        public static Solid ViewSolid(this View view, bool createIfUncropped = false)
         {
             if (view == null)
                 return null;
 
-            Solid solid = view.CropBoxSolid(createIfNoCropBox);
+            Solid solid = view.CropBoxSolid(createIfUncropped);
             if (view is View3D)
             {
                 View3D view3D = (View3D)view;
@@ -87,10 +88,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                if (createIfNoCropBox)
-                    return NoCropBoxSolid(view);
-
-                return null;
+                return createIfNoCropBox ? NoCropBoxSolid(view) : null;
             }
         }
 
@@ -103,28 +101,42 @@ namespace BH.Revit.Engine.Core
                 Output<double, double> range = viewplan.PlanViewRange();
                 BoundingBoxXYZ viewBBox = new BoundingBoxXYZ
                 {
-                    Min = new XYZ(-1e6, -1e6, range.Item1),
-                    Max = new XYZ(1e6, 1e6, range.Item2)
+                    Min = new XYZ(-m_DefaultExtents, -m_DefaultExtents, range.Item1),
+                    Max = new XYZ(m_DefaultExtents, m_DefaultExtents, range.Item2)
                 };
 
                 return viewBBox.ToSolid();
             }
             else if (view is ViewSection viewSection)
             {
+                Line range = view.ViewDepthLine();
+                Plane plane = Plane.CreateByNormalAndOrigin(range.Direction, range.GetEndPoint(0));
+                Solid solid = MaximumSolid();
+                BooleanOperationsUtils.CutWithHalfSpaceModifyingOriginalSolid(solid, plane);
+                Plane endPlane = Plane.CreateByNormalAndOrigin(-range.Direction, range.GetEndPoint(1));
+                BooleanOperationsUtils.CutWithHalfSpaceModifyingOriginalSolid(solid, endPlane);
 
+                return solid;
             }
             else if (view is View3D)
             {
-                BoundingBoxXYZ viewBBox = new BoundingBoxXYZ
-                {
-                    Min = new XYZ(-1e6, -1e6, -1e6),
-                    Max = new XYZ(1e6, 1e6, 1e6)
-                };
-
-                return viewBBox.ToSolid();
+                return MaximumSolid();
             }
 
             return null;
+        }
+
+        /***************************************************/
+
+        private static Solid MaximumSolid()
+        {
+            BoundingBoxXYZ bbox = new BoundingBoxXYZ
+            {
+                Min = new XYZ(-m_DefaultExtents, -m_DefaultExtents, -m_DefaultExtents),
+                Max = new XYZ(m_DefaultExtents, m_DefaultExtents, m_DefaultExtents)
+            };
+
+            return bbox.ToSolid();
         }
 
         /***************************************************/
