@@ -64,7 +64,7 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
-        private static Solid CropBoxSolid(this View view, bool createIfNoCropBox)
+        private static Solid CropBoxSolid(this View view, bool createIfUncropped)
         {
             if (view.CropBoxActive)
             {
@@ -89,7 +89,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                return createIfNoCropBox ? NoCropBoxSolid(view) : null;
+                return createIfUncropped ? NoCropBoxSolid(view) : null;
             }
         }
 
