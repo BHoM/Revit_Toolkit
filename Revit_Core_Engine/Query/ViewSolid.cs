@@ -38,7 +38,7 @@ namespace BH.Revit.Engine.Core
         [PreviousVersion("7.3", "BH.Revit.Engine.Core.Query.ViewSolid(Autodesk.Revit.DB.View)")]
         [Description("Returns a solid that represents the 3-dimensional extents of a given view.")]
         [Input("view", "View to compute the solids.")]
-        [Input("createIfUncropped", "Create solid if crop view property is inactive. New solid will be extended by default extens value (1e+4) in directions per perpendicular to the view type.")]
+        [Input("createIfUncropped", "Create solid if crop view property is inactive. New solid will be extended by maximum extends value in directions perpendicular to the view type.")]
         [Output("solid", "Solid that represents the 3-dimensional extents of the input view.")]
         public static Solid ViewSolid(this View view, bool createIfUncropped = false)
         {
