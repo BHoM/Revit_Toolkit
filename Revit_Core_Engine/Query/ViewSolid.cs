@@ -102,8 +102,8 @@ namespace BH.Revit.Engine.Core
                 Output<double, double> range = viewplan.PlanViewRange();
                 BoundingBoxXYZ viewBBox = new BoundingBoxXYZ
                 {
-                    Min = new XYZ(-m_DefaultExtents, -m_DefaultExtents, range.Item1),
-                    Max = new XYZ(m_DefaultExtents, m_DefaultExtents, range.Item2)
+                    Min = new XYZ(-m_DefaultHorizontalExtents, -m_DefaultHorizontalExtents, range.Item1),
+                    Max = new XYZ(m_DefaultHorizontalExtents, m_DefaultHorizontalExtents, range.Item2)
                 };
 
                 return viewBBox.ToSolid();
@@ -133,8 +133,8 @@ namespace BH.Revit.Engine.Core
         {
             BoundingBoxXYZ bbox = new BoundingBoxXYZ
             {
-                Min = new XYZ(-m_DefaultExtents, -m_DefaultExtents, -m_DefaultExtents),
-                Max = new XYZ(m_DefaultExtents, m_DefaultExtents, m_DefaultExtents)
+                Min = new XYZ(-m_DefaultHorizontalExtents, -m_DefaultHorizontalExtents, -m_DefaultExtents),
+                Max = new XYZ(m_DefaultHorizontalExtents, m_DefaultHorizontalExtents, m_DefaultExtents)
             };
 
             return bbox.ToSolid();
@@ -164,6 +164,14 @@ namespace BH.Revit.Engine.Core
                 return Line.CreateBound(view.CropBox.Transform.OfPoint(bottom), view.CropBox.Transform.OfPoint(top));
             }
         }
+
+        /***************************************************/
+        /****              Private fields               ****/
+        /***************************************************/
+
+        private static double m_DefaultHorizontalExtents = 1e+6;
+
+        /***************************************************/
 
         /***************************************************/
     }
