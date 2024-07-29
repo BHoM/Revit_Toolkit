@@ -63,7 +63,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Return view solid corrected by link instnace transform.")]
+        [Description("Return view solid transformed by inverse link instnace transform.")]
         private static Solid TransformedViewSolid(this View view, RevitLinkInstance linkInstance)
         {
             Solid viewSolid = view.ViewSolid(true);
