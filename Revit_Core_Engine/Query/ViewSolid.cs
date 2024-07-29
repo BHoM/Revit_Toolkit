@@ -172,7 +172,5 @@ namespace BH.Revit.Engine.Core
         private static double m_DefaultHorizontalExtents = 1e+6;
 
         /***************************************************/
-
-        /***************************************************/
     }
 }
