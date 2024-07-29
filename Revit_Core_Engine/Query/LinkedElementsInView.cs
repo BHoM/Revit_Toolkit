@@ -34,7 +34,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [PreviousVersion("7.3", "BH.Revit.Engine.Core.Query.LinkedElementsInView(Autodesk.Revit.DB.ViewPlan, Autodesk.Revit.DB.RevitLinkInstance, System.Collections.Generic.List<Autodesk.Revit.DB.ElementFilter>)")]
-        [Description("Return elements from the revit link instance visible in the view.")]
+        [Description("Return elements from the revit link instance located in the view scope.")]
         [Input("view", "View to get visible elements from.")]
         [Input("linkInstance", "Revit link instance to get the elements from.")]
         [Input("elementFilters", "Additional filters for the element collector. If null, no additional filters will be applied.")]
