@@ -35,15 +35,17 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("7.3", "BH.Revit.Engine.Core.Query.ViewSolid(Autodesk.Revit.DB.View)")]
         [Description("Returns a solid that represents the 3-dimensional extents of a given view.")]
         [Input("view", "View to compute the solids.")]
+        [Input("createUnlimitedIfViewUncropped", "If false, the method will return null in case of missing crop box (i.e. the view is unlimited, so it cannot be represented by a solid). If true, uncropped views will produce an 'unlimited' solid roughly 1e+6 by 1e+6 in dimensions perpendicular to the view direction, with depth equal to view depth or 1e+4 in case of views without depth.")]
         [Output("solid", "Solid that represents the 3-dimensional extents of the input view.")]
-        public static Solid ViewSolid(this View view)
+        public static Solid ViewSolid(this View view, bool createUnlimitedIfViewUncropped = false)
         {
             if (view == null)
                 return null;
 
-            Solid solid = view.CropBoxSolid();
+            Solid solid = view.CropBoxSolid(createUnlimitedIfViewUncropped);
             if (view is View3D)
             {
                 View3D view3D = (View3D)view;
@@ -58,12 +60,11 @@ namespace BH.Revit.Engine.Core
             return solid;
         }
 
-
         /***************************************************/
         /****              Private methods              ****/
         /***************************************************/
 
-        private static Solid CropBoxSolid(this View view)
+        private static Solid CropBoxSolid(this View view, bool createUnlimitedIfViewUncropped)
         {
             if (view.CropBoxActive)
             {
@@ -87,7 +88,50 @@ namespace BH.Revit.Engine.Core
                 return GeometryCreationUtilities.CreateExtrusionGeometry(loops, range.Direction, range.Length);
             }
             else
-                return null;
+            {
+                return createUnlimitedIfViewUncropped ? NoCropBoxSolid(view) : null;
+            }
+        }
+
+        /***************************************************/
+
+        private static Solid NoCropBoxSolid(this View view)
+        {
+            if (view is ViewPlan viewplan)
+            {
+                Output<double, double> range = viewplan.PlanViewRange();
+                BoundingBoxXYZ viewBBox = new BoundingBoxXYZ
+                {
+                    Min = new XYZ(-m_DefaultHorizontalExtents, -m_DefaultHorizontalExtents, range.Item1),
+                    Max = new XYZ(m_DefaultHorizontalExtents, m_DefaultHorizontalExtents, range.Item2)
+                };
+
+                return viewBBox.ToSolid();
+            }
+            else if (view is ViewSection viewSection)
+            {
+                Line range = view.ViewDepthLine();
+                Plane plane = Plane.CreateByNormalAndOrigin(range.Direction, range.GetEndPoint(0));
+                Solid solid = MaximumSolid();
+                BooleanOperationsUtils.CutWithHalfSpaceModifyingOriginalSolid(solid, plane);
+                Plane endPlane = Plane.CreateByNormalAndOrigin(-range.Direction, range.GetEndPoint(1));
+                BooleanOperationsUtils.CutWithHalfSpaceModifyingOriginalSolid(solid, endPlane);
+
+                return solid;
+            }
+            else if (view is View3D)
+            {
+                return MaximumSolid();
+            }
+
+            return null;
+        }
+
+        /***************************************************/
+
+        private static Solid MaximumSolid()
+        {
+            return UnlimitedViewBounds().ToSolid();
         }
 
         /***************************************************/
@@ -107,7 +151,7 @@ namespace BH.Revit.Engine.Core
                 // If far clip is set to no clipping, set bottom Z to minimum value
                 XYZ bottom;
                 if (view.LookupParameterInteger(BuiltInParameter.VIEWER_BOUND_FAR_CLIPPING)==0)
-                    bottom = new XYZ(mid.X, mid.Y, -m_DefaultExtents);
+                    bottom = new XYZ(mid.X, mid.Y, -m_DefaultVerticalExtents);
                 else
                     bottom = new XYZ(mid.X, mid.Y, view.CropBox.Min.Z);
 

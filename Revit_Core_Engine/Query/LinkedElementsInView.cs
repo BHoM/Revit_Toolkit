@@ -24,7 +24,6 @@ using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -34,29 +33,48 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Return elements from link instance located in given view. Method returns all instance elements in the view scope (including hidden elements).")]
-        [Input("view", "ViewPlan to get the elements from.")]
-        [Input("linkInstance", "Revit Link Instance to get the elements from.")]
+        [PreviousVersion("7.3", "BH.Revit.Engine.Core.Query.LinkedElementsInView(Autodesk.Revit.DB.ViewPlan, Autodesk.Revit.DB.RevitLinkInstance, System.Collections.Generic.List<Autodesk.Revit.DB.ElementFilter>)")]
+        [Description("Return elements from the revit link instance located in the view scope (including hidden elements)")]
+        [Input("view", "View to get visible elements from. The view needs to belong to the host document.")]
+        [Input("linkInstance", "Revit link instance to get the elements from.")]
         [Input("elementFilters", "Additional filters for the element collector. If null, no additional filters will be applied.")]
         [Output("elements", "Elements of link instance in given view.")]
-        public static List<Element> LinkedElementsInView(this ViewPlan view, RevitLinkInstance linkInstance, List<ElementFilter> elementFilters = null)
+        public static IEnumerable<ElementId> LinkedElementsInView(this View view, RevitLinkInstance linkInstance, List<ElementFilter> elementFilters = null)
         {
-            if (view == null || linkInstance == null || elementFilters.Count == 0)
+            if (view == null || linkInstance == null)
                 return null;
 
             Document linkDoc = linkInstance.GetLinkDocument();
-            Transform linkTransform = linkInstance.GetTotalTransform();
-            Solid viewSolid = view.Solid(linkTransform);
-
+            Solid viewSolid = view.TransformedViewSolid(linkInstance);
             ElementIntersectsSolidFilter solidFilter = new ElementIntersectsSolidFilter(viewSolid);
-
+            
+            IEnumerable<ElementId> elementIds; 
             if (elementFilters == null)
-                return new FilteredElementCollector(linkDoc).WherePasses(solidFilter).WhereElementIsNotElementType().ToElements().ToList();
+                elementIds = new FilteredElementCollector(linkDoc).WherePasses(solidFilter).WhereElementIsNotElementType().ToElementIds();
+            else
+            {
+                LogicalOrFilter elementFilter = new LogicalOrFilter(elementFilters);
+                LogicalAndFilter elementSolidFilter = new LogicalAndFilter(elementFilter, solidFilter);
+                elementIds = new FilteredElementCollector(linkDoc).WherePasses(elementSolidFilter).WhereElementIsNotElementType().ToElementIds();
+            }
 
-            LogicalOrFilter elementFilter = new LogicalOrFilter(elementFilters);
-            LogicalAndFilter elementSolidFilter = new LogicalAndFilter(elementFilter, solidFilter);
+            return elementIds;
+        }
 
-            return new FilteredElementCollector(linkDoc).WherePasses(elementSolidFilter).WhereElementIsNotElementType().ToElements().ToList();
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        [Description("Return view solid transformed by inverse link instnace transform.")]
+        private static Solid TransformedViewSolid(this View view, RevitLinkInstance linkInstance)
+        {
+            Solid viewSolid = view.ViewSolid(true);
+
+            Transform linkTransform = linkInstance.GetTotalTransform();
+            if (linkTransform.IsIdentity)
+                return viewSolid;
+
+            return SolidUtils.CreateTransformed(viewSolid, linkTransform.Inverse);
         }
 
         /***************************************************/
