@@ -205,8 +205,8 @@ namespace BH.Revit.Engine.Core
         private static BoundingBoxXYZ UnlimitedViewBounds()
         {
             BoundingBoxXYZ bbox = new BoundingBoxXYZ();
-            bbox.Min = new XYZ(-m_DefaultVerticalExtents, -m_DefaultVerticalExtents, -m_DefaultVerticalExtents);
-            bbox.Max = new XYZ(m_DefaultVerticalExtents, m_DefaultVerticalExtents, m_DefaultVerticalExtents);
+            bbox.Min = new XYZ(-m_DefaultHorizontalExtents, -m_DefaultHorizontalExtents, -m_DefaultVerticalExtents);
+            bbox.Max = new XYZ(m_DefaultHorizontalExtents, m_DefaultHorizontalExtents, m_DefaultVerticalExtents);
             return bbox;
         }
 

@@ -131,13 +131,7 @@ namespace BH.Revit.Engine.Core
 
         private static Solid MaximumSolid()
         {
-            BoundingBoxXYZ bbox = new BoundingBoxXYZ
-            {
-                Min = new XYZ(-m_DefaultHorizontalExtents, -m_DefaultHorizontalExtents, -m_DefaultVerticalExtents),
-                Max = new XYZ(m_DefaultHorizontalExtents, m_DefaultHorizontalExtents, m_DefaultVerticalExtents)
-            };
-
-            return bbox.ToSolid();
+            return UnlimitedViewBounds().ToSolid();
         }
 
         /***************************************************/
