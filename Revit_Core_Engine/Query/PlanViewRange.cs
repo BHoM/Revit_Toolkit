@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
             Level topLevel = doc.GetElement(viewRange.GetLevelId(PlanViewPlane.TopClipPlane)) as Level;
             double topOffset = viewRange.GetOffset(PlanViewPlane.TopClipPlane);
             double topZ = (topLevel == null)
-                ? m_DefaultExtents
+                ? m_DefaultVerticalExtents
                 : topLevel.ProjectElevation + topOffset;
 
             Level bottomLevel;
@@ -57,7 +57,7 @@ namespace BH.Revit.Engine.Core
                 bottomOffset = viewRange.GetOffset(PlanViewPlane.ViewDepthPlane);
             }
 
-            double bottomZ = bottomLevel != null ? bottomLevel.ProjectElevation + bottomOffset : -m_DefaultExtents;
+            double bottomZ = bottomLevel != null ? bottomLevel.ProjectElevation + bottomOffset : -m_DefaultVerticalExtents;
             return new Output<double, double> { Item1 = bottomZ, Item2 = topZ };
         }
 
@@ -66,7 +66,8 @@ namespace BH.Revit.Engine.Core
         /****              Private fields               ****/
         /***************************************************/
 
-        private static double m_DefaultExtents = 1e+4;
+        private static double m_DefaultVerticalExtents = 1e+4;
+        private static double m_DefaultHorizontalExtents = 1e+6;
 
         /***************************************************/
     }
