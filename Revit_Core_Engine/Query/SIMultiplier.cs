@@ -79,7 +79,7 @@ namespace BH.Revit.Engine.Core
         public static double ToSIMultiplier(this ForgeTypeId quantity)
         {
             // In case of unitless numbers
-            if (quantity == null)
+            if (quantity == null || !UnitUtils.IsMeasurableSpec(quantity))
                 return 1;
 
             string typeId = quantity.TypeId;
@@ -98,7 +98,7 @@ namespace BH.Revit.Engine.Core
         public static double FromSIMultiplier(this ForgeTypeId quantity)
         {
             // In case of unitless numbers
-            if (quantity == null)
+            if (quantity == null || !UnitUtils.IsMeasurableSpec(quantity))
                 return 1;
 
             string typeId = quantity.TypeId;

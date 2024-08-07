@@ -22,8 +22,10 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 
 namespace BH.Revit.Engine.Core
 {
@@ -62,6 +64,53 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        [Description("Returns name of SpecTypeId property that contains a given Revit unit type object (enum for Revit up to 2020 or ForgeTypeId for later versions).")]
+        [Input("unitType", "Unit type object to be queried for the correspondent SpecTypeId property name.")]
+        [Output("identifier", "Name of SpecTypeId property that contains the input unit type object.")]
+#if (REVIT2020)
+        public static string UnitTypePropertyName(this UnitType unitType)
+#else
+        public static string UnitTypePropertyName2(this ForgeTypeId unitType)
+#endif
+        {
+            if (m_UnitTypesWithIdentifiers2 == null)
+                CollectUnitTypes2();
+
+            if (m_UnitTypesWithIdentifiers2.ContainsValue(unitType))
+                return m_UnitTypesWithIdentifiers2.FirstOrDefault(x => x.Value.Equals(unitType)).Key;
+            else
+                return null;
+        }
+
+        /***************************************************/
+
+        [Description("Returns name of SpecTypeId property that contains given Revit parameter's unit type object (enum for Revit up to 2020 or ForgeTypeId for later versions).")]
+        [Input("parameter", "Parameter to be queried for the correspondent SpecTypeId property name.")]
+        [Output("identifier", "Name of SpecTypeId property that contains the unit type object correspondent to the input parameter.")]
+        public static string UnitTypePropertyName2(this Parameter parameter)
+        {
+            return parameter.StorageType == StorageType.Double ? parameter.GetUnitTypeId().UnitTypePropertyName2() : null;
+        }
+
+        /***************************************************/
+        private static void CollectUnitTypes2()
+        {
+            m_UnitTypesWithIdentifiers2 = new Dictionary<string, ForgeTypeId>();
+            foreach (PropertyInfo info in typeof(UnitTypeId).GetProperties())
+            {
+                ForgeTypeId unitType = info.GetValue(null) as ForgeTypeId;
+                if (unitType != null)
+                    m_UnitTypesWithIdentifiers2.Add(info.Name, unitType);
+            }
+        }
+
+
+        /***************************************************/
+        /****               Private fields              ****/
+        /***************************************************/
+
+        private static Dictionary<string, ForgeTypeId> m_UnitTypesWithIdentifiers2 = null;
     }
 }
 

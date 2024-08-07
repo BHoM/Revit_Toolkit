@@ -63,6 +63,34 @@ namespace BH.Revit.Engine.Core
         }
 
 
+        //[Description("Returns Revit unit type object (enum for Revit up to 2020 or ForgeTypeId for later versions) based on SpecTypeId property name that represents it.")]
+        //[Input("identifier", "Name of SpecTypeId property to be queried for the correspondent unit type.")]
+        //[Output("unitType", "Unit type object under the input SpecTypeId property name.")]
+#if (REVIT2020)
+        public static UnitType UnitTypeByPropertyName2(this string identifier)
+#else
+        public static ForgeTypeId UnitTypeByPropertyName2(this string identifier)
+#endif
+        {
+            if (m_UnitTypesWithIdentifiers2 == null)
+                CollectUnitTypes2();
+
+            if (!string.IsNullOrWhiteSpace(identifier))
+            {
+                if (m_UnitTypesWithIdentifiers2.ContainsKey(identifier))
+                    return m_UnitTypesWithIdentifiers2[identifier];
+                else
+                    BH.Engine.Base.Compute.RecordWarning($"Unit type with identifier {identifier} not found.");
+            }
+
+#if (REVIT2020)
+            return UnitType.UT_Undefined;
+#else
+            return null;
+#endif
+        }
+
+
         /***************************************************/
         /****              Private methods              ****/
         /***************************************************/
