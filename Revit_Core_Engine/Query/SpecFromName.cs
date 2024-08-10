@@ -23,9 +23,8 @@
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
-using System.Reflection;
 using System.ComponentModel;
-using System.Linq;
+using System.Reflection;
 
 namespace BH.Revit.Engine.Core
 {
@@ -35,52 +34,24 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns Revit unit type object (enum for Revit up to 2020 or ForgeTypeId for later versions) based on SpecTypeId property name that represents it.")]
-        [Input("identifier", "Name of SpecTypeId property to be queried for the correspondent unit type.")]
-        [Output("unitType", "Unit type object under the input SpecTypeId property name.")]
+        [Description("Returns Revit spec object (enum for Revit up to 2020 or ForgeTypeId for later versions) based on SpecTypeId property name that represents it.")]
+        [Input("name", "Name of SpecTypeId property to be queried for the correspondent spec.")]
+        [Output("spec", "Spec object under the input SpecTypeId property name.")]
 #if (REVIT2020)
-        public static UnitType UnitTypeByPropertyName(this string identifier)
+        public static UnitType SpecFromName(this string name)
 #else
-        public static ForgeTypeId UnitTypeByPropertyName(this string identifier)
+        public static ForgeTypeId SpecFromName(this string name)
 #endif
         {
-            if (m_UnitTypesWithIdentifiers == null)
-                CollectUnitTypes();
+            if (m_SpecsWithNames == null)
+                CollectSpecs();
 
-            if (!string.IsNullOrWhiteSpace(identifier))
+            if (!string.IsNullOrWhiteSpace(name))
             {
-                if (m_UnitTypesWithIdentifiers.ContainsKey(identifier))
-                    return m_UnitTypesWithIdentifiers[identifier];
+                if (m_SpecsWithNames.ContainsKey(name))
+                    return m_SpecsWithNames[name];
                 else
-                    BH.Engine.Base.Compute.RecordWarning($"Unit type with identifier {identifier} not found.");
-            }
-
-#if (REVIT2020)
-            return UnitType.UT_Undefined;
-#else
-            return null;
-#endif
-        }
-
-
-        //[Description("Returns Revit unit type object (enum for Revit up to 2020 or ForgeTypeId for later versions) based on SpecTypeId property name that represents it.")]
-        //[Input("identifier", "Name of SpecTypeId property to be queried for the correspondent unit type.")]
-        //[Output("unitType", "Unit type object under the input SpecTypeId property name.")]
-#if (REVIT2020)
-        public static UnitType UnitTypeByPropertyName2(this string identifier)
-#else
-        public static ForgeTypeId UnitTypeByPropertyName2(this string identifier)
-#endif
-        {
-            if (m_UnitTypesWithIdentifiers2 == null)
-                CollectUnitTypes2();
-
-            if (!string.IsNullOrWhiteSpace(identifier))
-            {
-                if (m_UnitTypesWithIdentifiers2.ContainsKey(identifier))
-                    return m_UnitTypesWithIdentifiers2[identifier];
-                else
-                    BH.Engine.Base.Compute.RecordWarning($"Unit type with identifier {identifier} not found.");
+                    BH.Engine.Base.Compute.RecordWarning($"Spec with identifier {name} not found.");
             }
 
 #if (REVIT2020)
@@ -96,16 +67,16 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
 #if (REVIT2020)
-        private static void CollectUnitTypes()
+        private static void CollectSpecs()
         {
-            m_UnitTypesWithIdentifiers = new Dictionary<string, UnitType>();
+            m_SpecsWithNames = new Dictionary<string, UnitType>();
             foreach (PropertyInfo info in typeof(SpecTypeId).GetProperties())
             {
                 if (info.GetGetMethod().GetCustomAttribute<NotImplementedAttribute>() == null)
                 {
                     UnitType? unitType = info.GetValue(null) as UnitType?;
                     if (unitType != null && unitType != UnitType.UT_Undefined)
-                        m_UnitTypesWithIdentifiers.Add(info.Name, unitType.Value);
+                        m_SpecsWithNames.Add(info.Name, unitType.Value);
                 }
             }
         }
@@ -115,18 +86,18 @@ namespace BH.Revit.Engine.Core
         /****               Private fields              ****/
         /***************************************************/
 
-        private static Dictionary<string, UnitType> m_UnitTypesWithIdentifiers = null;
+        private static Dictionary<string, UnitType> m_SpecsWithNames = null;
 
         /***************************************************/
 #else
-        private static void CollectUnitTypes()
+        private static void CollectSpecs()
         {
-            m_UnitTypesWithIdentifiers = new Dictionary<string, ForgeTypeId>();
+            m_SpecsWithNames = new Dictionary<string, ForgeTypeId>();
             foreach (PropertyInfo info in typeof(SpecTypeId).GetProperties())
             {
                 ForgeTypeId unitType = info.GetValue(null) as ForgeTypeId;
                 if (unitType != null)
-                    m_UnitTypesWithIdentifiers.Add(info.Name, unitType);
+                    m_SpecsWithNames.Add(info.Name, unitType);
             }
         }
 
@@ -135,7 +106,7 @@ namespace BH.Revit.Engine.Core
         /****               Private fields              ****/
         /***************************************************/
 
-        private static Dictionary<string, ForgeTypeId> m_UnitTypesWithIdentifiers = null;
+        private static Dictionary<string, ForgeTypeId> m_SpecsWithNames = null;
 #endif
 
         /***************************************************/
