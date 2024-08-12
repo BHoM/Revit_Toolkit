@@ -33,6 +33,8 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("7.3", "BH.Revit.Engine.Core.Query.UnitTypePropertyName(Autodesk.Revit.DB.UnitType)")]
+        [PreviousVersion("7.3", "BH.Revit.Engine.Core.Query.UnitTypePropertyName(Autodesk.Revit.DB.ForgeTypeId)")]
         [Description("Returns name of SpecTypeId property that contains a given Revit spec object (enum for Revit up to 2020 or ForgeTypeId for later versions).")]
         [Input("spec", "Spec object to be queried for the correspondent SpecTypeId property name.")]
         [Output("name", "Name of SpecTypeId property that contains the input spec object.")]
@@ -53,6 +55,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("7.3", "BH.Revit.Engine.Core.Query.UnitTypePropertyName(Autodesk.Revit.DB.Parameter)")]
         [Description("Returns name of SpecTypeId property that contains given Revit parameter's spec object (enum for Revit up to 2020 or ForgeTypeId for later versions).")]
         [Input("parameter", "Parameter to be queried for the correspondent SpecTypeId property name.")]
         [Output("name", "Name of SpecTypeId property that contains the spec object correspondent to the input parameter.")]
