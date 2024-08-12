@@ -105,7 +105,7 @@ namespace BH.Revit.Engine.Core
 #if(REVIT2021)
             if (quantity == null)
 #else
-            if (quantity == null || !UnitUtils.IsMeasurableSpec(quantity)
+            if (quantity == null || !UnitUtils.IsMeasurableSpec(quantity))
 #endif
                 return 1;
 
