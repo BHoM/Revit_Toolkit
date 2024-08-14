@@ -44,12 +44,14 @@ namespace BH.Revit.Engine.Core
             if (face == null)
                 return null;
 
-            CurveLoop externalLoop = face.ExternalCurveLoop();
+            CurveLoop boundary = face.ExternalCurveLoop();
+            double perimeterLength = boundary.GetExactLength();
 
-            List<CurveLoop> crvLoops = face.GetEdgesAsCurveLoops().ToList();
-            List<ICurve> internalBoundaries = crvLoops.Where(x => x != externalLoop).Select(x => x.FromRevit() as ICurve).ToList();
+            List<ICurve> openings = face.GetEdgesAsCurveLoops().ToList()
+                .Where(x => perimeterLength - x.GetExactLength() > Tolerance.Distance)
+                .Select(x => x.FromRevit() as ICurve).ToList();
 
-            return new PlanarSurface(externalLoop.FromRevit(), internalBoundaries);
+            return new PlanarSurface(boundary.FromRevit(), openings);
         }
 
 
