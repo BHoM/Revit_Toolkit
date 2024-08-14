@@ -21,66 +21,55 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Geometry;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Convert
+    public static partial class Query
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Converts a Revit PlanarFace to BH.oM.Geometry.PlanarSurface.")]
-        [Input("face", "Revit PlanarFace to be converted.")]
-        [Output("surface", "BH.oM.Geometry.PlanarSurface resulting from converting the input Revit PlanarFace.")]
-        public static PlanarSurface FromRevit(this PlanarFace face)
+        [Description("Returns the main, external boundary curve loop of a planar face.")]
+        [Input("face", "A planar face with and external boundary curve loop that can contains internal holes, if any.")]
+        [Output("externalCurveLoop", "The main, external boundary curve loop of a planar face.")]
+        public static CurveLoop ExternalCurveLoop(this PlanarFace face)
         {
-            if (face == null)
-                return null;
-
-            CurveLoop externalLoop = face.ExternalCurveLoop();
-
             List<CurveLoop> crvLoops = face.GetEdgesAsCurveLoops().ToList();
-            List<ICurve> internalBoundaries = crvLoops.Where(x => x != externalLoop).Select(x => x.FromRevit() as ICurve).ToList();
+            CurveLoop externalLoop = crvLoops.FirstOrDefault(x => !x.IsOpen() && x.IsCounterclockwise(face.FaceNormal));
 
-            return new PlanarSurface(externalLoop.FromRevit(), internalBoundaries);
-        }
+            //The face may violate conventional winding directions, or Revit may see a complex curve loop as 'Open' and refuses to calculate IsCounterclockwise
+            if (externalLoop == null)
+            {
+                //Checking areas is slower but these problematic faces rarely exist, so performance hit isn't bad.
+                double maxArea = double.MinValue;
 
+                foreach (CurveLoop loop in crvLoops)
+                {
+                    List<BH.oM.Geometry.Point> controlPoints = new List<BH.oM.Geometry.Point>();
+                    foreach (Curve curve in loop)
+                        controlPoints.AddRange(curve.Tessellate().Select(x => x.PointFromRevit()));
 
-        /***************************************************/
-        /****             Interface Methods             ****/
-        /***************************************************/
+                    double area = new Polyline { ControlPoints = controlPoints }.Area();
+                    if (area > maxArea)
+                    {
+                        maxArea = area;
+                        externalLoop = loop;
+                    }
+                }
+            }
 
-        [Description("Converts a Revit Face to BH.oM.Geometry.ISurface.")]
-        [Input("face", "Revit Face to be converted.")]
-        [Output("surface", "BH.oM.Geometry.ISurface resulting from converting the input Revit Face.")]
-        public static oM.Geometry.ISurface IFromRevit(this Autodesk.Revit.DB.Face face)
-        {
-            return FromRevit(face as dynamic);
-        }
-
-
-        /***************************************************/
-        /****              Fallback Methods             ****/
-        /***************************************************/
-
-        private static oM.Geometry.ISurface FromRevit(this Autodesk.Revit.DB.Face face)
-        {
-            BH.Engine.Base.Compute.RecordError(String.Format("Revit face of type {0} could not be converted to BHoM due to a missing convert method.", face.GetType()));
-            return null;
+            return externalLoop;
         }
 
         /***************************************************/
     }
 }
-
-
-
 
 
