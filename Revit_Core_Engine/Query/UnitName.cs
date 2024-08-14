@@ -33,32 +33,32 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns name of SpecTypeId property that contains a given Revit unit type object (enum for Revit up to 2020 or ForgeTypeId for later versions).")]
-        [Input("unitType", "Unit type object to be queried for the correspondent SpecTypeId property name.")]
-        [Output("identifier", "Name of SpecTypeId property that contains the input unit type object.")]
+        [Description("Returns name of UnitTypeId property that contains a given Revit unit object (enum for Revit up to 2020 or ForgeTypeId for later versions).")]
+        [Input("unit", "Unit object to be queried for the correspondent UnitTypeId property name.")]
+        [Output("name", "Name of UnitTypeId property that contains the input unit object.")]
 #if (REVIT2020)
-        public static string UnitTypePropertyName(this UnitType unitType)
+        public static string UnitName(this DisplayUnitType unit)
 #else
-        public static string UnitTypePropertyName(this ForgeTypeId unitType)
+        public static string UnitName(this ForgeTypeId unit)
 #endif
         {
-            if (m_UnitTypesWithIdentifiers == null)
-                CollectUnitTypes();
+            if (m_UnitsWithNames == null)
+                CollectUnits();
 
-            if (m_UnitTypesWithIdentifiers.ContainsValue(unitType))
-                return m_UnitTypesWithIdentifiers.FirstOrDefault(x => x.Value.Equals(unitType)).Key;
+            if (m_UnitsWithNames.ContainsValue(unit))
+                return m_UnitsWithNames.FirstOrDefault(x => x.Value.Equals(unit)).Key;
             else
                 return null;
         }
 
         /***************************************************/
 
-        [Description("Returns name of SpecTypeId property that contains given Revit parameter's unit type object (enum for Revit up to 2020 or ForgeTypeId for later versions).")]
-        [Input("parameter", "Parameter to be queried for the correspondent SpecTypeId property name.")]
-        [Output("identifier", "Name of SpecTypeId property that contains the unit type object correspondent to the input parameter.")]
-        public static string UnitTypePropertyName(this Parameter parameter)
+        [Description("Returns name of UnitTypeId property that contains given Revit parameter's unit object (enum for Revit up to 2020 or ForgeTypeId for later versions).")]
+        [Input("parameter", "Parameter to be queried for the correspondent UnitTypeId property name.")]
+        [Output("name", "Name of UnitTypeId property that contains the unit object correspondent to the input parameter.")]
+        public static string UnitName(this Parameter parameter)
         {
-            return parameter.StorageType == StorageType.Double ? parameter.Definition.GetDataType().UnitTypePropertyName() : null;
+            return parameter.StorageType == StorageType.Double ? parameter.GetUnitTypeId().UnitName() : null;
         }
 
         /***************************************************/
