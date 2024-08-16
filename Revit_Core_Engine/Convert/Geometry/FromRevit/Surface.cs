@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Geometry;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using System;
@@ -44,12 +45,13 @@ namespace BH.Revit.Engine.Core
             if (face == null)
                 return null;
 
-            CurveLoop externalLoop = face.ExternalCurveLoop();
+            PolyCurve boundary = face.ExternalCurveLoop().FromRevit();
+            BoundingBox boundaryBox = boundary.Bounds();
 
-            List<CurveLoop> crvLoops = face.GetEdgesAsCurveLoops().ToList();
-            List<ICurve> internalBoundaries = crvLoops.Where(x => x != externalLoop).Select(x => x.FromRevit() as ICurve).ToList();
+            PolyCurve[] loops = face.GetEdgesAsCurveLoops().Select(x => x.FromRevit()).ToArray();
+            List<ICurve> openings = loops.Where(x => !x.Bounds().IsEqual(boundaryBox)).Cast<ICurve>().ToList();
 
-            return new PlanarSurface(externalLoop.FromRevit(), internalBoundaries);
+            return new PlanarSurface(boundary, openings);
         }
 
 
