@@ -5,10 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.oM.Adapters.Revit.Elements
+namespace BH.oM.Revit.FilterRules
 {
-    public class FilterStringRule : FilterValueRule
+    public class FilterNumericValueRule : FilterValueRule
     {
-        public virtual TextComparisonType Evaluator { get; set; }
+        public virtual NumberComparisonType Evaluator { get; set; }
+
+
     }
 }
