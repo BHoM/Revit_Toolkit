@@ -25,7 +25,6 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Adapters.Revit.Views;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.MEP.Equipment.Parts;

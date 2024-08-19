@@ -546,7 +546,7 @@ namespace BH.Revit.Engine.Core
             typeof(Autodesk.Revit.DB.Family),
             typeof(ElementType),
             typeof(Material),
-            typeof(View)
+            typeof(Autodesk.Revit.DB.View)
         };
 
         /***************************************************/

@@ -36,7 +36,7 @@ using System.Drawing;
 using System.Linq;
 using System.Security.Policy;
 using System.Xml.Linq;
-using FilterRule = BH.oM.Revit.Elements.FilterRule;
+using FilterRule = BH.oM.Revit.FilterRules.FilterRule;
 using OverrideGraphicSettings = BH.oM.Adapters.Revit.Elements.OverrideGraphicSettings;
 using View = Autodesk.Revit.DB.View;
 

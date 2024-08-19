@@ -55,7 +55,7 @@ namespace BH.Revit.Engine.Core
 
             if (curveElement.ViewSpecific)
             {
-                View view = curveElement.Document.GetElement(curveElement.OwnerViewId) as View;
+                Autodesk.Revit.DB.View view = curveElement.Document.GetElement(curveElement.OwnerViewId) as Autodesk.Revit.DB.View;
                 if (view == null)
                     return null;
 
