@@ -1,5 +1,5 @@
 ﻿using BH.oM.Base;
-using BH.oM.Revit.Elements;
+using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Revit.FilterRules;
 using System;
 using System.Collections.Generic;

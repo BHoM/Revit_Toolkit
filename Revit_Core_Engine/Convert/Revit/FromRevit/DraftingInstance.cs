@@ -53,7 +53,7 @@ namespace BH.Revit.Engine.Core
             if (draftingInstance != null)
                 return draftingInstance;
 
-            View view = filledRegion.Document.GetElement(filledRegion.OwnerViewId) as View;
+            Autodesk.Revit.DB.View view = filledRegion.Document.GetElement(filledRegion.OwnerViewId) as Autodesk.Revit.DB.View;
             if (view == null)
                 return null;
 
