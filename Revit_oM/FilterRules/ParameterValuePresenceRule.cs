@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.oM.Adapters.Revit.Elements
+namespace BH.oM.Revit.FilterRules
 {
     public class ParameterValuePresenceRule : FilterValueRule
     {
-        public virtual bool IsPresent {  get; set; }
+        public virtual bool IsPresent { get; set; }
     }
 }
