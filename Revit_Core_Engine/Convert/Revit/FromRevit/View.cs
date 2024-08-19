@@ -26,11 +26,15 @@ using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
+using BH.oM.Revit.Enums;
 using BH.oM.Revit.Views;
+using BH.Revit.Engine.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
+using System.Security.Policy;
 using System.Xml.Linq;
 using FilterRule = BH.oM.Revit.Elements.FilterRule;
 using OverrideGraphicSettings = BH.oM.Adapters.Revit.Elements.OverrideGraphicSettings;
@@ -57,42 +61,14 @@ namespace BH.Revit.Engine.Core
             if (view != null)
                 return view;
 
-            /* 1. Transfer NAME */
-            view = new oM.Adapters.Revit.Elements.View { Name = revitView.Name };
+            /*1. Transfer ViewFilters and corresponding OverrideGraphicSettings into ViewFilterWithOverrides Objects - via STREAMS */
+            List<ViewFilterWithOverrides> filtersWithOverrides = revitView.GetFilters().ToDictionary<ElementId, ViewFilter, OverrideGraphicSettings>
+                                                        (elId => Convert.ViewFilterFromRevit((ParameterFilterElement)revitView.Document.GetElement(elId)),
+                                                         elId => overrideGraphicSettingsFromRevit(revitView, revitView.GetFilterOverrides(elId))).ToList()
+                                                         .Select(kvp => new ViewFilterWithOverrides { Filter = kvp.Key, Overrides = kvp.Value }).ToList();
 
-            /* 2. Collect FILTER CATEGORY NAMES */
-            List<List<string>> categoriesNames=revitView.GetFilters()
-                .Select(elId => revitView.Document.GetElement(elId))
-                .Cast<ParameterFilterElement>()
-                .Select(pfe => pfe.GetCategories().ToList<ElementId>())
-                .Select(catIdsList => catIdsList.Select(catId => revitView.Document.GetElement(catId).Name).ToList<string>())
-                .ToList<List<string>>();
-
-
-            List<ViewFilterWithOverrides> filtersWithOverrides;
-            List<ViewFilter> viewFilters;
-            List<OverrideGraphicSettings> overrides;
-
-            List<FilterRule> filterRules = revitView.GetFilters()
-                .Select(elId => revitView.Document.GetElement(elId))
-                .Cast<ElementParameterFilter>()
-                .Select(epf => epf.GetRules())
-                .ToDictionary<System.Type, string[]>(fvr => fvr.GetType(),
-                                                     fvr =>
-                                                     {
-                                                         Element param = revitView.Document.GetElement(fvr.GetRuleParameter());
-                                                         string paramName = param.Name;
-                                                         string value = fvr.ToString();
-                                                         return new Array<string> { paramName, value };
-                                                     })
-                .ToList<KeyValuePair<System.Type, string[]>>()
-                .Select(kvp => new FilterRule { RuleType = FilterRuleType.BEGINSWITH, 
-                                                ParameterName = kvp.Value[0], 
-                                                Value = kvp.Value[1] })
-                .
-
-
-            //TODO: here goes the convertion method
+            /*2. Create BHoM View Object with Name and FilterWithOverrides objects */
+            view = new oM.Adapters.Revit.Elements.View { Name = revitView.Name, FiltersWithOverrides = filtersWithOverrides };
 
             //Set identifiers, parameters & custom data
             view.SetIdentifiers(revitView);
@@ -104,10 +80,56 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        private static OverrideGraphicSettings overrideGraphicSettingsFromRevit(this View element, Autodesk.Revit.DB.OverrideGraphicSettings revitOverrides)
+        {
+            // Initialize BHoM OverrideGraphicsSettings object
+            OverrideGraphicSettings overrideGraphicsSettings = new OverrideGraphicSettings();
+
+            // Convert COLORS 
+            overrideGraphicsSettings.LineColor = System.Drawing.Color.FromArgb(revitOverrides.CutLineColor.Red, revitOverrides.CutLineColor.Green, revitOverrides.CutLineColor.Blue);
+            overrideGraphicsSettings.CutColor = System.Drawing.Color.FromArgb(revitOverrides.CutBackgroundPatternColor.Red, revitOverrides.CutBackgroundPatternColor.Green, revitOverrides.CutBackgroundPatternColor.Blue);
+            overrideGraphicsSettings.SurfaceColor = System.Drawing.Color.FromArgb(revitOverrides.SurfaceBackgroundPatternColor.Red, revitOverrides.SurfaceBackgroundPatternColor.Green, revitOverrides.SurfaceBackgroundPatternColor.Blue);
+
+            // Convert LINE PATTERNS
+            String linePatternName = element.Document.GetElement(revitOverrides.CutLinePatternId).Name;
+
+            if (linePatternName.ToUpper().Contains("DASH")) { overrideGraphicsSettings.LinePattern = oM.Revit.Enums.LinePattern.DASH; }
+            else if (linePatternName.ToUpper().Contains("DOT")) { overrideGraphicsSettings.LinePattern = oM.Revit.Enums.LinePattern.DOT; }
+            else if (linePatternName.ToUpper().Contains("HIDDEN")) { overrideGraphicsSettings.LinePattern = oM.Revit.Enums.LinePattern.HIDDEN; }
+            else if (linePatternName.ToUpper().Contains("SOLID")) { overrideGraphicsSettings.LinePattern = oM.Revit.Enums.LinePattern.SOLID; }
+            else { BH.Engine.Base.Compute.RecordWarning($"The Revit Line Pattern {linePatternName} is not implemented yet in the BHoM.\n By default, the Line Pattern {linePatternName} will be set to SOLID."); }
+
+
+            // Convert CUT PATTERNS
+            String cutPatternName = element.Document.GetElement(revitOverrides.CutBackgroundPatternId).Name;
+
+            if (cutPatternName.ToUpper().Contains("CROSSHATCH") && !cutPatternName.ToUpper().Contains("DIAGONAL")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.CROSSHATCH; }
+            else if (cutPatternName.ToUpper().Contains("CROSSHATCH") && cutPatternName.ToUpper().Contains("DIAGONAL")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.DIAGONAL_CROSSHATCH; }
+            else if (cutPatternName.ToUpper().Contains("DIAGONAL") && cutPatternName.ToUpper().Contains("DOWN")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.DIAGONAL_DOWN; }
+            else if (cutPatternName.ToUpper().Contains("DIAGONAL") && cutPatternName.ToUpper().Contains("UP")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.DIAGONAL_UP; }
+            else if (cutPatternName.ToUpper().Contains("HORIZONTAL")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.HORIZONTAL; }
+            else if (cutPatternName.ToUpper().Contains("STEEL")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.STEEL; }
+            else if (cutPatternName.ToUpper().Contains("SOLID")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.SOLID; }
+            else if (cutPatternName.ToUpper().Contains("VERTICAL")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.VERTICAL; }
+            else { BH.Engine.Base.Compute.RecordWarning($"The Revit Fill Pattern {cutPatternName} is not implemented yet in the BHoM.\n By default, the Fill Pattern {cutPatternName} will be set to SOLID."); }
+
+
+            // Convert SURFACE PATTERNS
+            String surfacePatternName = element.Document.GetElement(revitOverrides.SurfaceBackgroundPatternId).Name;
+
+            if (surfacePatternName.ToUpper().Contains("CROSSHATCH") && !surfacePatternName.ToUpper().Contains("DIAGONAL")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.CROSSHATCH; }
+            else if (surfacePatternName.ToUpper().Contains("CROSSHATCH") && surfacePatternName.ToUpper().Contains("DIAGONAL")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.DIAGONAL_CROSSHATCH; }
+            else if (surfacePatternName.ToUpper().Contains("DIAGONAL") && surfacePatternName.ToUpper().Contains("DOWN")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.DIAGONAL_DOWN; }
+            else if (surfacePatternName.ToUpper().Contains("DIAGONAL") && surfacePatternName.ToUpper().Contains("UP")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.DIAGONAL_UP; }
+            else if (surfacePatternName.ToUpper().Contains("HORIZONTAL")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.HORIZONTAL; }
+            else if (surfacePatternName.ToUpper().Contains("STEEL")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.STEEL; }
+            else if (surfacePatternName.ToUpper().Contains("SOLID")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.SOLID; }
+            else if (surfacePatternName.ToUpper().Contains("VERTICAL")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.VERTICAL; }
+            else { BH.Engine.Base.Compute.RecordWarning($"The Revit Fill Pattern {surfacePatternName} is not implemented yet in the BHoM.\n By default, the Fill Pattern {surfacePatternName} will be set to SOLID."); }
+
+            return overrideGraphicsSettings;
+        }
+
     }
 }
-
-
-
-
-
