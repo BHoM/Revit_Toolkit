@@ -72,7 +72,7 @@ namespace BH.Revit.Engine.Core
                              .Select(catName => catName.ToUpper().Replace(" ", ""))
                              // Get the corresponding BuiltInCategories
                              .Select(catName => { List<string> builtInCatNames = Enum.GetNames(typeof(BuiltInCategory))
-                                                        .Select(builtInCategoryName => builtInCategoryName.ToUpper().Replace("ost_", ""))
+                                                        .Select(builtInCategoryName => builtInCategoryName.ToUpper().Replace("OST_", "").Replace("_",""))
                                                         .ToList();
                                                   return (BuiltInCategory)(((BuiltInCategory[])Enum.GetValues(typeof(BuiltInCategory)))[builtInCatNames.IndexOf(catName)]);})
                              // Get the ElementIds of the BuiltInCategories
@@ -251,16 +251,9 @@ namespace BH.Revit.Engine.Core
 
             /* 1. INITIALIZE FILTERRULE AND LOGICALFILTER CLASS INSTANCES */
             Autodesk.Revit.DB.FilterRule revitFilterRule = null;
-            ElementClassFilter paramFilter = new ElementClassFilter(typeof(Parameter));
-            ElementClassFilter builtInParamFilter = new ElementClassFilter(typeof(BuiltInParameter));
-            LogicalOrFilter logicalOrFilter = new LogicalOrFilter(paramFilter, builtInParamFilter);
 
             /* 2. GET THE ELEMENT ID OF THE PARAMETER OBJECT */
-            ElementId parameterId = new FilteredElementCollector(document)
-                            .WherePasses(logicalOrFilter)
-                            .Where(par => par.Name.Equals(filterValueRule.ParameterName))
-                            .First()
-                            .Id;
+            ElementId parameterId = GetParameterIdByName(document, filterValueRule.ParameterName);
 
             /* 3. CREATE FILTER-RULE */
 
@@ -326,8 +319,10 @@ namespace BH.Revit.Engine.Core
             // Based on FilterNumericValueRule...
             } else if (filterValueRule.GetType().IsSubclassOf(typeof(oM.Revit.FilterRules.FilterNumericValueRule)))
             {
+                /* 1. Downcast to subclass */
                 oM.Revit.FilterRules.FilterNumericValueRule filterNumericValueRule = (oM.Revit.FilterRules.FilterNumericValueRule)filterValueRule;
 
+                /* 2. Convert Evaluator from Revit to BHoM */
                 switch (filterNumericValueRule.Evaluator)
                 {
                     case NumberComparisonType.Equal:
@@ -375,9 +370,30 @@ namespace BH.Revit.Engine.Core
 
             return revitFilterRule;
         }
+
+        private static ElementId GetParameterIdByName(Document doc, string parameterName)
+        {
+            // Get all elements in the document
+            FilteredElementCollector collector = new FilteredElementCollector(doc);
+            collector.WhereElementIsNotElementType();            
+
+            // Iterate through all elements
+            foreach (Element element in collector)
+            {
+                // Get the parameter by name
+                Parameter param = element.LookupParameter(parameterName);
+                if (param != null)
+                {
+                    // Return the ElementId of the parameter
+                    return param.Id;
+                }
+            }
+
+            // If the parameter is not found, return InvalidElementId
+            return ElementId.InvalidElementId;
+        }
+  
     }
-
-
 
 }
 
