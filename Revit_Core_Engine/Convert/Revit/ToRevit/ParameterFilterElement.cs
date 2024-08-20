@@ -33,6 +33,7 @@ using BH.oM.Physical.Elements;
 using BH.oM.Revit.Enums;
 using BH.oM.Revit.FilterRules;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -120,9 +121,32 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
 
-        public static Autodesk.Revit.DB.FilterRule filterCategoryRuleToRevit(Document document, oM.Revit.FilterRules.FilterCategoryRule filterCategoryRule)
+        public static Autodesk.Revit.DB.FilterRule filterRuleToRevit(Document document, oM.Revit.FilterRules.FilterRule filterRule)
         {
-            /* 1. INITIALIZE FILTERRULE AND BUILTINPARAMETER INSTANCES */
+
+            /* 1. CONVERT BHOM FILTERRULE INTO REVIT FILTERRULE */
+
+            // FilterCategoryRule
+            if (filterRule.GetType() == typeof(oM.Revit.FilterRules.FilterCategoryRule))
+                { return filterCategoryRuleToRevit(document, (oM.Revit.FilterRules.FilterCategoryRule)filterRule); }
+            // FilterMaterialRule
+            else if (filterRule.GetType() == typeof(oM.Revit.FilterRules.FilterMaterialRule))
+                { return filterMaterialRuleToRevit(document, (oM.Revit.FilterRules.FilterMaterialRule)filterRule); }
+            // FilterLevelRule
+            else if (filterRule.GetType() == typeof(oM.Revit.FilterRules.FilterLevelRule))
+                { return filterLevelRuleToRevit(document, (oM.Revit.FilterRules.FilterLevelRule)filterRule); }
+            // FilterValueRule
+            else if (filterRule.GetType().IsSubclassOf(typeof(oM.Revit.FilterRules.FilterValueRule)))
+                { return filterValueRuleToRevit(document, (oM.Revit.FilterRules.FilterValueRule)filterRule); }
+
+            return null;
+
+        }
+
+
+        private static Autodesk.Revit.DB.FilterRule filterCategoryRuleToRevit(Document document, oM.Revit.FilterRules.FilterCategoryRule filterCategoryRule)
+        {
+            /* 1. INITIALIZE FILTERRULE */
             Autodesk.Revit.DB.FilterRule revitFilterRule = null;
 
             /* 2. GET THE ELEMENT IDS OF THE CATEGORIES STORED IN THE FILTERCATEGORYRULE */
@@ -146,23 +170,22 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static Autodesk.Revit.DB.FilterRule filterMaterialRuleToRevit(Document document, FilterMaterialRule filterMaterialRule)
+        private static Autodesk.Revit.DB.FilterRule filterMaterialRuleToRevit(Document document, FilterMaterialRule filterMaterialRule)
         {
             /* 1. INITIALIZE FILTERRULE AND BUILTINPARAMETER INSTANCES */
             Autodesk.Revit.DB.FilterRule revitFilterRule = null;
             BuiltInParameter parameter = BuiltInParameter.MATERIAL_NAME;
 
-
+            /* 2. CREATE THE FILTER RULE */
             //ParameterValueProvider provider = new ParameterValueProvider(new ElementId(parameter));
             revitFilterRule = ParameterFilterRuleFactory.CreateEqualsRule(new ElementId(parameter), filterMaterialRule.MaterialName, true);
-
 
             return revitFilterRule;
         }
 
         /***************************************************/
 
-        public static Autodesk.Revit.DB.FilterRule filterLevelRuleToRevit(Document document, FilterLevelRule filterLevelRule)
+        private static Autodesk.Revit.DB.FilterRule filterLevelRuleToRevit(Document document, FilterLevelRule filterLevelRule)
         {
             /* 1. INITIALIZE FILTERRULE AND BUILTINPARAMETER INSTANCES */
             Autodesk.Revit.DB.FilterRule revitFilterRule = null;
@@ -182,6 +205,7 @@ namespace BH.Revit.Engine.Core
                                      .First();
             } catch (Exception ex){
                 return null;}
+
 
             /* 3. CREATE FILTERS RULE */
 
@@ -223,7 +247,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
 
-        public static Autodesk.Revit.DB.FilterRule filterValueRuleToRevit(Document document,oM.Revit.FilterRules.FilterValueRule filterValueRule) {
+        private static Autodesk.Revit.DB.FilterRule filterValueRuleToRevit(Document document,oM.Revit.FilterRules.FilterValueRule filterValueRule) {
 
             /* 1. INITIALIZE FILTERRULE AND LOGICALFILTER CLASS INSTANCES */
             Autodesk.Revit.DB.FilterRule revitFilterRule = null;
