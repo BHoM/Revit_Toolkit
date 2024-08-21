@@ -192,11 +192,16 @@ namespace BH.Revit.Engine.Core
         {
             /* 1. INITIALIZE FILTERRULE AND BUILTINPARAMETER INSTANCES */
             Autodesk.Revit.DB.FilterRule revitFilterRule = null;
-            BuiltInParameter parameter = BuiltInParameter.MATERIAL_NAME;
+            BuiltInParameter parameter = BuiltInParameter.STRUCTURAL_MATERIAL_PARAM;
 
             /* 2. CREATE THE FILTER RULE */
+
             //ParameterValueProvider provider = new ParameterValueProvider(new ElementId(parameter));
-            revitFilterRule = ParameterFilterRuleFactory.CreateEqualsRule(new ElementId(parameter), filterMaterialRule.MaterialName, true);
+            //revitFilterRule = ParameterFilterRuleFactory.CreateEqualsRule(new ElementId(parameter), filterMaterialRule.MaterialName, true);
+
+            FilteredElementCollector collector = new FilteredElementCollector(document);
+            Element mat=collector.OfClass(typeof(Material)).Where(material => material.Name == filterMaterialRule.MaterialName).First();
+            revitFilterRule = ParameterFilterRuleFactory.CreateEqualsRule(new ElementId(parameter), mat.Id);
 
             return revitFilterRule;
         }
@@ -207,22 +212,27 @@ namespace BH.Revit.Engine.Core
         {
             /* 1. INITIALIZE FILTERRULE AND BUILTINPARAMETER INSTANCES */
             Autodesk.Revit.DB.FilterRule revitFilterRule = null;
-            BuiltInParameter elevationParam = BuiltInParameter.LEVEL_ELEV;
-            ElementId elevParamId=new ElementId(elevationParam);
-            Double levelElevation;
+            BuiltInParameter levParam = BuiltInParameter.LEVEL_PARAM;
+            ElementId levParamId=new ElementId(levParam);
+            ElementId levelId;
 
             /* 2. GET ELEVATION OF LEVEL CORRESPONDING TO INPUT LEVEL NAME */
             // Via Streams and withing a Try-Catch statement to make sure the code is compact and if the level is not found, we prevent any error
             // being thrown when executing .First() while returning null instead.
-            try {
-                levelElevation=new FilteredElementCollector(document)
+            try
+            {
+                levelId = new FilteredElementCollector(document)
                                      .OfCategory(BuiltInCategory.OST_Levels)
                                      .Where(level => level.Name.ToUpper() == filterLevelRule.LevelName.ToUpper())
                                      .Cast<Level>()
-                                     .Select(level => level.Elevation)
+                                     .Select(level => level.Id)
                                      .First();
-            } catch (Exception ex){
-                return null;}
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+
 
 
             /* 3. CREATE FILTERS RULE */
@@ -232,27 +242,27 @@ namespace BH.Revit.Engine.Core
             {
                 case LevelComparisonType.Equal:
                     revitFilterRule = ParameterFilterRuleFactory
-                        .CreateEqualsRule(elevParamId,(double)levelElevation, 0.001);
+                        .CreateEqualsRule(levParamId, filterLevelRule.LevelName,false);
                     break;
                 case LevelComparisonType.NotEqual:
                     revitFilterRule = ParameterFilterRuleFactory
-                        .CreateNotEqualsRule(elevParamId, (double)levelElevation, 0.001);
+                        .CreateNotEqualsRule(levParamId, levelId);
                     break;
                 case LevelComparisonType.Above:
                     revitFilterRule = ParameterFilterRuleFactory
-                        .CreateGreaterRule(elevParamId, (double)levelElevation, 0.001);
+                        .CreateGreaterRule(levParamId, levelId);
                     break;
                 case LevelComparisonType.AtOrAbove:
                     revitFilterRule = ParameterFilterRuleFactory
-                        .CreateGreaterOrEqualRule(elevParamId, (double)levelElevation, 0.001);
+                        .CreateGreaterOrEqualRule(levParamId, levelId);
                     break;
                 case LevelComparisonType.Below:
                     revitFilterRule = ParameterFilterRuleFactory
-                        .CreateLessRule(elevParamId, (double)levelElevation, 0.001);
+                        .CreateLessRule(levParamId, levelId);
                     break;
                 case LevelComparisonType.AtOrBelow:
                     revitFilterRule = ParameterFilterRuleFactory
-                        .CreateLessOrEqualRule(elevParamId, (double)levelElevation, 0.001);
+                        .CreateLessOrEqualRule(levParamId, levelId);
                     break; 
                 default:
                     break;

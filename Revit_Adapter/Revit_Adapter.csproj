@@ -17,7 +17,7 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot;  &quot;C:\ProgramData\BHoM\Assemblies&quot; /Y&#xD;&#xA;start &quot;&quot; &quot;d:\ALL DATA\BURO HAPPOLD\COMPUTATIONAL\BHoM Bugs and Tests\Revit Toolkit\TestScript.gh&quot;&#xD;&#xA;&quot;c:\Program Files\Autodesk\Revit 2022\Revit.exe&quot; &quot;d:\ALL DATA\BURO HAPPOLD\COMPUTATIONAL\BHoM Bugs and Tests\Revit Toolkit\TestRevitfile.rvt&quot;" />
+    <Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot;  &quot;C:\ProgramData\BHoM\Assemblies&quot; /Y&#xD;&#xA;&#xD;&#xA;start &quot;&quot; &quot;d:\ALL DATA\BURO HAPPOLD\COMPUTATIONAL\BHoM Bugs and Tests\Revit Toolkit\TestScript.gh&quot;&#xD;&#xA;&quot;c:\Program Files\Autodesk\Revit 2022\Revit.exe&quot; &quot;d:\ALL DATA\BURO HAPPOLD\COMPUTATIONAL\BHoM Bugs and Tests\Revit Toolkit\TestRevitfile.rvt&quot;" />
   </Target>
 
   <ItemGroup>
