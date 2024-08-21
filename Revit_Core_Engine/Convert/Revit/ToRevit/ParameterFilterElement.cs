@@ -212,7 +212,7 @@ namespace BH.Revit.Engine.Core
         {
             /* 1. INITIALIZE FILTERRULE AND BUILTINPARAMETER INSTANCES */
             Autodesk.Revit.DB.FilterRule revitFilterRule = null;
-            BuiltInParameter levParam = BuiltInParameter.LEVEL_PARAM;
+            BuiltInParameter levParam = BuiltInParameter.SCHEDULE_LEVEL_PARAM;
             ElementId levParamId=new ElementId(levParam);
             ElementId levelId;
 
@@ -242,7 +242,7 @@ namespace BH.Revit.Engine.Core
             {
                 case LevelComparisonType.Equal:
                     revitFilterRule = ParameterFilterRuleFactory
-                        .CreateEqualsRule(levParamId, filterLevelRule.LevelName,false);
+                        .CreateEqualsRule(levParamId, levelId);
                     break;
                 case LevelComparisonType.NotEqual:
                     revitFilterRule = ParameterFilterRuleFactory
