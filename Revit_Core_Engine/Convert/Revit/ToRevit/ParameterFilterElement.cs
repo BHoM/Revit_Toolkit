@@ -86,37 +86,48 @@ namespace BH.Revit.Engine.Core
             // 2. BUILD THE REVIT FILTER RULES and ASSIGN THEM TO THE PARAMETERFILTERELEMENT
 
             /* Via use of Streams*/
-            revitFilter.SetElementFilter(new LogicalAndFilter(filter.Rules
+            ElementFilter elFilter=new LogicalAndFilter(filter.Rules
                             .GroupBy(rule => rule.GetType())
                             .ToDictionary(grp => grp.Key, grp => grp.ToList())
                             .ToList()
-                            .Select(kvp =>{
+                            .Select(kvp =>
+                            {
 
                                 List<Autodesk.Revit.DB.FilterRule> filterRules = new List<Autodesk.Revit.DB.FilterRule>();
 
-                                if (kvp.Key.IsSubclassOf(typeof(oM.Revit.FilterRules.FilterCategoryRule)))
+                                if (kvp.Key.Name == "FilterCategoryRule")
                                 {
                                     filterRules = kvp.Value.Cast<oM.Revit.FilterRules.FilterCategoryRule>()
                                                         .Select(filterCategoryRule => filterCategoryRuleToRevit(document, filterCategoryRule))
                                                         .ToList();
                                 }
-
-                                else if (kvp.Key.IsSubclassOf(typeof(FilterMaterialRule)))
+                                else if (kvp.Key.Name == "FilterLevelRule")
+                                {
+                                    filterRules = kvp.Value.Cast<FilterLevelRule>()
+                                                         .Select(filterLevelRule => filterLevelRuleToRevit(document, filterLevelRule))
+                                                         .ToList();
+                                }
+                                else if (kvp.Key.Name == "FilterMaterialRule")
                                 {
                                     filterRules = kvp.Value.Cast<FilterMaterialRule>()
                                                          .Select(filterMaterialRule => filterMaterialRuleToRevit(document, filterMaterialRule))
                                                          .ToList();
                                 }
-                                else if (kvp.Key.IsSubclassOf(typeof(oM.Revit.FilterRules.FilterValueRule)))
+                                else if (kvp.Key.Name == "FilterStringRule" || kvp.Key.Name == "FilterDoubleRule" ||
+                                         kvp.Key.Name == "FilterIntegerRule" || kvp.Key.Name == "FilterElementIdRule")
                                 {
                                     filterRules = kvp.Value.Cast<oM.Revit.FilterRules.FilterValueRule>()
                                                          .Select(filterValueRule => filterValueRuleToRevit(document, filterValueRule))
                                                          .ToList();
                                 }
-                                return filterRules; })
+                                return filterRules;
+                            })
                             .Select(filterRulesList => new ElementParameterFilter(filterRulesList))
                             .Cast<ElementFilter>()
-                            .ToList()));
+                            .ToList());
+
+
+            revitFilter.SetElementFilter(elFilter);
 
 
             revitFilter.CopyParameters(filter, settings);
@@ -340,9 +351,6 @@ namespace BH.Revit.Engine.Core
                     { 
                         BH.Engine.Base.Compute.RecordError("The Input Value of the FilterDoubleRule is not a Double Type value."); 
                     }
-
-                    ForgeTypeId units = new ForgeTypeId();
-                    Convert.ToSI(doubleValue,)
 
                     /* 3. Convert Evaluator from Revit to BHoM */
                     switch (filterDoubleRule.Evaluator)
