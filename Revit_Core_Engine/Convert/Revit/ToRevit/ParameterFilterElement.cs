@@ -319,41 +319,144 @@ namespace BH.Revit.Engine.Core
             // Based on FilterNumericValueRule...
             } else if (filterValueRule.GetType().IsSubclassOf(typeof(oM.Revit.FilterRules.FilterNumericValueRule)))
             {
-                /* 1. Downcast to subclass */
-                oM.Revit.FilterRules.FilterNumericValueRule filterNumericValueRule = (oM.Revit.FilterRules.FilterNumericValueRule)filterValueRule;
 
-                /* 2. Convert Evaluator from Revit to BHoM */
-                switch (filterNumericValueRule.Evaluator)
+                if (filterValueRule.GetType() == typeof(oM.Revit.FilterRules.FilterDoubleRule)) 
                 {
-                    case NumberComparisonType.Equal:
-                        revitFilterRule = ParameterFilterRuleFactory
-                            .CreateEqualsRule(parameterId,(string)filterNumericValueRule.Value, false);
-                        break;
-                    case NumberComparisonType.NotEqual:
-                        revitFilterRule = ParameterFilterRuleFactory
-                            .CreateNotEqualsRule(parameterId, (string)filterNumericValueRule.Value, false);
-                        break;
-                    case NumberComparisonType.Greater:
-                        revitFilterRule = ParameterFilterRuleFactory
-                            .CreateGreaterRule(parameterId, (string)filterNumericValueRule.Value, false);
-                        break;
-                    case NumberComparisonType.GreaterOrEqual:
-                        revitFilterRule = ParameterFilterRuleFactory
-                            .CreateGreaterOrEqualRule(parameterId, (string)filterNumericValueRule.Value, false);
-                        break;
-                    case NumberComparisonType.Less:
-                        revitFilterRule = ParameterFilterRuleFactory
-                            .CreateLessRule(parameterId, (string)filterNumericValueRule.Value, false);
-                        break;
-                    case NumberComparisonType.LessOrEqual:
-                        revitFilterRule = ParameterFilterRuleFactory
-                            .CreateLessOrEqualRule(parameterId, (string)filterNumericValueRule.Value, false);
-                        break;
-                    default:
-                        break;
-                }
-            }
+                    /* 1. Downcast to subclass */
+                    oM.Revit.FilterRules.FilterDoubleRule filterDoubleRule = (oM.Revit.FilterRules.FilterDoubleRule)filterValueRule;
 
+                    /* 2. Convert input value to target data type */
+                    Double doubleValue=0.0;
+                    Boolean boolParam=Double.TryParse(filterDoubleRule.Value,out doubleValue);
+
+                    if (!boolParam) 
+                    { 
+                        BH.Engine.Base.Compute.RecordError("The Input Value of the FilterDoubleRule is not a Double Type value."); 
+                    }
+
+                    /* 3. Convert Evaluator from Revit to BHoM */
+                    switch (filterDoubleRule.Evaluator)
+                    {
+                        case NumberComparisonType.Equal:
+                            revitFilterRule = ParameterFilterRuleFactory
+                                .CreateEqualsRule(parameterId, doubleValue, 0.01);
+                            break;
+                        case NumberComparisonType.NotEqual:
+                            revitFilterRule = ParameterFilterRuleFactory
+                                .CreateNotEqualsRule(parameterId, doubleValue, 0.01);
+                            break;
+                        case NumberComparisonType.Greater:
+                            revitFilterRule = ParameterFilterRuleFactory
+                                .CreateGreaterRule(parameterId, doubleValue, 0.01);
+                            break;
+                        case NumberComparisonType.GreaterOrEqual:
+                            revitFilterRule = ParameterFilterRuleFactory
+                                .CreateGreaterOrEqualRule(parameterId, doubleValue, 0.01);
+                            break;
+                        case NumberComparisonType.Less:
+                            revitFilterRule = ParameterFilterRuleFactory
+                                .CreateLessRule(parameterId, doubleValue, 0.01);
+                            break;
+                        case NumberComparisonType.LessOrEqual:
+                            revitFilterRule = ParameterFilterRuleFactory
+                                .CreateLessOrEqualRule(parameterId, doubleValue, 0.01);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else if (filterValueRule.GetType() == typeof(oM.Revit.FilterRules.FilterIntegerRule))
+                {
+                    /* 1. Downcast to subclass */
+                    oM.Revit.FilterRules.FilterIntegerRule filterIntegerRule = (oM.Revit.FilterRules.FilterIntegerRule)filterValueRule;
+
+                    /* 2. Convert input value to target data type */
+                    int intValue = 0;
+                    Boolean boolParam = int.TryParse(filterIntegerRule.Value, out intValue);
+
+                    if (!boolParam)
+                    {
+                        BH.Engine.Base.Compute.RecordError("The Input Value of the FilterIntegerRule is not an Integer Type value.");
+                    }
+
+                    /* 3. Convert Evaluator from Revit to BHoM */
+                    switch (filterIntegerRule.Evaluator)
+                    {
+                        case NumberComparisonType.Equal:
+                            revitFilterRule = ParameterFilterRuleFactory
+                                .CreateEqualsRule(parameterId, intValue);
+                            break;
+                        case NumberComparisonType.NotEqual:
+                            revitFilterRule = ParameterFilterRuleFactory
+                                .CreateNotEqualsRule(parameterId, intValue);
+                            break;
+                        case NumberComparisonType.Greater:
+                            revitFilterRule = ParameterFilterRuleFactory
+                                .CreateGreaterRule(parameterId, intValue);
+                            break;
+                        case NumberComparisonType.GreaterOrEqual:
+                            revitFilterRule = ParameterFilterRuleFactory
+                                .CreateGreaterOrEqualRule(parameterId, intValue);
+                            break;
+                        case NumberComparisonType.Less:
+                            revitFilterRule = ParameterFilterRuleFactory
+                                .CreateLessRule(parameterId, intValue);
+                            break;
+                        case NumberComparisonType.LessOrEqual:
+                            revitFilterRule = ParameterFilterRuleFactory
+                                .CreateLessOrEqualRule(parameterId, intValue);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else if (filterValueRule.GetType() == typeof(oM.Revit.FilterRules.FilterElementIdRule))
+                {
+                    /* 1. Downcast to subclass */
+                    oM.Revit.FilterRules.FilterElementIdRule filterElementIdRule = (oM.Revit.FilterRules.FilterElementIdRule)filterValueRule;
+
+                    /* 2. Convert input value to target data type */
+                    Boolean boolParam = int.TryParse(filterElementIdRule.Value, out int intValue);
+                    ElementId elId = new ElementId(intValue);
+
+                    if (!boolParam)
+                    {
+                        BH.Engine.Base.Compute.RecordError("The Input Value of the FilterIntegerRule is not an Integer Type value.");
+                    }
+
+                    /* 3. Convert Evaluator from Revit to BHoM */
+                    switch (filterElementIdRule.Evaluator)
+                    {
+                        case NumberComparisonType.Equal:
+                            revitFilterRule = ParameterFilterRuleFactory
+                                .CreateEqualsRule(parameterId, elId);
+                            break;
+                        case NumberComparisonType.NotEqual:
+                            revitFilterRule = ParameterFilterRuleFactory
+                                .CreateNotEqualsRule(parameterId, elId);
+                            break;
+                        case NumberComparisonType.Greater:
+                            revitFilterRule = ParameterFilterRuleFactory
+                                .CreateGreaterRule(parameterId, elId);
+                            break;
+                        case NumberComparisonType.GreaterOrEqual:
+                            revitFilterRule = ParameterFilterRuleFactory
+                                .CreateGreaterOrEqualRule(parameterId, elId);
+                            break;
+                        case NumberComparisonType.Less:
+                            revitFilterRule = ParameterFilterRuleFactory
+                                .CreateLessRule(parameterId, elId);
+                            break;
+                        case NumberComparisonType.LessOrEqual:
+                            revitFilterRule = ParameterFilterRuleFactory
+                                .CreateLessOrEqualRule(parameterId, elId);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+            }
             // Based on ParameterValuePresenceRule...
             else if (filterValueRule.GetType().IsSubclassOf(typeof(oM.Revit.FilterRules.ParameterValuePresenceRule)))
             {
