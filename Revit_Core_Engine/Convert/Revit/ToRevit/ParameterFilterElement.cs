@@ -86,7 +86,7 @@ namespace BH.Revit.Engine.Core
             // 2. BUILD THE REVIT FILTER RULES and ASSIGN THEM TO THE PARAMETERFILTERELEMENT
 
             /* Via use of Streams*/
-            ElementFilter elFilter=new LogicalAndFilter(filter.Rules
+            ElementFilter elFilter = new LogicalAndFilter(filter.Rules
                             .GroupBy(rule => rule.GetType())
                             .ToDictionary(grp => grp.Key, grp => grp.ToList())
                             .ToList()
@@ -113,8 +113,8 @@ namespace BH.Revit.Engine.Core
                                                          .Select(filterMaterialRule => filterMaterialRuleToRevit(document, filterMaterialRule))
                                                          .ToList();
                                 }
-                                else if (kvp.Key.Name == "FilterStringRule" || kvp.Key.Name == "FilterDoubleRule"||
-                                            kvp.Key.Name=="FilterIntegerRule"||kvp.Key.Name=="FilterElementIdRule")
+                                else if (kvp.Key.Name == "FilterStringRule" || kvp.Key.Name == "FilterDoubleRule" ||
+                                            kvp.Key.Name == "FilterIntegerRule" || kvp.Key.Name == "FilterElementIdRule")
                                 {
                                     filterRules = kvp.Value.Cast<oM.Revit.FilterRules.FilterValueRule>()
                                                          .Select(filterValueRule => filterValueRuleToRevit(document, filterValueRule))
@@ -167,10 +167,12 @@ namespace BH.Revit.Engine.Core
             /* 1. INITIALIZE FILTERRULE */
             Autodesk.Revit.DB.FilterRule revitFilterRule = null;
 
+            /* 2. EXTRACT CATEGORIES */
+            List<Autodesk.Revit.DB.Category> categories = new List<Autodesk.Revit.DB.Category>();
+            foreach (Autodesk.Revit.DB.Category cat in document.Settings.Categories) { categories.Add(cat);}
+            
             /* 2. GET THE ELEMENT IDS OF THE CATEGORIES STORED IN THE FILTERCATEGORYRULE */
-            List<ElementId> categoryIds = new FilteredElementCollector(document)
-                    // Get all the Categories (INTERMEDIATE OPERATION)
-                    .OfClass(typeof(Autodesk.Revit.DB.Category))
+            List<ElementId> categoryIds = categories            
                     // Retain only the Categories having name appearing in the filter's list (INTERMEDIATE OPERATION)
                     .Where(elem => filterCategoryRule.CategoryNames.Contains(elem.Name))
                     // Cast down to Category Class Instances (INTERMEDIATE OPERATION)
@@ -280,8 +282,9 @@ namespace BH.Revit.Engine.Core
             /* 1. INITIALIZE FILTERRULE AND LOGICALFILTER CLASS INSTANCES */
             Autodesk.Revit.DB.FilterRule revitFilterRule = null;
 
-            /* 2. GET THE ELEMENT ID OF THE PARAMETER OBJECT */
+            /* 2. GET the PARAMETER OBJECT and the ELEMENT ID of the PARAMETER OBJECT */
             ElementId parameterId = GetParameterIdByName(document, filterValueRule.ParameterName);
+            Parameter parameter = GetParameterByName(document, filterValueRule.ParameterName);
 
             /* 3. CREATE FILTER-RULE */
 
@@ -364,32 +367,35 @@ namespace BH.Revit.Engine.Core
                         BH.Engine.Base.Compute.RecordError("The Input Value of the FilterDoubleRule is not a Double Type value."); 
                     }
 
-                    /* 3. Convert Evaluator from Revit to BHoM */
+                    /* 3. Convert units of input value to internal units */
+                    double convertedValue =UnitUtils.ConvertToInternalUnits(doubleValue, parameter.GetUnitTypeId());
+
+                    /* 4. Convert Evaluator from Revit to BHoM */
                     switch (filterDoubleRule.Evaluator)
                     {
                         case NumberComparisonType.Equal:
                             revitFilterRule = ParameterFilterRuleFactory
-                                .CreateEqualsRule(parameterId, doubleValue, 0.01);
+                                .CreateEqualsRule(parameterId, convertedValue, 0.01);
                             break;
                         case NumberComparisonType.NotEqual:
                             revitFilterRule = ParameterFilterRuleFactory
-                                .CreateNotEqualsRule(parameterId, doubleValue, 0.01);
+                                .CreateNotEqualsRule(parameterId, convertedValue, 0.01);
                             break;
                         case NumberComparisonType.Greater:
                             revitFilterRule = ParameterFilterRuleFactory
-                                .CreateGreaterRule(parameterId, doubleValue, 0.01);
+                                .CreateGreaterRule(parameterId, convertedValue, 0.01);
                             break;
                         case NumberComparisonType.GreaterOrEqual:
                             revitFilterRule = ParameterFilterRuleFactory
-                                .CreateGreaterOrEqualRule(parameterId, doubleValue, 0.01);
+                                .CreateGreaterOrEqualRule(parameterId, convertedValue, 0.01);
                             break;
                         case NumberComparisonType.Less:
                             revitFilterRule = ParameterFilterRuleFactory
-                                .CreateLessRule(parameterId, doubleValue, 0.01);
+                                .CreateLessRule(parameterId, convertedValue, 0.01);
                             break;
                         case NumberComparisonType.LessOrEqual:
                             revitFilterRule = ParameterFilterRuleFactory
-                                .CreateLessOrEqualRule(parameterId, doubleValue, 0.01);
+                                .CreateLessOrEqualRule(parameterId, convertedValue, 0.01);
                             break;
                         default:
                             break;
@@ -409,32 +415,35 @@ namespace BH.Revit.Engine.Core
                         BH.Engine.Base.Compute.RecordError("The Input Value of the FilterIntegerRule is not an Integer Type value.");
                     }
 
-                    /* 3. Convert Evaluator from Revit to BHoM */
+                    /* 3. Convert units of input value to internal units */
+                    int convertedValue = (int)UnitUtils.ConvertToInternalUnits((Double)intValue, parameter.GetUnitTypeId());
+
+                    /* 4. Convert Evaluator from Revit to BHoM */
                     switch (filterIntegerRule.Evaluator)
                     {
                         case NumberComparisonType.Equal:
                             revitFilterRule = ParameterFilterRuleFactory
-                                .CreateEqualsRule(parameterId, intValue);
+                                .CreateEqualsRule(parameterId, convertedValue);
                             break;
                         case NumberComparisonType.NotEqual:
                             revitFilterRule = ParameterFilterRuleFactory
-                                .CreateNotEqualsRule(parameterId, intValue);
+                                .CreateNotEqualsRule(parameterId, convertedValue);
                             break;
                         case NumberComparisonType.Greater:
                             revitFilterRule = ParameterFilterRuleFactory
-                                .CreateGreaterRule(parameterId, intValue);
+                                .CreateGreaterRule(parameterId, convertedValue);
                             break;
                         case NumberComparisonType.GreaterOrEqual:
                             revitFilterRule = ParameterFilterRuleFactory
-                                .CreateGreaterOrEqualRule(parameterId, intValue);
+                                .CreateGreaterOrEqualRule(parameterId, convertedValue);
                             break;
                         case NumberComparisonType.Less:
                             revitFilterRule = ParameterFilterRuleFactory
-                                .CreateLessRule(parameterId, intValue);
+                                .CreateLessRule(parameterId, convertedValue);
                             break;
                         case NumberComparisonType.LessOrEqual:
                             revitFilterRule = ParameterFilterRuleFactory
-                                .CreateLessOrEqualRule(parameterId, intValue);
+                                .CreateLessOrEqualRule(parameterId, convertedValue);
                             break;
                         default:
                             break;
@@ -526,7 +535,29 @@ namespace BH.Revit.Engine.Core
             // If the parameter is not found, return InvalidElementId
             return ElementId.InvalidElementId;
         }
-  
+
+
+        private static Parameter GetParameterByName(Document doc, string parameterName)
+        {
+            // Get all elements in the document
+            FilteredElementCollector collector = new FilteredElementCollector(doc);
+            collector.WhereElementIsNotElementType();
+
+            // Iterate through all elements
+            foreach (Element element in collector)
+            {
+                // Get the parameter by name
+                Parameter param = element.LookupParameter(parameterName);
+                if (param != null)
+                {
+                    // Return the ElementId of the parameter
+                    return param;
+                }
+            }
+
+            // If the parameter is not found, return InvalidElementId
+            return null;
+        }
     }
 
 }
