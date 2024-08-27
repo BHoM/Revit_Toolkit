@@ -113,8 +113,8 @@ namespace BH.Revit.Engine.Core
                                                          .Select(filterMaterialRule => filterMaterialRuleToRevit(document, filterMaterialRule))
                                                          .ToList();
                                 }
-                                else if (kvp.Key.Name == "FilterStringRule" || kvp.Key.Name == "FilterDoubleRule" ||
-                                         kvp.Key.Name == "FilterIntegerRule" || kvp.Key.Name == "FilterElementIdRule")
+                                else if (kvp.Key.Name == "FilterStringRule" || kvp.Key.Name == "FilterDoubleRule"||
+                                            kvp.Key.Name=="FilterIntegerRule"||kvp.Key.Name=="FilterElementIdRule")
                                 {
                                     filterRules = kvp.Value.Cast<oM.Revit.FilterRules.FilterValueRule>()
                                                          .Select(filterValueRule => filterValueRuleToRevit(document, filterValueRule))
@@ -286,7 +286,8 @@ namespace BH.Revit.Engine.Core
             /* 3. CREATE FILTER-RULE */
 
             // Based on FilterStringRule...
-            if (filterValueRule.GetType().IsSubclassOf(typeof(FilterStringRule)))
+            if (filterValueRule.GetType()==typeof(FilterStringRule)||
+                filterValueRule.GetType().IsSubclassOf(typeof(FilterStringRule)))
             {
                 FilterStringRule filterStringValueRule = (FilterStringRule)filterValueRule;
 
@@ -345,10 +346,11 @@ namespace BH.Revit.Engine.Core
                 }
 
             // Based on FilterNumericValueRule...
-            } else if (filterValueRule.GetType().IsSubclassOf(typeof(oM.Revit.FilterRules.FilterNumericValueRule)))
+            } else if (filterValueRule.GetType()==typeof(oM.Revit.FilterRules.FilterNumericValueRule)||
+                       filterValueRule.GetType().IsSubclassOf(typeof(oM.Revit.FilterRules.FilterNumericValueRule)))
             {
 
-                if (filterValueRule.GetType() == typeof(oM.Revit.FilterRules.FilterDoubleRule)) 
+                if ((filterValueRule.GetType() == typeof(oM.Revit.FilterRules.FilterDoubleRule)))
                 {
                     /* 1. Downcast to subclass */
                     oM.Revit.FilterRules.FilterDoubleRule filterDoubleRule = (oM.Revit.FilterRules.FilterDoubleRule)filterValueRule;
@@ -486,7 +488,8 @@ namespace BH.Revit.Engine.Core
 
             }
             // Based on ParameterValuePresenceRule...
-            else if (filterValueRule.GetType().IsSubclassOf(typeof(oM.Revit.FilterRules.ParameterValuePresenceRule)))
+            else if (filterValueRule.GetType()== typeof(oM.Revit.FilterRules.ParameterValuePresenceRule)||  
+                     filterValueRule.GetType().IsSubclassOf(typeof(oM.Revit.FilterRules.ParameterValuePresenceRule)))
             {
                 oM.Revit.FilterRules.ParameterValuePresenceRule parameterValuePresenceRule = (oM.Revit.FilterRules.ParameterValuePresenceRule)filterValueRule;
 
