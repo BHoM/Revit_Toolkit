@@ -79,56 +79,58 @@ namespace BH.Revit.Engine.Core
                              .Select(builtInCat => new ElementId(builtInCat))
                              // Turn the Stream into a List of ElementIds
                              .ToList<ElementId>();
-            
+
             /* 1.2 Create the ParameterFilterElement in the current Revit Document */
             revitFilter = ParameterFilterElement.Create(document, filter.Name, categoryIdsList);
+
 
             // 2. BUILD THE REVIT FILTER RULES and ASSIGN THEM TO THE PARAMETERFILTERELEMENT
 
             /* Via use of Streams*/
-            ElementFilter elFilter = new LogicalAndFilter(filter.Rules
-                            .GroupBy(rule => rule.GetType())
-                            .ToDictionary(grp => grp.Key, grp => grp.ToList())
-                            .ToList()
-                            .Select(kvp =>
-                            {
-
-                                List<Autodesk.Revit.DB.FilterRule> filterRules = new List<Autodesk.Revit.DB.FilterRule>();
-
-                                if (kvp.Key.Name == "FilterCategoryRule")
+            if (filter.Rules.Count != 0) 
+            { 
+                ElementFilter elFilter = new LogicalAndFilter(filter.Rules
+                                .GroupBy(rule => rule.GetType())
+                                .ToDictionary(grp => grp.Key, grp => grp.ToList())
+                                .ToList()
+                                .Select(kvp =>
                                 {
-                                    filterRules = kvp.Value.Cast<oM.Revit.FilterRules.FilterCategoryRule>()
-                                                        .Select(filterCategoryRule => filterCategoryRuleToRevit(document, filterCategoryRule))
-                                                        .ToList();
-                                }
-                                else if (kvp.Key.Name == "FilterLevelRule")
-                                {
-                                    filterRules = kvp.Value.Cast<FilterLevelRule>()
-                                                         .Select(filterLevelRule => filterLevelRuleToRevit(document, filterLevelRule))
-                                                         .ToList();
-                                }
-                                else if (kvp.Key.Name == "FilterMaterialRule")
-                                {
-                                    filterRules = kvp.Value.Cast<FilterMaterialRule>()
-                                                         .Select(filterMaterialRule => filterMaterialRuleToRevit(document, filterMaterialRule))
-                                                         .ToList();
-                                }
-                                else if (kvp.Key.Name == "FilterStringRule" || kvp.Key.Name == "FilterDoubleRule" ||
-                                            kvp.Key.Name == "FilterIntegerRule" || kvp.Key.Name == "FilterElementIdRule")
-                                {
-                                    filterRules = kvp.Value.Cast<oM.Revit.FilterRules.FilterValueRule>()
-                                                         .Select(filterValueRule => filterValueRuleToRevit(document, filterValueRule))
-                                                         .ToList();
-                                }
-                                return filterRules;
-                            })
-                            .Select(filterRulesList => new ElementParameterFilter(filterRulesList))
-                            .Cast<ElementFilter>()
-                            .ToList());
 
+                                    List<Autodesk.Revit.DB.FilterRule> filterRules = new List<Autodesk.Revit.DB.FilterRule>();
 
-            revitFilter.SetElementFilter(elFilter);
+                                    if (kvp.Key.Name == "FilterCategoryRule")
+                                    {
+                                        filterRules = kvp.Value.Cast<oM.Revit.FilterRules.FilterCategoryRule>()
+                                                            .Select(filterCategoryRule => filterCategoryRuleToRevit(document, filterCategoryRule))
+                                                            .ToList();
+                                    }
+                                    else if (kvp.Key.Name == "FilterLevelRule")
+                                    {
+                                        filterRules = kvp.Value.Cast<FilterLevelRule>()
+                                                             .Select(filterLevelRule => filterLevelRuleToRevit(document, filterLevelRule))
+                                                             .ToList();
+                                    }
+                                    else if (kvp.Key.Name == "FilterMaterialRule")
+                                    {
+                                        filterRules = kvp.Value.Cast<FilterMaterialRule>()
+                                                             .Select(filterMaterialRule => filterMaterialRuleToRevit(document, filterMaterialRule))
+                                                             .ToList();
+                                    }
+                                    else if (kvp.Key.Name == "FilterStringRule" || kvp.Key.Name == "FilterDoubleRule" ||
+                                                kvp.Key.Name == "FilterIntegerRule" || kvp.Key.Name == "FilterElementIdRule")
+                                    {
+                                        filterRules = kvp.Value.Cast<oM.Revit.FilterRules.FilterValueRule>()
+                                                             .Select(filterValueRule => filterValueRuleToRevit(document, filterValueRule))
+                                                             .ToList();
+                                    }
+                                    return filterRules;
+                                })
+                                .Select(filterRulesList => new ElementParameterFilter(filterRulesList))
+                                .Cast<ElementFilter>()
+                                .ToList());
 
+                revitFilter.SetElementFilter(elFilter);
+            }
 
             revitFilter.CopyParameters(filter, settings);
             refObjects.AddOrReplace(filter, revitFilter);
