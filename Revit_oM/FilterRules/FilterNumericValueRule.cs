@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BH.oM.Revit.FilterRules
 {
-    public class FilterNumericValueRule : FilterValueRule
+    public abstract class FilterNumericValueRule : FilterValueRule
     {
         public virtual NumberComparisonType Evaluator { get; set; }
 
