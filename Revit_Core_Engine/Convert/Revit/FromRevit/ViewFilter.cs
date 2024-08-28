@@ -66,14 +66,17 @@ namespace BH.Revit.Engine.Core
 
             /* 3. Transfer List of FILTER RULES */
             // If the Filter is assigned with any rules.....
-            if (((ElementParameterFilter)revitViewFilter.GetElementFilter()).GetRules().Count !=0) 
+            if (revitViewFilter.GetElementFilter()!=null)
             {
-                //Extract the name of all the parameters affected by the rules of the Revit View Filter object (ElementParameterFilter) - via STREAMS
-                List<string> parameterNames = ((ElementParameterFilter)revitViewFilter.GetElementFilter()).GetRules()
-                            .Select(rule => revitViewFilter.Document.GetElement(rule.GetRuleParameter()).Name.ToString())
-                            .ToList<string>();
+                    //Extract the name of all the parameters affected by the rules of the Revit View Filter object (ElementParameterFilter) - via STREAMS
+                    //List<string> parameterNames = ((ElementLogicalFilter)revitViewFilter.GetElementFilter()).GetFilters()
+                    Dictionary<FilterRule, string> filterAndParNames = ((ElementLogicalFilter)revitViewFilter.GetElementFilter()).GetFilters()
+                            .Select(filter => ((ElementParameterFilter)filter).GetRules())
+                            .SelectMany(list => list)
+                            .ToDictionary(rule => rule, rule => (GetParameterById(revitViewFilter.Document, rule.GetRuleParameter()).Definition.Name.ToString()));
+                            //.ToList<string>();
                 //Extract the Revit Filter Rule objects defined in the Revit View Filter object (ElementParameterFilter)
-                List<Autodesk.Revit.DB.FilterRule> revitFilterRules = ((ElementParameterFilter)revitViewFilter.GetElementFilter()).GetRules().ToList();
+                List<Autodesk.Revit.DB.FilterRule> revitFilterRules = (filterAndParNames.Keys.ToList());
                 //Convert the Revit Filter Rule objects into corresponding BHoM FilterRule objects and assign them to the BHoM ViewFilter objects
                 viewFilter.Rules = FilterRulesFromRevit(revitViewFilter, revitFilterRules);
             }
@@ -97,25 +100,25 @@ namespace BH.Revit.Engine.Core
                 NumberComparisonType bhomNumericEvaluator = 0;
 
                 // FILTER STRING RULE
-                if (revitRule.GetType().IsSubclassOf(typeof(Autodesk.Revit.DB.FilterStringRule)))
+                if (revitRule.GetType()== typeof(Autodesk.Revit.DB.FilterStringRule))
                 { return (oM.Revit.FilterRules.FilterRule)FilterStringRuleFromRevit(revitViewFilter, revitRule, bhomTextEvaluator); }
                 // FILTER DOUBLE RULE
-                else if (revitRule.GetType().IsSubclassOf(typeof(Autodesk.Revit.DB.FilterDoubleRule)))
+                else if (revitRule.GetType()==typeof(Autodesk.Revit.DB.FilterDoubleRule))
                 { return (oM.Revit.FilterRules.FilterRule)FilterDoubleRuleFromRevit(revitViewFilter, revitRule, bhomNumericEvaluator); }
                 // FILTER INTEGER RULE
-                else if (revitRule.GetType().IsSubclassOf(typeof(Autodesk.Revit.DB.FilterIntegerRule)))
+                else if (revitRule.GetType() == typeof(Autodesk.Revit.DB.FilterIntegerRule))
                 { return (oM.Revit.FilterRules.FilterRule)FilterIntegerRuleFromRevit(revitViewFilter, revitRule, bhomNumericEvaluator); }
                 // FILTER ELEMENTID RULE
-                else if (revitRule.GetType().IsSubclassOf(typeof(Autodesk.Revit.DB.FilterElementIdRule)))
+                else if (revitRule.GetType() == typeof(Autodesk.Revit.DB.FilterElementIdRule))
                 { return (oM.Revit.FilterRules.FilterRule)FilterElementIdRuleFromRevit(revitViewFilter, revitRule, bhomNumericEvaluator); }
                 // FILTER CATEGORY RULE
-                else if (revitRule.GetType().IsSubclassOf(typeof(Autodesk.Revit.DB.FilterCategoryRule)))
+                else if (revitRule.GetType() == typeof(Autodesk.Revit.DB.FilterCategoryRule))
                 { return (oM.Revit.FilterRules.FilterRule)FilterCategoryRuleFromRevit(revitViewFilter, revitRule); }
                 // FILTER PARAMETER VALUE PRESENCE RULE
-                else if (revitRule.GetType().IsSubclassOf(typeof(Autodesk.Revit.DB.ParameterValuePresenceRule)))
+                else if (revitRule.GetType() == typeof(Autodesk.Revit.DB.ParameterValuePresenceRule))
                 { return (oM.Revit.FilterRules.FilterRule)ParameterValuePresenceRuleFromRevit(revitViewFilter, revitRule); }
                 // FILTER INVERSE RULE
-                else if (revitRule.GetType().IsSubclassOf(typeof(Autodesk.Revit.DB.FilterInverseRule)))
+                else if (revitRule.GetType() == typeof(Autodesk.Revit.DB.FilterInverseRule))
                 { return FilterInverseRuleFromRevit(revitViewFilter, revitRule, bhomTextEvaluator, bhomNumericEvaluator); }
                 return null;
             }).ToList();
@@ -485,7 +488,31 @@ namespace BH.Revit.Engine.Core
             }
         }
 
-}
+
+        /* UTILITY METHODS */
+
+        private static Parameter GetParameterById(Autodesk.Revit.DB.Document doc, ElementId parameterId)
+        {
+            // Get all elements in the document
+            FilteredElementCollector collector = new FilteredElementCollector(doc);
+            collector.WhereElementIsNotElementType();
+
+                // Iterate through all elements
+                foreach (Element element in collector)
+                {
+                    // Get the parameter by its own Id
+                    List<Parameter> matchingParams=element.Parameters().Where(prm => prm.Id == parameterId).ToList();
+
+                    if (matchingParams.Count!=0)
+                        {return matchingParams.First();} 
+
+                }
+
+            // If the parameter is not found, return InvalidElementId
+            return null;
+        }
+
+    }
 }
 
 
