@@ -193,7 +193,8 @@ namespace BH.Revit.Engine.Core
             Autodesk.Revit.DB.FilterDoubleRule revitFilterDoubleRule = (Autodesk.Revit.DB.FilterDoubleRule)revitRule;
             // Extract name and value assigned to the parameter of the FilterDoubleRule obj
             string paramName = GetParameterById(revitViewFilter.Document,revitFilterDoubleRule.GetRuleParameter()).Definition.Name;
-            string paramValue = revitFilterDoubleRule.RuleValue.ToString();
+            ForgeTypeId paramTypeId = GetParameterById(revitViewFilter.Document, revitFilterDoubleRule.GetRuleParameter()).GetUnitTypeId();
+            string paramValue = UnitUtils.ConvertFromInternalUnits(revitFilterDoubleRule.RuleValue,paramTypeId).ToString();
             // Get the RuleEvaluator of the FilterDoubleRule (Class defining the way the string value 
             // assigned to the parameter is compared with the one assigned by the filter)
             FilterNumericRuleEvaluator numericEvaluator = revitFilterDoubleRule.GetEvaluator();
@@ -241,7 +242,8 @@ namespace BH.Revit.Engine.Core
             Autodesk.Revit.DB.FilterIntegerRule revitFilterIntegerRule = (Autodesk.Revit.DB.FilterIntegerRule)revitRule;
             // Extract name and value assigned to the parameter of the FilterIntegerRule obj
             string paramName = GetParameterById(revitViewFilter.Document, revitFilterIntegerRule.GetRuleParameter()).Definition.Name;
-            string paramValue = revitFilterIntegerRule.RuleValue.ToString();
+            ForgeTypeId paramTypeId = GetParameterById(revitViewFilter.Document, revitFilterIntegerRule.GetRuleParameter()).GetUnitTypeId();
+            string paramValue = UnitUtils.ConvertFromInternalUnits(revitFilterIntegerRule.RuleValue, paramTypeId).ToString();
             // Get the RuleEvaluator of the FilterIntegerRule (Class defining the way the string value 
             // assigned to the parameter is compared with the one assigned by the filter)
             FilterNumericRuleEvaluator numericEvaluator = revitFilterIntegerRule.GetEvaluator();
@@ -289,7 +291,7 @@ namespace BH.Revit.Engine.Core
             Autodesk.Revit.DB.FilterElementIdRule revitFilterElemIdRule = (Autodesk.Revit.DB.FilterElementIdRule)revitRule;
             // Extract name and value assigned to the parameter of the FilterElementIdRule obj
             string paramName = GetParameterById(revitViewFilter.Document, revitFilterElemIdRule.GetRuleParameter()).Definition.Name;
-            string paramValue = revitFilterElemIdRule.RuleValue.ToString();
+            string paramValue = revitViewFilter.Document.GetElement(revitFilterElemIdRule.RuleValue).Name.ToString();
             // Get the RuleEvaluator of the FilterElementIdRule (Class defining the way the string value 
             // assigned to the parameter is compared with the one assigned by the filter)
             FilterNumericRuleEvaluator numericEvaluator = revitFilterElemIdRule.GetEvaluator();
