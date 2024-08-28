@@ -135,7 +135,7 @@ namespace BH.Revit.Engine.Core
             // Downcast Revit FilterRule obj to Revit FilterStringRule obj
             Autodesk.Revit.DB.FilterStringRule revitFilterStringRule = (Autodesk.Revit.DB.FilterStringRule)revitRule;
             // Extract name and value assigned to the parameter of the FilterStringRule obj
-            string paramName = revitViewFilter.Document.GetElement(revitFilterStringRule.GetRuleParameter()).Name;
+            string paramName = GetParameterById(revitViewFilter.Document, revitFilterStringRule.GetRuleParameter()).Definition.Name;
             string paramValue = revitFilterStringRule.RuleString;
             // Get the RuleEvaluator of the FilterStringRule (Class defining the way the string value 
             // assigned to the parameter is compared with the one assigned by the filter)
@@ -192,7 +192,7 @@ namespace BH.Revit.Engine.Core
             // Downcast Revit FilterRule obj to Revit FilterDoubleRule obj
             Autodesk.Revit.DB.FilterDoubleRule revitFilterDoubleRule = (Autodesk.Revit.DB.FilterDoubleRule)revitRule;
             // Extract name and value assigned to the parameter of the FilterDoubleRule obj
-            string paramName = revitViewFilter.Document.GetElement(revitFilterDoubleRule.GetRuleParameter()).Name;
+            string paramName = GetParameterById(revitViewFilter.Document,revitFilterDoubleRule.GetRuleParameter()).Definition.Name;
             string paramValue = revitFilterDoubleRule.RuleValue.ToString();
             // Get the RuleEvaluator of the FilterDoubleRule (Class defining the way the string value 
             // assigned to the parameter is compared with the one assigned by the filter)
@@ -240,7 +240,7 @@ namespace BH.Revit.Engine.Core
             // Downcast Revit FilterRule obj to Revit FilterIntegerRule obj
             Autodesk.Revit.DB.FilterIntegerRule revitFilterIntegerRule = (Autodesk.Revit.DB.FilterIntegerRule)revitRule;
             // Extract name and value assigned to the parameter of the FilterIntegerRule obj
-            string paramName = revitViewFilter.Document.GetElement(revitFilterIntegerRule.GetRuleParameter()).Name;
+            string paramName = GetParameterById(revitViewFilter.Document, revitFilterIntegerRule.GetRuleParameter()).Definition.Name;
             string paramValue = revitFilterIntegerRule.RuleValue.ToString();
             // Get the RuleEvaluator of the FilterIntegerRule (Class defining the way the string value 
             // assigned to the parameter is compared with the one assigned by the filter)
@@ -288,7 +288,7 @@ namespace BH.Revit.Engine.Core
             // Downcast Revit FilterRule obj to Revit FilterElementIdRule obj
             Autodesk.Revit.DB.FilterElementIdRule revitFilterElemIdRule = (Autodesk.Revit.DB.FilterElementIdRule)revitRule;
             // Extract name and value assigned to the parameter of the FilterElementIdRule obj
-            string paramName = revitViewFilter.Document.GetElement(revitFilterElemIdRule.GetRuleParameter()).Name;
+            string paramName = GetParameterById(revitViewFilter.Document, revitFilterElemIdRule.GetRuleParameter()).Definition.Name;
             string paramValue = revitFilterElemIdRule.RuleValue.ToString();
             // Get the RuleEvaluator of the FilterElementIdRule (Class defining the way the string value 
             // assigned to the parameter is compared with the one assigned by the filter)
@@ -380,23 +380,23 @@ namespace BH.Revit.Engine.Core
                     {
                         switch (((Autodesk.Revit.DB.FilterStringRule)innerRule).GetEvaluator().GetType().ToString())
                         {
-                            case ("FilterStringEquals"):
+                            case ("Autodesk.Revit.DB.FilterStringEquals"):
                                 bhomTextEvaluator = TextComparisonType.NotEqual;
                                 break;
-                            case ("FilterStringBeginsWith"):
+                            case ("Autodesk.Revit.DB.FilterStringBeginsWith"):
                                 bhomTextEvaluator = TextComparisonType.NotStartsWith;
                                 break;
-                            case ("FilterStringEndsWith"):
+                            case ("Autodesk.Revit.DB.FilterStringEndsWith"):
                                 bhomTextEvaluator = TextComparisonType.NotEndsWith;
                                 break;
-                            case ("FilterStringContains"):
+                            case ("Autodesk.Revit.DB.FilterStringContains"):
                                 bhomTextEvaluator = TextComparisonType.ContainsNot;
                                 break;
                             default:
                                 break;
                         }
                         oM.Revit.FilterRules.FilterStringRule bhomFilterStringRule = new BH.oM.Revit.FilterRules.FilterStringRule();
-                        bhomFilterStringRule.ParameterName = revitViewFilter.Document.GetElement(innerRule.GetRuleParameter()).Name;
+                        bhomFilterStringRule.ParameterName = GetParameterById(revitViewFilter.Document, innerRule.GetRuleParameter()).Definition.Name;
                         bhomFilterStringRule.Value = ((Autodesk.Revit.DB.FilterStringRule)innerRule).RuleString;
                         bhomFilterStringRule.Evaluator = bhomTextEvaluator;
                         return (oM.Revit.FilterRules.FilterRule)bhomFilterStringRule;
@@ -406,24 +406,24 @@ namespace BH.Revit.Engine.Core
                     {
                         switch (((Autodesk.Revit.DB.FilterNumericValueRule)innerRule).GetEvaluator().GetType().ToString())
                         {
-                            case ("FilterNumericEquals"):
+                            case ("Autodesk.Revit.DB.FilterNumericEquals"):
                                 bhomNumericEvaluator = NumberComparisonType.NotEqual;
                                 break;
-                            case ("FilterNumericGreater"):
+                            case ("Autodesk.Revit.DB.FilterNumericGreater"):
                                 bhomNumericEvaluator = NumberComparisonType.Less;
                                 break;
-                            case ("FilterNumericGreaterOrEqual"):
+                            case ("Autodesk.Revit.DB.FilterNumericGreaterOrEqual"):
                                 bhomNumericEvaluator = NumberComparisonType.NotEqual;
                                 break;
-                            case ("FilterNumericLess"):
+                            case ("Autodesk.Revit.DB.FilterNumericLess"):
                                 bhomNumericEvaluator = NumberComparisonType.Greater;
                                 break;
-                            case ("FilterNumericLessOrEqual"):
+                            case ("Autodesk.Revit.DB.FilterNumericLessOrEqual"):
                                 bhomNumericEvaluator = NumberComparisonType.GreaterOrEqual;
                                 break;
                         }
                         oM.Revit.FilterRules.FilterDoubleRule bhomFilterDoubleRule = new BH.oM.Revit.FilterRules.FilterDoubleRule();
-                        bhomFilterDoubleRule.ParameterName = revitViewFilter.Document.GetElement(innerRule.GetRuleParameter()).Name;
+                        bhomFilterDoubleRule.ParameterName = GetParameterById(revitViewFilter.Document, innerRule.GetRuleParameter()).Definition.Name;
                         bhomFilterDoubleRule.Value = ((Autodesk.Revit.DB.FilterDoubleRule)innerRule).RuleValue.ToString();
                         bhomFilterDoubleRule.Evaluator = bhomNumericEvaluator;
                         return (oM.Revit.FilterRules.FilterRule)bhomFilterDoubleRule;
@@ -433,24 +433,24 @@ namespace BH.Revit.Engine.Core
                     {
                         switch (((Autodesk.Revit.DB.FilterNumericValueRule)innerRule).GetEvaluator().GetType().ToString())
                         {
-                            case ("FilterNumericEquals"):
+                            case ("Autodesk.Revit.DB.FilterNumericEquals"):
                                 bhomNumericEvaluator = NumberComparisonType.NotEqual;
                                 break;
-                            case ("FilterNumericGreater"):
+                            case ("Autodesk.Revit.DB.FilterNumericGreater"):
                                 bhomNumericEvaluator = NumberComparisonType.Less;
                                 break;
-                            case ("FilterNumericGreaterOrEqual"):
+                            case ("Autodesk.Revit.DB.FilterNumericGreaterOrEqual"):
                                 bhomNumericEvaluator = NumberComparisonType.NotEqual;
                                 break;
-                            case ("FilterNumericLess"):
+                            case ("Autodesk.Revit.DB.FilterNumericLess"):
                                 bhomNumericEvaluator = NumberComparisonType.Greater;
                                 break;
-                            case ("FilterNumericLessOrEqual"):
+                            case ("Autodesk.Revit.DB.FilterNumericLessOrEqual"):
                                 bhomNumericEvaluator = NumberComparisonType.GreaterOrEqual;
                                 break;
                         }
                         oM.Revit.FilterRules.FilterIntegerRule bhomFilterIntegerRule = new BH.oM.Revit.FilterRules.FilterIntegerRule();
-                        bhomFilterIntegerRule.ParameterName = revitViewFilter.Document.GetElement(innerRule.GetRuleParameter()).Name;
+                        bhomFilterIntegerRule.ParameterName = GetParameterById(revitViewFilter.Document, innerRule.GetRuleParameter()).Definition.Name;
                         bhomFilterIntegerRule.Value = ((Autodesk.Revit.DB.FilterIntegerRule)innerRule).RuleValue.ToString();
                         bhomFilterIntegerRule.Evaluator = bhomNumericEvaluator;
                         return (oM.Revit.FilterRules.FilterRule)bhomFilterIntegerRule;
@@ -460,24 +460,24 @@ namespace BH.Revit.Engine.Core
                     {
                         switch (((Autodesk.Revit.DB.FilterElementIdRule)innerRule).GetEvaluator().GetType().ToString())
                         {
-                            case ("FilterNumericEquals"):
+                            case ("Autodesk.Revit.DB.FilterNumericEquals"):
                                 bhomNumericEvaluator = NumberComparisonType.NotEqual;
                                 break;
-                            case ("FilterNumericGreater"):
+                            case ("Autodesk.Revit.DB.FilterNumericGreater"):
                                 bhomNumericEvaluator = NumberComparisonType.Less;
                                 break;
-                            case ("FilterNumericGreaterOrEqual"):
+                            case ("Autodesk.Revit.DB.FilterNumericGreaterOrEqual"):
                                 bhomNumericEvaluator = NumberComparisonType.NotEqual;
                                 break;
-                            case ("FilterNumericLess"):
+                            case ("Autodesk.Revit.DB.FilterNumericLess"):
                                 bhomNumericEvaluator = NumberComparisonType.Greater;
                                 break;
-                            case ("FilterNumericLessOrEqual"):
+                            case ("Autodesk.Revit.DB.FilterNumericLessOrEqual"):
                                 bhomNumericEvaluator = NumberComparisonType.GreaterOrEqual;
                                 break;
                         }
                         oM.Revit.FilterRules.FilterElementIdRule bhomFilterElementIdRule = new BH.oM.Revit.FilterRules.FilterElementIdRule();
-                        bhomFilterElementIdRule.ParameterName = revitViewFilter.Document.GetElement(innerRule.GetRuleParameter()).Name;
+                        bhomFilterElementIdRule.ParameterName = GetParameterById(revitViewFilter.Document, innerRule.GetRuleParameter()).Definition.Name;
                         bhomFilterElementIdRule.Value = ((Autodesk.Revit.DB.FilterElementIdRule)innerRule).RuleValue.ToString();
                         bhomFilterElementIdRule.Evaluator = bhomNumericEvaluator;
                         return (oM.Revit.FilterRules.FilterRule)bhomFilterElementIdRule;
