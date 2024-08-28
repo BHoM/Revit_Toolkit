@@ -33,6 +33,7 @@ using System.Linq;
 using System.CodeDom;
 using System;
 using Autodesk.Revit.DB.Architecture;
+using Autodesk.Revit.Creation;
 
 namespace BH.Revit.Engine.Core
 {
@@ -59,17 +60,23 @@ namespace BH.Revit.Engine.Core
             viewFilter = new oM.Adapters.Revit.Elements.ViewFilter { Name = revitViewFilter.Name };
 
             /* 2. Transfer List of CATEGORY NAMES */
-            viewFilter.Categories = revitViewFilter.GetCategories().Select(catId => revitViewFilter.Document.GetElement(catId).Name).ToList<string>();
+            List<Autodesk.Revit.DB.Category> categories = new List<Autodesk.Revit.DB.Category>();
+            foreach (Autodesk.Revit.DB.Category cat in revitViewFilter.Document.Settings.Categories) { categories.Add(cat); }
+            viewFilter.Categories = revitViewFilter.GetCategories().Select(catId => categories.Where(cat=>cat.Id==catId).First().Name).ToList<string>();
 
             /* 3. Transfer List of FILTER RULES */
-            //Extract the name of all the parameters affected by the rules of the Revit View Filter object (ElementParameterFilter) - via STREAMS
-            List<string> parameterNames = ((ElementParameterFilter)revitViewFilter.GetElementFilter()).GetRules()
-                        .Select(rule => revitViewFilter.Document.GetElement(rule.GetRuleParameter()).Name.ToString())
-                        .ToList<string>();
-            //Extract the Revit Filter Rule objects defined in the Revit View Filter object (ElementParameterFilter)
-            List<Autodesk.Revit.DB.FilterRule> revitFilterRules = ((ElementParameterFilter)revitViewFilter.GetElementFilter()).GetRules().ToList();
-            //Convert the Revit Filter Rule objects into corresponding BHoM FilterRule objects and assign them to the BHoM ViewFilter objects
-            viewFilter.Rules = FilterRulesFromRevit(revitViewFilter, revitFilterRules);
+            // If the Filter is assigned with any rules.....
+            if (((ElementParameterFilter)revitViewFilter.GetElementFilter()).GetRules().Count !=0) 
+            {
+                //Extract the name of all the parameters affected by the rules of the Revit View Filter object (ElementParameterFilter) - via STREAMS
+                List<string> parameterNames = ((ElementParameterFilter)revitViewFilter.GetElementFilter()).GetRules()
+                            .Select(rule => revitViewFilter.Document.GetElement(rule.GetRuleParameter()).Name.ToString())
+                            .ToList<string>();
+                //Extract the Revit Filter Rule objects defined in the Revit View Filter object (ElementParameterFilter)
+                List<Autodesk.Revit.DB.FilterRule> revitFilterRules = ((ElementParameterFilter)revitViewFilter.GetElementFilter()).GetRules().ToList();
+                //Convert the Revit Filter Rule objects into corresponding BHoM FilterRule objects and assign them to the BHoM ViewFilter objects
+                viewFilter.Rules = FilterRulesFromRevit(revitViewFilter, revitFilterRules);
+            }
 
             //Set identifiers, parameters & custom data
             viewFilter.SetIdentifiers(revitViewFilter);
