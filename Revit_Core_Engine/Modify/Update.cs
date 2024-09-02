@@ -275,11 +275,11 @@ namespace BH.Revit.Engine.Core
                     FillPatternElement revitCutPattern = new FilteredElementCollector(element.Document)
                         .OfClass(typeof(FillPatternElement))
                         .Cast<FillPatternElement>()
-                        .FirstOrDefault(pattern => pattern.Name.Contains(kvp.Value.CutPattern.ToString()));
+                        .FirstOrDefault(pattern => pattern.Name.ToUpper().Contains(kvp.Value.CutPattern.ToString().ToUpper()));
                     FillPatternElement revitSurfacePattern = new FilteredElementCollector(element.Document)
                         .OfClass(typeof(FillPatternElement))
                         .Cast<FillPatternElement>()
-                        .FirstOrDefault(pattern => pattern.Name.Contains(kvp.Value.SurfacePattern.ToString()));
+                        .FirstOrDefault(pattern => pattern.Name.ToUpper().Contains(kvp.Value.SurfacePattern.ToString().ToUpper()));
                     // 3.3 Create the OverrideGraphics by Properties
                     OverrideGraphicSettings overrideGraphicsSettings = new OverrideGraphicSettings();
                     Color revitLineColor = new Color(kvp.Value.LineColor.R, kvp.Value.LineColor.G, kvp.Value.LineColor.B);
