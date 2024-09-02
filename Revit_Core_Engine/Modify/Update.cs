@@ -302,6 +302,60 @@ namespace BH.Revit.Engine.Core
             return true;
         }
 
+
+        [Description("Updates the existing Revit View based on the given BHoM View.")]
+        [Input("element", "Revit View instance to be updated.")]
+        [Input("bHoMObject", "BHoM View, based on which the Revit View will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Input("setLocationOnUpdate", "Revit View instance does not have location property, therefore this parameter is irrelevant.")]
+        [Output("success", "True if the Revit View instance has been updated successfully based on the input BHoM View.")]
+        public static bool Update(this View3D element, BH.oM.Adapters.Revit.Elements.View bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            /* ADD FILTERS WITH OVERRIDES TO REVIT VIEW */
+
+            // Via Streams...
+            bHoMObject.FiltersWithOverrides
+                // 1. Turn Filters and Overrides into Keys and Values of a Dictionary
+                .ToDictionary(x => x.Filter, x => x.Overrides)
+                // 2. Turn the Dictionary into a List of KeyValue Pairs (to allow use of ForEach()
+                .ToList<KeyValuePair<ViewFilter, BH.oM.Adapters.Revit.Elements.OverrideGraphicSettings>>()
+                // 3. Assign Filters to View and Set their Overrides
+                .ForEach(kvp => {
+                    ParameterFilterElement pfe = kvp.Key.ToRevitParameterFilterElement(element.Document, settings);
+                    // 3.1 Add ViewFilter to the View
+                    element.AddFilter(pfe.Id);
+                    // 3.2 Get the Revit FillPatternElement Objects for CutPattern and SurfacePattern
+                    FillPatternElement revitCutPattern = new FilteredElementCollector(element.Document)
+                        .OfClass(typeof(FillPatternElement))
+                        .Cast<FillPatternElement>()
+                        .FirstOrDefault(pattern => pattern.Name.Contains(kvp.Value.CutPattern.ToString()));
+                    FillPatternElement revitSurfacePattern = new FilteredElementCollector(element.Document)
+                        .OfClass(typeof(FillPatternElement))
+                        .Cast<FillPatternElement>()
+                        .FirstOrDefault(pattern => pattern.Name.Contains(kvp.Value.SurfacePattern.ToString()));
+                    // 3.3 Create the OverrideGraphics by Properties
+                    OverrideGraphicSettings overrideGraphicsSettings = new OverrideGraphicSettings();
+                    Color revitLineColor = new Color(kvp.Value.LineColor.R, kvp.Value.LineColor.G, kvp.Value.LineColor.B);
+                    Color revitCutColor = new Color(kvp.Value.CutColor.R, kvp.Value.CutColor.G, kvp.Value.CutColor.B);
+                    Color revitSurfaceColor = new Color(kvp.Value.SurfaceColor.R, kvp.Value.SurfaceColor.G, kvp.Value.SurfaceColor.B);
+                    overrideGraphicsSettings.SetCutLineColor(revitLineColor);
+                    overrideGraphicsSettings.SetProjectionLineColor(revitLineColor);
+                    overrideGraphicsSettings.SetCutBackgroundPatternId(revitCutPattern.Id);
+                    overrideGraphicsSettings.SetCutBackgroundPatternColor(revitCutColor);
+                    overrideGraphicsSettings.SetCutForegroundPatternId(revitCutPattern.Id);
+                    overrideGraphicsSettings.SetCutForegroundPatternColor(revitCutColor);
+                    overrideGraphicsSettings.SetSurfaceBackgroundPatternId(revitSurfacePattern.Id);
+                    overrideGraphicsSettings.SetSurfaceBackgroundPatternColor(revitSurfaceColor);
+                    overrideGraphicsSettings.SetSurfaceForegroundPatternId(revitSurfacePattern.Id);
+                    overrideGraphicsSettings.SetSurfaceForegroundPatternColor(revitSurfaceColor);
+                    // 3.4 Assign Overrides to the ViewFilter
+                    element.SetFilterOverrides(pfe.Id, overrideGraphicsSettings);
+                });
+
+            element.CopyParameters(bHoMObject, settings);
+            return true;
+        }
+
         /***************************************************/
 
         [Description("Updates the existing Revit ParameterFilterElement based on the given BHoM ViewFilter.")]
