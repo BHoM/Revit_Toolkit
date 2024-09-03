@@ -93,6 +93,8 @@ namespace BH.Revit.Engine.Core
 
         private static void CollectUnits()
         {
+            BH.Engine.Base.Compute.StartSuppressRecordingEvents(false, true, true);
+
             m_UnitsWithNames = new Dictionary<string, ForgeTypeId>();
             foreach (PropertyInfo info in typeof(UnitTypeId).GetProperties())
             {
@@ -100,6 +102,8 @@ namespace BH.Revit.Engine.Core
                 if (unitType != null)
                     m_UnitsWithNames.Add(info.Name, unitType);
             }
+
+            BH.Engine.Base.Compute.StopSuppressRecordingEvents();
         }
 
 
