@@ -93,6 +93,8 @@ namespace BH.Revit.Engine.Core
 #else
         private static void CollectSpecs()
         {
+            BH.Engine.Base.Compute.StartSuppressRecordingEvents(true, true, true);
+
             m_SpecsWithNames = new Dictionary<string, ForgeTypeId>();
             foreach (PropertyInfo info in typeof(SpecTypeId).GetProperties())
             {
@@ -100,6 +102,8 @@ namespace BH.Revit.Engine.Core
                 if (unitType != null)
                     m_SpecsWithNames.Add(info.Name, unitType);
             }
+
+            BH.Engine.Base.Compute.StopSuppressRecordingEvents();
         }
 
 
