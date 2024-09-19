@@ -45,33 +45,13 @@ namespace BH.Revit.Engine.Core
             if (face == null)
                 return null;
 
-            List<CurveLoop> crvLoops = face.GetEdgesAsCurveLoops().ToList();
-            CurveLoop externalLoop = crvLoops.FirstOrDefault(x => !x.IsOpen() && x.IsCounterclockwise(face.FaceNormal));
+            PolyCurve boundary = face.ExternalCurveLoop().FromRevit();
+            BoundingBox boundaryBox = boundary.Bounds();
 
-            //The face may violate conventional winding directions, or Revit may see a complex curve loop as 'Open' and refuses to calculate IsCounterclockwise
-            if (externalLoop == null)
-            {
-                //Checking areas is slower but these problematic faces rarely exist, so performance hit isn't bad.
-                double maxArea = double.MinValue;
+            PolyCurve[] loops = face.GetEdgesAsCurveLoops().Select(x => x.FromRevit()).ToArray();
+            List<ICurve> openings = loops.Where(x => !x.Bounds().IsEqual(boundaryBox)).Cast<ICurve>().ToList();
 
-                foreach (CurveLoop loop in crvLoops)
-                {
-                    List<BH.oM.Geometry.Point> controlPoints = new List<BH.oM.Geometry.Point>();
-                    foreach (Curve curve in loop)
-                        controlPoints.AddRange(curve.Tessellate().Select(x => x.PointFromRevit()));
-
-                    double area = new Polyline { ControlPoints = controlPoints }.Area();
-                    if (area > maxArea)
-                    {
-                        maxArea = area;
-                        externalLoop = loop;
-                    }
-                }
-            }
-
-            List<ICurve> internalBoundaries = crvLoops.Where(x => x != externalLoop).Select(x => x.FromRevit() as ICurve).ToList();
-
-            return new PlanarSurface(externalLoop.FromRevit(), internalBoundaries);
+            return new PlanarSurface(boundary, openings);
         }
 
 

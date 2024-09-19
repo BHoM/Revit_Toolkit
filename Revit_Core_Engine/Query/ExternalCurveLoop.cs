@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
@@ -21,9 +21,12 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Base;
-using System;
+using BH.Engine.Geometry;
+using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -33,45 +36,40 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Output<double, double> PlanViewRange(this ViewPlan view)
+        [Description("Returns the main, external boundary curve loop of a planar face.")]
+        [Input("face", "A planar face with and external boundary curve loop that can contains internal holes, if any.")]
+        [Output("externalCurveLoop", "The main, external boundary curve loop of a planar face.")]
+        public static CurveLoop ExternalCurveLoop(this PlanarFace face)
         {
-            Document doc = view.Document;
+            List<CurveLoop> crvLoops = face.GetEdgesAsCurveLoops().ToList();
+            CurveLoop externalLoop = crvLoops.FirstOrDefault(x => !x.IsOpen() && x.IsCounterclockwise(face.FaceNormal));
 
-            PlanViewRange viewRange = view.GetViewRange();
-            Level topLevel = doc.GetElement(viewRange.GetLevelId(PlanViewPlane.TopClipPlane)) as Level;
-            double topOffset = viewRange.GetOffset(PlanViewPlane.TopClipPlane);
-            double topZ = (topLevel == null)
-                ? m_DefaultVerticalExtents
-                : topLevel.ProjectElevation + topOffset;
-
-            Level bottomLevel;
-            double bottomOffset;
-            if (view.ViewType == Autodesk.Revit.DB.ViewType.CeilingPlan)
+            //The face may violate conventional winding directions, or Revit may see a complex curve loop as 'Open' and refuses to calculate IsCounterclockwise
+            if (externalLoop == null)
             {
-                bottomLevel = doc.GetElement(viewRange.GetLevelId(PlanViewPlane.CutPlane)) as Level;
-                bottomOffset = viewRange.GetOffset(PlanViewPlane.CutPlane);
-            }
-            else
-            {
-                bottomLevel = doc.GetElement(viewRange.GetLevelId(PlanViewPlane.ViewDepthPlane)) as Level;
-                bottomOffset = viewRange.GetOffset(PlanViewPlane.ViewDepthPlane);
+                //Checking areas is slower but these problematic faces rarely exist, so performance hit isn't bad.
+                double maxArea = double.MinValue;
+
+                foreach (CurveLoop loop in crvLoops)
+                {
+                    List<BH.oM.Geometry.Point> controlPoints = new List<BH.oM.Geometry.Point>();
+                    foreach (Curve curve in loop)
+                        controlPoints.AddRange(curve.Tessellate().Select(x => x.PointFromRevit()));
+
+                    double area = new Polyline { ControlPoints = controlPoints }.Area();
+                    if (area > maxArea)
+                    {
+                        maxArea = area;
+                        externalLoop = loop;
+                    }
+                }
             }
 
-            double bottomZ = bottomLevel != null ? bottomLevel.ProjectElevation + bottomOffset : -m_DefaultVerticalExtents;
-            return new Output<double, double> { Item1 = bottomZ, Item2 = topZ };
+            return externalLoop;
         }
-
-
-        /***************************************************/
-        /****              Private fields               ****/
-        /***************************************************/
-
-        private static double m_DefaultVerticalExtents = 1e+4;
-        private static double m_DefaultHorizontalExtents = 1e+6;
 
         /***************************************************/
     }
 }
-
 
 

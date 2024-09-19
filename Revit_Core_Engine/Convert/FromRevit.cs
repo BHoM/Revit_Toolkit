@@ -41,7 +41,6 @@ namespace BH.Revit.Engine.Core
         /****             Interface Methods             ****/
         /***************************************************/
 
-        [PreviousVersion("7.2", "BH.Revit.Engine.Core.Convert.IFromRevit(Autodesk.Revit.DB.Element, BH.oM.Adapters.Revit.Enums.Discipline, Autodesk.Revit.DB.Transform, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>)")]
         [Description("Interface method that tries to find a suitable FromRevit convert for any Revit Element.")]
         [Input("element", "Revit Element to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
@@ -71,7 +70,6 @@ namespace BH.Revit.Engine.Core
         /****      Convert Revit elements to BHoM       ****/
         /***************************************************/
 
-        [PreviousVersion("7.2", "BH.Revit.Engine.Core.Convert.FromRevit(Autodesk.Revit.DB.Analysis.EnergyAnalysisDetailModel, BH.oM.Adapters.Revit.Enums.Discipline, Autodesk.Revit.DB.Transform, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>)")]
         [Description("Converts a Revit EnergyAnalysisDetailModel to a BHoM object based on the requested engineering discipline.")]
         [Input("energyAnalysisModel", "Revit EnergyAnalysisDetailModel to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
@@ -97,7 +95,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [PreviousVersion("7.2", "BH.Revit.Engine.Core.Convert.FromRevit(Autodesk.Revit.DB.AssemblyInstance, BH.oM.Adapters.Revit.Enums.Discipline, Autodesk.Revit.DB.Transform, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>)")]
         [Description("Converts a Revit AssemblyInstance to a BHoM object based on the requested engineering discipline.")]
         [Input("assemblyInstance", "Revit AssemblyInstance to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
@@ -122,7 +119,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [PreviousVersion("7.2", "BH.Revit.Engine.Core.Convert.FromRevit(Autodesk.Revit.DB.Element, BH.oM.Adapters.Revit.Enums.Discipline, Autodesk.Revit.DB.Transform, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>)")]
         [Description("Converts a Revit Element to a BHoM object based on the requested engineering discipline.")]
         [Input("element", "Revit EnergyAnalysisDetailModel to be converted.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]

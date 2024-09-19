@@ -80,7 +80,7 @@ namespace BH.Revit.Engine.Core
                     break;
             }
 
-            string unitTypeIdentifier = parameter.UnitTypePropertyName();
+            string unitTypeIdentifier = parameter.SpecName();
             return new RevitParameter { Name = name, Value = value, IsReadOnly = parameter.IsReadOnly, UnitType = unitTypeIdentifier };
         }
 

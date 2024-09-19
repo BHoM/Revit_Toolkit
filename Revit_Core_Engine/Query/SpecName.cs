@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
@@ -21,9 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Base;
-using System;
-using System.Collections.Generic;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -33,45 +33,38 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static Output<double, double> PlanViewRange(this ViewPlan view)
+        [PreviousVersion("7.3", "BH.Revit.Engine.Core.Query.UnitTypePropertyName(Autodesk.Revit.DB.UnitType)")]
+        [PreviousVersion("7.3", "BH.Revit.Engine.Core.Query.UnitTypePropertyName(Autodesk.Revit.DB.ForgeTypeId)")]
+        [Description("Returns name of SpecTypeId property that contains a given Revit spec object (enum for Revit up to 2020 or ForgeTypeId for later versions).")]
+        [Input("spec", "Spec object to be queried for the correspondent SpecTypeId property name.")]
+        [Output("name", "Name of SpecTypeId property that contains the input spec object.")]
+#if (REVIT2020)
+        public static string SpecName(this UnitType spec)
+#else
+        public static string SpecName(this ForgeTypeId spec)
+#endif
         {
-            Document doc = view.Document;
+            if (m_SpecsWithNames == null)
+                CollectSpecs();
 
-            PlanViewRange viewRange = view.GetViewRange();
-            Level topLevel = doc.GetElement(viewRange.GetLevelId(PlanViewPlane.TopClipPlane)) as Level;
-            double topOffset = viewRange.GetOffset(PlanViewPlane.TopClipPlane);
-            double topZ = (topLevel == null)
-                ? m_DefaultVerticalExtents
-                : topLevel.ProjectElevation + topOffset;
-
-            Level bottomLevel;
-            double bottomOffset;
-            if (view.ViewType == Autodesk.Revit.DB.ViewType.CeilingPlan)
-            {
-                bottomLevel = doc.GetElement(viewRange.GetLevelId(PlanViewPlane.CutPlane)) as Level;
-                bottomOffset = viewRange.GetOffset(PlanViewPlane.CutPlane);
-            }
+            if (m_SpecsWithNames.ContainsValue(spec))
+                return m_SpecsWithNames.FirstOrDefault(x => x.Value.Equals(spec)).Key;
             else
-            {
-                bottomLevel = doc.GetElement(viewRange.GetLevelId(PlanViewPlane.ViewDepthPlane)) as Level;
-                bottomOffset = viewRange.GetOffset(PlanViewPlane.ViewDepthPlane);
-            }
-
-            double bottomZ = bottomLevel != null ? bottomLevel.ProjectElevation + bottomOffset : -m_DefaultVerticalExtents;
-            return new Output<double, double> { Item1 = bottomZ, Item2 = topZ };
+                return null;
         }
 
-
-        /***************************************************/
-        /****              Private fields               ****/
         /***************************************************/
 
-        private static double m_DefaultVerticalExtents = 1e+4;
-        private static double m_DefaultHorizontalExtents = 1e+6;
+        [PreviousVersion("7.3", "BH.Revit.Engine.Core.Query.UnitTypePropertyName(Autodesk.Revit.DB.Parameter)")]
+        [Description("Returns name of SpecTypeId property that contains given Revit parameter's spec object (enum for Revit up to 2020 or ForgeTypeId for later versions).")]
+        [Input("parameter", "Parameter to be queried for the correspondent SpecTypeId property name.")]
+        [Output("name", "Name of SpecTypeId property that contains the spec object correspondent to the input parameter.")]
+        public static string SpecName(this Parameter parameter)
+        {
+            return parameter.StorageType == StorageType.Double ? parameter.Definition.GetDataType().SpecName() : null;
+        }
 
         /***************************************************/
     }
 }
-
-
 
