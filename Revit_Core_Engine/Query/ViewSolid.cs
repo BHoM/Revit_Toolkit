@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
@@ -35,7 +35,6 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("7.3", "BH.Revit.Engine.Core.Query.ViewSolid(Autodesk.Revit.DB.View)")]
         [Description("Returns a solid that represents the 3-dimensional extents of a given view.")]
         [Input("view", "View to compute the solids.")]
         [Input("createUnlimitedIfViewUncropped", "If false, the method will return null in case of missing crop box (i.e. the view is unlimited, so it cannot be represented by a solid). If true, uncropped views will produce an 'unlimited' solid roughly 1e+6 by 1e+6 in dimensions perpendicular to the view direction, with depth equal to view depth or 1e+4 in case of views without depth.")]
