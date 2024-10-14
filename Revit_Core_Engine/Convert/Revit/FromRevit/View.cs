@@ -86,46 +86,47 @@ namespace BH.Revit.Engine.Core
             // Initialize BHoM OverrideGraphicsSettings object
             OverrideGraphicSettings overrideGraphicsSettings = new OverrideGraphicSettings();
 
+
             // Convert COLORS 
-            overrideGraphicsSettings.LineColor = System.Drawing.Color.FromArgb(revitOverrides.CutLineColor.Red, revitOverrides.CutLineColor.Green, revitOverrides.CutLineColor.Blue);
-            overrideGraphicsSettings.CutColor = System.Drawing.Color.FromArgb(revitOverrides.CutBackgroundPatternColor.Red, revitOverrides.CutBackgroundPatternColor.Green, revitOverrides.CutBackgroundPatternColor.Blue);
-            overrideGraphicsSettings.SurfaceColor = System.Drawing.Color.FromArgb(revitOverrides.SurfaceBackgroundPatternColor.Red, revitOverrides.SurfaceBackgroundPatternColor.Green, revitOverrides.SurfaceBackgroundPatternColor.Blue);
+            if (revitOverrides.CutLineColor.IsValid) overrideGraphicsSettings.LineColor = System.Drawing.Color.FromArgb(revitOverrides.CutLineColor.Red, revitOverrides.CutLineColor.Green, revitOverrides.CutLineColor.Blue);
+            if (revitOverrides.CutForegroundPatternColor.IsValid) overrideGraphicsSettings.CutColor = System.Drawing.Color.FromArgb(revitOverrides.CutBackgroundPatternColor.Red, revitOverrides.CutBackgroundPatternColor.Green, revitOverrides.CutBackgroundPatternColor.Blue);
+            if (revitOverrides.SurfaceBackgroundPatternColor.IsValid) overrideGraphicsSettings.SurfaceColor = System.Drawing.Color.FromArgb(revitOverrides.SurfaceBackgroundPatternColor.Red, revitOverrides.SurfaceBackgroundPatternColor.Green, revitOverrides.SurfaceBackgroundPatternColor.Blue);
 
             // Convert LINE PATTERNS
             String linePatternName = element.Document.GetElement(revitOverrides.CutLinePatternId).Name;
 
-            if (linePatternName.ToUpper().Contains("DASH")) { overrideGraphicsSettings.LinePattern = oM.Revit.Enums.LinePattern.DASH; }
-            else if (linePatternName.ToUpper().Contains("DOT")) { overrideGraphicsSettings.LinePattern = oM.Revit.Enums.LinePattern.DOT; }
-            else if (linePatternName.ToUpper().Contains("HIDDEN")) { overrideGraphicsSettings.LinePattern = oM.Revit.Enums.LinePattern.HIDDEN; }
-            else if (linePatternName.ToUpper().Contains("SOLID")) { overrideGraphicsSettings.LinePattern = oM.Revit.Enums.LinePattern.SOLID; }
+            if (linePatternName.ToUpper().Contains("DASH")) { overrideGraphicsSettings.LinePattern = oM.Revit.Enums.LinePattern.Dash; }
+            else if (linePatternName.ToUpper().Contains("DOT")) { overrideGraphicsSettings.LinePattern = oM.Revit.Enums.LinePattern.Dot; }
+            else if (linePatternName.ToUpper().Contains("HIDDEN")) { overrideGraphicsSettings.LinePattern = oM.Revit.Enums.LinePattern.Hidden; }
+            else if (linePatternName.ToUpper().Contains("SOLID")) { overrideGraphicsSettings.LinePattern = oM.Revit.Enums.LinePattern.Solid; }
             else { BH.Engine.Base.Compute.RecordWarning($"The Revit Line Pattern {linePatternName} is not implemented yet in the BHoM.\n By default, the Line Pattern {linePatternName} will be set to SOLID."); }
 
 
             // Convert CUT PATTERNS
             String cutPatternName = element.Document.GetElement(revitOverrides.CutBackgroundPatternId).Name;
 
-            if (cutPatternName.ToUpper().Contains("CROSSHATCH") && !cutPatternName.ToUpper().Contains("DIAGONAL")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.CROSSHATCH; }
-            else if (cutPatternName.ToUpper().Contains("CROSSHATCH") && cutPatternName.ToUpper().Contains("DIAGONAL")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.DIAGONAL_CROSSHATCH; }
-            else if (cutPatternName.ToUpper().Contains("DIAGONAL") && cutPatternName.ToUpper().Contains("DOWN")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.DIAGONAL_DOWN; }
-            else if (cutPatternName.ToUpper().Contains("DIAGONAL") && cutPatternName.ToUpper().Contains("UP")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.DIAGONAL_UP; }
-            else if (cutPatternName.ToUpper().Contains("HORIZONTAL")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.HORIZONTAL; }
-            else if (cutPatternName.ToUpper().Contains("STEEL")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.STEEL; }
-            else if (cutPatternName.ToUpper().Contains("SOLID")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.SOLID; }
-            else if (cutPatternName.ToUpper().Contains("VERTICAL")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.VERTICAL; }
+            if (cutPatternName.ToUpper().Contains("CROSSHATCH") && !cutPatternName.ToUpper().Contains("DIAGONAL")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.CrossHatch; }
+            else if (cutPatternName.ToUpper().Contains("CROSSHATCH") && cutPatternName.ToUpper().Contains("DIAGONAL")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.DiagonalCrossHatch; }
+            else if (cutPatternName.ToUpper().Contains("DIAGONAL") && cutPatternName.ToUpper().Contains("DOWN")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.DiagonalDown; }
+            else if (cutPatternName.ToUpper().Contains("DIAGONAL") && cutPatternName.ToUpper().Contains("UP")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.DiagonalUp; }
+            else if (cutPatternName.ToUpper().Contains("HORIZONTAL")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.Horizontal; }
+            else if (cutPatternName.ToUpper().Contains("STEEL")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.Steel; }
+            else if (cutPatternName.ToUpper().Contains("SOLID")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.Solid; }
+            else if (cutPatternName.ToUpper().Contains("VERTICAL")) { overrideGraphicsSettings.CutPattern = oM.Revit.Enums.FillPattern.Vertical; }
             else { BH.Engine.Base.Compute.RecordWarning($"The Revit Fill Pattern {cutPatternName} is not implemented yet in the BHoM.\n By default, the Fill Pattern {cutPatternName} will be set to SOLID."); }
 
 
             // Convert SURFACE PATTERNS
             String surfacePatternName = element.Document.GetElement(revitOverrides.SurfaceBackgroundPatternId).Name;
 
-            if (surfacePatternName.ToUpper().Contains("CROSSHATCH") && !surfacePatternName.ToUpper().Contains("DIAGONAL")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.CROSSHATCH; }
-            else if (surfacePatternName.ToUpper().Contains("CROSSHATCH") && surfacePatternName.ToUpper().Contains("DIAGONAL")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.DIAGONAL_CROSSHATCH; }
-            else if (surfacePatternName.ToUpper().Contains("DIAGONAL") && surfacePatternName.ToUpper().Contains("DOWN")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.DIAGONAL_DOWN; }
-            else if (surfacePatternName.ToUpper().Contains("DIAGONAL") && surfacePatternName.ToUpper().Contains("UP")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.DIAGONAL_UP; }
-            else if (surfacePatternName.ToUpper().Contains("HORIZONTAL")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.HORIZONTAL; }
-            else if (surfacePatternName.ToUpper().Contains("STEEL")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.STEEL; }
-            else if (surfacePatternName.ToUpper().Contains("SOLID")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.SOLID; }
-            else if (surfacePatternName.ToUpper().Contains("VERTICAL")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.VERTICAL; }
+            if (surfacePatternName.ToUpper().Contains("CROSSHATCH") && !surfacePatternName.ToUpper().Contains("DIAGONAL")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.CrossHatch; }
+            else if (surfacePatternName.ToUpper().Contains("CROSSHATCH") && surfacePatternName.ToUpper().Contains("DIAGONAL")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.DiagonalCrossHatch; }
+            else if (surfacePatternName.ToUpper().Contains("DIAGONAL") && surfacePatternName.ToUpper().Contains("DOWN")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.DiagonalDown; }
+            else if (surfacePatternName.ToUpper().Contains("DIAGONAL") && surfacePatternName.ToUpper().Contains("UP")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.DiagonalUp; }
+            else if (surfacePatternName.ToUpper().Contains("HORIZONTAL")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.Horizontal; }
+            else if (surfacePatternName.ToUpper().Contains("STEEL")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.Steel; }
+            else if (surfacePatternName.ToUpper().Contains("SOLID")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.Solid; }
+            else if (surfacePatternName.ToUpper().Contains("VERTICAL")) { overrideGraphicsSettings.SurfacePattern = oM.Revit.Enums.FillPattern.Vertical; }
             else { BH.Engine.Base.Compute.RecordWarning($"The Revit Fill Pattern {surfacePatternName} is not implemented yet in the BHoM.\n By default, the Fill Pattern {surfacePatternName} will be set to SOLID."); }
 
             return overrideGraphicsSettings;

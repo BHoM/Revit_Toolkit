@@ -10,7 +10,7 @@ namespace BH.oM.Revit.FilterRules
     public class FilterLevelRule : FilterRule
     {
         public virtual string LevelName { get; set; }
-        public virtual LevelComparisonType Evaluator { get; set; }
+        public virtual LevelComparisonType ComparisonType { get; set; }
 
     }
 }

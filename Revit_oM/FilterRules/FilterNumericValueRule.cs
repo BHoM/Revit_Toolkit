@@ -9,7 +9,7 @@ namespace BH.oM.Revit.FilterRules
 {
     public abstract class FilterNumericValueRule : FilterValueRule
     {
-        public virtual NumberComparisonType Evaluator { get; set; }
+        public virtual NumberComparisonType ComparisonType { get; set; }
 
 
     }

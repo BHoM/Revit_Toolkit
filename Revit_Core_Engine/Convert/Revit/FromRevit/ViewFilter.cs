@@ -68,15 +68,13 @@ namespace BH.Revit.Engine.Core
             // If the Filter is assigned with any rules.....
             if (revitViewFilter.GetElementFilter()!=null)
             {
-                    //Extract the name of all the parameters affected by the rules of the Revit View Filter object (ElementParameterFilter) - via STREAMS
-                    //List<string> parameterNames = ((ElementLogicalFilter)revitViewFilter.GetElementFilter()).GetFilters()
-                    Dictionary<FilterRule, string> filterAndParNames = ((ElementLogicalFilter)revitViewFilter.GetElementFilter()).GetFilters()
-                            .Select(filter => ((ElementParameterFilter)filter).GetRules())
-                            .SelectMany(list => list)
-                            .ToDictionary(rule => rule, rule => (GetParameterById(revitViewFilter.Document, rule.GetRuleParameter()).Definition.Name.ToString()));
-                            //.ToList<string>();
+                //Extract the name of all the parameters affected by the rules of the Revit View Filter object (ElementParameterFilter) - via STREAMS
+                List<FilterRule> filterRules = ((ElementLogicalFilter)revitViewFilter.GetElementFilter()).GetFilters()
+                        .Select(filter => ((ElementParameterFilter)filter).GetRules())
+                        .SelectMany(list => list)
+                        .ToList();
                 //Extract the Revit Filter Rule objects defined in the Revit View Filter object (ElementParameterFilter)
-                List<Autodesk.Revit.DB.FilterRule> revitFilterRules = (filterAndParNames.Keys.ToList());
+                List<Autodesk.Revit.DB.FilterRule> revitFilterRules = (filterRules);
                 //Convert the Revit Filter Rule objects into corresponding BHoM FilterRule objects and assign them to the BHoM ViewFilter objects
                 viewFilter.Rules = FilterRulesFromRevit(revitViewFilter, revitFilterRules);
             }
@@ -178,7 +176,7 @@ namespace BH.Revit.Engine.Core
             bhomFilterStringRule = new oM.Revit.FilterRules.FilterStringRule();
             bhomFilterStringRule.ParameterName = paramName;
             bhomFilterStringRule.Value = paramValue;
-            bhomFilterStringRule.Evaluator = bhomTextEvaluator;
+            bhomFilterStringRule.ComparisonType = bhomTextEvaluator;
 
             return bhomFilterStringRule;
         }
@@ -227,7 +225,7 @@ namespace BH.Revit.Engine.Core
             bhomFilterDoubleRule = new BH.oM.Revit.FilterRules.FilterDoubleRule();
             bhomFilterDoubleRule.ParameterName = paramName;
             bhomFilterDoubleRule.Value = paramValue;
-            bhomFilterDoubleRule.Evaluator = bhomNumericEvaluator;
+            bhomFilterDoubleRule.ComparisonType = bhomNumericEvaluator;
 
             return bhomFilterDoubleRule;
         }
@@ -276,7 +274,7 @@ namespace BH.Revit.Engine.Core
             bhomFilterIntegerRule = new BH.oM.Revit.FilterRules.FilterIntegerRule();
                             bhomFilterIntegerRule.ParameterName = paramName;
                             bhomFilterIntegerRule.Value = paramValue;
-                            bhomFilterIntegerRule.Evaluator = bhomNumericEvaluator;
+                            bhomFilterIntegerRule.ComparisonType = bhomNumericEvaluator;
 
             return bhomFilterIntegerRule;
         }
@@ -324,7 +322,7 @@ namespace BH.Revit.Engine.Core
             bhomFilterElemIdRule = new BH.oM.Revit.FilterRules.FilterElementIdRule();
             bhomFilterElemIdRule.ParameterName = paramName;
             bhomFilterElemIdRule.Value = paramValue;
-            bhomFilterElemIdRule.Evaluator = bhomNumericEvaluator;
+            bhomFilterElemIdRule.ComparisonType = bhomNumericEvaluator;
 
             return bhomFilterElemIdRule;
         }
@@ -400,7 +398,7 @@ namespace BH.Revit.Engine.Core
                         oM.Revit.FilterRules.FilterStringRule bhomFilterStringRule = new BH.oM.Revit.FilterRules.FilterStringRule();
                         bhomFilterStringRule.ParameterName = GetParameterById(revitViewFilter.Document, innerRule.GetRuleParameter()).Definition.Name;
                         bhomFilterStringRule.Value = ((Autodesk.Revit.DB.FilterStringRule)innerRule).RuleString;
-                        bhomFilterStringRule.Evaluator = bhomTextEvaluator;
+                        bhomFilterStringRule.ComparisonType = bhomTextEvaluator;
                         return (oM.Revit.FilterRules.FilterRule)bhomFilterStringRule;
                     }
                 // FilterDoubleRule
@@ -427,7 +425,7 @@ namespace BH.Revit.Engine.Core
                         oM.Revit.FilterRules.FilterDoubleRule bhomFilterDoubleRule = new BH.oM.Revit.FilterRules.FilterDoubleRule();
                         bhomFilterDoubleRule.ParameterName = GetParameterById(revitViewFilter.Document, innerRule.GetRuleParameter()).Definition.Name;
                         bhomFilterDoubleRule.Value = ((Autodesk.Revit.DB.FilterDoubleRule)innerRule).RuleValue.ToString();
-                        bhomFilterDoubleRule.Evaluator = bhomNumericEvaluator;
+                        bhomFilterDoubleRule.ComparisonType = bhomNumericEvaluator;
                         return (oM.Revit.FilterRules.FilterRule)bhomFilterDoubleRule;
                     }
                 // FilterIntegerRule
@@ -454,7 +452,7 @@ namespace BH.Revit.Engine.Core
                         oM.Revit.FilterRules.FilterIntegerRule bhomFilterIntegerRule = new BH.oM.Revit.FilterRules.FilterIntegerRule();
                         bhomFilterIntegerRule.ParameterName = GetParameterById(revitViewFilter.Document, innerRule.GetRuleParameter()).Definition.Name;
                         bhomFilterIntegerRule.Value = ((Autodesk.Revit.DB.FilterIntegerRule)innerRule).RuleValue.ToString();
-                        bhomFilterIntegerRule.Evaluator = bhomNumericEvaluator;
+                        bhomFilterIntegerRule.ComparisonType = bhomNumericEvaluator;
                         return (oM.Revit.FilterRules.FilterRule)bhomFilterIntegerRule;
                     }
                 // FilterElementIdRule
@@ -481,7 +479,7 @@ namespace BH.Revit.Engine.Core
                         oM.Revit.FilterRules.FilterElementIdRule bhomFilterElementIdRule = new BH.oM.Revit.FilterRules.FilterElementIdRule();
                         bhomFilterElementIdRule.ParameterName = GetParameterById(revitViewFilter.Document, innerRule.GetRuleParameter()).Definition.Name;
                         bhomFilterElementIdRule.Value = ((Autodesk.Revit.DB.FilterElementIdRule)innerRule).RuleValue.ToString();
-                        bhomFilterElementIdRule.Evaluator = bhomNumericEvaluator;
+                        bhomFilterElementIdRule.ComparisonType = bhomNumericEvaluator;
                         return (oM.Revit.FilterRules.FilterRule)bhomFilterElementIdRule;
                     }
                 default:
