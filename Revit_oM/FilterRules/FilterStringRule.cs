@@ -9,6 +9,6 @@ namespace BH.oM.Revit.FilterRules
 {
     public class FilterStringRule : FilterValueRule
     {
-        public virtual TextComparisonType Evaluator { get; set; }
+        public virtual TextComparisonType ComparisonType { get; set; }
     }
 }

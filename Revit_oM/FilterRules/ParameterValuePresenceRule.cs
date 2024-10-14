@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BH.oM.Revit.FilterRules
 {
-    public class ParameterValuePresenceRule : FilterValueRule
+    public class ParameterValuePresenceRule : FilterParameterRule
     {
         public virtual bool IsPresent { get; set; }
     }

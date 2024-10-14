@@ -8,13 +8,13 @@ namespace BH.oM.Revit.Enums
 {
     public enum FillPattern
     {
-        CROSSHATCH,
-        DIAGONAL_CROSSHATCH,
-        DIAGONAL_DOWN,
-        DIAGONAL_UP,
-        HORIZONTAL,
-        STEEL,
-        SOLID,
-        VERTICAL
+        CrossHatch,
+        DiagonalCrossHatch,
+        DiagonalDown,
+        DiagonalUp,
+        Horizontal,
+        Steel,
+        Solid,
+        Vertical
     }
 }
