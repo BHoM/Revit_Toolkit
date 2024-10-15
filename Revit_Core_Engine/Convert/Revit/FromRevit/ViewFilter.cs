@@ -92,49 +92,25 @@ namespace BH.Revit.Engine.Core
         //Convert the Revit Filter Rule objects into corresponding BHoM FilterRule objects and store them in a List - via STREAMS
         private static List<oM.Revit.FilterRules.FilterRule> FilterRulesFromRevit(this ParameterFilterElement revitViewFilter, List<Autodesk.Revit.DB.FilterRule> revitFilterRules)
         {
-            List<oM.Revit.FilterRules.FilterRule> bhomFilterRules = revitFilterRules.Select(revitRule =>
-            {
-                // FILTER STRING RULE
-                if (revitRule.GetType()== typeof(Autodesk.Revit.DB.FilterStringRule))
-                { return (oM.Revit.FilterRules.FilterRule)FilterStringRuleFromRevit(revitViewFilter, revitRule); }
-                // FILTER DOUBLE RULE
-                else if (revitRule.GetType()==typeof(Autodesk.Revit.DB.FilterDoubleRule))
-                { return (oM.Revit.FilterRules.FilterRule)FilterDoubleRuleFromRevit(revitViewFilter, revitRule); }
-                // FILTER INTEGER RULE
-                else if (revitRule.GetType() == typeof(Autodesk.Revit.DB.FilterIntegerRule))
-                { return (oM.Revit.FilterRules.FilterRule)FilterIntegerRuleFromRevit(revitViewFilter, revitRule); }
-                // FILTER ELEMENTID RULE
-                else if (revitRule.GetType() == typeof(Autodesk.Revit.DB.FilterElementIdRule))
-                { return (oM.Revit.FilterRules.FilterRule)FilterElementIdRuleFromRevit(revitViewFilter, revitRule); }
-                // FILTER CATEGORY RULE
-                else if (revitRule.GetType() == typeof(Autodesk.Revit.DB.FilterCategoryRule))
-                { return (oM.Revit.FilterRules.FilterRule)FilterCategoryRuleFromRevit(revitViewFilter, revitRule); }
-                // FILTER PARAMETER VALUE PRESENCE RULE
-                else if (revitRule.GetType() == typeof(Autodesk.Revit.DB.ParameterValuePresenceRule))
-                { return (oM.Revit.FilterRules.FilterRule)ParameterValuePresenceRuleFromRevit(revitViewFilter, revitRule); }
-                // FILTER INVERSE RULE
-                else if (revitRule.GetType() == typeof(Autodesk.Revit.DB.FilterInverseRule))
-                { return FilterInverseRuleFromRevit(revitViewFilter, revitRule); }
-                return null;
-            }).ToList();
-
+            List<oM.Revit.FilterRules.FilterRule> bhomFilterRules = revitFilterRules.Select(revitRule => FilterRuleFromRevit(revitViewFilter, revitRule as dynamic))
+                                                                                    .Cast< oM.Revit.FilterRules.FilterRule >().ToList();
             return bhomFilterRules;
         }
 
 
-        private static oM.Revit.FilterRules.FilterStringRule FilterStringRuleFromRevit(this ParameterFilterElement revitViewFilter,
-            Autodesk.Revit.DB.FilterRule revitRule)
+
+
+        private static oM.Revit.FilterRules.FilterStringRule FilterRuleFromRevit(this ParameterFilterElement revitViewFilter,
+            Autodesk.Revit.DB.FilterStringRule revitRule)
         {
             // 1. EXTRACT DATA from the REVIT FILTERRULE object
 
-            // Downcast Revit FilterRule obj to Revit FilterStringRule obj
-            Autodesk.Revit.DB.FilterStringRule revitFilterStringRule = (Autodesk.Revit.DB.FilterStringRule)revitRule;
             // Extract name and value assigned to the parameter of the FilterStringRule obj
-            string paramName = GetParameterById(revitViewFilter.Document, revitFilterStringRule.GetRuleParameter()).Definition.Name;
-            string paramValue = revitFilterStringRule.RuleString;
+            string paramName = GetParameterById(revitViewFilter.Document, revitRule.GetRuleParameter()).Definition.Name;
+            string paramValue = revitRule.RuleString;
             // Get the RuleEvaluator of the FilterStringRule (Class defining the way the string value 
             // assigned to the parameter is compared with the one assigned by the filter)
-            FilterStringRuleEvaluator stringEvaluator = revitFilterStringRule.GetEvaluator();
+            FilterStringRuleEvaluator stringEvaluator = revitRule.GetEvaluator();
 
             // Convert the REVIT FilterStringEvaluator type into the BHOM TextComparisonType Enum 
             TextComparisonType bhomTextEvaluator = TextComparisonTypeFromRevit(stringEvaluator.GetType().Name);
@@ -152,20 +128,18 @@ namespace BH.Revit.Engine.Core
         }
 
 
-        private static oM.Revit.FilterRules.FilterDoubleRule FilterDoubleRuleFromRevit(this ParameterFilterElement revitViewFilter,
-                    Autodesk.Revit.DB.FilterRule revitRule)
+        private static oM.Revit.FilterRules.FilterDoubleRule FilterRuleFromRevit(this ParameterFilterElement revitViewFilter,
+                    Autodesk.Revit.DB.FilterDoubleRule revitRule)
         {
             // 1. EXTRACT DATA from the REVIT FILTERRULE object
 
-            // Downcast Revit FilterRule obj to Revit FilterDoubleRule obj
-            Autodesk.Revit.DB.FilterDoubleRule revitFilterDoubleRule = (Autodesk.Revit.DB.FilterDoubleRule)revitRule;
             // Extract name and value assigned to the parameter of the FilterDoubleRule obj
-            string paramName = GetParameterById(revitViewFilter.Document,revitFilterDoubleRule.GetRuleParameter()).Definition.Name;
-            ForgeTypeId paramTypeId = GetParameterById(revitViewFilter.Document, revitFilterDoubleRule.GetRuleParameter()).GetUnitTypeId();
-            string paramValue = UnitUtils.ConvertFromInternalUnits(revitFilterDoubleRule.RuleValue,paramTypeId).ToString();
+            string paramName = GetParameterById(revitViewFilter.Document,revitRule.GetRuleParameter()).Definition.Name;
+            ForgeTypeId paramTypeId = GetParameterById(revitViewFilter.Document, revitRule.GetRuleParameter()).GetUnitTypeId();
+            string paramValue = UnitUtils.ConvertFromInternalUnits(revitRule.RuleValue,paramTypeId).ToString();
             // Get the RuleEvaluator of the FilterDoubleRule (Class defining the way the string value 
             // assigned to the parameter is compared with the one assigned by the filter)
-            FilterNumericRuleEvaluator numericEvaluator = revitFilterDoubleRule.GetEvaluator();
+            FilterNumericRuleEvaluator numericEvaluator = revitRule.GetEvaluator();
 
             // Convert the REVIT FilterNumericEvaluator type into the BHOM NumberComparisonType Enum 
             NumberComparisonType bhomNumericEvaluator = NumberComparisonTypeFromRevit(numericEvaluator.GetType().Name);
@@ -183,20 +157,18 @@ namespace BH.Revit.Engine.Core
         }
 
 
-        private static oM.Revit.FilterRules.FilterIntegerRule FilterIntegerRuleFromRevit(this ParameterFilterElement revitViewFilter,
-                    Autodesk.Revit.DB.FilterRule revitRule)
+        private static oM.Revit.FilterRules.FilterIntegerRule FilterRuleFromRevit(this ParameterFilterElement revitViewFilter,
+                    Autodesk.Revit.DB.FilterIntegerRule revitRule)
         {                    
             // 1. EXTRACT DATA from the REVIT FILTERRULE object
 
-            // Downcast Revit FilterRule obj to Revit FilterIntegerRule obj
-            Autodesk.Revit.DB.FilterIntegerRule revitFilterIntegerRule = (Autodesk.Revit.DB.FilterIntegerRule)revitRule;
             // Extract name and value assigned to the parameter of the FilterIntegerRule obj
-            string paramName = GetParameterById(revitViewFilter.Document, revitFilterIntegerRule.GetRuleParameter()).Definition.Name;
-            ForgeTypeId paramTypeId = GetParameterById(revitViewFilter.Document, revitFilterIntegerRule.GetRuleParameter()).GetUnitTypeId();
-            string paramValue = UnitUtils.ConvertFromInternalUnits(revitFilterIntegerRule.RuleValue, paramTypeId).ToString();
+            string paramName = GetParameterById(revitViewFilter.Document, revitRule.GetRuleParameter()).Definition.Name;
+            ForgeTypeId paramTypeId = GetParameterById(revitViewFilter.Document, revitRule.GetRuleParameter()).GetUnitTypeId();
+            string paramValue = UnitUtils.ConvertFromInternalUnits(revitRule.RuleValue, paramTypeId).ToString();
             // Get the RuleEvaluator of the FilterIntegerRule (Class defining the way the string value 
             // assigned to the parameter is compared with the one assigned by the filter)
-            FilterNumericRuleEvaluator numericEvaluator = revitFilterIntegerRule.GetEvaluator();
+            FilterNumericRuleEvaluator numericEvaluator = revitRule.GetEvaluator();
 
             // Convert the REVIT FilterNumericEvaluator type into the BHOM NumberComparisonType Enum 
             NumberComparisonType bhomNumericEvaluator=NumberComparisonTypeFromRevit(numericEvaluator.GetType().Name);
@@ -214,18 +186,16 @@ namespace BH.Revit.Engine.Core
 
 
         private static oM.Revit.FilterRules.FilterElementIdRule FilterElementIdRuleFromRevit(this ParameterFilterElement revitViewFilter,
-                    Autodesk.Revit.DB.FilterRule revitRule)
+                    Autodesk.Revit.DB.FilterElementIdRule revitRule)
         {
             // 1. EXTRACT DATA from the REVIT FILTERRULE object
 
-            // Downcast Revit FilterRule obj to Revit FilterElementIdRule obj
-            Autodesk.Revit.DB.FilterElementIdRule revitFilterElemIdRule = (Autodesk.Revit.DB.FilterElementIdRule)revitRule;
             // Extract name and value assigned to the parameter of the FilterElementIdRule obj
-            string paramName = GetParameterById(revitViewFilter.Document, revitFilterElemIdRule.GetRuleParameter()).Definition.Name;
-            string paramValue = revitViewFilter.Document.GetElement(revitFilterElemIdRule.RuleValue).Name.ToString();
+            string paramName = GetParameterById(revitViewFilter.Document, revitRule.GetRuleParameter()).Definition.Name;
+            string paramValue = revitViewFilter.Document.GetElement(revitRule.RuleValue).Name.ToString();
             // Get the RuleEvaluator of the FilterElementIdRule (Class defining the way the string value 
             // assigned to the parameter is compared with the one assigned by the filter)
-            FilterNumericRuleEvaluator numericEvaluator = revitFilterElemIdRule.GetEvaluator();
+            FilterNumericRuleEvaluator numericEvaluator = revitRule.GetEvaluator();
 
             // Convert the REVIT FilterNumericEvaluator type into the BHOM NumberComparisonType Enum 
             NumberComparisonType bhomNumericEvaluator = NumberComparisonTypeFromRevit(numericEvaluator.GetType().Name);
@@ -242,14 +212,12 @@ namespace BH.Revit.Engine.Core
         }
 
 
-        private static oM.Revit.FilterRules.FilterCategoryRule FilterCategoryRuleFromRevit(this ParameterFilterElement revitViewFilter, Autodesk.Revit.DB.FilterRule revitRule)
+        private static oM.Revit.FilterRules.FilterCategoryRule FilterCategoryRuleFromRevit(this ParameterFilterElement revitViewFilter, Autodesk.Revit.DB.FilterCategoryRule revitRule)
         {
             // 1. EXTRACT DATA from the REVIT FILTERRULE object
 
-            // Downcast Revit FilterRule obj to Revit FilterCategoryRule obj
-            Autodesk.Revit.DB.FilterCategoryRule revitFilterCategoryRule = (Autodesk.Revit.DB.FilterCategoryRule)revitRule;
             // Extract name and value assigned to the parameter of the FilterElementIdRule obj
-            List<string> categoryNames = revitFilterCategoryRule.GetCategories().Select(elId => revitViewFilter.Document.GetElement(elId).Name).ToList();
+            List<string> categoryNames = revitRule.GetCategories().Select(elId => revitViewFilter.Document.GetElement(elId).Name).ToList();
 
             // 2. BUILD the BHOM FILTERRULE object
 
@@ -261,7 +229,7 @@ namespace BH.Revit.Engine.Core
         }
 
 
-        private static oM.Revit.FilterRules.ParameterValuePresenceRule ParameterValuePresenceRuleFromRevit(this ParameterFilterElement revitViewFilter, Autodesk.Revit.DB.FilterRule revitRule)
+        private static oM.Revit.FilterRules.ParameterValuePresenceRule ParameterValuePresenceRuleFromRevit(this ParameterFilterElement revitViewFilter, Autodesk.Revit.DB.ParameterValuePresenceRule revitRule)
         {
             // 1. EXTRACT DATA from the REVIT FILTERRULE object
             oM.Revit.FilterRules.ParameterValuePresenceRule bhomParamValuePresenceRule;
@@ -269,21 +237,19 @@ namespace BH.Revit.Engine.Core
 
             // 2. BUILD the BHOM FILTERRULE object
 
-            bhomParamValuePresenceRule.ParameterName = revitViewFilter.Document.GetElement(((Autodesk.Revit.DB.ParameterValuePresenceRule)revitRule).Parameter).Name;
+            bhomParamValuePresenceRule.ParameterName = revitViewFilter.Document.GetElement((revitRule).Parameter).Name;
             bhomParamValuePresenceRule.IsPresent = (revitRule.GetType() == typeof(HasValueFilterRule)) ? true : false;
 
             return bhomParamValuePresenceRule;
         }
 
 
-        private static oM.Revit.FilterRules.FilterRule FilterInverseRuleFromRevit(this ParameterFilterElement revitViewFilter, Autodesk.Revit.DB.FilterRule revitRule)
+        private static oM.Revit.FilterRules.FilterRule FilterInverseRuleFromRevit(this ParameterFilterElement revitViewFilter, Autodesk.Revit.DB.FilterInverseRule revitRule)
         {
             // 1. EXTRACT DATA from the REVIT FILTERRULE object
 
-            // Downcast Revit FilterRule obj to Revit FilterInverseRule obj
-            Autodesk.Revit.DB.FilterInverseRule revitFilterInverseRule = (Autodesk.Revit.DB.FilterInverseRule)revitRule;
             // Extract innerRule assigned to the Revit FilterInverseRule obj
-            Autodesk.Revit.DB.FilterRule innerRule = revitFilterInverseRule.GetInnerRule();
+            Autodesk.Revit.DB.FilterRule innerRule = revitRule.GetInnerRule();
 
             // Convert the REVIT InnerRule into the corresponding BHOM FilterRule obj 
             TextComparisonType bhomTextEvaluator = 0;
