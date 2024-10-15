@@ -313,8 +313,8 @@ namespace BH.Revit.Engine.Core
         public static bool Update(this ParameterFilterElement element, BH.oM.Adapters.Revit.Elements.ViewFilter bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
         {
             // 1. Collect the ElementIds of the filter's categories - via Streams
-            List<ElementId> builtInCategoryIds= bHoMObject.Categories.Select(catName => { BuiltInCategory builtInCat;
-                                                                                          Enum.TryParse<BuiltInCategory>(catName, out builtInCat);
+            List<ElementId> builtInCategoryIds= bHoMObject.Categories.Select(catObj => { BuiltInCategory builtInCat;
+                                                                                          Enum.TryParse<BuiltInCategory>(catObj.ToString(), out builtInCat);
                                                                                           return builtInCat; })
                                                                       .Select(builtInCat=> new ElementId(builtInCat))
                                                                       .ToList<ElementId>();

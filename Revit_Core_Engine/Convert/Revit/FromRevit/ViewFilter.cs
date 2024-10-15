@@ -62,7 +62,7 @@ namespace BH.Revit.Engine.Core
             /* 2. Transfer List of CATEGORY NAMES */
             List<Autodesk.Revit.DB.Category> categories = new List<Autodesk.Revit.DB.Category>();
             foreach (Autodesk.Revit.DB.Category cat in revitViewFilter.Document.Settings.Categories) { categories.Add(cat); }
-            viewFilter.Categories = revitViewFilter.GetCategories().Select(catId => categories.Where(cat=>cat.Id==catId).First().Name).ToList<string>();
+            viewFilter.Categories = revitViewFilter.GetCategories().Select(catId => categories.Where(cat=>cat.Id==catId).First()).Cast<BH.oM.Revit.Enums.Category>().ToList();
 
             /* 3. Transfer List of FILTER RULES */
             // If the Filter is assigned with any rules.....

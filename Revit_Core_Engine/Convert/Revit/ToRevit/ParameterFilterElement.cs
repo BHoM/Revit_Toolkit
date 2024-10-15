@@ -69,7 +69,7 @@ namespace BH.Revit.Engine.Core
 
             List<ElementId> categoryIdsList = filter.Categories
                              // Format the string name of the categories
-                             .Select(catName => catName.ToUpper().Replace(" ", ""))
+                             .Select(catObj => catObj.ToString().ToUpper().Replace(" ", ""))
                              // Get the corresponding BuiltInCategories
                              .Select(catName => { List<string> builtInCatNames = Enum.GetNames(typeof(BuiltInCategory))
                                                         .Select(builtInCategoryName => builtInCategoryName.ToUpper().Replace("OST_", "").Replace("_", ""))
