@@ -9,8 +9,14 @@ namespace BH.oM.Revit.Enums
     public enum LinePattern
     {
         Dash,
+        DashDot,
+        DashDotDot,
+        DoubleDash,
         Dot,
         Hidden,
-        Solid
+        LongDash,
+        LooseDash,
+        Solid,
+        TripleDash
     }
 }
