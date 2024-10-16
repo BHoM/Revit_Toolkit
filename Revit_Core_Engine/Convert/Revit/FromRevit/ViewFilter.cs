@@ -115,8 +115,6 @@ namespace BH.Revit.Engine.Core
         {
             // 1. EXTRACT DATA from the REVIT FILTERRULE object
 
-            // Downcast Revit FilterRule obj to Revit FilterStringRule obj
-            Autodesk.Revit.DB.FilterStringRule revitFilterStringRule = (Autodesk.Revit.DB.FilterStringRule)revitRule;
             // Extract name and value assigned to the parameter of the FilterStringRule obj
             string paramName = GetParameterById(revitViewFilter.Document, revitRule.GetRuleParameter()).Definition.Name;
             string paramValue = revitRule.RuleString;
@@ -145,8 +143,6 @@ namespace BH.Revit.Engine.Core
         {
             // 1. EXTRACT DATA from the REVIT FILTERRULE object
 
-            // Downcast Revit FilterRule obj to Revit FilterDoubleRule obj
-            Autodesk.Revit.DB.FilterDoubleRule revitFilterDoubleRule = (Autodesk.Revit.DB.FilterDoubleRule)revitRule;
             // Extract name and value assigned to the parameter of the FilterDoubleRule obj
             string paramName = GetParameterById(revitViewFilter.Document,revitRule.GetRuleParameter()).Definition.Name;
             ForgeTypeId paramTypeId = GetParameterById(revitViewFilter.Document, revitRule.GetRuleParameter()).GetUnitTypeId();
@@ -176,8 +172,6 @@ namespace BH.Revit.Engine.Core
         {                    
             // 1. EXTRACT DATA from the REVIT FILTERRULE object
 
-            // Downcast Revit FilterRule obj to Revit FilterIntegerRule obj
-            Autodesk.Revit.DB.FilterIntegerRule revitFilterIntegerRule = (Autodesk.Revit.DB.FilterIntegerRule)revitRule;
             // Extract name and value assigned to the parameter of the FilterIntegerRule obj
             string paramName = GetParameterById(revitViewFilter.Document, revitRule.GetRuleParameter()).Definition.Name;
             ForgeTypeId paramTypeId = GetParameterById(revitViewFilter.Document, revitRule.GetRuleParameter()).GetUnitTypeId();
@@ -206,8 +200,6 @@ namespace BH.Revit.Engine.Core
         {
             // 1. EXTRACT DATA from the REVIT FILTERRULE object
 
-            // Downcast Revit FilterRule obj to Revit FilterElementIdRule obj
-            Autodesk.Revit.DB.FilterElementIdRule revitFilterElemIdRule = (Autodesk.Revit.DB.FilterElementIdRule)revitRule;
             // Extract name and value assigned to the parameter of the FilterElementIdRule obj
             string paramName = GetParameterById(revitViewFilter.Document, revitRule.GetRuleParameter()).Definition.Name;
             string paramValue = revitViewFilter.Document.GetElement(revitRule.RuleValue).Name.ToString();
@@ -234,8 +226,6 @@ namespace BH.Revit.Engine.Core
         {
             // 1. EXTRACT DATA from the REVIT FILTERRULE object
 
-            // Downcast Revit FilterRule obj to Revit FilterCategoryRule obj
-            Autodesk.Revit.DB.FilterCategoryRule revitFilterCategoryRule = (Autodesk.Revit.DB.FilterCategoryRule)revitRule;
             // Extract name and value assigned to the parameter of the FilterElementIdRule obj
             List<string> categoryNames = revitRule.GetCategories().Select(elId => revitViewFilter.Document.GetElement(elId).Name).ToList();
 
@@ -268,8 +258,6 @@ namespace BH.Revit.Engine.Core
         {
             // 1. EXTRACT DATA from the REVIT FILTERRULE object
 
-            // Downcast Revit FilterRule obj to Revit FilterInverseRule obj
-            Autodesk.Revit.DB.FilterInverseRule revitFilterInverseRule = (Autodesk.Revit.DB.FilterInverseRule)revitRule;
             // Extract innerRule assigned to the Revit FilterInverseRule obj
             Autodesk.Revit.DB.FilterRule innerRule = revitRule.GetInnerRule();
 

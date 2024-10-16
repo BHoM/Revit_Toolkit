@@ -65,7 +65,7 @@ namespace BH.Revit.Engine.Core
                 /*1. Transfer ViewFilters and corresponding OverrideGraphicSettings into ViewFilterWithOverrides Objects - via STREAMS */
                 List<ViewFilterWithOverrides> filtersWithOverrides = revitView.GetFilters().ToDictionary<ElementId, ViewFilter, OverrideGraphicSettings>
                                                             (elId => Convert.ViewFilterFromRevit((ParameterFilterElement)revitView.Document.GetElement(elId)),
-                                                                elId => overrideGraphicSettingsFromRevit(revitView, revitView.GetFilterOverrides(elId))).ToList()
+                                                                elId => OverrideGraphicSettingsFromRevit(revitView, revitView.GetFilterOverrides(elId))).ToList()
                                                                 .Select(kvp => new ViewFilterWithOverrides { Filter = kvp.Key, Overrides = kvp.Value }).ToList();
                 /*2. Create BHoM View Object with Name and FilterWithOverrides objects */
                 view = new oM.Adapters.Revit.Elements.View { Name = revitView.Name, FiltersWithOverrides = filtersWithOverrides };}

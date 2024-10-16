@@ -257,7 +257,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the action.")]
         [Input("setLocationOnUpdate", "Revit View instance does not have location property, therefore this parameter is irrelevant.")]
         [Output("success", "True if the Revit View instance has been updated successfully based on the input BHoM View.")]
-        public static bool Update<T>(this T element, BH.oM.Adapters.Revit.Elements.View bHoMObject, RevitSettings settings, bool setLocationOnUpdate) where T:View
+        public static bool Update (this View element, BH.oM.Adapters.Revit.Elements.View bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
         {
             /* ADD FILTERS WITH OVERRIDES TO REVIT VIEW */
 
