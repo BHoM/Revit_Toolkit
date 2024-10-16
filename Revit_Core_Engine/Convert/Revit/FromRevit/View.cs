@@ -82,7 +82,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static OverrideGraphicSettings overrideGraphicSettingsFromRevit(this View element, Autodesk.Revit.DB.OverrideGraphicSettings revitOverrides)
+        private static OverrideGraphicSettings OverrideGraphicSettingsFromRevit(this View element, Autodesk.Revit.DB.OverrideGraphicSettings revitOverrides)
         {
             // Initialize BHoM OverrideGraphicsSettings object
             OverrideGraphicSettings overrideGraphicsSettings = new OverrideGraphicSettings();
