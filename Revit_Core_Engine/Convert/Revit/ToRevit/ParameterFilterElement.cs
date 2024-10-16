@@ -72,7 +72,7 @@ namespace BH.Revit.Engine.Core
                              .Select(catObj => catObj.ToString().ToUpper().Replace(" ", ""))
                              // Get the corresponding BuiltInCategories
                              .Select(catName => { List<string> builtInCatNames = Enum.GetNames(typeof(BuiltInCategory))
-                                                        .Select(builtInCategoryName => builtInCategoryName.ToUpper().Replace("OST_", "").Replace("_", ""))
+                                                        .Select(builtInCategoryName => builtInCategoryName.ToUpper().Replace(" ", ""))
                                                         .ToList();
                                  return (BuiltInCategory)(((BuiltInCategory[])Enum.GetValues(typeof(BuiltInCategory)))[builtInCatNames.IndexOf(catName)]); })
                              // Get the ElementIds of the BuiltInCategories
@@ -227,6 +227,7 @@ namespace BH.Revit.Engine.Core
             {
                 levelId = new FilteredElementCollector(document)
                                      .OfCategory(BuiltInCategory.OST_Levels)
+                                     .WhereElementIsNotElementType()
                                      .Where(level => level.Name.ToUpper() == filterLevelRule.LevelName.ToUpper())
                                      .Cast<Level>()
                                      .Select(level => level.Id)

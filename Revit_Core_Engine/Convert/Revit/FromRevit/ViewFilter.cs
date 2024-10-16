@@ -34,6 +34,7 @@ using System.CodeDom;
 using System;
 using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.Creation;
+using BH.oM.Revit.Enums;
 
 namespace BH.Revit.Engine.Core
 {
@@ -62,7 +63,16 @@ namespace BH.Revit.Engine.Core
             /* 2. Transfer List of CATEGORY NAMES */
             List<Autodesk.Revit.DB.Category> categories = new List<Autodesk.Revit.DB.Category>();
             foreach (Autodesk.Revit.DB.Category cat in revitViewFilter.Document.Settings.Categories) { categories.Add(cat); }
-            viewFilter.Categories = revitViewFilter.GetCategories().Select(catId => categories.Where(cat=>cat.Id==catId).First()).Cast<BH.oM.Revit.Enums.Category>().ToList();
+
+            List<BH.oM.Revit.Enums.Category> values = Enum.GetValues(typeof(BH.oM.Revit.Enums.Category)).Cast<BH.oM.Revit.Enums.Category>().ToList();
+
+            viewFilter.Categories = revitViewFilter.GetCategories().Select(catId => categories.Where(cat => cat.Id == catId).First())
+                                                   .Select(cat => Enum.GetValues(typeof(BH.oM.Revit.Enums.Category))
+                                                                    .Cast<BH.oM.Revit.Enums.Category>()
+                                                                    .ToList()
+                                                                    .Where(enumValue => ((int)enumValue).ToString()==cat.Id.ToString())
+                                                                    .First())
+                                                   .ToList();
 
             /* 3. Transfer List of FILTER RULES */
             // If the Filter is assigned with any rules.....
@@ -191,7 +201,7 @@ namespace BH.Revit.Engine.Core
         }
 
 
-        private static oM.Revit.FilterRules.FilterElementIdRule FilterElementIdRuleFromRevit(this ParameterFilterElement revitViewFilter,
+        private static oM.Revit.FilterRules.FilterElementIdRule FilterRuleFromRevit(this ParameterFilterElement revitViewFilter,
                     Autodesk.Revit.DB.FilterElementIdRule revitRule)
         {
             // 1. EXTRACT DATA from the REVIT FILTERRULE object
@@ -220,7 +230,7 @@ namespace BH.Revit.Engine.Core
         }
 
 
-        private static oM.Revit.FilterRules.FilterCategoryRule FilterCategoryRuleFromRevit(this ParameterFilterElement revitViewFilter, Autodesk.Revit.DB.FilterCategoryRule revitRule)
+        private static oM.Revit.FilterRules.FilterCategoryRule FilterRuleFromRevit(this ParameterFilterElement revitViewFilter, Autodesk.Revit.DB.FilterCategoryRule revitRule)
         {
             // 1. EXTRACT DATA from the REVIT FILTERRULE object
 
@@ -239,7 +249,7 @@ namespace BH.Revit.Engine.Core
         }
 
 
-        private static oM.Revit.FilterRules.ParameterValuePresenceRule ParameterValuePresenceRuleFromRevit(this ParameterFilterElement revitViewFilter, Autodesk.Revit.DB.ParameterValuePresenceRule revitRule)
+        private static oM.Revit.FilterRules.ParameterValuePresenceRule FilterRuleFromRevit(this ParameterFilterElement revitViewFilter, Autodesk.Revit.DB.ParameterValuePresenceRule revitRule)
         {
             // 1. EXTRACT DATA from the REVIT FILTERRULE object
             oM.Revit.FilterRules.ParameterValuePresenceRule bhomParamValuePresenceRule;
@@ -254,7 +264,7 @@ namespace BH.Revit.Engine.Core
         }
 
 
-        private static oM.Revit.FilterRules.FilterRule FilterInverseRuleFromRevit(this ParameterFilterElement revitViewFilter, Autodesk.Revit.DB.FilterInverseRule revitRule)
+        private static oM.Revit.FilterRules.FilterRule FilterRuleFromRevit(this ParameterFilterElement revitViewFilter, Autodesk.Revit.DB.FilterInverseRule revitRule)
         {
             // 1. EXTRACT DATA from the REVIT FILTERRULE object
 
