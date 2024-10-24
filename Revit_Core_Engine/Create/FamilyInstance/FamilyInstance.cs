@@ -440,6 +440,11 @@ namespace BH.Revit.Engine.Core
                     if (orientation.BasisZ.DotProduct(orientation.BasisX.CrossProduct(orientation.BasisY)) < 0)
                         refDir = -refDir;
                 }
+                else if (host.Location is LocationCurve hostCurve)
+                {
+                    if (hostCurve.Curve is Line line)
+                        refDir = line.Direction;
+                }
 
                 FamilyInstance familyInstance = document.Create.NewFamilyInstance(reference, location, refDir, familySymbol);
 
