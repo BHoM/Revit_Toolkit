@@ -128,7 +128,7 @@ namespace BH.Revit.Engine.Core
             if (!BH.Engine.Geometry.Query.IsPlanar(curve as dynamic))
                 return null;
 
-            View view = Query.View(draftingInstance, document);
+            Autodesk.Revit.DB.View view = Query.View(draftingInstance, document);
             if (view == null)
                 return null;
 
