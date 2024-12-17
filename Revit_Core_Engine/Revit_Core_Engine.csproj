@@ -75,9 +75,9 @@
 		</Reference>
 	</ItemGroup>
 
-	<!--<ItemGroup>
+	<ItemGroup>
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-	</ItemGroup>-->
+	</ItemGroup>
 
 	<ItemGroup>
 		<Reference Include="Analytical_oM">
