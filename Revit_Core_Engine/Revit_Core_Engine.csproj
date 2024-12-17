@@ -13,7 +13,6 @@
 		<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
 		<OutputPath>..\Build\</OutputPath>
 		<Configurations>Debug;Release;Debug2020;Release2020;Debug2021;Release2021;Debug2022;Release2022;Debug2023;Release2023;Debug2024;Release2024;Debug2025;Release2025</Configurations>
-		<TargetFramework>net480</TargetFramework>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
@@ -59,7 +58,7 @@
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="	xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProgramData)\BHoM\Assemblies&quot; /Y&#xD;&#xA;					xcopy &quot;$(ProjectDir)Files\Families&quot; &quot;$(ProgramData)\BHoM\Resources\Revit\Families&quot; /Y /I /E" />
 	</Target>
-	
+
 	<ItemGroup>
 		<ProjectReference Include="..\Revit_Engine\Revit_Engine.csproj" />
 		<ProjectReference Include="..\Revit_oM\Revit_oM.csproj" />
@@ -76,9 +75,9 @@
 		</Reference>
 	</ItemGroup>
 
-	<ItemGroup>
+	<!--<ItemGroup>
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-	</ItemGroup>
+	</ItemGroup>-->
 
 	<ItemGroup>
 		<Reference Include="Analytical_oM">
@@ -195,7 +194,7 @@
 			<SpecificVersion>False</SpecificVersion>
 			<HintPath>$(ProgramData)\BHoM\Assemblies\Physical_oM.dll</HintPath>
 			<Private>False</Private>
-		</Reference>		
+		</Reference>
 		<Reference Include="Spatial_Engine">
 			<HintPath>$(ProgramData)\BHoM\Assemblies\Spatial_Engine.dll</HintPath>
 			<Private>False</Private>
