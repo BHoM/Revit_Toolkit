@@ -51,6 +51,7 @@ bld/
 [Ll]og/
 [Bb]uild/
 [Pp]ackages/
+!libs/**/*
 
 # Visual Studio User File #
 ###########################
