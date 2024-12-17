@@ -22,11 +22,9 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
 
 namespace BH.Revit.Engine.Core
 {
@@ -49,9 +47,9 @@ namespace BH.Revit.Engine.Core
         [Output("definition", "Revit parameter Definition created based on the input properties.")]
         public static Definition Parameter(Document document, string parameterName, string typeName, string groupName, bool instance, IEnumerable<string> categoryNames, bool shared, string discipline = "")
         {
-#if (REVIT2020 || REVIT2021 || REVIT2022)
+#if REVIT2020 || REVIT2021
             List<ParameterType> parameterTypes = new List<ParameterType>();
-            foreach (ParameterType pt in Enum.GetValues(typeof(ParameterType)))
+            foreach (ParameterType pt in System.Enum.GetValues(typeof(ParameterType)))
             {
                 try
                 {
@@ -63,9 +61,9 @@ namespace BH.Revit.Engine.Core
 
                 }
             }
-            
+
             ParameterType parameterType = ParameterType.Invalid;
-            
+
             if (parameterTypes.Count == 0)
             {
                 BH.Engine.Base.Compute.RecordError($"Parameter type named {typeName} does not exist.");
@@ -118,6 +116,7 @@ namespace BH.Revit.Engine.Core
                 return Create.SharedParameter(document, parameterName, parameterType, groupName, instance, categories);
             else
             {
+#if REVIT2020 || REVIT2021 || REVIT2022
                 BuiltInParameterGroup parameterGroup = BuiltInParameterGroup.INVALID;
                 foreach (BuiltInParameterGroup bpg in System.Enum.GetValues(typeof(BuiltInParameterGroup)))
                 {
@@ -133,6 +132,14 @@ namespace BH.Revit.Engine.Core
                     BH.Engine.Base.Compute.RecordError($"Parameter group named {groupName} does not exist.");
                     return null;
                 }
+#else
+                ForgeTypeId parameterGroup = groupName.ParameterGroupTypeId();
+                if (parameterGroup == null)
+                {
+                    BH.Engine.Base.Compute.RecordError($"Parameter group named {groupName} does not exist.");
+                    return null;
+                }
+#endif
 
                 return Create.ProjectParameter(document, parameterName, parameterType, parameterGroup, instance, categories);
             }
