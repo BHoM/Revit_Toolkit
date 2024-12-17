@@ -42,7 +42,11 @@ namespace BH.Revit.Engine.Core
         [Input("parameterNames", "Names of the parameter to be iterated over in search for the parameter.")]
         [Input("parameterGroups", "If not null, only the Revit parameters from the given parameter groups will be parsed.")]
         [Output("parameter", "Parameter extracted from the input Revit element.")]
+#if REVIT2020 || REVIT2021 || REVIT2022
         public static Parameter LookupParameter(this Element element, IEnumerable<string> parameterNames, IEnumerable<BuiltInParameterGroup> parameterGroups = null)
+#else
+        public static Parameter LookupParameter(this Element element, IEnumerable<string> parameterNames, IEnumerable<ForgeTypeId> parameterGroups = null)
+#endif
         {
             if (parameterNames == null || !parameterNames.Any())
                 return null;
@@ -51,9 +55,14 @@ namespace BH.Revit.Engine.Core
             {
                 foreach (Parameter p in element.Parameters)
                 {
+#if REVIT2020 || REVIT2021 || REVIT2022
+                    BuiltInParameterGroup groupType = p.Definition.ParameterGroup;
+#else
+                    ForgeTypeId groupType = p.Definition.GetGroupTypeId();
+#endif
                     if (p != null && p.HasValue && p.Definition.Name == name)
                     {
-                        if (parameterGroups == null || parameterGroups.Any(x => x == p.Definition.ParameterGroup))
+                        if (parameterGroups == null || parameterGroups.Any(x => x == groupType))
                             return p;
                     }
                 }
@@ -61,6 +70,8 @@ namespace BH.Revit.Engine.Core
 
             return null;
         }
+
+        /***************************************************/
 
         [Description("Searches a Revit Family Instance for the first existing parameter of a given name, by first looking for Instance parameters and then, optionally, for Type parameters.")]
         [Input("element", "Revit element to be queried.")]
@@ -71,7 +82,7 @@ namespace BH.Revit.Engine.Core
         {
             if (element == null || string.IsNullOrEmpty(parameterName))
                 return null;
-           
+
             // Try to return an Instance Parameter
             Parameter parameter = element.LookupParameter(parameterName);
             if (parameter != null)
@@ -79,7 +90,7 @@ namespace BH.Revit.Engine.Core
 
             if (!allowTypeParameters)
                 return null;
-            
+
             // Try to return a Type Parameter
             Element elementSymbol = element.Document.GetElement(element.GetTypeId());
             return elementSymbol?.LookupParameter(parameterName);
@@ -135,7 +146,11 @@ namespace BH.Revit.Engine.Core
         [Input("parameterGroups", "If not null, only the Revit parameters from the given parameter groups will be parsed.")]
         [Input("convertUnits", "If true, the output will be converted from Revit internal units to SI.")]
         [Output("value", "Parameter value extracted from the input Revit element.")]
+#if REVIT2020 || REVIT2021 || REVIT2022
         public static double LookupParameterDouble(this Element element, IEnumerable<string> parameterNames, IEnumerable<BuiltInParameterGroup> parameterGroups, bool convertUnits = true)
+#else
+        public static double LookupParameterDouble(this Element element, IEnumerable<string> parameterNames, IEnumerable<ForgeTypeId> parameterGroups, bool convertUnits = true)
+#endif
         {
             double value = double.NaN;
             Parameter p = element.LookupParameter(parameterNames, parameterGroups);
@@ -299,7 +314,7 @@ namespace BH.Revit.Engine.Core
             HashSet<string> paramNames = mappingSettings.ParameterNames(type, name, false);
             if (paramNames != null)
                 names.AddRange(paramNames);
-            
+
             foreach (string val in names)
             {
                 Parameter parameter = element.LookupParameter(val);
