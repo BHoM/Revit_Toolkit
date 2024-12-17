@@ -47,7 +47,7 @@ namespace BH.Revit.Engine.Core
         [Output("definition", "Revit parameter Definition created based on the input properties.")]
         public static Definition Parameter(Document document, string parameterName, string typeName, string groupName, bool instance, IEnumerable<string> categoryNames, bool shared, string discipline = "")
         {
-#if REVIT2020 || REVIT2021
+#if REVIT2020 || REVIT2021 || REVIT2022
             List<ParameterType> parameterTypes = new List<ParameterType>();
             foreach (ParameterType pt in System.Enum.GetValues(typeof(ParameterType)))
             {
