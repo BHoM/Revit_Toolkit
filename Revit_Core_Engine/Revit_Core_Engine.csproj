@@ -53,6 +53,7 @@
 
 	<PropertyGroup>
 		<AssemblyName>Revit_Core_Engine_$(RevitVersion)</AssemblyName>
+		<StartProgram>C:\Program Files\Autodesk\Revit $(RevitVersion)\Revit.exe</StartProgram>
 	</PropertyGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
