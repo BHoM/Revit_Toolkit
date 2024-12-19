@@ -77,10 +77,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Reference Include="Analytical_oM">
 			<SpecificVersion>False</SpecificVersion>
 			<HintPath>$(ProgramData)\BHoM\Assemblies\Analytical_oM.dll</HintPath>
@@ -215,6 +211,11 @@
 			<HintPath>$(ProgramData)\BHoM\Assemblies\Structure_oM.dll</HintPath>
 			<Private>False</Private>
 			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Microsoft.CSharp">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Microsoft.CSharp.dll</HintPath>
+			<Private>False</Private>
 		</Reference>
 	</ItemGroup>
 
