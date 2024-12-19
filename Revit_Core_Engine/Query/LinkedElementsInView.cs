@@ -33,7 +33,6 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("7.3", "BH.Revit.Engine.Core.Query.LinkedElementsInView(Autodesk.Revit.DB.ViewPlan, Autodesk.Revit.DB.RevitLinkInstance, System.Collections.Generic.List<Autodesk.Revit.DB.ElementFilter>)")]
         [Description("Return elements from the revit link instance located in the view scope (including hidden elements)")]
         [Input("view", "View to get visible elements from. The view needs to belong to the host document.")]
         [Input("linkInstance", "Revit link instance to get the elements from.")]

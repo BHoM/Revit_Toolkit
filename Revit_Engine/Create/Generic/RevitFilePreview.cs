@@ -24,6 +24,7 @@ using BH.oM.Adapters.Revit;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace BH.Engine.Adapters.Revit
@@ -39,14 +40,31 @@ namespace BH.Engine.Adapters.Revit
         [Output("revitFilePreview")]
         public static RevitFilePreview RevitFilePreview(string path)
         {
+            // Find the family document
             XDocument xDocument = path.XDocument();
             if (xDocument == null)
                 return null;
 
+            // Get category and family name
             string categoryName = xDocument.CategoryName();
             string familyName = System.IO.Path.GetFileNameWithoutExtension(path);
+            
+            // Scrape type names from the file itself
             List<string> familyTypeNames = xDocument.FamilyTypeNames();
+            
+            // Scrape type names from the sister .txt file if exists
+            string txtPath = path.Replace(".rfa", ".txt");
+            if (System.IO.File.Exists(txtPath))
+            {
+                foreach (string line in System.IO.File.ReadAllLines(txtPath).Skip(1))
+                {
+                    string[] splitLine = line.Split(',');
+                    if (splitLine.Length != 0 && !familyTypeNames.Contains(splitLine[0]))
+                        familyTypeNames.Add(splitLine[0]);
+                }
+            }
 
+            familyTypeNames.Sort();
             return new RevitFilePreview(path, categoryName, familyName, familyTypeNames);
         }
 

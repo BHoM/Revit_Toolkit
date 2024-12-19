@@ -34,7 +34,6 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("7.3", "BH.Revit.Engine.Core.Query.UnitTypeByPropertyName(System.String)")]
         [Description("Returns Revit spec object (enum for Revit up to 2020 or ForgeTypeId for later versions) based on SpecTypeId property name that represents it.")]
         [Input("name", "Name of SpecTypeId property to be queried for the correspondent spec.")]
         [Output("spec", "Spec object under the input SpecTypeId property name.")]
