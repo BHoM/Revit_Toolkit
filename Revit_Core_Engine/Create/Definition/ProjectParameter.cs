@@ -44,8 +44,6 @@ namespace BH.Revit.Engine.Core
         [Output("definition", "Revit project parameter Definition created based on the input properties.")]
 #if REVIT2020 || REVIT2021  || REVIT2022
         public static Definition ProjectParameter(Document document, string parameterName, ParameterType parameterType, BuiltInParameterGroup parameterGroup, bool instance, IEnumerable<Category> categories)
-#elif REVIT2022
-        public static Definition ProjectParameter(Document document, string parameterName, ForgeTypeId parameterType, BuiltInParameterGroup parameterGroup, bool instance, IEnumerable<Category> categories)
 #else
         public static Definition ProjectParameter(Document document, string parameterName, ForgeTypeId parameterType, ForgeTypeId parameterGroup, bool instance, IEnumerable<Category> categories)
 #endif

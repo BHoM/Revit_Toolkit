@@ -21,7 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
-#if !REVIT2020 && !REVIT2021 && !REVIT2022 
+using System.ComponentModel;
+using BH.oM.Base.Attributes;
+#if !REVIT2020 && !REVIT2021 && !REVIT2022
 using System.Collections.Generic;
 using System.Reflection;
 using System;
@@ -43,9 +45,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Gets the parameter type of a Revit parameter definition.")]
-        //[Input("definition", "Revit parameter definition to extract the parameter type from.")]
-        //[Output("parameterType", "Parameter type extracted from the input Revit parameter definition.")]
+        [Description("Gets the GroupTypeId of a Revit parameter group by its name in the UI.")]
+        [Input("groupName", "Name in the UI of a Revit parameter group.")]
+        [Output("groupTypeId", "GroupTypeId of a Revit parameter group by its name in the UI.")]
         public static ForgeTypeId ParameterGroupTypeId(this string groupName)
         {
             if (!m_GroupTypeIdByName.Any())
@@ -71,11 +73,17 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
 #if REVIT2020 || REVIT2021 || REVIT2022
+        [Description("Gets the BuiltInParameterGroup of a Revit parameter definition.")]
+        [Input("groupName", "Name in the UI of a Revit parameter definition.")]
+        [Output("parameterGroup", "BuiltInParameterGroup of a Revit parameter definition.")]
         public static BuiltInParameterGroup ParameterGroupTypeId(this Definition def)
         {
             return def.ParameterGroup;
         }
 #else
+        [Description("Gets the GroupTypeId of a Revit parameter definition.")]
+        [Input("groupName", "Name in the UI of a Revit parameter definition.")]
+        [Output("groupTypeId", "GroupTypeId of a Revit parameter definition.")]
         public static ForgeTypeId ParameterGroupTypeId(this Definition def)
         {
             return def.ParameterGroupTypeId();
