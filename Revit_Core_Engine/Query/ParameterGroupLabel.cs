@@ -21,6 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -30,9 +32,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        //[Description("Returns the human-readable label of a given Revit parameter type.")]
-        //[Input("parameterType", "Parameter type to get the label for.")]
-        //[Output("label", "Human-readable label of the input Revit parameter type.")]
+        [Description("Returns the human-readable label of a Revit parameter group.")]
+        [Input("parameterGroup", "Parameter group to get the label for.")]
+        [Output("label", "Human-readable label of the input Revit parameter group.")]
 #if REVIT2020 || REVIT2021 || REVIT2022
         public static string ParameterGroupLabel(this BuiltInParameterGroup parameterGroup)
         {
