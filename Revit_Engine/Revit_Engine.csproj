@@ -16,6 +16,7 @@
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
 		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+		<AppendTargetFrameworkToOutputpath>false</AppendTargetFrameworkToOutputpath>
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
