@@ -74,7 +74,7 @@ namespace BH.Revit.Engine.Core
 
 #if REVIT2020 || REVIT2021 || REVIT2022
         [Description("Gets the BuiltInParameterGroup of a Revit parameter definition.")]
-        [Input("groupName", "Name in the UI of a Revit parameter definition.")]
+        [Input("def", "A Revit parameter definition to get GroupTypeId for.")]
         [Output("parameterGroup", "BuiltInParameterGroup of a Revit parameter definition.")]
         public static BuiltInParameterGroup ParameterGroupTypeId(this Definition def)
         {
@@ -82,7 +82,7 @@ namespace BH.Revit.Engine.Core
         }
 #else
         [Description("Gets the GroupTypeId of a Revit parameter definition.")]
-        [Input("groupName", "Name in the UI of a Revit parameter definition.")]
+        [Input("def", "A Revit parameter definition to get GroupTypeId for.")]
         [Output("groupTypeId", "GroupTypeId of a Revit parameter definition.")]
         public static ForgeTypeId ParameterGroupTypeId(this Definition def)
         {
