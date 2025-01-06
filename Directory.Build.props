@@ -1,4 +1,4 @@
-<!-- This file helps enable Batch Build of configurations that have a mix of .Net Framework and .Net targets. It also allows passing bot checks. It has to be this separate file because the same code if put in csproj files will be overridden by Visual Studio with default settings is has for Batch Build. The goal is to ensure each configuration gets its own project.assets.json file (and other intermediate build artefacts) under the obj\<ConfigurationName> folder. -->
+<!-- This file helps enable Batch Build of configurations that have a mix of .Net Framework and .Net targets. It also allows passing bot checks. It has to be this separate file because the same code if put in csproj files will be overridden by Visual Studio with default settings is has for Batch Build. The goal is to ensure each configuration gets its own project.assets.json file (and other intermediate build artefacts) under the obj\<ConfigurationName> folder. More info at https://github.com/dotnet/msbuild/issues/1603 -->
 <Project>
 	<PropertyGroup>
 		<BaseIntermediateOutputPath>$(MSBuildProjectDirectory)\obj\$(Configuration)\</BaseIntermediateOutputPath>
