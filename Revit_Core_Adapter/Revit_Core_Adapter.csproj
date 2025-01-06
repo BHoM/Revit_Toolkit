@@ -55,13 +55,19 @@
 		<DefineConstants>REVIT2025</DefineConstants>
 	</PropertyGroup>
 
-	<PropertyGroup >
+	<PropertyGroup>
 		<AssemblyName>Revit_Core_Adapter_$(RevitVersion)</AssemblyName>
 	</PropertyGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="C:\Windows\System32\xcopy &quot;$(ProjectDir)Listener\Files\BHoM_$(RevitVersion).Addin&quot; &quot;C:\Users\$(Username)\AppData\Roaming\Autodesk\Revit\Addins\$(RevitVersion)\&quot; /Y /I /E&#xD;&#xA;xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;C:\\ProgramData\\BHoM\\Assemblies&quot; /Y&#xD;&#xA;xcopy &quot;$(TargetDir)Listener\Files\Resources&quot;  &quot;C:\ProgramData\BHoM\Resources\Revit&quot; /Y /I /E" />
 	</Target>
+
+	<ItemGroup>
+	  <Compile Remove="obj\**" />
+	  <EmbeddedResource Remove="obj\**" />
+	  <None Remove="obj\**" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Revit_Adapter\Revit_Adapter.csproj" />

@@ -24,6 +24,12 @@
   </Target>
 
   <ItemGroup>
+    <Compile Remove="obj\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="obj\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Revit_oM\Revit_oM.csproj" />
   </ItemGroup>
   
