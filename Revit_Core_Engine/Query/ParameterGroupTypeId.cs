@@ -23,12 +23,10 @@
 using Autodesk.Revit.DB;
 using System.ComponentModel;
 using BH.oM.Base.Attributes;
-#if !(REVIT2020 || REVIT2021 || REVIT2022)
 using System.Collections.Generic;
 using System.Reflection;
 using System;
 using System.Linq;
-#endif
 
 namespace BH.Revit.Engine.Core
 {
