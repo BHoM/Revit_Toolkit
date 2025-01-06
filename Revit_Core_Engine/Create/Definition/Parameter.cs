@@ -25,6 +25,9 @@ using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+#if REVIT2020 || REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
+using System;
+#endif
 
 namespace BH.Revit.Engine.Core
 {
@@ -49,7 +52,7 @@ namespace BH.Revit.Engine.Core
         {
 #if REVIT2020 || REVIT2021 || REVIT2022
             List<ParameterType> parameterTypes = new List<ParameterType>();
-            foreach (ParameterType pt in System.Enum.GetValues(typeof(ParameterType)))
+            foreach (ParameterType pt in Enum.GetValues(typeof(ParameterType)))
             {
                 try
                 {
@@ -116,9 +119,9 @@ namespace BH.Revit.Engine.Core
                 return Create.SharedParameter(document, parameterName, parameterType, groupName, instance, categories);
             else
             {
-#if REVIT2020 || REVIT2021 || REVIT2022
+#if REVIT2020 || REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
                 BuiltInParameterGroup parameterGroup = BuiltInParameterGroup.INVALID;
-                foreach (BuiltInParameterGroup bpg in System.Enum.GetValues(typeof(BuiltInParameterGroup)))
+                foreach (BuiltInParameterGroup bpg in Enum.GetValues(typeof(BuiltInParameterGroup)))
                 {
                     if (LabelUtils.GetLabelFor(bpg) == groupName)
                     {

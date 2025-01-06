@@ -8,7 +8,7 @@
 	<Target Name="RestoreBeforeSolutionBuild" BeforeTargets="PrepareForBuild">
 		
 		<ItemGroup>
-			<!-- Import build all configurations from the csproj file -->
+			<!-- Import all build configurations from the csproj file -->
 			<SelectedConfigurations Include="$(Configurations)" />
 		</ItemGroup>
 

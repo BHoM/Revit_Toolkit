@@ -23,7 +23,7 @@
 using Autodesk.Revit.DB;
 using System.ComponentModel;
 using BH.oM.Base.Attributes;
-#if !REVIT2020 && !REVIT2021 && !REVIT2022
+#if !(REVIT2020 || REVIT2021 || REVIT2022)
 using System.Collections.Generic;
 using System.Reflection;
 using System;
@@ -34,7 +34,7 @@ namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
-#if !REVIT2020 && !REVIT2021 && !REVIT2022 
+#if !(REVIT2020 || REVIT2021 || REVIT2022)
         /***************************************************/
         /****              Private fields               ****/
         /***************************************************/
@@ -72,7 +72,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-#if REVIT2020 || REVIT2021 || REVIT2022
+#if REVIT2020 || REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
         [Description("Gets the BuiltInParameterGroup of a Revit parameter definition.")]
         [Input("def", "A Revit parameter definition to get GroupTypeId for.")]
         [Output("parameterGroup", "BuiltInParameterGroup of a Revit parameter definition.")]

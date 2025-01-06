@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
         [Input("parameterNames", "Names of the parameter to be iterated over in search for the parameter.")]
         [Input("parameterGroups", "If not null, only the Revit parameters from the given parameter groups will be parsed.")]
         [Output("parameter", "Parameter extracted from the input Revit element.")]
-#if REVIT2020 || REVIT2021 || REVIT2022
+#if REVIT2020 || REVIT2021 || REVIT2022  || REVIT2023 || REVIT2024
         public static Parameter LookupParameter(this Element element, IEnumerable<string> parameterNames, IEnumerable<BuiltInParameterGroup> parameterGroups = null)
 #else
         public static Parameter LookupParameter(this Element element, IEnumerable<string> parameterNames, IEnumerable<ForgeTypeId> parameterGroups = null)
@@ -55,7 +55,7 @@ namespace BH.Revit.Engine.Core
             {
                 foreach (Parameter p in element.Parameters)
                 {
-#if REVIT2020 || REVIT2021 || REVIT2022
+#if REVIT2020 || REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
                     BuiltInParameterGroup groupType = p.Definition.ParameterGroup;
 #else
                     ForgeTypeId groupType = p.Definition.GetGroupTypeId();
@@ -146,7 +146,7 @@ namespace BH.Revit.Engine.Core
         [Input("parameterGroups", "If not null, only the Revit parameters from the given parameter groups will be parsed.")]
         [Input("convertUnits", "If true, the output will be converted from Revit internal units to SI.")]
         [Output("value", "Parameter value extracted from the input Revit element.")]
-#if REVIT2020 || REVIT2021 || REVIT2022
+#if REVIT2020 || REVIT2021 || REVIT2022  || REVIT2023 || REVIT2024
         public static double LookupParameterDouble(this Element element, IEnumerable<string> parameterNames, IEnumerable<BuiltInParameterGroup> parameterGroups, bool convertUnits = true)
 #else
         public static double LookupParameterDouble(this Element element, IEnumerable<string> parameterNames, IEnumerable<ForgeTypeId> parameterGroups, bool convertUnits = true)
