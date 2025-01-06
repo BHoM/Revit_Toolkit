@@ -1,0 +1,19 @@
+<!-- This file helps enable Batch Build of configurations on with a mix of net48 and net8.0 and also allows passing bot checks. It has to be this separate file because the same code if put in csproj files will be overridden by Visual Studio with default settings is has for Batch Build. The goal is to ensure each configuration gets its own project.assets.json file (and other intermediate build artefacts) under the obj\<ConfigurationName> folder. -->
+<Project>
+	<PropertyGroup>
+		<BaseIntermediateOutputPath>$(MSBuildProjectDirectory)\obj\$(Configuration)\</BaseIntermediateOutputPath>
+	</PropertyGroup>
+
+	<!-- PrepareForBuild allows Visual Studio to do the restore right after opening the solution, so build time won't be affected -->
+	<Target Name="RestoreBeforeSolutionBuild" BeforeTargets="PrepareForBuild">
+		
+		<ItemGroup>
+			<!-- Import build all configurations from the csproj file -->
+			<SelectedConfigurations Include="$(Configurations)" />
+		</ItemGroup>
+
+		<!-- Loop through all configurations and run dotnet restore on each one to generate the project.assets.json file and other intermediate build artefacts. Skip the restore if the json file already exists so in practice, this will only re-run if we purposefully delete the obj folder -->
+		<Exec Command="dotnet restore $(SolutionPath) -p:Configuration=%(SelectedConfigurations.Identity)"
+			Condition="!Exists('$(MSBuildProjectDirectory)\obj\%(SelectedConfigurations.Identity)\project.assets.json')" />
+	</Target>
+</Project>

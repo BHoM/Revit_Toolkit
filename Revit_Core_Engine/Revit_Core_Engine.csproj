@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">	
 	<PropertyGroup>
 		<AssemblyVersion>8.0.0.0</AssemblyVersion>
 		<Description>https://github.com/BHoM/Revit_Toolkit</Description>
@@ -8,11 +8,13 @@
 		<RootNamespace>BH.Revit.Engine.Core</RootNamespace>
 		<FileVersion>8.1.0.0</FileVersion>
 	</PropertyGroup>
-
+	
 	<PropertyGroup>
-		<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
 		<OutputPath>..\Build\</OutputPath>
-		<Configurations>Debug;Release;Debug2020;Release2020;Debug2021;Release2021;Debug2022;Release2022;Debug2023;Release2023;Debug2024;Release2024;Debug2025;Release2025</Configurations>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+					<Configurations>Debug;Release;Debug2020;Release2020;Debug2021;Release2021;Debug2022;Release2022;Debug2023;Release2023;Debug2024;Release2024;Debug2025;Release2025</Configurations>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
