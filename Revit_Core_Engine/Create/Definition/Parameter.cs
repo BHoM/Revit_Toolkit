@@ -119,30 +119,17 @@ namespace BH.Revit.Engine.Core
                 return Create.SharedParameter(document, parameterName, parameterType, groupName, instance, categories);
             else
             {
-#if REVIT2020 || REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
-                BuiltInParameterGroup parameterGroup = BuiltInParameterGroup.INVALID;
-                foreach (BuiltInParameterGroup bpg in Enum.GetValues(typeof(BuiltInParameterGroup)))
-                {
-                    if (LabelUtils.GetLabelFor(bpg) == groupName)
-                    {
-                        parameterGroup = bpg;
-                        break;
-                    }
-                }
+                var parameterGroup = groupName.ParameterGroupTypeId();
 
+#if REVIT2020 || REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
                 if (parameterGroup == BuiltInParameterGroup.INVALID)
-                {
-                    BH.Engine.Base.Compute.RecordError($"Parameter group named {groupName} does not exist.");
-                    return null;
-                }
 #else
-                ForgeTypeId parameterGroup = groupName.ParameterGroupTypeId();
                 if (parameterGroup == null)
+#endif
                 {
                     BH.Engine.Base.Compute.RecordError($"Parameter group named {groupName} does not exist.");
                     return null;
                 }
-#endif
 
                 return Create.ProjectParameter(document, parameterName, parameterType, parameterGroup, instance, categories);
             }

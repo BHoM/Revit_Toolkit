@@ -32,7 +32,26 @@ namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
-#if !(REVIT2020 || REVIT2021 || REVIT2022)
+#if REVIT2020 || REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+
+        public static BuiltInParameterGroup ParameterGroupTypeId(this string groupName)
+        {
+            BuiltInParameterGroup parameterGroup = BuiltInParameterGroup.INVALID;
+            foreach (BuiltInParameterGroup bpg in Enum.GetValues(typeof(BuiltInParameterGroup)))
+            {
+                if (LabelUtils.GetLabelFor(bpg) == groupName)
+                {
+                    parameterGroup = bpg;
+                    break;
+                }
+            }
+
+            return parameterGroup;
+        }
+#else
         /***************************************************/
         /****              Private fields               ****/
         /***************************************************/
