@@ -6,7 +6,7 @@
 			folder. More info: https://github.com/dotnet/msbuild/issues/1603-->
 		<BaseIntermediateOutputPath>$(MSBuildProjectDirectory)\obj\$(Configuration)\</BaseIntermediateOutputPath>
 
-		<!-- By default all .cs files in the project folder & subfolders are automatically included in the build, except those in $(DefaultItemExcludes), i.e. the bin	& obj folders. Since we added BaseIntermediateOutputPath above, adding obj/** to exclude all subfolders under obj. More info: https://github.com/dotnet/msbuild/issues/6899-->
+		<!-- By default all .cs files in the project folder & subfolders are automatically included in the build, except those in $(DefaultItemExcludes), i.e. the bin	& obj folders. Since we added BaseIntermediateOutputPath above, adding obj/** to exclude all subfolders under obj. This also resolves the "Duplicated attributes" errors. More info: https://github.com/dotnet/msbuild/issues/6899-->
 		<DefaultItemExcludes>$(DefaultItemExcludes);obj/**</DefaultItemExcludes>
 	</PropertyGroup>
 

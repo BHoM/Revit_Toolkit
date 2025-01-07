@@ -12,7 +12,6 @@
 	<PropertyGroup>
 		<OutputPath>..\Build\</OutputPath>
 		<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
 		<AppendTargetFrameworkToOutputpath>false</AppendTargetFrameworkToOutputpath>
 					<Configurations>Debug;Release;Debug2020;Release2020;Debug2021;Release2021;Debug2022;Release2022;Debug2023;Release2023;Debug2024;Release2024;Debug2025;Release2025</Configurations>
 	</PropertyGroup>
