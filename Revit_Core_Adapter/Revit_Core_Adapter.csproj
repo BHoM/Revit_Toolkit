@@ -12,6 +12,7 @@
 
 	<PropertyGroup>
 		<OutputPath>..\Build\</OutputPath>
+		<StartAction>Program</StartAction>
 		<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
 		<AppendTargetFrameworkToOutputpath>false</AppendTargetFrameworkToOutputpath>
 		<Configurations>Debug;Release;Debug2020;Release2020;Debug2021;Release2021;Debug2022;Release2022;Debug2023;Release2023;Debug2024;Release2024;Debug2025;Release2025</Configurations>
@@ -55,6 +56,7 @@
 
 	<PropertyGroup>
 		<AssemblyName>Revit_Core_Adapter_$(RevitVersion)</AssemblyName>
+		<StartProgram>C:\Program Files\Autodesk\Revit $(RevitVersion)\Revit.exe</StartProgram>
 	</PropertyGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
