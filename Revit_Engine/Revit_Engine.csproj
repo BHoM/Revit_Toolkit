@@ -13,7 +13,6 @@
 
   <PropertyGroup>
     <OutputPath>..\Build\</OutputPath>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
 		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
 		<AppendTargetFrameworkToOutputpath>false</AppendTargetFrameworkToOutputpath>
