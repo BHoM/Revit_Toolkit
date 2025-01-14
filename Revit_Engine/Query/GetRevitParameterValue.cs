@@ -90,6 +90,21 @@ namespace BH.Engine.Adapters.Revit
             return null;
         }
 
+
+        [Description("Retrieves values of a parameter attached to a groupe of BHoM objects. It will return null values for objects that do not have  the parameter defined")]
+        [Input("List<bHoMObject>", "BHoMObjects to which the parameters will be attached.")]
+        [Input("parameterName", "Name of the parameter to be sought for.")]
+        [Output("List of values in same order as objects' list")]
+        public static List<object> GetRevitParameterValues(this List<IBHoMObject> bHoMObjects, string parameterName)
+        {
+            List<object> values = new List<object>();
+            for (int i = 0; i < bHoMObjects.Count; i++)
+            {
+                object value = GetRevitParameterValue(bHoMObjects[i], parameterName);
+                values.Add(value);
+            }
+            return values;
+        }
         /***************************************************/
     }
 }
