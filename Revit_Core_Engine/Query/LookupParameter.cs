@@ -55,11 +55,7 @@ namespace BH.Revit.Engine.Core
             {
                 foreach (Parameter p in element.Parameters)
                 {
-#if REVIT2020 || REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
-                    BuiltInParameterGroup groupType = p.Definition.ParameterGroup;
-#else
-                    ForgeTypeId groupType = p.Definition.GetGroupTypeId();
-#endif
+                    dynamic groupType = p.Definition.GroupTypeId();
                     if (p != null && p.HasValue && p.Definition.Name == name)
                     {
                         if (parameterGroups == null || parameterGroups.Any(x => x == groupType))
