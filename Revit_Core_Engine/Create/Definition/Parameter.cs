@@ -25,9 +25,7 @@ using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-#if REVIT2020 || REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
 using System;
-#endif
 
 namespace BH.Revit.Engine.Core
 {
@@ -119,11 +117,11 @@ namespace BH.Revit.Engine.Core
                 return Create.SharedParameter(document, parameterName, parameterType, groupName, instance, categories);
             else
             {
-                var parameterGroup = groupName.ParameterGroupTypeId();
-
 #if REVIT2020 || REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
+                BuiltInParameterGroup parameterGroup = groupName.GroupFromName();
                 if (parameterGroup == BuiltInParameterGroup.INVALID)
 #else
+                ForgeTypeId parameterGroup = groupName.GroupFromName();
                 if (parameterGroup == null)
 #endif
                 {

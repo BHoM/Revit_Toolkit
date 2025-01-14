@@ -22,36 +22,34 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
 
 namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
-
-        [Description("Returns the human-readable label of a Revit parameter group.")]
-        [Input("parameterGroup", "Parameter group to get the label for.")]
-        [Output("label", "Human-readable label of the input Revit parameter group.")]
 #if REVIT2020 || REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
-        public static string ParameterGroupLabel(this BuiltInParameterGroup parameterGroup)
+        [Description("Gets the BuiltInParameterGroup of a Revit parameter definition.")]
+        [Input("def", "A Revit parameter definition to get BuiltInParameterGroup for.")]
+        [Output("parameterGroup", "BuiltInParameterGroup of a Revit parameter definition.")]
+        public static BuiltInParameterGroup GroupTypeId(this Definition def)
         {
-            return LabelUtils.GetLabelFor(parameterGroup);
+            return def.ParameterGroup;
         }
 #else
-        public static string ParameterGroupLabel(this ForgeTypeId parameterGroup)
+        [Description("Gets the GroupTypeId of a Revit parameter definition.")]
+        [Input("def", "A Revit parameter definition to get GroupTypeId for.")]
+        [Output("groupTypeId", "GroupTypeId of a Revit parameter definition.")]
+        public static ForgeTypeId GroupTypeId(this Definition def)
         {
-            if (parameterGroup != null)
-                return LabelUtils.GetLabelForGroup(parameterGroup);
-            else
-                return null;
+            return def.GetGroupTypeId();
         }
 #endif
 
         /***************************************************/
     }
 }
-
-

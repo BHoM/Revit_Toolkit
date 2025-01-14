@@ -185,19 +185,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="Listener\Files\BHoM_2020.Addin">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Include="Listener\Files\BHoM_2021.Addin">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Include="Listener\Files\BHoM_2022.Addin">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Include="Listener\Files\BHoM_2023.Addin">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Include="Listener\Files\BHoM_2024.Addin">
+		<None Include="Listener\Files\BHoM_$(RevitVersion).Addin">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>

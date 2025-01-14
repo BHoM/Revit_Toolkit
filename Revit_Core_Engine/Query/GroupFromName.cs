@@ -21,12 +21,12 @@
  */
 
 using Autodesk.Revit.DB;
-using System.ComponentModel;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
-using System.Reflection;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 
 namespace BH.Revit.Engine.Core
 {
@@ -37,7 +37,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static BuiltInParameterGroup ParameterGroupTypeId(this string groupName)
+        [Description("Gets a BuiltInParameterGroup by its name in the UI.")]
+        [Input("groupName", "Name in the UI of a Revit parameter group.")]
+        [Output("builtInParameterGroup", "A BuiltInParameterGroup that has the input name.")]
+        public static BuiltInParameterGroup GroupFromName(this string groupName)
         {
             BuiltInParameterGroup parameterGroup = BuiltInParameterGroup.INVALID;
             foreach (BuiltInParameterGroup bpg in Enum.GetValues(typeof(BuiltInParameterGroup)))
@@ -56,7 +59,7 @@ namespace BH.Revit.Engine.Core
         /****              Private fields               ****/
         /***************************************************/
 
-        private static Dictionary<string, ForgeTypeId> m_GroupTypeIdByName = new Dictionary<string, ForgeTypeId>();
+        private static Dictionary<string, ForgeTypeId> m_GroupTypeByName = new Dictionary<string, ForgeTypeId>();
 
         /***************************************************/
         /****              Public methods               ****/
@@ -64,10 +67,10 @@ namespace BH.Revit.Engine.Core
 
         [Description("Gets the GroupTypeId of a Revit parameter group by its name in the UI.")]
         [Input("groupName", "Name in the UI of a Revit parameter group.")]
-        [Output("groupTypeId", "GroupTypeId of a Revit parameter group by its name in the UI.")]
-        public static ForgeTypeId ParameterGroupTypeId(this string groupName)
+        [Output("groupTypeId", "GroupTypeId of a Revit parameter group that has the input name.")]
+        public static ForgeTypeId GroupFromName(this string groupName)
         {
-            if (!m_GroupTypeIdByName.Any())
+            if (!m_GroupTypeByName.Any())
             {
                 Type type = typeof(GroupTypeId);
                 PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Static);
@@ -76,34 +79,14 @@ namespace BH.Revit.Engine.Core
                 {
                     ForgeTypeId value = property.GetValue(null) as ForgeTypeId;
                     string name = LabelUtils.GetLabelForGroup(value);
-                    m_GroupTypeIdByName[name] = value;
+                    m_GroupTypeByName[name] = value;
                 }
             }
 
-            if (m_GroupTypeIdByName.TryGetValue(groupName, out ForgeTypeId groupTypeId))
+            if (m_GroupTypeByName.TryGetValue(groupName, out ForgeTypeId groupTypeId))
                 return groupTypeId;
             else
                 return null;
-        }
-#endif
-
-        /***************************************************/
-
-#if REVIT2020 || REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
-        [Description("Gets the BuiltInParameterGroup of a Revit parameter definition.")]
-        [Input("def", "A Revit parameter definition to get GroupTypeId for.")]
-        [Output("parameterGroup", "BuiltInParameterGroup of a Revit parameter definition.")]
-        public static BuiltInParameterGroup ParameterGroupTypeId(this Definition def)
-        {
-            return def.ParameterGroup;
-        }
-#else
-        [Description("Gets the GroupTypeId of a Revit parameter definition.")]
-        [Input("def", "A Revit parameter definition to get GroupTypeId for.")]
-        [Output("groupTypeId", "GroupTypeId of a Revit parameter definition.")]
-        public static ForgeTypeId ParameterGroupTypeId(this Definition def)
-        {
-            return def.GetGroupTypeId();
         }
 #endif
 
