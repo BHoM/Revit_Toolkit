@@ -36,7 +36,7 @@ namespace BH.Revit.Engine.Core
         [Description("Gets the BuiltInParameterGroup of a Revit parameter definition.")]
         [Input("def", "A Revit parameter definition to get BuiltInParameterGroup for.")]
         [Output("parameterGroup", "BuiltInParameterGroup of a Revit parameter definition.")]
-        public static BuiltInParameterGroup GroupTypeId(this Definition def)
+        public static BuiltInParameterGroup GetGroupTypeId(this Definition def)
         {
             return def.ParameterGroup;
         }
@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
         [Description("Gets the GroupTypeId of a Revit parameter definition.")]
         [Input("def", "A Revit parameter definition to get GroupTypeId for.")]
         [Output("groupTypeId", "GroupTypeId of a Revit parameter definition.")]
-        public static ForgeTypeId GroupTypeId(this Definition def)
+        public static ForgeTypeId GetGroupTypeId(this Definition def)
         {
             return def.GetGroupTypeId();
         }

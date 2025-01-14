@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
             // Look for existing parameter definition
             bool bindings = false;
             IEnumerable<Definition> existingDefs = new FilteredElementCollector(document).OfClass(typeof(SharedParameterElement)).Cast<SharedParameterElement>().Select(x => x.GetDefinition());
-            Definition def = existingDefs.FirstOrDefault(x => x.Name == parameterName && x.GroupTypeId() == parameterGroup);
+            Definition def = existingDefs.FirstOrDefault(x => x.Name == parameterName && Query.GetGroupTypeId(x) == parameterGroup);
             if (def != null)
             {
                 if (document.ParameterBindings.Contains(def))

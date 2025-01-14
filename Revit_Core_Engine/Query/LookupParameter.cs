@@ -55,7 +55,7 @@ namespace BH.Revit.Engine.Core
             {
                 foreach (Parameter p in element.Parameters)
                 {
-                    dynamic groupType = p.Definition.GroupTypeId();
+                    dynamic groupType = GetGroupTypeId(p.Definition);
                     if (p != null && p.HasValue && p.Definition.Name == name)
                     {
                         if (parameterGroups == null || parameterGroups.Any(x => x == groupType))
