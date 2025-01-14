@@ -27,8 +27,8 @@ using BH.Engine.Base;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Geometry;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
 using BH.oM.Spatial.ShapeProfiles;
 using BH.oM.Structure.SectionProperties;
 using System;
@@ -116,7 +116,7 @@ namespace BH.Revit.Engine.Core
 
             if (profile == null)
                 profile = familySymbol.FreeFormProfileFromRevit(settings);
-            
+
             if (profile == null)
                 return null;
 
@@ -150,7 +150,7 @@ namespace BH.Revit.Engine.Core
             // Instead, one needs to extract the geometry of one of the instances
             // The instance to be queried needs to have its start (bottom) face exposed
             // In simple words, it needs to be the first mullion in a chain of mullions of same type            
-            
+
             // First, take arbitrary mullion of a given type
             Document doc = mullionType.Document;
             Mullion representativeMullion = new FilteredElementCollector(doc)
@@ -716,7 +716,7 @@ namespace BH.Revit.Engine.Core
                 Document doc = familySymbol.Document;
                 if (!doc.IsModifiable)
                 {
-                    using(Transaction tempTransaction = new Transaction(doc, "Temp activate family symbol"))
+                    using (Transaction tempTransaction = new Transaction(doc, "Temp activate family symbol"))
                     {
                         tempTransaction.Start();
 
@@ -774,7 +774,7 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Base.Compute.RecordWarning("The profile of a family type could not be found. ElementId: " + familySymbol.Id.IntegerValue.ToString());
                 return null;
             }
-            
+
             List<ICurve> profileCurves = new List<ICurve>();
             foreach (EdgeArray curveArray in (face as PlanarFace).EdgeLoops)
             {
@@ -862,7 +862,11 @@ namespace BH.Revit.Engine.Core
         /****              Private helpers              ****/
         /***************************************************/
 
-        private static readonly BuiltInParameterGroup[] dimensionGroups = { BuiltInParameterGroup.PG_STRUCTURAL_SECTION_GEOMETRY, BuiltInParameterGroup.PG_GEOMETRY };
+#if REVIT2020 || REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
+        private static readonly BuiltInParameterGroup[] dimensionGroups = { GroupTypeId.StructuralSectionGeometry, GroupTypeId.Geometry };
+#else
+        private static readonly ForgeTypeId[] dimensionGroups = { GroupTypeId.StructuralSectionGeometry, GroupTypeId.Geometry };
+#endif
 
         private static readonly string[] diameterNames = { "BHE_Diameter", "Diameter", "d", "D", "OD" };
         private static readonly string[] radiusNames = { "BHE_Radius", "Radius", "r", "R" };
