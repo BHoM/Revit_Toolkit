@@ -61,7 +61,12 @@ namespace BH.Revit.Engine.Core
             // Look for existing parameter definition
             bool bindings = false;
             IEnumerable<Definition> existingDefs = new FilteredElementCollector(document).OfClass(typeof(SharedParameterElement)).Cast<SharedParameterElement>().Select(x => x.GetDefinition());
+
+#if REVIT2020 || REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
+            Definition def = existingDefs.FirstOrDefault(x => x.Name == parameterName && BH.Revit.Engine.Core.Query.GetGroupTypeId(x) == parameterGroup);
+#else
             Definition def = existingDefs.FirstOrDefault(x => x.Name == parameterName && x.GetGroupTypeId() == parameterGroup);
+#endif       
             if (def != null)
             {
                 if (document.ParameterBindings.Contains(def))
