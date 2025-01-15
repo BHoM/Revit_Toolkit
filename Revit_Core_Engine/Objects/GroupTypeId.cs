@@ -147,12 +147,6 @@ namespace BH.Revit.Engine.Core
         public static BuiltInParameterGroup ViewExtents { get { return BuiltInParameterGroup.PG_VIEW_EXTENTS; } }
         public static BuiltInParameterGroup Visibility { get { return BuiltInParameterGroup.PG_VISIBILITY; } }
 
-        public static BuiltInParameterGroup AlternateUnits { [NotImplemented] get { return NonExistent(nameof(AlternateUnits), 2020); } }
-        public static BuiltInParameterGroup ElectricalAnalysis { [NotImplemented] get { return NonExistent(nameof(ElectricalAnalysis), 2020); } }
-        public static BuiltInParameterGroup ElectricalEngineering { [NotImplemented] get { return NonExistent(nameof(ElectricalEngineering), 2020); } }
-        public static BuiltInParameterGroup PrimaryUnits { [NotImplemented] get { return NonExistent(nameof(PrimaryUnits), 2020); } }
-        public static BuiltInParameterGroup Termination { [NotImplemented] get { return NonExistent(nameof(Termination), 2020); } }
-
         public static BuiltInParameterGroup LifeSafety { [NotImplemented] get { return NonExistent(nameof(LifeSafety), 2022); } }
         public static BuiltInParameterGroup StructuralSectionDimensions { [NotImplemented] get { return NonExistent(nameof(StructuralSectionDimensions), 2022); } }
         public static BuiltInParameterGroup ToposolidSubdivision { [NotImplemented] get { return NonExistent(nameof(ToposolidSubdivision), 2022); } }
