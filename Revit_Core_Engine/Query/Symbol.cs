@@ -40,7 +40,7 @@ namespace BH.Revit.Engine.Core
             if (geometryInstance == null)
                 return null;
 
-#if (REVIT2020 || REVIT2021 || REVIT2022)
+#if (REVIT2021 || REVIT2022)
             return geometryInstance.Symbol;
 #else
             return geometryInstance.GetDocument().GetElement(geometryInstance.GetSymbolGeometryId().SymbolId);

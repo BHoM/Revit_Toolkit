@@ -47,7 +47,7 @@ namespace BH.Revit.Engine.Core
         {
             List<ICurve> result = new List<ICurve>();
 
-#if (REVIT2020 || REVIT2021 || REVIT2022)
+#if (REVIT2021 || REVIT2022)
             AnalyticalModel analyticalModel = hostObject.GetAnalyticalModel();
             if (analyticalModel == null)
                 return null;

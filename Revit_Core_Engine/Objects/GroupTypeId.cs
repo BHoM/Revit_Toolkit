@@ -20,7 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-#if REVIT2020 || REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
+#if REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
 

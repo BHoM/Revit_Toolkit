@@ -36,11 +36,7 @@ namespace BH.Revit.Engine.Core
         [Description("Returns name of SpecTypeId property that contains a given Revit spec object (enum for Revit up to 2020 or ForgeTypeId for later versions).")]
         [Input("spec", "Spec object to be queried for the correspondent SpecTypeId property name.")]
         [Output("name", "Name of SpecTypeId property that contains the input spec object.")]
-#if (REVIT2020)
-        public static string SpecName(this UnitType spec)
-#else
         public static string SpecName(this ForgeTypeId spec)
-#endif
         {
             if (m_SpecsWithNames == null)
                 CollectSpecs();

@@ -71,7 +71,7 @@ namespace BH.Revit.Engine.Core
 
         private static IEnumerable<ElementId> TaggedElements(this IndependentTag tag)
         {
-#if (REVIT2020 || REVIT2021)
+#if REVIT2021
             return new List<ElementId> { tag.TaggedLocalElementId };
 #else
             return tag.GetTaggedLocalElementIds();
