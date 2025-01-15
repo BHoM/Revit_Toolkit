@@ -33,7 +33,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns name of UnitTypeId property that contains a given Revit unit object (enum for Revit up to 2020 or ForgeTypeId for later versions).")]
+        [Description("Returns name of UnitTypeId property that contains a given ForgeTypeId.")]
         [Input("unit", "Unit object to be queried for the correspondent UnitTypeId property name.")]
         [Output("name", "Name of UnitTypeId property that contains the input unit object.")]
         public static string UnitName(this ForgeTypeId unit)
@@ -49,7 +49,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Returns name of UnitTypeId property that contains given Revit parameter's unit object (enum for Revit up to 2020 or ForgeTypeId for later versions).")]
+        [Description("Returns name of UnitTypeId property that contains given Revit parameter's ForgeTypeId.")]
         [Input("parameter", "Parameter to be queried for the correspondent UnitTypeId property name.")]
         [Output("name", "Name of UnitTypeId property that contains the unit object correspondent to the input parameter.")]
         public static string UnitName(this Parameter parameter)

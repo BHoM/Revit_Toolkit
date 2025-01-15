@@ -34,7 +34,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns Revit unit object (enum for Revit up to 2020 or ForgeTypeId for later versions) based on UnitTypeId property name that represents it.")]
+        [Description("Returns ForgeTypeId based on UnitTypeId property name that represents it.")]
         [Input("name", "Name of UnitTypeId property to be queried for the correspondent unit.")]
         [Output("unit", "Unit object under the input UnitTypeId property name.")]
         public static ForgeTypeId UnitFromName(this string name)

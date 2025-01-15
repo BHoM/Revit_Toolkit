@@ -19,7 +19,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
-		<RevitVersion>2020</RevitVersion>
+		<RevitVersion>2021</RevitVersion>
 		<TargetFramework>net48</TargetFramework>
 		<DefineConstants>REVIT2021</DefineConstants>
 	</PropertyGroup>
