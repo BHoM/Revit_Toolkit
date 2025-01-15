@@ -40,14 +40,6 @@ namespace BH.Revit.Engine.Core
         {
             return def.ParameterGroup;
         }
-#else
-        [Description("Gets the GroupTypeId of a Revit parameter definition.")]
-        [Input("def", "A Revit parameter definition to get GroupTypeId for.")]
-        [Output("groupTypeId", "GroupTypeId of a Revit parameter definition.")]
-        public static ForgeTypeId GetGroupTypeId(this Definition def)
-        {
-            return def.GetGroupTypeId();
-        }
 #endif
 
         /***************************************************/
