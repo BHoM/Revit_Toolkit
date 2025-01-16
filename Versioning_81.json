@@ -1,7 +1,17 @@
 {
   "MessageForDeleted": {
+	"BH.Revit.Engine.Core.Convert.FromSI(System.Double, Autodesk.Revit.DB.UnitType)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
+	"BH.Revit.Engine.Core.Convert.ToSI(System.Double, Autodesk.Revit.DB.UnitType)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
+	"BH.Revit.Engine.Core.Create.ProjectParameter(Autodesk.Revit.DB.Document, System.String, Autodesk.Revit.DB.ParameterType, Autodesk.Revit.DB.BuiltInParameterGroup, System.Boolean, System.Collections.Generic.IEnumerable<Autodesk.Revit.DB.Category>)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
+	"BH.Revit.Engine.Core.Create.SharedParameter(Autodesk.Revit.DB.Document, System.String, Autodesk.Revit.DB.ParameterType, System.String, System.Boolean, System.Collections.Generic.IEnumerable<Autodesk.Revit.DB.Category>)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
+	"BH.Revit.Engine.Core.Query.BHoMUnitType(Autodesk.Revit.DB.UnitType)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
+    "BH.Revit.Engine.Core.Query.FromSIMultiplier(Autodesk.Revit.DB.UnitType)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
+    "BH.Revit.Engine.Core.Query.GetDataType(Autodesk.Revit.DB.Definition)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
     "BH.Revit.Engine.Core.Query.GetUnitTypeId(Autodesk.Revit.DB.FormatOptions)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
-	"BH.Revit.Engine.Core.Query.GetUnitTypeId(Autodesk.Revit.DB.Parameter)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
+    "BH.Revit.Engine.Core.Query.Label(Autodesk.Revit.DB.ParameterType)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
+    "BH.Revit.Engine.Core.Query.SpecName(Autodesk.Revit.DB.UnitType)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
+    "BH.Revit.Engine.Core.Query.ToSIMultiplier(Autodesk.Revit.DB.UnitType)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
+    "BH.Revit.Engine.Core.Query.UnitName(Autodesk.Revit.DB.DisplayUnitType)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
 	"BH.Revit.Engine.Core.SpecTypeId": "This object has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
 	"BH.Revit.Engine.Core.UnitTypeId": "This object has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it."
   }
