@@ -8,6 +8,7 @@
     "BH.Revit.Engine.Core.Query.FromSIMultiplier(Autodesk.Revit.DB.UnitType)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
     "BH.Revit.Engine.Core.Query.GetDataType(Autodesk.Revit.DB.Definition)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
     "BH.Revit.Engine.Core.Query.GetUnitTypeId(Autodesk.Revit.DB.FormatOptions)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
+    "BH.Revit.Engine.Core.Query.GetUnitTypeId(Autodesk.Revit.DB.Parameter)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
     "BH.Revit.Engine.Core.Query.Label(Autodesk.Revit.DB.ParameterType)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
     "BH.Revit.Engine.Core.Query.SpecName(Autodesk.Revit.DB.UnitType)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
     "BH.Revit.Engine.Core.Query.ToSIMultiplier(Autodesk.Revit.DB.UnitType)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
