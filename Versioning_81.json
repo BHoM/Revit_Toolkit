@@ -1,0 +1,8 @@
+{
+  "MessageForDeleted": {
+    "BH.Revit.Engine.Core.Query.GetUnitTypeId(Autodesk.Revit.DB.FormatOptions)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
+	"BH.Revit.Engine.Core.Query.GetUnitTypeId(Autodesk.Revit.DB.Parameter)": "This method has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
+	"BH.Revit.Engine.Core.SpecTypeId": "This object has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it.",
+	"BH.Revit.Engine.Core.UnitTypeId": "This object has been removed as a part of the legacy code cleanup. Please contact the developers if you still need it."
+  }
+}
