@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
             
             // Get bar curve
             List<oM.Geometry.ICurve> locationCurves = null;
-#if (REVIT2020 || REVIT2021 || REVIT2022)
+#if (REVIT2021 || REVIT2022)
             AnalyticalModelStick analyticalModel = familyInstance.GetAnalyticalModel() as AnalyticalModelStick;
             if (analyticalModel != null)
             {

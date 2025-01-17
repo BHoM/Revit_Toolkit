@@ -20,7 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-#if REVIT2020 || REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
+#if REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
 
@@ -146,12 +146,6 @@ namespace BH.Revit.Engine.Core
         public static BuiltInParameterGroup ViewCamera { get { return BuiltInParameterGroup.PG_VIEW_CAMERA; } }
         public static BuiltInParameterGroup ViewExtents { get { return BuiltInParameterGroup.PG_VIEW_EXTENTS; } }
         public static BuiltInParameterGroup Visibility { get { return BuiltInParameterGroup.PG_VISIBILITY; } }
-
-        public static BuiltInParameterGroup AlternateUnits { [NotImplemented] get { return NonExistent(nameof(AlternateUnits), 2020); } }
-        public static BuiltInParameterGroup ElectricalAnalysis { [NotImplemented] get { return NonExistent(nameof(ElectricalAnalysis), 2020); } }
-        public static BuiltInParameterGroup ElectricalEngineering { [NotImplemented] get { return NonExistent(nameof(ElectricalEngineering), 2020); } }
-        public static BuiltInParameterGroup PrimaryUnits { [NotImplemented] get { return NonExistent(nameof(PrimaryUnits), 2020); } }
-        public static BuiltInParameterGroup Termination { [NotImplemented] get { return NonExistent(nameof(Termination), 2020); } }
 
         public static BuiltInParameterGroup LifeSafety { [NotImplemented] get { return NonExistent(nameof(LifeSafety), 2022); } }
         public static BuiltInParameterGroup StructuralSectionDimensions { [NotImplemented] get { return NonExistent(nameof(StructuralSectionDimensions), 2022); } }
