@@ -35,7 +35,7 @@ namespace BH.Revit.Engine.Core
         [Description("Returns the human-readable label of a Revit parameter group.")]
         [Input("parameterGroup", "Parameter group to get the label for.")]
         [Output("label", "Human-readable label of the input Revit parameter group.")]
-#if REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
+#if REVIT2021
         public static string GroupName(this BuiltInParameterGroup parameterGroup)
         {
             return LabelUtils.GetLabelFor(parameterGroup);

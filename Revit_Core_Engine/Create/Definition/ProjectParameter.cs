@@ -42,10 +42,8 @@ namespace BH.Revit.Engine.Core
         [Input("instance", "If true, the created parameter will be an instance parameter, otherwise it will be a type parameter.")]
         [Input("categories", "Categories, to which the created parameter is bound. It will get bound to all categories if this value is null.")]
         [Output("definition", "Revit project parameter Definition created based on the input properties.")]
-#if REVIT2021 || REVIT2022
+#if REVIT2021
         public static Definition ProjectParameter(Document document, string parameterName, ParameterType parameterType, BuiltInParameterGroup parameterGroup, bool instance, IEnumerable<Category> categories)
-#elif REVIT2023 || REVIT2024
-        public static Definition ProjectParameter(Document document, string parameterName, ForgeTypeId parameterType, BuiltInParameterGroup parameterGroup, bool instance, IEnumerable<Category> categories)
 #else
         public static Definition ProjectParameter(Document document, string parameterName, ForgeTypeId parameterType, ForgeTypeId parameterGroup, bool instance, IEnumerable<Category> categories)
 #endif
@@ -62,7 +60,7 @@ namespace BH.Revit.Engine.Core
             bool bindings = false;
             IEnumerable<Definition> existingDefs = new FilteredElementCollector(document).OfClass(typeof(SharedParameterElement)).Cast<SharedParameterElement>().Select(x => x.GetDefinition());
 
-#if REVIT2020 || REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
+#if REVIT2021
             Definition def = existingDefs.FirstOrDefault(x => x.Name == parameterName && BH.Revit.Engine.Core.Query.GetGroupTypeId(x) == parameterGroup);
 #else
             Definition def = existingDefs.FirstOrDefault(x => x.Name == parameterName && x.GetGroupTypeId() == parameterGroup);
