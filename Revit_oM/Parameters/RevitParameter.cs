@@ -46,6 +46,9 @@ namespace BH.oM.Adapters.Revit.Parameters
         [Description("Whether the parameter is read only or modifiable by the Revit user.")]
         public virtual bool IsReadOnly { get; set; } = false;
 
+        [Description("Whether the parameter is instance parameter.")]
+        public virtual bool IsInstance { get; set; } = true;
+
         /***************************************************/
     }
 }

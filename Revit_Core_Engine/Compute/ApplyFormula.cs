@@ -26,6 +26,8 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Parameters;
+using BH.oM.Data.Requests;
+using BH.oM.Adapters.Revit;
 using System.Reflection;
 using System;
 using System.Linq;
@@ -46,15 +48,15 @@ namespace BH.Revit.Engine.Core
         [Input("toParameter", "RevitParameter to which the result of the formula will be set.")]
         [Input("activate", "Perform calculation.")]
         [Output("bHoMObjects", "List of BHoMObjects with the applied calculation to the specified Revit parameter.")]
-        public static List<BHoMObject> ApplyFormula(List<BHoMObject> elements, ParameterFormula formula, RevitParameter toParameter, bool activate = false)
+        public static List<IBHoMObject> ApplyFormula(List<IBHoMObject> elements, ParameterFormula formula, RevitParameter toParameter, bool activate = false)
         {
             Func<List<object>, object> function = GenerateMethod<List<object>, object>(formula);
-            List<BHoMObject> bHoMObjects = new List<BHoMObject>();
+            List<IBHoMObject> bHoMObjects = new List<IBHoMObject>();
 
             for (int i = 0; i < elements.Count; i++)
             {
                 //Check toParameter if it is a parameterType or parameterInstance
-                bool isInstanceParameter = toParameter.IsInstanceParameter(elements[i]);
+                bool isInstanceParameter = toParameter.IsInstance;
 
                 bool isValidInput = true;
                 List<object> inputs = new List<object>();
@@ -62,7 +64,7 @@ namespace BH.Revit.Engine.Core
                 int j = 0;
                 while (j < formula.InputParameters.Count && isValidInput)
                 {
-                    bool isTypeParameter = formula.InputParameters[j].IsTypeParameter(elements[i]);
+                    bool isTypeParameter = !formula.InputParameters[j].IsInstance;
 
                     //type parameter only accepts type parameters as input
                     isValidInput &= isInstanceParameter || isTypeParameter;
@@ -72,7 +74,7 @@ namespace BH.Revit.Engine.Core
                     j++;
                 }
 
-                var result = (isValidInput) ? function(inputs) : null;
+                var result = (isValidInput) ? function(inputs) : BH.Engine.Base.Compute.RecordError($"Input invalid at {elements[i].ElementId()}, TypeParameter output only accepts TypeParameterInput"); ;
 
                 if (activate)
                 {
@@ -84,24 +86,13 @@ namespace BH.Revit.Engine.Core
             return bHoMObjects;
         }
 
-        public static List<BHoMObject> ApplyFormula(string CategoryName, ParameterFormula formula, RevitParameter toParameter, bool activate = false)
-        {
-            throw new NotImplementedException();
-        }
 
-        /***************************************************/
-        /****              private methods               ****/
-        /***************************************************/
-
-        private static bool IsTypeParameter(this RevitParameter parameter, BHoMObject bHoMObject)
-        {
-            return true;
-        }
-
-        private static bool IsInstanceParameter(this RevitParameter parameter, BHoMObject bHoMObject)
-        {
-            return true;
-        }
+        [Description("")]
+        [Input("", "")]
+        [Input("", "")]
+        [Input("", "")]
+        [Input("", "")]
+        [Output("", "")]
 
         private static Func<T, TResult> GenerateMethod<T, TResult>(ParameterFormula formula)
         {

@@ -45,6 +45,10 @@ namespace BH.Revit.Engine.Core
             if (parameter == null)
                 return null;
 
+            Document doc = parameter.Element.Document;
+            Binding binding = doc.ParameterBindings.get_Item(parameter.Definition);
+            bool isInstance = (binding is InstanceBinding);
+
             string name = parameter.Definition.Name;
 
             IParameterLink parameterLink = parameterLinks.ParameterLink(parameter);
@@ -81,7 +85,7 @@ namespace BH.Revit.Engine.Core
             }
 
             string unitTypeIdentifier = parameter.SpecName();
-            return new RevitParameter { Name = name, Value = value, IsReadOnly = parameter.IsReadOnly, UnitType = unitTypeIdentifier };
+            return new RevitParameter { Name = name, Value = value, IsReadOnly = parameter.IsReadOnly, UnitType = unitTypeIdentifier, IsInstance = isInstance };
         }
 
         /***************************************************/
