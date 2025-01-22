@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
         [Output("bHoMObjects", "List of BHoMObjects with the applied calculation to the specified Revit parameter.")]
         public static List<IBHoMObject> ApplyFormula(List<IBHoMObject> elements, ParameterFormula formula, RevitParameter toParameter, bool activate = false)
         {
-            Func<List<object>, object> function = GenerateMethod<List<object>, object>(formula);
+            Func<List<object>, object> function = GenerateMethod<List<object>, object>(formula, toParameter.Value.GetType());
             List<IBHoMObject> bHoMObjects = new List<IBHoMObject>();
 
             for (int i = 0; i < elements.Count; i++)
@@ -99,7 +99,7 @@ namespace BH.Revit.Engine.Core
         [Input("", "")]
         [Output("", "")]
 
-        private static Func<T, TResult> GenerateMethod<T, TResult>(ParameterFormula formula)
+        private static Func<T, TResult> GenerateMethod<T, TResult>(ParameterFormula input, System.Type ouputType)
         {
             throw new NotImplementedException();
         }
