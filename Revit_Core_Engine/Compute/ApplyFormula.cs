@@ -20,17 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
 using System.ComponentModel;
 using System.Collections.Generic;
 using BH.oM.Base;
 using BH.oM.Adapters.Revit.Parameters;
-using BH.oM.Data.Requests;
-using BH.oM.Adapters.Revit;
-using System.Reflection;
 using System;
-using System.Linq;
 using BH.Engine.Adapters.Revit;
 
 namespace BH.Revit.Engine.Core
@@ -74,7 +69,17 @@ namespace BH.Revit.Engine.Core
                     j++;
                 }
 
-                var result = (isValidInput) ? function(inputs) : BH.Engine.Base.Compute.RecordError($"Input invalid at {elements[i].ElementId()}, TypeParameter output only accepts TypeParameterInput"); ;
+                object result;
+
+                if (!isValidInput)
+                {
+                    result = null;
+                    BH.Engine.Base.Compute.RecordError($"Input invalid at {elements[i].ElementId()}, TypeParameter output only accepts TypeParameterInput");
+                }
+                else
+                {
+                    result = function(inputs);
+                }
 
                 if (activate)
                 {

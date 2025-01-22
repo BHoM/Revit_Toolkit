@@ -46,6 +46,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             Document doc = parameter.Element.Document;
+
             Binding binding = doc.ParameterBindings.get_Item(parameter.Definition);
             bool isInstance = (binding is InstanceBinding);
 
