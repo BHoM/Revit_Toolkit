@@ -68,7 +68,10 @@ namespace BH.Revit.Engine.Core
                     displayUnit = FormatOptions
                         .GetValidSymbols(parameter.Definition.GetDataType().BHoMUnitType())
                         .FirstOrDefault()
-                        .ToString();
+                        .SpecName()+1+ FormatOptions
+                        .GetValidSymbols(parameter.Definition.GetDataType().BHoMUnitType())
+                        .FirstOrDefault()
+                        .TypeId+2;
 
                     break;
                 case StorageType.ElementId:
