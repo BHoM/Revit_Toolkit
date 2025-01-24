@@ -26,6 +26,7 @@ using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -49,6 +50,7 @@ namespace BH.Revit.Engine.Core
 
             Binding binding = doc.ParameterBindings.get_Item(parameter.Definition);
             bool isInstance = (binding is InstanceBinding);
+            string displayUnit = string.Empty;
 
             string name = parameter.Definition.Name;
 
@@ -63,6 +65,11 @@ namespace BH.Revit.Engine.Core
             {
                 case StorageType.Double:
                     value = parameter.AsDouble().ToSI(parameter.Definition.GetDataType());
+                    displayUnit = FormatOptions
+                        .GetValidSymbols(parameter.Definition.GetDataType().BHoMUnitType())
+                        .FirstOrDefault()
+                        .ToString();
+
                     break;
                 case StorageType.ElementId:
                     ElementId elementID = parameter.AsElementId();
@@ -86,7 +93,13 @@ namespace BH.Revit.Engine.Core
             }
 
             string unitTypeIdentifier = parameter.SpecName();
-            return new RevitParameter { Name = name, Value = value, IsReadOnly = parameter.IsReadOnly, UnitType = unitTypeIdentifier, IsInstance = isInstance };
+            return new RevitParameter { 
+                Name = name, 
+                Value = value, 
+                IsReadOnly = parameter.IsReadOnly, 
+                UnitType = unitTypeIdentifier,
+                DisplayUnit = displayUnit,
+                IsInstance = isInstance };
         }
 
         /***************************************************/

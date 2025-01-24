@@ -43,6 +43,9 @@ namespace BH.oM.Adapters.Revit.Parameters
         [Description("Unit type of the Revit parameter.")]
         public virtual string UnitType { get; set; }
 
+        [Description("Current Using Unit of the Revit parameter.")]
+        public virtual string DisplayUnit { get; set; }
+
         [Description("Whether the parameter is read only or modifiable by the Revit user.")]
         public virtual bool IsReadOnly { get; set; } = false;
 

@@ -41,10 +41,23 @@ namespace BH.Revit.Engine.Core
         [Input("elements", "List of BHoMObjects to which the formula will be applied.")]
         [Input("formula", "ParameterFormula containing the formula to be applied.")]
         [Input("toParameter", "RevitParameter to which the result of the formula will be set.")]
-        [Input("activate", "Perform calculation.")]
+        [Input("startCalculation", "Flag to start the calculation process.")]
+        [Input("applyCalculation", "Flag to apply the calculation result to the Revit parameter.")]
         [Output("bHoMObjects", "List of BHoMObjects with the applied calculation to the specified Revit parameter.")]
-        public static List<IBHoMObject> ApplyFormula(List<IBHoMObject> elements, ParameterFormula formula, RevitParameter toParameter, bool activate = false)
+        public static List<IBHoMObject> ApplyFormula(List<IBHoMObject> elements, ParameterFormula formula, RevitParameter toParameter,bool startCalculation = false, bool applyCalculation = false)
         {
+            if (elements == null || formula == null || toParameter == null)
+            {
+                BH.Engine.Base.Compute.RecordError("One or more input parameters are null");
+                return null;
+            }
+
+            if (startCalculation)
+            {
+                BH.Engine.Base.Compute.RecordError("Inputs received, waiting for calculation");
+                return null;
+            }
+
             Func<List<object>, object> function = GenerateMethod<List<object>, object>(formula, toParameter.Value.GetType());
             List<IBHoMObject> bHoMObjects = new List<IBHoMObject>();
 
@@ -59,10 +72,10 @@ namespace BH.Revit.Engine.Core
                 int j = 0;
                 while (j < formula.InputParameters.Count && isValidInput)
                 {
-                    bool isTypeParameter = !formula.InputParameters[j].IsInstance;
+                    bool isAllInputsTypeParam = !formula.InputParameters[j].IsInstance;
 
                     //type parameter only accepts type parameters as input
-                    isValidInput &= isInstanceParameter || isTypeParameter;
+                    isValidInput &= isInstanceParameter || isAllInputsTypeParam;
 
                     inputs.Add(elements[i].GetRevitParameterValue(formula.InputParameters[j].Name));
 
@@ -81,7 +94,7 @@ namespace BH.Revit.Engine.Core
                     result = function(inputs);
                 }
 
-                if (activate)
+                if (applyCalculation)
                 {
                     elements[i].SetRevitParameter(toParameter.Name, result);
                     bHoMObjects.Add(elements[i]);
