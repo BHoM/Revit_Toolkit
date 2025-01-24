@@ -71,7 +71,7 @@ namespace BH.Revit.Engine.Core
                         .SpecName()+1+ FormatOptions
                         .GetValidSymbols(parameter.Definition.GetDataType().BHoMUnitType())
                         .FirstOrDefault()
-                        .TypeId+2;
+                        .TypeId+2+ UnitUtils.GetTypeCatalogStringForUnit(parameter.Definition.GetDataType().BHoMUnitType())+3;
 
                     break;
                 case StorageType.ElementId:
