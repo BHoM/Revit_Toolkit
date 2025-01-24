@@ -35,15 +35,6 @@ namespace BH.Revit.Engine.Core
         [Description("Gets the parameter type of a Revit parameter definition.")]
         [Input("definition", "Revit parameter definition to extract the parameter type from.")]
         [Output("parameterType", "Parameter type extracted from the input Revit parameter definition.")]
-#if (REVIT2020)
-        public static ParameterType? ParameterType(this Definition definition)
-        {
-            if (definition.ParameterType == Autodesk.Revit.DB.ParameterType.Invalid)
-                return null;
-            else
-                return definition.ParameterType;
-        }
-#else
         public static ForgeTypeId ParameterType(this Definition definition)
         {
             ForgeTypeId result = definition?.GetDataType();
@@ -54,7 +45,6 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-#endif
     }
 }
 

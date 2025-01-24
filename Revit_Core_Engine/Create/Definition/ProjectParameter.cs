@@ -42,10 +42,12 @@ namespace BH.Revit.Engine.Core
         [Input("instance", "If true, the created parameter will be an instance parameter, otherwise it will be a type parameter.")]
         [Input("categories", "Categories, to which the created parameter is bound. It will get bound to all categories if this value is null.")]
         [Output("definition", "Revit project parameter Definition created based on the input properties.")]
-#if (REVIT2020 || REVIT2021 || REVIT2022)
+#if REVIT2021 || REVIT2022
         public static Definition ProjectParameter(Document document, string parameterName, ParameterType parameterType, BuiltInParameterGroup parameterGroup, bool instance, IEnumerable<Category> categories)
-#else
+#elif REVIT2023 || REVIT2024
         public static Definition ProjectParameter(Document document, string parameterName, ForgeTypeId parameterType, BuiltInParameterGroup parameterGroup, bool instance, IEnumerable<Category> categories)
+#else
+        public static Definition ProjectParameter(Document document, string parameterName, ForgeTypeId parameterType, ForgeTypeId parameterGroup, bool instance, IEnumerable<Category> categories)
 #endif
         {
             // Inspired by https://github.com/DynamoDS/DynamoRevit/blob/master/src/Libraries/RevitNodes/Elements/Parameter.cs
@@ -59,16 +61,16 @@ namespace BH.Revit.Engine.Core
             // Look for existing parameter definition
             bool bindings = false;
             IEnumerable<Definition> existingDefs = new FilteredElementCollector(document).OfClass(typeof(SharedParameterElement)).Cast<SharedParameterElement>().Select(x => x.GetDefinition());
-            Definition def = existingDefs.FirstOrDefault(x => x.Name == parameterName && x.ParameterGroup == parameterGroup);
+            Definition def = existingDefs.FirstOrDefault(x => x.Name == parameterName && x.GroupTypeId() == parameterGroup);
             if (def != null)
             {
                 if (document.ParameterBindings.Contains(def))
                 {
-                    BH.Engine.Base.Compute.RecordWarning($"Parameter {parameterName} already exists in group {LabelUtils.GetLabelFor(parameterGroup)}. It already has category bindings, they were not updated - please make sure they are correct.");
+                    BH.Engine.Base.Compute.RecordWarning($"Parameter {parameterName} already exists in group {parameterGroup.GroupName()}. It already has category bindings, they were not updated - please make sure they are correct.");
                     bindings = true;
                 }
                 else
-                    BH.Engine.Base.Compute.RecordWarning($"Parameter {parameterName} already exists in group {LabelUtils.GetLabelFor(parameterGroup)}. It did not have any category bindings, so input bindings were applied.");
+                    BH.Engine.Base.Compute.RecordWarning($"Parameter {parameterName} already exists in group {parameterGroup.GroupName()}. It did not have any category bindings, so input bindings were applied.");
             }
             else
             {
@@ -77,7 +79,7 @@ namespace BH.Revit.Engine.Core
                 string tempSharedParameterFile = System.IO.Path.GetTempFileName() + ".txt";
                 using (System.IO.File.Create(tempSharedParameterFile)) { }
                 document.Application.SharedParametersFilename = tempSharedParameterFile;
-                
+
                 // Create a new shared parameter, since the file is empty everything has to be created from scratch
                 def = document.Application.OpenSharedParameterFile()
                     .Groups.Create("TempParameterGroup").Definitions.Create(new ExternalDefinitionCreationOptions(parameterName, parameterType)) as ExternalDefinition;

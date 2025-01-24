@@ -1,258 +1,254 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <AssemblyVersion>8.0.0.0</AssemblyVersion>
-    <Description>https://github.com/BHoM/Revit_Toolkit</Description>
-    <Version>6.0.0</Version>
-    <Authors>BHoM</Authors>
-    <Copyright>Copyright © https://github.com/BHoM</Copyright>
-    <RootNamespace>BH.Revit.Engine.Core</RootNamespace>
-    <FileVersion>8.1.0.0</FileVersion>
-  </PropertyGroup>
-  
-  <PropertyGroup>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <OutputPath>..\Build\</OutputPath>
-    <Configurations>Debug;Release;Debug2020;Release2020;Debug2021;Release2021;Debug2022;Release2022;Debug2023;Release2023;Debug2024;Release2024</Configurations>
-	<TargetFramework>net480</TargetFramework>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
-    <AssemblyName>Revit_Core_Engine_2020</AssemblyName>
-	<DefineConstants>REVIT2020</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020'">
-    <AssemblyName>Revit_Core_Engine_2020</AssemblyName>
-	<DefineConstants>REVIT2020</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
-    <AssemblyName>Revit_Core_Engine_2021</AssemblyName>
-	<DefineConstants>REVIT2021</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Debug2022' Or '$(Configuration)'=='Release2022'">
-    <AssemblyName>Revit_Core_Engine_2022</AssemblyName>
-	<DefineConstants>REVIT2022</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Debug2023' Or '$(Configuration)'=='Release2023'">
-    <AssemblyName>Revit_Core_Engine_2023</AssemblyName>
-	<DefineConstants>REVIT2023</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Debug2024' Or '$(Configuration)'=='Release2024'">
-    <AssemblyName>Revit_Core_Engine_2024</AssemblyName>
-	<DefineConstants>REVIT2024</DefineConstants>
-  </PropertyGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="	xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProgramData)\BHoM\Assemblies&quot; /Y&#xD;&#xA;					xcopy &quot;$(ProjectDir)Files\Families&quot; &quot;$(ProgramData)\BHoM\Resources\Revit\Families&quot; /Y /I /E" />
-   </Target>
-  <ItemGroup>
-    <ProjectReference Include="..\Revit_Engine\Revit_Engine.csproj" />
-    <ProjectReference Include="..\Revit_oM\Revit_oM.csproj" />
-  </ItemGroup> 
-  
-  <ItemGroup>
-    <Reference Include="Analytical_oM">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Analytical_oM.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Architecture_Engine">
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Architecture_Engine.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Architecture_oM">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Architecture_oM.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="BHoM">
-      <HintPath>$(ProgramData)\BHoM\Assemblies\BHoM.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="BHoM_Engine">
-      <HintPath>$(ProgramData)\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Data_Engine">
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Data_Engine.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Data_oM">
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Data_oM.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Dimensional_oM">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Dimensional_oM.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Environment_Engine">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Environment_Engine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Environment_oM">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Environment_oM.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Facade_Engine">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Facade_Engine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Facade_oM">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Facade_oM.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Geometry_Engine">
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Geometry_Engine.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Geometry_oM">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Geometry_oM.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Graphics_Engine">
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Graphics_Engine.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Graphics_oM">
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Graphics_oM.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Library_Engine">
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Library_Engine.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Lighting_oM">
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Lighting_oM.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Matter_Engine">
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Matter_Engine.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="MEP_Engine">
-      <HintPath>$(ProgramData)\BHoM\Assemblies\MEP_Engine.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="MEP_oM">
-      <HintPath>$(ProgramData)\BHoM\Assemblies\MEP_oM.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Physical_Engine">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Physical_Engine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Physical_oM">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Physical_oM.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020' Or '$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
-      <HintPath>..\libs\2020\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2020' Or '$(Configuration)'=='Release2020' Or '$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
-      <HintPath>..\libs\2020\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
-      <HintPath>..\libs\2021\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2021' Or '$(Configuration)'=='Release2021'">
-      <HintPath>..\libs\2021\RevitAPIUI.dll</HintPath>
-      <private>False</private>
-    </Reference>
-    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2022' Or '$(Configuration)'=='Release2022'">
-      <HintPath>..\libs\2022\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2022' Or '$(Configuration)'=='Release2022'">
-      <HintPath>..\libs\2022\RevitAPIUI.dll</HintPath>
-      <private>False</private>
-    </Reference>
-    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2023' Or '$(Configuration)'=='Release2023'">
-      <HintPath>..\libs\2023\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2023' Or '$(Configuration)'=='Release2023'">
-      <HintPath>..\libs\2023\RevitAPIUI.dll</HintPath>
-      <private>False</private>
-    </Reference>
-    <Reference Include="RevitAPI" Condition="'$(Configuration)'=='Debug2024' Or '$(Configuration)'=='Release2024'">
-      <HintPath>..\libs\2024\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)'=='Debug2024' Or '$(Configuration)'=='Release2024'">
-      <HintPath>..\libs\2024\RevitAPIUI.dll</HintPath>
-      <private>False</private>
-    </Reference>
-    <Reference Include="Spatial_Engine">
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Spatial_Engine.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Spatial_oM">
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Spatial_oM.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Structure_Engine">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Structure_Engine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Structure_oM">
-      <HintPath>$(ProgramData)\BHoM\Assemblies\Structure_oM.dll</HintPath>
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <None Include="Files\Families\StructuralColumns_AngleProfile.rfa" />
-    <None Include="Files\Families\StructuralColumns_BoxProfile.rfa" />
-    <None Include="Files\Families\StructuralColumns_ChannelProfile.rfa" />
-    <None Include="Files\Families\StructuralColumns_CircleProfile.rfa" />
-    <None Include="Files\Families\StructuralColumns_FabricatedBoxProfile.rfa" />
-    <None Include="Files\Families\StructuralColumns_FabricatedIProfile.rfa" />
-    <None Include="Files\Families\StructuralColumns_FreeformProfile.rfa" />
-    <None Include="Files\Families\StructuralColumns_IProfile.rfa" />
-    <None Include="Files\Families\StructuralColumns_RectangleProfile.rfa" />
-    <None Include="Files\Families\StructuralColumns_TaperFlangeChannelProfile.rfa" />
-    <None Include="Files\Families\StructuralColumns_TaperFlangeISectionProfile.rfa" />
-    <None Include="Files\Families\StructuralColumns_TProfile.rfa" />
-    <None Include="Files\Families\StructuralColumns_TubeProfile.rfa" />
-    <None Include="Files\Families\StructuralFraming_AngleProfile.rfa" />
-    <None Include="Files\Families\StructuralFraming_BoxProfile.rfa" />
-    <None Include="Files\Families\StructuralFraming_ChannelProfile.rfa" />
-    <None Include="Files\Families\StructuralFraming_CircleProfile.rfa" />
-    <None Include="Files\Families\StructuralFraming_FabricatedBoxProfile.rfa" />
-    <None Include="Files\Families\StructuralFraming_FabricatedIProfile.rfa" />
-    <None Include="Files\Families\StructuralFraming_FreeformProfile.rfa" />
-    <None Include="Files\Families\StructuralFraming_IProfile.rfa" />
-    <None Include="Files\Families\StructuralFraming_RectangleProfile.rfa" />
-    <None Include="Files\Families\StructuralFraming_TaperFlangeChannelProfile.rfa" />
-    <None Include="Files\Families\StructuralFraming_TaperFlangeISectionProfile.rfa" />
-    <None Include="Files\Families\StructuralFraming_TProfile.rfa" />
-    <None Include="Files\Families\StructuralFraming_TubeProfile.rfa" />
-  </ItemGroup>
-  
+<Project Sdk="Microsoft.NET.Sdk">	
+	<PropertyGroup>
+		<AssemblyVersion>8.0.0.0</AssemblyVersion>
+		<Description>https://github.com/BHoM/Revit_Toolkit</Description>
+		<Version>6.0.0</Version>
+		<Authors>BHoM</Authors>
+		<Copyright>Copyright © https://github.com/BHoM</Copyright>
+		<RootNamespace>BH.Revit.Engine.Core</RootNamespace>
+		<FileVersion>8.1.0.0</FileVersion>
+	</PropertyGroup>
+	
+	<PropertyGroup>
+		<OutputPath>..\Build\</OutputPath>
+		<StartAction>Program</StartAction>
+		<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+		<AppendTargetFrameworkToOutputpath>false</AppendTargetFrameworkToOutputpath>
+		<ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+					<Configurations>Debug;Release;Debug2021;Release2021;Debug2022;Release2022;Debug2023;Release2023;Debug2024;Release2024;Debug2025;Release2025</Configurations>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
+		<RevitVersion>2021</RevitVersion>
+		<TargetFramework>net48</TargetFramework>
+		<DefineConstants>REVIT2021</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(Configuration.Contains('2021'))">
+		<RevitVersion>2021</RevitVersion>
+		<TargetFramework>net48</TargetFramework>
+		<DefineConstants>REVIT2021</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(Configuration.Contains('2022'))">
+		<RevitVersion>2022</RevitVersion>
+		<TargetFramework>net48</TargetFramework>
+		<DefineConstants>REVIT2022</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(Configuration.Contains('2023'))">
+		<RevitVersion>2023</RevitVersion>
+		<TargetFramework>net48</TargetFramework>
+		<DefineConstants>REVIT2023</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(Configuration.Contains('2024'))">
+		<RevitVersion>2024</RevitVersion>
+		<TargetFramework>net48</TargetFramework>
+		<DefineConstants>REVIT2024</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="$(Configuration.Contains('2025'))">
+		<RevitVersion>2025</RevitVersion>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<DefineConstants>REVIT2025</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<AssemblyName>Revit_Core_Engine_$(RevitVersion)</AssemblyName>
+		<StartProgram>C:\Program Files\Autodesk\Revit $(RevitVersion)\Revit.exe</StartProgram>
+	</PropertyGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="	xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProgramData)\BHoM\Assemblies&quot; /Y&#xD;&#xA;					xcopy &quot;$(ProjectDir)Files\Families&quot; &quot;$(ProgramData)\BHoM\Resources\Revit\Families&quot; /Y /I /E" />
+	</Target>
+
+	<ItemGroup>
+	  <Compile Remove="obj\**" />
+	  <EmbeddedResource Remove="obj\**" />
+	  <None Remove="obj\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Revit_Engine\Revit_Engine.csproj" />
+		<ProjectReference Include="..\Revit_oM\Revit_oM.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="RevitAPI">
+			<HintPath>..\libs\$(RevitVersion)\RevitAPI.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="RevitAPIUI">
+			<HintPath>..\libs\$(RevitVersion)\RevitAPIUI.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="Analytical_oM">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Analytical_oM.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Architecture_Engine">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Architecture_Engine.dll</HintPath>
+			<Private>False</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Architecture_oM">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Architecture_oM.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="BHoM">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\BHoM.dll</HintPath>
+			<Private>False</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="BHoM_Engine">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
+			<Private>False</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Data_Engine">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Data_Engine.dll</HintPath>
+			<Private>False</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Data_oM">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Data_oM.dll</HintPath>
+			<Private>False</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Dimensional_oM">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Dimensional_oM.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Environment_Engine">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Environment_Engine.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Environment_oM">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Environment_oM.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Facade_Engine">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Facade_Engine.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Facade_oM">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Facade_oM.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Geometry_Engine">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Geometry_Engine.dll</HintPath>
+			<Private>False</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Geometry_oM">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Geometry_oM.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Graphics_Engine">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Graphics_Engine.dll</HintPath>
+			<Private>False</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Graphics_oM">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Graphics_oM.dll</HintPath>
+			<Private>False</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Library_Engine">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Library_Engine.dll</HintPath>
+			<Private>False</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Lighting_oM">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Lighting_oM.dll</HintPath>
+			<Private>False</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Matter_Engine">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Matter_Engine.dll</HintPath>
+			<Private>False</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="MEP_Engine">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\MEP_Engine.dll</HintPath>
+			<Private>False</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="MEP_oM">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\MEP_oM.dll</HintPath>
+			<Private>False</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Physical_Engine">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Physical_Engine.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Physical_oM">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Physical_oM.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Spatial_Engine">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Spatial_Engine.dll</HintPath>
+			<Private>False</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Spatial_oM">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Spatial_oM.dll</HintPath>
+			<Private>False</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+		<Reference Include="Structure_Engine">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Structure_Engine.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="Structure_oM">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Structure_oM.dll</HintPath>
+			<Private>False</Private>
+			<SpecificVersion>False</SpecificVersion>
+		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="Files\Families\StructuralColumns_AngleProfile.rfa" />
+		<None Include="Files\Families\StructuralColumns_BoxProfile.rfa" />
+		<None Include="Files\Families\StructuralColumns_ChannelProfile.rfa" />
+		<None Include="Files\Families\StructuralColumns_CircleProfile.rfa" />
+		<None Include="Files\Families\StructuralColumns_FabricatedBoxProfile.rfa" />
+		<None Include="Files\Families\StructuralColumns_FabricatedIProfile.rfa" />
+		<None Include="Files\Families\StructuralColumns_FreeformProfile.rfa" />
+		<None Include="Files\Families\StructuralColumns_IProfile.rfa" />
+		<None Include="Files\Families\StructuralColumns_RectangleProfile.rfa" />
+		<None Include="Files\Families\StructuralColumns_TaperFlangeChannelProfile.rfa" />
+		<None Include="Files\Families\StructuralColumns_TaperFlangeISectionProfile.rfa" />
+		<None Include="Files\Families\StructuralColumns_TProfile.rfa" />
+		<None Include="Files\Families\StructuralColumns_TubeProfile.rfa" />
+		<None Include="Files\Families\StructuralFraming_AngleProfile.rfa" />
+		<None Include="Files\Families\StructuralFraming_BoxProfile.rfa" />
+		<None Include="Files\Families\StructuralFraming_ChannelProfile.rfa" />
+		<None Include="Files\Families\StructuralFraming_CircleProfile.rfa" />
+		<None Include="Files\Families\StructuralFraming_FabricatedBoxProfile.rfa" />
+		<None Include="Files\Families\StructuralFraming_FabricatedIProfile.rfa" />
+		<None Include="Files\Families\StructuralFraming_FreeformProfile.rfa" />
+		<None Include="Files\Families\StructuralFraming_IProfile.rfa" />
+		<None Include="Files\Families\StructuralFraming_RectangleProfile.rfa" />
+		<None Include="Files\Families\StructuralFraming_TaperFlangeChannelProfile.rfa" />
+		<None Include="Files\Families\StructuralFraming_TaperFlangeISectionProfile.rfa" />
+		<None Include="Files\Families\StructuralFraming_TProfile.rfa" />
+		<None Include="Files\Families\StructuralFraming_TubeProfile.rfa" />
+	</ItemGroup>
+
 </Project>

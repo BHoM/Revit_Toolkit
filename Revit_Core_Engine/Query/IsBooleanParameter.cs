@@ -37,7 +37,7 @@ namespace BH.Revit.Engine.Core
         [Output("boolean", "True if the Revit parameter is of type Boolean, otherwise false.")]
         public static bool IsBooleanParameter(this Parameter parameter)
         {
-#if (REVIT2020 || REVIT2021)
+#if REVIT2021
             return parameter.Definition.ParameterType == Autodesk.Revit.DB.ParameterType.YesNo;
 #else
             return parameter.Definition.GetDataType() == SpecTypeId.Boolean.YesNo;
