@@ -65,14 +65,7 @@ namespace BH.Revit.Engine.Core
             {
                 case StorageType.Double:
                     value = parameter.AsDouble().ToSI(parameter.Definition.GetDataType());
-                    displayUnit = FormatOptions
-                        .GetValidSymbols(parameter.Definition.GetDataType().BHoMUnitType())
-                        .FirstOrDefault()
-                        .SpecName()+1+ FormatOptions
-                        .GetValidSymbols(parameter.Definition.GetDataType().BHoMUnitType())
-                        .FirstOrDefault()
-                        .TypeId+2+ UnitUtils.GetTypeCatalogStringForUnit(parameter.Definition.GetDataType().BHoMUnitType())+3;
-
+                    displayUnit = parameter.Definition.GetDataType().LabelForSymbolTypeId();
                     break;
                 case StorageType.ElementId:
                     ElementId elementID = parameter.AsElementId();

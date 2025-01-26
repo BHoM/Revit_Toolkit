@@ -215,4 +215,14 @@
 		</Content>
 	</ItemGroup>
 
+	<PropertyGroup>
+		<StartAction>Program</StartAction>
+		<StartProgram>C:\Program Files\Microsoft Office\root\Office16\EXCEL.EXE</StartProgram>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<StartAction>Program</StartAction>
+		<StartProgram>C:\Program Files\Autodesk\Revit 2023\Revit.exe</StartProgram>
+		<StartArguments>/language FRA</StartArguments>
+	</PropertyGroup>
 </Project>
