@@ -37,22 +37,22 @@ namespace BH.Revit.Engine.Core
         [Description("Returns name of SpecTypeId property that contains a given ForgeTypeId.")]
         [Input("spec", "Spec object to be queried for the correspondent SpecTypeId property name.")]
         [Output("name", "Name of SpecTypeId property that contains the input spec object.")]
-        public static string LabelForSymbolTypeId(this ForgeTypeId SpecTypeId)
+        public static string LabelForSymbolTypeId(this ForgeTypeId specTypeId)
         {
 #if REVIT2021
             if (bhomUnitType == null)
 #else
-            if (SpecTypeId == null || !UnitUtils.IsMeasurableSpec(SpecTypeId))
+            if (specTypeId.NameEquals(SpecTypeId.Currency) || specTypeId == null || !UnitUtils.IsMeasurableSpec(specTypeId))
 #endif
             {             
                 return string.Empty;
             }
 
-            string typeId = SpecTypeId.TypeId;
+            string typeId = specTypeId.TypeId;
             if (!m_LabelForSymbolTypeId.ContainsKey(typeId))
                 m_LabelForSymbolTypeId.Add(typeId,
                     LabelUtils.GetLabelForSymbol(
-                        FormatOptions.GetValidSymbols(SpecTypeId.BHoMUnitType()).Last()));
+                        FormatOptions.GetValidSymbols(specTypeId.BHoMUnitType()).Last()));
 
             return m_LabelForSymbolTypeId[typeId];
         }
