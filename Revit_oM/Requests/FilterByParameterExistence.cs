@@ -20,12 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Data.Requests;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
+    //TODO: could become a ConditionRequest, new condition needed?
     [Description("IRequest that filters elements the have (or do not have) a parameter with given name.")]
-    public class FilterByParameterExistence : IParameterRequest
+    public class FilterByParameterExistence : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
@@ -40,8 +42,3 @@ namespace BH.oM.Adapters.Revit.Requests
         /***************************************************/
     }
 }
-
-
-
-
-

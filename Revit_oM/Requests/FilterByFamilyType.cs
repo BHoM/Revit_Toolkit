@@ -25,6 +25,7 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
+    //TODO: potentially could be replaced with ConditionRequest + IsModelElementCondition?
     [Description("IRequest that filters all elements of given Revit family type.")]
     public class FilterByFamilyType : IRequest
     {

@@ -20,9 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Requests;
+using BH.oM.Adapters.Revit;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
+using BH.oM.Revit.Requests;
+using BH.oM.Verification;
+using BH.oM.Verification.Conditions;
 using System;
 using System.ComponentModel;
 
@@ -38,7 +41,7 @@ namespace BH.Engine.Adapters.Revit
         [InputFromProperty("parameterName")]
         [Input("idElement", "BHoMObject that represents the pulled Revit element to extract the ElementId from (contains its ElementId in RevitIdentifiers).")]
         [Output("request", "Created request.")]
-        public static FilterByParameterElementId FilterByParameterElementId(string parameterName, IBHoMObject idElement)
+        public static ConditionRequest FilterByParameterElementId(string parameterName, IBHoMObject idElement)
         {
             int elementId = idElement.ElementId();
             if (elementId == -1)
@@ -47,7 +50,20 @@ namespace BH.Engine.Adapters.Revit
                 return null;
             }
             else
-                return new FilterByParameterElementId { ParameterName = parameterName, ElementId = elementId };
+            {
+                return new ConditionRequest
+                {
+                    Condition = new ValueCondition
+                    {
+                        ValueSource = new ParameterValueSource
+                        {
+                            ParameterName = parameterName
+                        },
+                        ReferenceValue = elementId,
+                        ComparisonType = ValueComparisonType.EqualTo
+                    }
+                };
+            }
         }
 
         /***************************************************/

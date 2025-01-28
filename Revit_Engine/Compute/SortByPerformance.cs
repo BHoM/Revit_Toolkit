@@ -25,6 +25,7 @@ using BH.oM.Data.Requests;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using BH.oM.Revit.Requests;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -42,12 +43,12 @@ namespace BH.Engine.Adapters.Revit
             List<IRequest> allRequests = new List<IRequest>();
             List<IRequest> logicalRequests = new List<IRequest>();
             List<IRequest> eachElementRequests = new List<IRequest>();
-            List<IRequest> parameterRequests = new List<IRequest>();
+            List<IRequest> conditionRequests = new List<IRequest>();
 
             foreach (IRequest request in requests)
             {
-                if (request is IParameterRequest)
-                    parameterRequests.Add(request);
+                if (request is ConditionRequest)
+                    conditionRequests.Add(request);
                 else if (request is ILogicalRequest)
                     logicalRequests.Add(request);
                 else if (request is FilterByUsage || request is FilterModelElements || request is FilterByScopeBox)
@@ -58,7 +59,7 @@ namespace BH.Engine.Adapters.Revit
 
             allRequests.AddRange(logicalRequests);
             allRequests.AddRange(eachElementRequests);
-            allRequests.AddRange(parameterRequests);
+            allRequests.AddRange(conditionRequests);
 
             return allRequests;
         }

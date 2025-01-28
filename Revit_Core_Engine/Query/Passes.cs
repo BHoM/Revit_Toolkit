@@ -32,6 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using BH.oM.Revit.Requests;
 
 namespace BH.Revit.Engine.Core
 {
@@ -41,6 +42,7 @@ namespace BH.Revit.Engine.Core
         /****             Interface methods             ****/
         /***************************************************/
 
+        //TODO: conceptually, all requests that can be processed with this method should become ConditionRequests??
         [Description("Checks whether a given Revit Element passes the filtering criteria contained within the IRequest.")]
         [Input("element", "Revit Element to be checked against the IRequest.")]
         [Input("request", "IRequest containing the filtering criteria, against which the Revit element is checked.")]
@@ -57,17 +59,17 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Checks whether the value of a given Revit Parameter passes the filtering criteria contained within the IParameterValueRequest.")]
-        [Input("parameter", "Revit Parameter to be checked against the IParameterValueRequest.")]
-        [Input("request", "IParameterValueRequest containing the filtering criteria, against which the Revit Parameter is checked.")]
-        [Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the IParameterValueRequest, otherwise false.")]
-        public static bool IPasses(this Parameter parameter, IParameterValueRequest request)
-        {
-            if (!CheckIfNotNull(parameter, request))
-                return false;
+        //[Description("Checks whether the value of a given Revit Parameter passes the filtering criteria contained within the IParameterValueRequest.")]
+        //[Input("parameter", "Revit Parameter to be checked against the IParameterValueRequest.")]
+        //[Input("request", "IParameterValueRequest containing the filtering criteria, against which the Revit Parameter is checked.")]
+        //[Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the IParameterValueRequest, otherwise false.")]
+        //public static bool IPasses(this Parameter parameter, IParameterValueRequest request)
+        //{
+        //    if (!CheckIfNotNull(parameter, request))
+        //        return false;
 
-            return Passes(parameter, request as dynamic);
-        }
+        //    return Passes(parameter, request as dynamic);
+        //}
 
 
         /***************************************************/
@@ -138,13 +140,13 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Checks whether a given Revit Element passes the filtering criteria contained within the IParameterValueRequest.")]
-        [Input("element", "Revit Element to be checked against the IParameterValueRequest.")]
-        [Input("request", "IParameterValueRequest containing the filtering criteria, against which the Revit element is checked.")]
-        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
-        [Input("settings", "Revit adapter settings to be used while evaluating the element against the filtering criteria.")]
-        [Output("passes", "True if the input Revit Element passes the filtering criteria contained within the IParameterValueRequest, otherwise false.")]
-        public static bool Passes(this Element element, IParameterValueRequest request, Discipline discipline = Discipline.Undefined, RevitSettings settings = null)
+        //[Description("Checks whether a given Revit Element passes the filtering criteria contained within the IParameterValueRequest.")]
+        //[Input("element", "Revit Element to be checked against the IParameterValueRequest.")]
+        //[Input("request", "IParameterValueRequest containing the filtering criteria, against which the Revit element is checked.")]
+        //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        //[Input("settings", "Revit adapter settings to be used while evaluating the element against the filtering criteria.")]
+        //[Output("passes", "True if the input Revit Element passes the filtering criteria contained within the IParameterValueRequest, otherwise false.")]
+        public static bool Passes(this Element element, ConditionRequest request, Discipline discipline = Discipline.Undefined, RevitSettings settings = null)
         {
             if (!CheckIfNotNull(element, request))
                 return false;
@@ -190,176 +192,176 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Checks whether the value of a given Revit Parameter passes the filtering criteria contained within the FilterByParameterBool request.")]
-        [Input("parameter", "Revit Parameter to be checked against the IParameterValueRequest.")]
-        [Input("request", "FilterByParameterBool request containing the filtering criteria, against which the Revit Parameter is checked.")]
-        [Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterBool request, otherwise false.")]
-        public static bool Passes(this Parameter parameter, FilterByParameterBool request)
-        {
-            if (!CheckIfNotNull(parameter, request))
-                return false;
+        //[Description("Checks whether the value of a given Revit Parameter passes the filtering criteria contained within the FilterByParameterBool request.")]
+        //[Input("parameter", "Revit Parameter to be checked against the IParameterValueRequest.")]
+        //[Input("request", "FilterByParameterBool request containing the filtering criteria, against which the Revit Parameter is checked.")]
+        //[Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterBool request, otherwise false.")]
+        //public static bool Passes(this Parameter parameter, FilterByParameterBool request)
+        //{
+        //    if (!CheckIfNotNull(parameter, request))
+        //        return false;
 
-            if (parameter.StorageType == StorageType.Integer && parameter.IsBooleanParameter())
-            {
-                int paramValue = parameter.AsInteger();
-                return (request.Value && paramValue == 1) || (!request.Value && paramValue == 0);
-            }
-            else
-                return false;
-        }
+        //    if (parameter.StorageType == StorageType.Integer && parameter.IsBooleanParameter())
+        //    {
+        //        int paramValue = parameter.AsInteger();
+        //        return (request.Value && paramValue == 1) || (!request.Value && paramValue == 0);
+        //    }
+        //    else
+        //        return false;
+        //}
 
-        /***************************************************/
+        ///***************************************************/
 
-        [Description("Checks whether the value of a given Revit Parameter passes the filtering criteria contained within the FilterByParameterInteger request.")]
-        [Input("parameter", "Revit Parameter to be checked against the IParameterValueRequest.")]
-        [Input("request", "FilterByParameterInteger request containing the filtering criteria, against which the Revit Parameter is checked.")]
-        [Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterInteger request, otherwise false.")]
-        public static bool Passes(this Parameter parameter, FilterByParameterInteger request)
-        {
-            if (!CheckIfNotNull(parameter, request))
-                return false;
+        //[Description("Checks whether the value of a given Revit Parameter passes the filtering criteria contained within the FilterByParameterInteger request.")]
+        //[Input("parameter", "Revit Parameter to be checked against the IParameterValueRequest.")]
+        //[Input("request", "FilterByParameterInteger request containing the filtering criteria, against which the Revit Parameter is checked.")]
+        //[Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterInteger request, otherwise false.")]
+        //public static bool Passes(this Parameter parameter, FilterByParameterInteger request)
+        //{
+        //    if (!CheckIfNotNull(parameter, request))
+        //        return false;
 
-            if (parameter.HasValue && parameter.StorageType == StorageType.Integer && !parameter.IsBooleanParameter())
-            {
-                int paramValue = parameter.AsInteger();
-                switch (request.NumberComparisonType)
-                {
-                    case NumberComparisonType.Equal:
-                        return paramValue == request.Value;
-                    case NumberComparisonType.Greater:
-                        return paramValue > request.Value;
-                    case NumberComparisonType.GreaterOrEqual:
-                        return paramValue >= request.Value;
-                    case NumberComparisonType.Less:
-                        return paramValue < request.Value;
-                    case NumberComparisonType.LessOrEqual:
-                        return paramValue <= request.Value;
-                    case NumberComparisonType.NotEqual:
-                        return paramValue != request.Value;
-                }
-            }
+        //    if (parameter.HasValue && parameter.StorageType == StorageType.Integer && !parameter.IsBooleanParameter())
+        //    {
+        //        int paramValue = parameter.AsInteger();
+        //        switch (request.NumberComparisonType)
+        //        {
+        //            case NumberComparisonType.Equal:
+        //                return paramValue == request.Value;
+        //            case NumberComparisonType.Greater:
+        //                return paramValue > request.Value;
+        //            case NumberComparisonType.GreaterOrEqual:
+        //                return paramValue >= request.Value;
+        //            case NumberComparisonType.Less:
+        //                return paramValue < request.Value;
+        //            case NumberComparisonType.LessOrEqual:
+        //                return paramValue <= request.Value;
+        //            case NumberComparisonType.NotEqual:
+        //                return paramValue != request.Value;
+        //        }
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
-        /***************************************************/
+        ///***************************************************/
 
-        [Description("Checks whether the value of a given Revit Parameter passes the filtering criteria contained within the FilterByParameterNumber request.")]
-        [Input("parameter", "Revit Parameter to be checked against the IParameterValueRequest.")]
-        [Input("request", "FilterByParameterNumber request containing the filtering criteria, against which the Revit Parameter is checked.")]
-        [Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterNumber request, otherwise false.")]
-        public static bool Passes(this Parameter parameter, FilterByParameterNumber request)
-        {
-            if (!CheckIfNotNull(parameter, request))
-                return false;
+        //[Description("Checks whether the value of a given Revit Parameter passes the filtering criteria contained within the FilterByParameterNumber request.")]
+        //[Input("parameter", "Revit Parameter to be checked against the IParameterValueRequest.")]
+        //[Input("request", "FilterByParameterNumber request containing the filtering criteria, against which the Revit Parameter is checked.")]
+        //[Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterNumber request, otherwise false.")]
+        //public static bool Passes(this Parameter parameter, FilterByParameterNumber request)
+        //{
+        //    if (!CheckIfNotNull(parameter, request))
+        //        return false;
 
 
-            double paramValue = double.NaN;
-            if (parameter.HasValue)
-            {
-                if (parameter.StorageType == StorageType.Double)
-                    paramValue = parameter.AsDouble();
-                else if (parameter.StorageType == StorageType.Integer)
-                    paramValue = parameter.AsInteger();
-                else if (parameter.StorageType == StorageType.String)
-                {
-                    if (!double.TryParse(parameter.AsString(), out paramValue))
-                        return false;
-                }
-                else
-                    return false;
-            }
+        //    double paramValue = double.NaN;
+        //    if (parameter.HasValue)
+        //    {
+        //        if (parameter.StorageType == StorageType.Double)
+        //            paramValue = parameter.AsDouble();
+        //        else if (parameter.StorageType == StorageType.Integer)
+        //            paramValue = parameter.AsInteger();
+        //        else if (parameter.StorageType == StorageType.String)
+        //        {
+        //            if (!double.TryParse(parameter.AsString(), out paramValue))
+        //                return false;
+        //        }
+        //        else
+        //            return false;
+        //    }
 
-            double comparisonValue = request.Value;
-            double comparisonTolerance = request.Tolerance;
+        //    double comparisonValue = request.Value;
+        //    double comparisonTolerance = request.Tolerance;
 
-            if (request.ConvertUnits)
-            {
-                comparisonValue = comparisonValue.FromSI(parameter.Definition.GetDataType());
-                comparisonTolerance = comparisonTolerance.FromSI(parameter.Definition.GetDataType());
-            }
+        //    if (request.ConvertUnits)
+        //    {
+        //        comparisonValue = comparisonValue.FromSI(parameter.Definition.GetDataType());
+        //        comparisonTolerance = comparisonTolerance.FromSI(parameter.Definition.GetDataType());
+        //    }
 
-            switch (request.NumberComparisonType)
-            {
-                case NumberComparisonType.Equal:
-                    return Math.Abs(paramValue - comparisonValue) <= comparisonTolerance || (double.IsNaN(paramValue) && double.IsNaN(comparisonValue));
-                case NumberComparisonType.Greater:
-                    return paramValue - comparisonValue > comparisonTolerance;
-                case NumberComparisonType.GreaterOrEqual:
-                    return paramValue - comparisonValue > -comparisonTolerance;
-                case NumberComparisonType.Less:
-                    return paramValue - comparisonValue < -comparisonTolerance;
-                case NumberComparisonType.LessOrEqual:
-                    return paramValue - comparisonValue < comparisonTolerance;
-                case NumberComparisonType.NotEqual:
-                    if (double.IsNaN(paramValue))
-                        return true;
-                    return Math.Abs(paramValue - comparisonValue) > comparisonTolerance;
+        //    switch (request.NumberComparisonType)
+        //    {
+        //        case NumberComparisonType.Equal:
+        //            return Math.Abs(paramValue - comparisonValue) <= comparisonTolerance || (double.IsNaN(paramValue) && double.IsNaN(comparisonValue));
+        //        case NumberComparisonType.Greater:
+        //            return paramValue - comparisonValue > comparisonTolerance;
+        //        case NumberComparisonType.GreaterOrEqual:
+        //            return paramValue - comparisonValue > -comparisonTolerance;
+        //        case NumberComparisonType.Less:
+        //            return paramValue - comparisonValue < -comparisonTolerance;
+        //        case NumberComparisonType.LessOrEqual:
+        //            return paramValue - comparisonValue < comparisonTolerance;
+        //        case NumberComparisonType.NotEqual:
+        //            if (double.IsNaN(paramValue))
+        //                return true;
+        //            return Math.Abs(paramValue - comparisonValue) > comparisonTolerance;
                     
-            }
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
-        /***************************************************/
+        ///***************************************************/
 
-        [Description("Checks whether the value of a given Revit Parameter passes the filtering criteria contained within the FilterByParameterText request.")]
-        [Input("parameter", "Revit Parameter to be checked against the IParameterValueRequest.")]
-        [Input("request", "FilterByParameterText request containing the filtering criteria, against which the Revit Parameter is checked.")]
-        [Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterText request, otherwise false.")]
-        public static bool Passes(this Parameter parameter, FilterByParameterText request)
-        {
-            if (!CheckIfNotNull(parameter, request))
-                return false;
+        //[Description("Checks whether the value of a given Revit Parameter passes the filtering criteria contained within the FilterByParameterText request.")]
+        //[Input("parameter", "Revit Parameter to be checked against the IParameterValueRequest.")]
+        //[Input("request", "FilterByParameterText request containing the filtering criteria, against which the Revit Parameter is checked.")]
+        //[Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterText request, otherwise false.")]
+        //public static bool Passes(this Parameter parameter, FilterByParameterText request)
+        //{
+        //    if (!CheckIfNotNull(parameter, request))
+        //        return false;
             
-            string paramValue;
-            if (parameter.StorageType == StorageType.String)
-            {
-                paramValue = parameter.AsString();
-                if (paramValue == null)
-                    paramValue = "";
-            }
-            else if (parameter.StorageType == StorageType.ElementId || (parameter.StorageType == StorageType.Integer && !parameter.IsBooleanParameter()))
-                paramValue = parameter.AsValueString();
-            else
-                return false;
+        //    string paramValue;
+        //    if (parameter.StorageType == StorageType.String)
+        //    {
+        //        paramValue = parameter.AsString();
+        //        if (paramValue == null)
+        //            paramValue = "";
+        //    }
+        //    else if (parameter.StorageType == StorageType.ElementId || (parameter.StorageType == StorageType.Integer && !parameter.IsBooleanParameter()))
+        //        paramValue = parameter.AsValueString();
+        //    else
+        //        return false;
 
-            switch (request.TextComparisonType)
-            {
-                case TextComparisonType.Contains:
-                    return paramValue.Contains(request.Value);
-                case TextComparisonType.ContainsNot:
-                    return !paramValue.Contains(request.Value);
-                case TextComparisonType.EndsWith:
-                    return paramValue.EndsWith(request.Value);
-                case TextComparisonType.Equal:
-                    return paramValue == request.Value;
-                case TextComparisonType.NotEqual:
-                    return paramValue != request.Value;
-                case TextComparisonType.StartsWith:
-                    return paramValue.StartsWith(request.Value);
-            }
+        //    switch (request.TextComparisonType)
+        //    {
+        //        case TextComparisonType.Contains:
+        //            return paramValue.Contains(request.Value);
+        //        case TextComparisonType.ContainsNot:
+        //            return !paramValue.Contains(request.Value);
+        //        case TextComparisonType.EndsWith:
+        //            return paramValue.EndsWith(request.Value);
+        //        case TextComparisonType.Equal:
+        //            return paramValue == request.Value;
+        //        case TextComparisonType.NotEqual:
+        //            return paramValue != request.Value;
+        //        case TextComparisonType.StartsWith:
+        //            return paramValue.StartsWith(request.Value);
+        //    }
             
 
-            return false;
-        }
+        //    return false;
+        //}
 
-        /***************************************************/
+        ///***************************************************/
 
-        [Description("Checks whether the value of a given Revit Parameter passes the filtering criteria contained within the FilterByParameterElementId request.")]
-        [Input("parameter", "Revit Parameter to be checked against the IParameterValueRequest.")]
-        [Input("request", "FilterByParameterElementId request containing the filtering criteria, against which the Revit Parameter is checked.")]
-        [Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterElementId request, otherwise false.")]
-        public static bool Passes(this Parameter parameter, FilterByParameterElementId request)
-        {
-            if (!CheckIfNotNull(parameter, request))
-                return false;
+        //[Description("Checks whether the value of a given Revit Parameter passes the filtering criteria contained within the FilterByParameterElementId request.")]
+        //[Input("parameter", "Revit Parameter to be checked against the IParameterValueRequest.")]
+        //[Input("request", "FilterByParameterElementId request containing the filtering criteria, against which the Revit Parameter is checked.")]
+        //[Output("passes", "True if the input Revit Parameter passes the filtering criteria contained within the FilterByParameterElementId request, otherwise false.")]
+        //public static bool Passes(this Parameter parameter, FilterByParameterElementId request)
+        //{
+        //    if (!CheckIfNotNull(parameter, request))
+        //        return false;
 
-            if (parameter.HasValue && parameter.StorageType == StorageType.ElementId)
-                return parameter.AsElementId().IntegerValue == request.ElementId;
+        //    if (parameter.HasValue && parameter.StorageType == StorageType.ElementId)
+        //        return parameter.AsElementId().IntegerValue == request.ElementId;
 
-            return false;
-        }
+        //    return false;
+        //}
 
 
         /***************************************************/

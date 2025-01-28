@@ -158,6 +158,16 @@
       <HintPath>$(ProgramData)\BHoM\Assemblies\Structure_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Verification_Engine">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Verification_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Verification_oM">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Verification_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
