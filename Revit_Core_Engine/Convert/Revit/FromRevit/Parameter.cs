@@ -46,10 +46,6 @@ namespace BH.Revit.Engine.Core
             if (parameter == null)
                 return null;
 
-            Document doc = parameter.Element.Document;
-
-            Binding binding = doc.ParameterBindings.get_Item(parameter.Definition);
-            bool isInstance = (binding is InstanceBinding);
             string displayUnit = string.Empty;
 
             string name = parameter.Definition.Name;
@@ -107,8 +103,7 @@ namespace BH.Revit.Engine.Core
                 Value = value, 
                 IsReadOnly = parameter.IsReadOnly, 
                 UnitType = unitTypeIdentifier,
-                DisplayUnit = displayUnit,
-                IsInstance = isInstance };
+                DisplayUnit = displayUnit};
         }
 
         /***************************************************/

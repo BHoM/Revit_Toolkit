@@ -215,10 +215,6 @@
 		</Content>
 	</ItemGroup>
 
-	<PropertyGroup>
-		<StartAction>Program</StartAction>
-		<StartProgram>C:\Program Files\Microsoft Office\root\Office16\EXCEL.EXE</StartProgram>
-	</PropertyGroup>
 
 	<PropertyGroup>
 		<StartAction>Program</StartAction>

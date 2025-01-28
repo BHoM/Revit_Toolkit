@@ -34,9 +34,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns name of SpecTypeId property that contains a given ForgeTypeId.")]
-        [Input("spec", "Spec object to be queried for the correspondent SpecTypeId property name.")]
-        [Output("name", "Name of SpecTypeId property that contains the input spec object.")]
+        [Description("Render unit symbol for corresponding unit of the display value of the parameter")]
+        [Input("specTypeId", "origine SpecTypeId of the parameter.")]
+        [Output("Unit symbol", "Rendered symbol using converted BHoMUnitType")]
         public static string LabelForSymbolTypeId(this ForgeTypeId specTypeId)
         {
 #if REVIT2021
