@@ -96,12 +96,13 @@ namespace BH.Revit.Engine.Core
                     value = parameter.AsValueString();
                     break;
             }
-
+            Element elementToCheck = null;
             string unitTypeIdentifier = parameter.SpecName();
             return new RevitParameter { 
                 Name = name, 
                 Value = value, 
-                IsReadOnly = parameter.IsReadOnly, 
+                IsReadOnly = parameter.IsReadOnly,
+                IsInstance = elementToCheck != null ? parameter.IsInstanceParameter(elementToCheck) : false,
                 UnitType = unitTypeIdentifier,
                 DisplayUnit = displayUnit};
         }

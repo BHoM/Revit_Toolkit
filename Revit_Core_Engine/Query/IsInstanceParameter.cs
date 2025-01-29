@@ -41,9 +41,11 @@ namespace BH.Revit.Engine.Core
         [Output("bool", "true/false")]
         public static bool IsInstanceParameter(this Parameter parameter, Element element)
         {
+            return true;
             Document doc = parameter.Element.Document;
             Binding binding = doc.ParameterBindings.get_Item(parameter.Definition);
 
+            //for project parameters
             if (binding != null && binding is InstanceBinding)
             {
                 return true;
@@ -57,34 +59,47 @@ namespace BH.Revit.Engine.Core
             BuiltInParameter bip = (BuiltInParameter)parameter.Id.IntegerValue;
             BuiltInCategory bic = (BuiltInCategory)element.Category.Id.IntegerValue;
 
-            if (Enum.IsDefined(typeof(BuiltInParameter), bip) && m_BuiltInParameters.ContainsKey((bip, bic)))
-            {
-                return m_BuiltInParameters[(bip, bic)];
-            }
-
-
             ElementType elementType;
+            Element elementInstance;
+            Parameter typeParameter,instanceParameter = null;
 
+            //check if element is ElementType or ElementInstance
             if (element is ElementType)
             {
                 elementType = element as ElementType;
+                typeParameter = elementType.get_Parameter(bip);
             }
             else
             {
                 elementType = doc.GetElement(element.GetTypeId()) as ElementType;
+                elementInstance = element;
+                typeParameter = elementType.get_Parameter(bip);
+                instanceParameter = elementInstance.get_Parameter(bip);
             }
 
-            Parameter typeParameter = elementType.get_Parameter(bip);
-            if (elementType != null && typeParameter != null && typeParameter.StorageType != StorageType.None)
+            //return cached value if available
+            if (Enum.IsDefined(typeof(BuiltInParameter), bip) && m_CachedBuiltInParameters.ContainsKey((bip, bic)))            
+                return m_CachedBuiltInParameters[(bip, bic)];
+            
+            if (!Enum.IsDefined(typeof(BuiltInParameter), bip) && m_CachedUserDefinedParameters.ContainsKey((parameter.Id, elementType.Id)))         
+                return m_CachedUserDefinedParameters[(parameter.Id, elementType.Id)];
+
+            //check TypeParameter and InstanceParameter
+            if (typeParameter != null && typeParameter.StorageType != StorageType.None)
             {
-                m_BuiltInParameters.Add((bip, bic), false);
+                if (Enum.IsDefined(typeof(BuiltInParameter), bip))
+                    m_CachedBuiltInParameters.Add((bip, bic), false);
+                else
+                    m_CachedUserDefinedParameters.Add((parameter.Id, elementType.Id), false);
                 return false;
             }
-
-            Parameter instanceParameter = element.get_Parameter(bip);
+                        
             if (instanceParameter != null && instanceParameter.StorageType != StorageType.None)
             {
-                m_BuiltInParameters.Add((bip, bic), true);
+                if (Enum.IsDefined(typeof(BuiltInParameter), bip))
+                    m_CachedBuiltInParameters.Add((bip, bic), true);
+                else
+                    m_CachedUserDefinedParameters.Add((parameter.Id, elementType.Id), true);
                 return true;
             }
 
@@ -96,7 +111,9 @@ namespace BH.Revit.Engine.Core
         /****              Private fields               ****/
         /***************************************************/
 
-        private static readonly Dictionary<(BuiltInParameter,BuiltInCategory), bool> m_BuiltInParameters = new Dictionary<(BuiltInParameter, BuiltInCategory), bool>();
+        private static Dictionary<(BuiltInParameter,BuiltInCategory), bool> m_CachedBuiltInParameters = new Dictionary<(BuiltInParameter, BuiltInCategory), bool>();
+
+        private static Dictionary<(ElementId, ElementId), bool> m_CachedUserDefinedParameters = new Dictionary<(ElementId, ElementId), bool>();
 
         /***************************************************/
     }
