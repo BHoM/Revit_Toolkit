@@ -21,11 +21,13 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Visual;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -60,22 +62,19 @@ namespace BH.Revit.Engine.Core
 
             ElementType elementType;
             Element elementInstance;
-            Parameter typeParameter, instanceParameter = null;
 
             //check if element is ElementType or ElementInstance
             if (element is ElementType)
             {
                 elementType = element as ElementType;
-                typeParameter = elementType.get_Parameter(bip);
+                elementInstance = null;
             }
             else
             {
                 elementType = doc.GetElement(element.GetTypeId()) as ElementType;
                 elementInstance = element;
-                typeParameter = elementType.get_Parameter(bip);
-                instanceParameter = elementInstance.get_Parameter(bip);
             }
-
+                        
             //return cached value if available
             if (Enum.IsDefined(typeof(BuiltInParameter), bip) && m_CachedBuiltInParameters.ContainsKey((bip, bic)))
                 return m_CachedBuiltInParameters[(bip, bic)];
@@ -84,7 +83,13 @@ namespace BH.Revit.Engine.Core
                 return m_CachedUserDefinedParameters[(parameter.Id, elementType.Id)];
 
             //check TypeParameter and InstanceParameter
-            if (typeParameter != null && typeParameter.StorageType != StorageType.None)
+            var T = elementType.GetOrderedParameters();
+            bool check = elementType != null;
+            check = T.Select(p => p.Id == parameter.Id).Contains(true);
+            check = parameter.StorageType != StorageType.None;
+            if (elementType != null 
+                && T.Select(p => p.Id == parameter.Id).Contains(true)
+                && parameter.StorageType != StorageType.None)
             {
                 if (Enum.IsDefined(typeof(BuiltInParameter), bip))
                     m_CachedBuiltInParameters.Add((bip, bic), false);
@@ -93,7 +98,10 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
-            if (instanceParameter != null && instanceParameter.StorageType != StorageType.None)
+            var Y = elementInstance != null ? elementInstance.GetOrderedParameters(): new List<Parameter>();
+            if (elementInstance != null 
+                && Y.Select(p => p.Id == parameter.Id).Contains(true)
+                && parameter.StorageType != StorageType.None)
             {
                 if (Enum.IsDefined(typeof(BuiltInParameter), bip))
                     m_CachedBuiltInParameters.Add((bip, bic), true);

@@ -84,14 +84,9 @@ namespace BH.Revit.Engine.Core
 
             foreach (Parameter parameter in elementParams)
             {
-                try
-                {
-                    parameters.Add(parameter.ParameterFromRevit(parameterLinks, false, element));
-                }
-                catch (Exception e)
-                {
-                    BH.Engine.Base.Compute.RecordWarning(e.Message);
-                }
+
+                parameters.Add(parameter.ParameterFromRevit(parameterLinks, false, element));
+
             }
 
             bHoMObject.Fragments.Add(new RevitPulledParameters(parameters));

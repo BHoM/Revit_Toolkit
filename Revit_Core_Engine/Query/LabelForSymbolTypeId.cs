@@ -49,14 +49,15 @@ namespace BH.Revit.Engine.Core
             }
 
             string typeId = specTypeId.TypeId;
-            ForgeTypeId symbolTypeId = FormatOptions.GetValidSymbols(specTypeId.BHoMUnitType()).Last();
-            if (symbolTypeId.TypeId != "" && !m_LabelForSymbolTypeId.ContainsKey(typeId))
-            {
-                m_LabelForSymbolTypeId.Add(typeId, LabelUtils.GetLabelForSymbol(symbolTypeId));
-                return m_LabelForSymbolTypeId[typeId];
-            }
 
-            return string.Empty;
+            ForgeTypeId validSymbol = FormatOptions.GetValidSymbols(specTypeId.BHoMUnitType()).Last();
+            if (validSymbol.TypeId == "")
+                return string.Empty;         
+
+            if (!m_LabelForSymbolTypeId.ContainsKey(typeId))
+                m_LabelForSymbolTypeId.Add(typeId, LabelUtils.GetLabelForSymbol(validSymbol));
+
+            return m_LabelForSymbolTypeId[typeId];
         }
 
 
