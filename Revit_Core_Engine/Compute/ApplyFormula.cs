@@ -64,7 +64,7 @@ namespace BH.Revit.Engine.Core
             for (int i = 0; i < elements.Count; i++)
             {
                 //Check toParameter if it is a parameterType or parameterInstance
-                bool isInstanceParameter = toParameter.IsInstance;
+                bool? isInstanceParameter = toParameter.IsInstance;
 
                 bool isValidInput = true;
                 List<object> inputs = new List<object>();
@@ -72,10 +72,10 @@ namespace BH.Revit.Engine.Core
                 int j = 0;
                 while (j < formula.InputParameters.Count && isValidInput)
                 {
-                    bool isAllInputsTypeParam = !formula.InputParameters[j].IsInstance;
+                    bool isAllInputsTypeParam = !formula.InputParameters[j].IsInstance.Value;
 
                     //type parameter only accepts type parameters as input
-                    isValidInput &= isInstanceParameter || isAllInputsTypeParam;
+                    isValidInput &= isInstanceParameter.Value || isAllInputsTypeParam;
 
                     inputs.Add(elements[i].GetRevitParameterValue(formula.InputParameters[j].Name));
 

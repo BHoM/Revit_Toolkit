@@ -50,7 +50,7 @@ namespace BH.oM.Adapters.Revit.Parameters
         public virtual bool IsReadOnly { get; set; } = false;
 
         [Description("Whether the parameter is instance parameter.")]
-        public virtual bool IsInstance { get; set; } = true;
+        public virtual bool? IsInstance { get; set; }
 
         /***************************************************/
     }
