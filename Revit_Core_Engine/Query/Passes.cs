@@ -146,49 +146,49 @@ namespace BH.Revit.Engine.Core
         //[Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         //[Input("settings", "Revit adapter settings to be used while evaluating the element against the filtering criteria.")]
         //[Output("passes", "True if the input Revit Element passes the filtering criteria contained within the IParameterValueRequest, otherwise false.")]
-        public static bool Passes(this Element element, ConditionRequest request, Discipline discipline = Discipline.Undefined, RevitSettings settings = null)
-        {
-            if (!CheckIfNotNull(element, request))
-                return false;
+        //public static bool Passes(this Element element, ConditionRequest request, Discipline discipline = Discipline.Undefined, RevitSettings settings = null)
+        //{
+        //    if (!CheckIfNotNull(element, request))
+        //        return false;
 
-            if (discipline == Discipline.Undefined)
-                discipline = Discipline.Physical;
+        //    if (discipline == Discipline.Undefined)
+        //        discipline = Discipline.Physical;
 
-            settings = settings.DefaultIfNull();
-            Parameter param = element.LookupParameter(request.ParameterName);
-            if (param != null)
-                return param.IPasses(request);
+        //    settings = settings.DefaultIfNull();
+        //    Parameter param = element.LookupParameter(request.ParameterName);
+        //    if (param != null)
+        //        return param.IPasses(request);
 
-            Type bHoMType = element.IBHoMType(discipline, settings);
-            oM.Adapters.Revit.Mapping.ParameterMap parameterMap = settings?.MappingSettings?.ParameterMap(bHoMType);
-            if (parameterMap != null)
-            {
-                IEnumerable<string> elementParameterNames = parameterMap.ParameterLinks.Where(x => x is ElementParameterLink && x.PropertyName == request.ParameterName).SelectMany(x => x.ParameterNames);
-                foreach (string parameterName in elementParameterNames)
-                {
-                    param = element.LookupParameter(parameterName);
-                    if (param != null)
-                        return param.IPasses(request);
-                }
+        //    Type bHoMType = element.IBHoMType(discipline, settings);
+        //    oM.Adapters.Revit.Mapping.ParameterMap parameterMap = settings?.MappingSettings?.ParameterMap(bHoMType);
+        //    if (parameterMap != null)
+        //    {
+        //        IEnumerable<string> elementParameterNames = parameterMap.ParameterLinks.Where(x => x is ElementParameterLink && x.PropertyName == request.ParameterName).SelectMany(x => x.ParameterNames);
+        //        foreach (string parameterName in elementParameterNames)
+        //        {
+        //            param = element.LookupParameter(parameterName);
+        //            if (param != null)
+        //                return param.IPasses(request);
+        //        }
 
-                List<string> typeParameterNames = parameterMap.ParameterLinks.Where(x => x is ElementTypeParameterLink && x.PropertyName == request.ParameterName).SelectMany(x => x.ParameterNames).ToList();
-                if (typeParameterNames.Count != 0)
-                {
-                    Element elementType = element.Document.GetElement(element.GetTypeId());
-                    if (elementType != null)
-                    {
-                        foreach (string parameterName in typeParameterNames)
-                        {
-                            param = elementType.LookupParameter(parameterName);
-                            if (param != null)
-                                return param.IPasses(request);
-                        }
-                    }
-                }
-            }
+        //        List<string> typeParameterNames = parameterMap.ParameterLinks.Where(x => x is ElementTypeParameterLink && x.PropertyName == request.ParameterName).SelectMany(x => x.ParameterNames).ToList();
+        //        if (typeParameterNames.Count != 0)
+        //        {
+        //            Element elementType = element.Document.GetElement(element.GetTypeId());
+        //            if (elementType != null)
+        //            {
+        //                foreach (string parameterName in typeParameterNames)
+        //                {
+        //                    param = elementType.LookupParameter(parameterName);
+        //                    if (param != null)
+        //                        return param.IPasses(request);
+        //                }
+        //            }
+        //        }
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
         /***************************************************/
 

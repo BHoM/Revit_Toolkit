@@ -21,16 +21,23 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Verification;
 using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Enums;
+using BH.oM.Adapters.Revit.Mapping;
 using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
+using BH.oM.Data.Requests;
 using BH.oM.Revit.Requests;
 using BH.oM.Verification.Conditions;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using BH.Engine.Adapters.Revit;
 using System.Linq;
+using BH.Engine.Base;
+using BH.Engine.Diffing;
 
 namespace BH.Revit.Engine.Core
 {
@@ -60,7 +67,7 @@ namespace BH.Revit.Engine.Core
         //    return collector.Where(x => x.IPasses(request, discipline, settings)).Select(x => x.Id).ToList();
         //}
 
-        public static IEnumerable<ElementId> ElementIdsByCondition(this Document document, ConditionRequest request, Discipline discipline, RevitSettings settings = null, IEnumerable<ElementId> ids = null)
+        public static List<ElementId> ElementIdsByCondition(this Document document, ConditionRequest request, Discipline discipline, RevitSettings settings = null, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;
@@ -68,24 +75,65 @@ namespace BH.Revit.Engine.Core
             if (ids != null && !ids.Any())
                 return new List<ElementId>();
 
-            ICondition condition = request.Condition;
-            if (condition is IValueCondition valueCondition && valueCondition.ValueSource is ParameterValueSource pvs)
-            {
-                //TODO: mapping only works for individual elements :/ how to make it work??
-
-                // Preproc:
-                // 1. for each element in collector find type and build type/list<elem> dictionary from that
-                // 2. for each type find mapping
-                // 3. for each type build a logical condition
-                // 4. for each kvp run separate filtering by calling Passes == true from verif engine
-            }
-
             FilteredElementCollector collector = ids == null ? new FilteredElementCollector(document) : new FilteredElementCollector(document, ids.ToList());
-            collector = collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true)));
-            return collector.Where(x => x.Passes(request, discipline, settings)).Select(x => x.Id).ToList();
+            List<Element> elements = collector.WherePasses(new LogicalOrFilter(new ElementIsElementTypeFilter(), new ElementIsElementTypeFilter(true))).ToList();
+
+            if (request.Condition is IValueCondition valueCondition && valueCondition.ValueSource is ParameterValueSource pvs)
+            {
+                Dictionary<ICondition, List<Element>> withMapping = AddParameterMapping(valueCondition, elements, discipline, settings);
+                return withMapping.SelectMany(x => x.Value.Where(y => y.IPasses(x.Key) == true)).Select(x => x.Id).ToList();
+            }
+            else
+                return elements.Where(x => x.IPasses(request.Condition) == true).Select(x => x.Id).ToList();
         }
 
         /***************************************************/
+
+        private static Dictionary<ICondition, List<Element>> AddParameterMapping(IValueCondition valueCondition, IEnumerable<Element> elements, Discipline discipline, RevitSettings settings)
+        {
+            string paramName = ((ParameterValueSource)valueCondition.ValueSource).ParameterName;
+            Dictionary<Element, Type> bhomTypes = elements.ToDictionary(x => x, x => x.BHoMType(discipline));
+            Dictionary<Type, ICondition> conditionByType = new Dictionary<Type, ICondition>();
+            foreach (Type bhomType in bhomTypes.Values.Distinct())
+            {
+                ICondition condition = valueCondition;
+                oM.Adapters.Revit.Mapping.ParameterMap parameterMap = settings?.MappingSettings?.ParameterMap(bhomType);
+                if (parameterMap != null)
+                {
+                    List<ParameterValueSource> mappedParams = new List<ParameterValueSource>();
+                    IEnumerable<string> elementParameterNames = parameterMap.ParameterLinks.Where(x => x is ElementParameterLink && x.PropertyName == paramName).SelectMany(x => x.ParameterNames);
+                    mappedParams.AddRange(elementParameterNames.Select(x => new ParameterValueSource { ParameterName = x }));
+
+                    List<string> typeParameterNames = parameterMap.ParameterLinks.Where(x => x is ElementTypeParameterLink && x.PropertyName == paramName).SelectMany(x => x.ParameterNames).ToList();
+                    mappedParams.AddRange(typeParameterNames.Select(x => new ParameterValueSource { ParameterName = x, FromType = true }));
+
+                    List<ICondition> conditions = new List<ICondition> { valueCondition };
+                    foreach (ParameterValueSource mappedParam in mappedParams)
+                    {
+                        IValueCondition newCondition = valueCondition.ShallowClone();
+                        newCondition.ValueSource = mappedParam;
+                        conditions.Add(newCondition);
+                    }
+
+                    condition = new LogicalOrCondition { Conditions = conditions };
+                }
+
+                conditionByType[bhomType] = condition;
+            }
+         
+            Dictionary<ICondition, List<Element>> result = new Dictionary<ICondition, List<Element>>();
+            foreach (var kvp in conditionByType)
+            {
+                List<Element> elementsOfType = bhomTypes.Where(x => x.Value == kvp.Key).Select(x => x.Key).ToList();
+                ICondition existingKey = result.Keys.FirstOrDefault(x => x.IsEqual(kvp.Value));
+                if (existingKey == null)
+                    result[kvp.Value] = new List<Element>();
+
+                result[kvp.Value].AddRange(elementsOfType);
+            }
+
+            return result;
+        }
     }
 }
 
