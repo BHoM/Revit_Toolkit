@@ -153,28 +153,11 @@ namespace BH.Revit.Engine.Core
         [Description("Check if point intersects with solid.")]
         [Input("point", "Point to check the intersection for.")]
         [Input("solid", "Solid to check the intersection for.")]
+        [Input("tolerance", "Tolerance of the intersection check.")]
         [Output("bool", "Result of the intersect checking.")]
-        public static bool DoesIntersect(this XYZ point, Solid solid)
+        public static bool DoesIntersect(this XYZ point, Solid solid, double tolerance = BH.oM.Geometry.Tolerance.Distance)
         {
-            if (point == null || solid == null)
-            {
-                return false;
-            }
-
-            Line line = Line.CreateBound(point, point.Add(XYZ.BasisZ));
-            SolidCurveIntersection sci = solid.IntersectWithCurve(line, new SolidCurveIntersectionOptions());
-
-            for (int i = 0; i < sci.SegmentCount; i++)
-            {
-                Curve c = sci.GetCurveSegment(i);
-
-                if (point.IsAlmostEqualTo(c.GetEndPoint(0), BH.oM.Geometry.Tolerance.Distance) || point.IsAlmostEqualTo(c.GetEndPoint(1), BH.oM.Geometry.Tolerance.Distance))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return IsContaining(solid, point, tolerance);
         }
 
         /***************************************************/
