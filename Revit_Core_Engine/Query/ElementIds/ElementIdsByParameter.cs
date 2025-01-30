@@ -92,7 +92,7 @@ namespace BH.Revit.Engine.Core
         private static Dictionary<ICondition, List<Element>> AddParameterMapping(IValueCondition valueCondition, IEnumerable<Element> elements, Discipline discipline, RevitSettings settings)
         {
             string paramName = ((ParameterValueSource)valueCondition.ValueSource).ParameterName;
-            Dictionary<Element, Type> bhomTypes = elements.ToDictionary(x => x, x => x.BHoMType(discipline));
+            Dictionary<Element, Type> bhomTypes = elements.ToDictionary(x => x, x => x.IBHoMType(discipline));
             Dictionary<Type, ICondition> conditionByType = new Dictionary<Type, ICondition>();
             foreach (Type bhomType in bhomTypes.Values.Distinct())
             {
