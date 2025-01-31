@@ -153,11 +153,10 @@ namespace BH.Revit.Engine.Core
         [Description("Check if point intersects with solid.")]
         [Input("point", "Point to check the intersection for.")]
         [Input("solid", "Solid to check the intersection for.")]
-        [Input("tolerance", "Tolerance of the intersection check.")]
         [Output("bool", "Result of the intersect checking.")]
-        public static bool DoesIntersect(this XYZ point, Solid solid, double tolerance = BH.oM.Geometry.Tolerance.Distance)
+        public static bool DoesIntersect(this XYZ point, Solid solid)
         {
-            return IsContaining(solid, point, tolerance);
+            return IsContaining(solid, point);
         }
 
         /***************************************************/
