@@ -50,15 +50,17 @@ namespace BH.Engine.Adapters.Revit
 
         public static Delegate CreateFormula(string parametersDeclaration, string returnType, string formulaString, string formulaName = "anonymous")
         {
-            var assemblyPaths = AppDomain.CurrentDomain
-            .GetAssemblies()
-            .Where(a => !a.IsDynamic && !string.IsNullOrEmpty(a.Location))
-            .Select(a => a.Location)
-            .Distinct()
-            .ToList();
+            Assembly[] assemblies = new Assembly[]
+            {
+                Assembly.GetAssembly(typeof( System.Math)),
+                Assembly.GetAssembly(typeof(System.String)),
+                Assembly.GetAssembly(typeof(Enumerable))
+            };
 
-            string unsafeAssemblyPath = @"C:\Path\To\System.Runtime.CompilerServices.Unsafe.dll";
-            assemblyPaths.Add(unsafeAssemblyPath);
+            var assemblyPaths = assemblies
+                .Where(a => !a.IsDynamic && !string.IsNullOrEmpty(a.Location))
+                .Select(a => MetadataReference.CreateFromFile(a.Location))
+                .ToList();
 
             // Wrap user code in a class and method
             string codeString = CodeTemplate(parametersDeclaration, returnType, formulaString, formulaName);
@@ -67,9 +69,7 @@ namespace BH.Engine.Adapters.Revit
             CSharpCompilation compilation = CSharpCompilation.Create(
                 assemblyName: "RuntimeAssembly_" + Guid.NewGuid().ToString("N"),
                 syntaxTrees: new[] { syntaxTree },
-                references: assemblyPaths
-                    .Select(path => MetadataReference.CreateFromFile(path))
-                    .Cast<MetadataReference>(),
+                references: assemblyPaths,
                 options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
             );
 
@@ -142,6 +142,7 @@ namespace BH.Engine.Adapters.Revit
         {
             return $@"
     using System;
+    using static System.Math;
     public static class CustomMethodsClass
     {{
         public static {returnType} {formulaName}({parametersDeclaration})
