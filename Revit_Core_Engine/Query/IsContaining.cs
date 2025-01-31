@@ -81,7 +81,8 @@ namespace BH.Revit.Engine.Core
                 for (int i = 0; i < sci.SegmentCount; i++)
                 {
                     Curve c = sci.GetCurveSegment(i);
-                    if (c.GetEndPoint(0).DistanceTo(point) < tolerance || c.GetEndPoint(1).DistanceTo(point) < tolerance)
+                    IntersectionResult ir = c.Project(point);
+                    if (ir != null && ir.Distance <= tolerance)
                         return true;
                 }
             }
