@@ -38,6 +38,9 @@ namespace BH.oM.Adapters.Revit.Parameters
         [Description("Formula string. RevitParameters' names are used as variables. using C# syntax, and methods from System.Math")]
         public virtual string Formula { get; set; } = string.Empty;
 
+        [Description("Return type of the formula")]
+        public virtual string ReturnType { get; set; }
+
         /***************************************************/
     }
 }
