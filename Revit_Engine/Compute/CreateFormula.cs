@@ -32,6 +32,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis;
+using System.Collections.Concurrent;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -52,14 +53,16 @@ namespace BH.Engine.Adapters.Revit
         {
             Assembly[] assemblies = new Assembly[]
             {
-                Assembly.GetAssembly(typeof( System.Math)),
-                Assembly.GetAssembly(typeof(System.String)),
-                Assembly.GetAssembly(typeof(Enumerable))
+                Assembly.GetAssembly(typeof(System.Math)),
+                Assembly.GetAssembly(typeof(Enumerable)),
+                Assembly.GetAssembly(typeof(Compute)),
             };
 
             var assemblyPaths = assemblies
                 .Where(a => !a.IsDynamic && !string.IsNullOrEmpty(a.Location))
-                .Select(a => MetadataReference.CreateFromFile(a.Location))
+                .Select(a => a.Location)    
+                .Distinct()
+                .Select(loc => MetadataReference.CreateFromFile(loc))
                 .ToList();
 
             // Wrap user code in a class and method
@@ -122,27 +125,47 @@ namespace BH.Engine.Adapters.Revit
         public static Delegate CreateFormula(ParameterFormula parameterFormula, string formulaName = "anonymous")
         {
 
-            string fromulaKey = ComputeFormulaKey(parameterFormula);
+            string formulaKey = ComputeFormulaKey(parameterFormula);
 
-            if (m_cachedFormula.ContainsKey(fromulaKey))
+            if (m_cachedFormula.ContainsKey(formulaKey))
             {
-                return m_cachedFormula[fromulaKey];
+                return m_cachedFormula[formulaKey];
             }
 
-            string parametersDeclaration = string.Join(", ", parameterFormula.InputParameters.Select(p => p.Value.GetType().Name + " " + p.Name));
+            string parametersDeclaration = string.Join(", ", parameterFormula.InputParameters.Select(p => p.Value.GetType().FullName + " " + p.Name));
+
+            if (parameterFormula.CustomData != null)
+            {
+                foreach (var data in parameterFormula.CustomData)
+                {
+                    parametersDeclaration += $", {data.Value.GetType().FullName} {data.Key}";
+                }
+            }
 
             Delegate formula = CreateFormula(parametersDeclaration, parameterFormula.ReturnType, parameterFormula.Formula, formulaName);
+
+            m_cachedFormula.GetOrAdd(formulaKey, formula);
 
             return formula;
         }
 
         /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
 
+        /// <summary>
+        /// This Template allows to use all methods from math enumerable types, and custom methods from BH.Engine.Adapters.Revit.Compute
+        /// </summary>
         private static string CodeTemplate(string parametersDeclaration, string returnType, string formulaString, string formulaName)
         {
-            return $@"
+            return 
+    $@"
     using System;
+    using System.Linq;
     using static System.Math;
+    using static System.String;
+    using static BH.Engine.Adapters.Revit.Compute;
+
     public static class CustomMethodsClass
     {{
         public static {returnType} {formulaName}({parametersDeclaration})
@@ -150,7 +173,6 @@ namespace BH.Engine.Adapters.Revit
             return {formulaString};
         }}
     }}";
-
         }
 
         private static string ComputeFormulaKey(ParameterFormula formula)
@@ -163,7 +185,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Private fields               ****/
         /***************************************************/
 
-        private static Dictionary<string, Delegate> m_cachedFormula = new Dictionary<string, Delegate>();
+        private static ConcurrentDictionary<string, Delegate> m_cachedFormula = new ConcurrentDictionary<string, Delegate>();
 
         /***************************************************/
     }

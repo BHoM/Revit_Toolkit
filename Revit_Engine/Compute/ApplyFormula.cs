@@ -32,6 +32,7 @@ namespace BH.Engine.Adapters.Revit
 {
     public static partial class Compute
     {
+
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
@@ -40,13 +41,13 @@ namespace BH.Engine.Adapters.Revit
         [Description("Applies a formula to a list of BHoMObjects and sets the result to a specified Revit parameter.")]
         [Input("elements", "List of BHoMObjects to which the formula will be applied.")]
         [Input("formula", "ParameterFormula containing the formula to be applied.")]
-        [Input("toParameter", "RevitParameter to which the result of the formula will be set.")]
+        [Input("toParameter", "RevitParameter to which the result of the formula will be set. Without this object, method will return result")]
         [Input("startCalculation", "Flag to start the calculation process.")]
-        [Input("applyCalculation", "Flag to apply the calculation result to the Revit parameter.")]
+        [Input("applyResults", "Flag to transfer the results to the Revit parameters")]
         [Output("bHoMObjects", "List of BHoMObjects with the applied calculation to the specified Revit parameter.")]
-        public static List<object> ApplyFormula(List<IBHoMObject> elements, ParameterFormula formula, RevitParameter toParameter, bool startCalculation = false, bool applyCalculation = false)
+        public static List<object> ApplyFormula(List<IBHoMObject> elements, ParameterFormula formula, RevitParameter toParameter = null, bool startCalculation = false, bool applyResults = false)
         {
-            if (elements == null || formula == null || toParameter == null)
+            if (elements == null || formula == null)
             {
                 BH.Engine.Base.Compute.RecordError("One or more input parameters are null");
                 return null;
@@ -59,104 +60,52 @@ namespace BH.Engine.Adapters.Revit
             }
 
             Delegate function = CreateFormula(formula);
+            Type[] paramType = function.Method.GetParameters().Select(p => p.ParameterType).ToArray();
 
-            List<object> results = new List<object>();
+            object[] results = new object[elements.Count];
 
             for (int i = 0; i < elements.Count; i++)
             {
-                //Check toParameter if it is a parameterType or parameterInstance
-                bool? isInstanceParameter = toParameter.IsInstance;
-
-                bool isValidInput = true;
-                object[] inputs = new object[formula.InputParameters.Count];
-
-                int j = 0;
-                while (j < formula.InputParameters.Count && isValidInput)
+                object[] inputs = BuildInputsFromElement(elements[i], formula, paramType, out bool isAllInputsTypeParam);
+                if (inputs == null)
                 {
-                    bool isAllInputsTypeParam = !formula.InputParameters[j].IsInstance.Value;
-
-                    //type parameter only accepts type parameters as input
-                    isValidInput &= isInstanceParameter.Value || isAllInputsTypeParam;
-                    inputs[j] = elements[i].GetRevitParameterValue(formula.InputParameters[j].Name);
-
-                    j++;
+                    BH.Engine.Base.Compute.RecordError($"Error in building inputs for element {elements[i].ElementId()}");
+                    results[i] = null;
+                    continue;
                 }
-
-                object result;
-
-                if (!isValidInput)
-                {
-                    result = null;
-                    BH.Engine.Base.Compute.RecordError($"Input invalid at {elements[i].ElementId()}, TypeParameter output only accepts TypeParameterInput");
-                }
-                else
-                {
-                    result = function.DynamicInvoke(inputs);
-                }
-
-                if (applyCalculation)
-                {
-                    var elementParameter = elements[i].GetRevitParameters().Where(p => p.Name == toParameter.Name).FirstOrDefault();
-                    if (elementParameter != null && !elementParameter.IsReadOnly)
-                    {
-                        elements[i].SetRevitParameter(toParameter.Name, result);
-                    }
-                    else
-                    {
-                        BH.Engine.Base.Compute.RecordError($"Parameter is not found for ID: {elements[i].ElementId()}, Result: {result}");
-                    }
-                    results.Add(elements[i]);
-                }
-                else
-                {
-                    results.Add(result);
-                }
+                results[i] = ExecuteCalculation(elements[i], toParameter, applyResults, function, inputs, isAllInputsTypeParam);
             }
-            return results;
+            return results.ToList();
         }
-
-
 
         [Description("Applies a formula to a single BHoMObject and returns the result.")]
         [Input("element", "BHoMObject to which the formula will be applied.")]
         [Input("formula", "ParameterFormula containing the formula to be applied.")]
         [Input("startCalculation", "Flag to start the calculation process.")]
-        [Input("applyCalculation", "Flag to apply the calculation result to the Revit parameter.")]
+        [Input("applyCalculation", "Flag to transfer the result to the Revit parameter.")]
         [Output("result", "Result of the applied formula.")]
-        public static object ApplyFormula(IBHoMObject element, ParameterFormula formula, bool startCalculation = false, bool applyCalculation = false)
+        public static object ApplyFormula(IBHoMObject element, ParameterFormula formula, RevitParameter toParameter = null, bool applyResult = false)
         {
             if (element == null || formula == null)
             {
-                BH.Engine.Base.Compute.RecordError("One or more input parameters are null");
+                BH.Engine.Base.Compute.RecordError($"Insufficient Inputs");
                 return null;
             }
-
-            if (!startCalculation)
-            {
-                BH.Engine.Base.Compute.RecordError("Inputs received, waiting for calculation");
-                return null;
-            }
-
             Delegate function = CreateFormula(formula);
+            Type[] paramType = function.Method.GetParameters().Select(p => p.ParameterType).ToArray();
 
-            object[] inputs = new object[formula.InputParameters.Count];
-
-            int i = 0;
-            while (i < formula.InputParameters.Count)
+            object[] inputs = BuildInputsFromElement(element, formula, paramType, out bool isAllInputsTypeParam);
+            if (inputs == null)
             {
-                bool isAllInputsTypeParam = !formula.InputParameters[i].IsInstance.Value;
-
-                //type parameter only accepts type parameters as input
-                inputs[i] = element.GetRevitParameterValue(formula.InputParameters[i].Name);
-
-                i++;
+                BH.Engine.Base.Compute.RecordError($"Error in building inputs for element {element.ElementId()}");
+                return null;
             }
-
-            return function.DynamicInvoke(inputs);
+            return ExecuteCalculation(element, toParameter, applyResult, function, inputs, isAllInputsTypeParam);
         }
 
 
-        [Description("Applies a formula to a ParameterFormula objects with Input Parameters' values and returns the result. Just for test")]
+
+        [Description("Apply a calculation to a ParameterFormula objects with Input Parameters' values and returns the result. For testing a formula")]
         [Input("formula", "ParameterFormula containing the formula to be applied.")]
         [Input("startCalculation", "Flag to start the calculation process.")]
         [Input("applyCalculation", "Flag to apply the calculation result to the Revit parameter.")]
@@ -176,24 +125,112 @@ namespace BH.Engine.Adapters.Revit
             }
 
             Delegate function = CreateFormula(formula);
-
-            object[] inputs = new object[formula.InputParameters.Count];
+            Type[] paramType = function.Method.GetParameters().Select(p => p.ParameterType).ToArray();
+            int customDataCount = formula.CustomData.Count;
+            object[] inputs = new object[formula.InputParameters.Count + customDataCount];
 
             int i = 0;
             while (i < formula.InputParameters.Count)
             {
-                bool isAllInputsTypeParam = !formula.InputParameters[i].IsInstance.Value;
-
-                //type parameter only accepts type parameters as input
                 inputs[i] = formula.InputParameters[i].Value;
 
                 i++;
             }
 
-            return function.DynamicInvoke(inputs);
+            if (customDataCount > 0)
+            {
+                foreach (var data in formula.CustomData)
+                {
+                    inputs[i] = data.Value;
+                    i++;
+                }
+            }
+
+            return  function.DynamicInvoke(inputs);
         }
 
         /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        /// <summary>
+        ///Check inputs nullable exception and build the inputs array for the formula
+        /// </summary>
+        private static object[] BuildInputsFromElement(IBHoMObject element, ParameterFormula formula,Type[] paramType, out bool isAllInputsTypeParam)
+        {
+            int customDataCount = formula.CustomData.Count;
+            object[] inputs = new object[formula.InputParameters.Count + customDataCount];
+
+            isAllInputsTypeParam = true;
+
+            //Add the input parameters to the inputs array, if the parameter is not found in the element, set it to default value
+            int i = 0;
+            while (i < formula.InputParameters.Count)
+            {
+                isAllInputsTypeParam &= !formula.InputParameters[i].IsInstance.Value;
+                if (!element.GetRevitParameters().Any(p => p.Name == formula.InputParameters[i].Name))
+                {
+                    BH.Engine.Base.Compute.RecordError($"Parameter {formula.InputParameters[i].Name} not found in the element {element.ElementId()}");
+                    return null;
+                }
+                inputs[i] = element.GetRevitParameterValue(formula.InputParameters[i].Name);
+                if (inputs[i] == null)
+                {
+                    switch (paramType[i])
+                    {
+                        case Type t when t == typeof(int):
+                            inputs[i] = 0;
+                            break;
+                        case Type t when t == typeof(double):
+                            inputs[i] = 0.0;
+                            break;
+                        case Type t when t == typeof(string):
+                            inputs[i] = "";
+                            break;
+                        case Type t when t == typeof(bool):
+                            return null;
+                        default:
+                            BH.Engine.Base.Compute.RecordError($"Parameter {formula.InputParameters[i].Name} is not a valid type");
+                            return null;
+                    }
+                }
+                i++;
+            }
+
+            if (customDataCount > 0)
+            {
+                foreach (var data in formula.CustomData)
+                {
+                    inputs[i] = data.Value;
+                    i++;
+                }
+            }
+            return inputs;
+        }
+
+        private static object ExecuteCalculation(IBHoMObject element, RevitParameter toParameter, bool applyResult, Delegate function, object[] inputs, bool isAllInputsTypeParam)
+        {
+            if (applyResult)
+            {
+                if (toParameter == null)
+                {
+                    BH.Engine.Base.Compute.RecordError("Parameter to apply result is null");
+                    return null;
+                }
+                if (isAllInputsTypeParam && !toParameter.IsInstance.Value)
+                {
+                    return element.SetRevitParameter(toParameter.Name, function.DynamicInvoke(inputs));
+                }
+                else
+                {
+                    BH.Engine.Base.Compute.RecordError("Input invalid, TypeParameter output only accepts TypeParameterInput");
+                    return null;
+                }
+            }
+            else
+            {
+                return function.DynamicInvoke(inputs);
+            }
+        }
     }
 }
-
