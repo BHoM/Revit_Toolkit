@@ -33,161 +33,199 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis;
 using System.Collections.Concurrent;
+using System.Text;
 
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Compute
-    {
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
+	public static partial class Compute
+	{
+		/***************************************************/
+		/****              Public methods               ****/
+		/***************************************************/
 
-        [Description("Creates a delegate from a formula string with specified parameters and return type.")]
-        [Input("parametersDeclaration", "A string representing the parameters of the formula.")]
-        [Input("returnType", "The return type of the formula.")]
-        [Input("formulaString", "The formula string to be compiled into a delegate.")]
-        [Input("formulaName", "The name of the formula method. Defaults to 'anonymous'.")]
-        [Output("Delegate", "A delegate representing the compiled formula.")]
+		[Description("Creates a delegate from a formula string with specified parameters and return type.")]
+		[Input("parametersDeclaration", "A string representing the parameters of the formula.")]
+		[Input("returnType", "The return type of the formula.")]
+		[Input("formulaString", "The formula string to be compiled into a delegate.")]
+		[Input("formulaName", "The name of the formula method. Defaults to 'anonymous'.")]
+		[Output("Delegate", "A delegate representing the compiled formula.")]
 
-        public static Delegate CreateFormula(string parametersDeclaration, string returnType, string formulaString, string formulaName = "anonymous")
-        {
-            Assembly[] assemblies = new Assembly[]
-            {
-                Assembly.GetAssembly(typeof(System.Math)),
-                Assembly.GetAssembly(typeof(Enumerable)),
-                Assembly.GetAssembly(typeof(Compute)),
-            };
+		public static Delegate CreateFormula(string parametersDeclaration, string returnType, string formulaString, string formulaName = "anonymous")
+		{
+			Assembly[] assemblies = new Assembly[]
+			{
+				Assembly.GetAssembly(typeof(System.Math)),
+				Assembly.GetAssembly(typeof(Enumerable)),
+				Assembly.GetAssembly(typeof(Compute)),
+			};
 
-            var assemblyPaths = assemblies
-                .Where(a => !a.IsDynamic && !string.IsNullOrEmpty(a.Location))
-                .Select(a => a.Location)    
-                .Distinct()
-                .Select(loc => MetadataReference.CreateFromFile(loc))
-                .ToList();
+			var assemblyPaths = assemblies
+				.Where(a => !a.IsDynamic && !string.IsNullOrEmpty(a.Location))
+				.Select(a => a.Location)    
+				.Distinct()
+				.Select(loc => MetadataReference.CreateFromFile(loc))
+				.ToList();
 
-            // Wrap user code in a class and method
-            string codeString = CodeTemplate(parametersDeclaration, returnType, formulaString, formulaName);
+			// Wrap user code in a class and method
+			string codeString = CodeTemplate(parametersDeclaration, returnType, formulaString, formulaName);
 
-            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(codeString);
-            CSharpCompilation compilation = CSharpCompilation.Create(
-                assemblyName: "RuntimeAssembly_" + Guid.NewGuid().ToString("N"),
-                syntaxTrees: new[] { syntaxTree },
-                references: assemblyPaths,
-                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
-            );
+			SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(codeString);
+			CSharpCompilation compilation = CSharpCompilation.Create(
+				assemblyName: "RuntimeAssembly_" + Guid.NewGuid().ToString("N"),
+				syntaxTrees: new[] { syntaxTree },
+				references: assemblyPaths,
+				options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+			);
 
-            using (var ms = new MemoryStream())
-            {
-                EmitResult result = compilation.Emit(ms);
+			using (var ms = new MemoryStream())
+			{
+				EmitResult result = compilation.Emit(ms);
 
-                if (!result.Success)
-                {
+				if (!result.Success)
+				{
+					StringBuilder err = new StringBuilder("Failed, Error :");
+					err.AppendLine($"params : {parametersDeclaration}");
+                    err.AppendLine($"returnType : {returnType}");
                     // If compilation failed, print errors
                     IEnumerable<Diagnostic> failures =
-                        result.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error);
-                    foreach (Diagnostic diag in failures)
+						result.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error);
+					foreach (Diagnostic diag in failures)
+					{
+						//Console.WriteLine($"{diag.Id}: {diag.GetMessage()}");
+						err.AppendLine($"{diag.Id}: {diag.GetMessage()}");
+					}
+					err.Replace("System.", "");
+                    if (err.Length > 255)
                     {
-                        Console.WriteLine($"{diag.Id}: {diag.GetMessage()}");
+                        err.Length = 252;
+                        err.Append("...");
                     }
-                    throw new Exception("Roslyn compilation failed.");
+                    BH.Engine.Base.Compute.RecordError(err.ToString());
+					return null;
+
+				}
+
+				// If success, load the assembly from the stream
+				ms.Seek(0, SeekOrigin.Begin);
+				Assembly assembly = Assembly.Load(ms.ToArray());
+
+				// Retrieve our class and method via reflection
+				Type type = assembly.GetType("CustomMethodsClass");
+				if (type == null)
+				{
+                    BH.Engine.Base.Compute.RecordError("Type 'MyRuntimeClass' not found in the assembly.");
+                    return null;
                 }
 
-                // If success, load the assembly from the stream
-                ms.Seek(0, SeekOrigin.Begin);
-                Assembly assembly = Assembly.Load(ms.ToArray());
-
-                // Retrieve our class and method via reflection
-                Type type = assembly.GetType("CustomMethodsClass");
-                if (type == null)
-                {
-                    throw new Exception("Type 'MyRuntimeClass' not found in the assembly.");
+				MethodInfo method = type.GetMethod(formulaName, BindingFlags.Public | BindingFlags.Static);
+				if (method == null)
+				{
+                    BH.Engine.Base.Compute.RecordError($"Method {formulaName} not found in the type 'CustomMethodsClass'.");
+                    return null;
                 }
 
-                MethodInfo method = type.GetMethod(formulaName, BindingFlags.Public | BindingFlags.Static);
-                if (method == null)
-                {
-                    throw new Exception($"Method {formulaName} not found in the type 'CustomMethodsClass'.");
-                }
+				var argumentTypes = method.GetParameters().Select(p => p.ParameterType).Append(method.ReturnType).ToArray();
 
-                var argumentTypes = method.GetParameters().Select(p => p.ParameterType).Append(method.ReturnType).ToArray();
+				Type delegateType = Expression.GetFuncType(argumentTypes);
 
-                Type delegateType = Expression.GetFuncType(argumentTypes);
+				return Delegate.CreateDelegate(delegateType, method);
+			}
+		}
 
-                return Delegate.CreateDelegate(delegateType, method);
+		[Description("Creates a delegate from a formula string with specified parameters and return type.")]
+		[Input("parameterFormula", "A ParameterFormula object containing input RevitParameters, return type, and formula string.")]
+		[Input("formulaName", "The name of the formula method. Defaults to 'anonymous'.")]
+		[Output("Delegate", "A delegate representing the compiled formula.")]
+
+		public static Delegate CreateFormula(ParameterFormula parameterFormula, string formulaName = null)
+		{
+
+			string parametersDeclaration = string.Join(", ", parameterFormula.InputParameters.Select(p => p.Value.GetType().FullName + " " + p.Name));
+
+			if (parameterFormula.ExternalData != null)
+			{
+				foreach (var data in parameterFormula.ExternalData)
+				{
+					string dataType;
+					if (data.Value is List<List<object>>)
+					{
+						dataType = "List<List<object>>";
+					}
+					else if (data.Value is List<object>)
+					{
+						dataType = "List<object>";
+					}
+					else
+					{
+						dataType = data.Value.GetType().FullName;
+					}
+					parametersDeclaration += $", {dataType} {data.Key}";
+				}
+			}
+
+			string formulaKey = ComputeFormulaKey(parametersDeclaration, parameterFormula.ReturnType, parameterFormula.Formula);
+
+			if (m_cachedFormula.ContainsKey(formulaKey))
+			{
+				return m_cachedFormula[formulaKey];
+			}
+
+			formulaName = formulaName ?? "F" + Guid.NewGuid().ToString().Replace('-','_');
+
+			Delegate formula = CreateFormula(
+				parametersDeclaration, 
+				parameterFormula.ReturnType, 
+				parameterFormula.Formula,
+				formulaName);
+
+			if (formula == null)
+			{
+                return null;
             }
-        }
+			m_cachedFormula.GetOrAdd(formulaKey, formula);
+			return formula;
+		}
 
-        [Description("Creates a delegate from a formula string with specified parameters and return type.")]
-        [Input("parameterFormula", "A ParameterFormula object containing input RevitParameters, return type, and formula string.")]
-        [Input("formulaName", "The name of the formula method. Defaults to 'anonymous'.")]
-        [Output("Delegate", "A delegate representing the compiled formula.")]
+		/***************************************************/
+		/****              Private methods              ****/
+		/***************************************************/
 
-        public static Delegate CreateFormula(ParameterFormula parameterFormula, string formulaName = "anonymous")
-        {
+		/// <summary>
+		/// This Template allows to use all methods from math enumerable types, and custom methods from BH.Engine.Adapters.Revit.Compute
+		/// </summary>
+		private static string CodeTemplate(string parametersDeclaration, string returnType, string formulaString, string formulaName)
+		{
+			return 
+	$@"
+	using System;
+	using System.Linq;
+	using System.Collections.Generic;
+	using static System.Math;
+	using static System.String;
+	using static BH.Engine.Adapters.Revit.Compute;
 
-            string formulaKey = ComputeFormulaKey(parameterFormula);
+	public static class CustomMethodsClass
+	{{
+		public static {returnType} {formulaName}({parametersDeclaration})
+		{{
+			return {formulaString};
+		}}
+	}}";
+		}
 
-            if (m_cachedFormula.ContainsKey(formulaKey))
-            {
-                return m_cachedFormula[formulaKey];
-            }
+		private static string ComputeFormulaKey(string parametersDeclaration, string returnType, string formulaString)
+		{
+			// create a string that uniquely identifies the formula.
+			return $"{parametersDeclaration} - {returnType} - {formulaString}";
+		}
 
-            string parametersDeclaration = string.Join(", ", parameterFormula.InputParameters.Select(p => p.Value.GetType().FullName + " " + p.Name));
+		/***************************************************/
+		/****              Private fields               ****/
+		/***************************************************/
 
-            if (parameterFormula.CustomData != null)
-            {
-                foreach (var data in parameterFormula.CustomData)
-                {
-                    parametersDeclaration += $", {data.Value.GetType().FullName} {data.Key}";
-                }
-            }
+		private static ConcurrentDictionary<string, Delegate> m_cachedFormula = new ConcurrentDictionary<string, Delegate>();
 
-            Delegate formula = CreateFormula(parametersDeclaration, parameterFormula.ReturnType, parameterFormula.Formula, formulaName);
-
-            m_cachedFormula.GetOrAdd(formulaKey, formula);
-
-            return formula;
-        }
-
-        /***************************************************/
-        /****              Private methods              ****/
-        /***************************************************/
-
-        /// <summary>
-        /// This Template allows to use all methods from math enumerable types, and custom methods from BH.Engine.Adapters.Revit.Compute
-        /// </summary>
-        private static string CodeTemplate(string parametersDeclaration, string returnType, string formulaString, string formulaName)
-        {
-            return 
-    $@"
-    using System;
-    using System.Linq;
-    using static System.Math;
-    using static System.String;
-    using static BH.Engine.Adapters.Revit.Compute;
-
-    public static class CustomMethodsClass
-    {{
-        public static {returnType} {formulaName}({parametersDeclaration})
-        {{
-            return {formulaString};
-        }}
-    }}";
-        }
-
-        private static string ComputeFormulaKey(ParameterFormula formula)
-        {
-            // the goal is to create a string that uniquely identifies the formula.
-            return $"{formula.ReturnType}-{formula.Formula}-{string.Join(",", formula.InputParameters.Select(p => p.Name))}";
-        }
-
-        /***************************************************/
-        /****              Private fields               ****/
-        /***************************************************/
-
-        private static ConcurrentDictionary<string, Delegate> m_cachedFormula = new ConcurrentDictionary<string, Delegate>();
-
-        /***************************************************/
-    }
+		/***************************************************/
+	}
 }
 

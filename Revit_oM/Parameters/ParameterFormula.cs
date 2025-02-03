@@ -42,7 +42,7 @@ namespace BH.oM.Adapters.Revit.Parameters
         public virtual string ReturnType { get; set; }
 
         [Description("Custom additional data, Ex: List<List<object>> object represent a lookup table")]
-        public override Dictionary<string,object> CustomData { get; set; } = null;
+        public virtual Dictionary<string,object> ExternalData { get; set; } = null;
 
         /***************************************************/
     }

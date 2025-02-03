@@ -59,7 +59,18 @@ namespace BH.Engine.Adapters.Revit
                 return null;
             }
 
-            Delegate function = CreateFormula(formula);
+            Delegate function;
+
+            try
+            {
+                function = CreateFormula(formula);
+            }
+            catch (Exception e)
+            {
+                BH.Engine.Base.Compute.RecordError($"{e.Message}");
+                return null;
+            }
+
             Type[] paramType = function.Method.GetParameters().Select(p => p.ParameterType).ToArray();
 
             object[] results = new object[elements.Count];
@@ -91,7 +102,18 @@ namespace BH.Engine.Adapters.Revit
                 BH.Engine.Base.Compute.RecordError($"Insufficient Inputs");
                 return null;
             }
-            Delegate function = CreateFormula(formula);
+            Delegate function;
+
+            try
+            {
+                function = CreateFormula(formula);
+            }
+            catch (Exception e)
+            {
+                BH.Engine.Base.Compute.RecordError($"{e.Message}");
+                return null;
+            }
+
             Type[] paramType = function.Method.GetParameters().Select(p => p.ParameterType).ToArray();
 
             object[] inputs = BuildInputsFromElement(element, formula, paramType, out bool isAllInputsTypeParam);
@@ -124,10 +146,17 @@ namespace BH.Engine.Adapters.Revit
                 return null;
             }
 
-            Delegate function = CreateFormula(formula);
+            Delegate function;
+            function = CreateFormula(formula);
+
+            if (function == null)
+            {
+                return null;
+            }
+
             Type[] paramType = function.Method.GetParameters().Select(p => p.ParameterType).ToArray();
-            int customDataCount = formula.CustomData.Count;
-            object[] inputs = new object[formula.InputParameters.Count + customDataCount];
+            int externalDataCount = formula.ExternalData != null ? formula.ExternalData.Count : 0;
+            object[] inputs = new object[formula.InputParameters.Count + externalDataCount];
 
             int i = 0;
             while (i < formula.InputParameters.Count)
@@ -137,9 +166,9 @@ namespace BH.Engine.Adapters.Revit
                 i++;
             }
 
-            if (customDataCount > 0)
+            if (externalDataCount > 0)
             {
-                foreach (var data in formula.CustomData)
+                foreach (var data in formula.ExternalData)
                 {
                     inputs[i] = data.Value;
                     i++;
@@ -158,8 +187,8 @@ namespace BH.Engine.Adapters.Revit
         /// </summary>
         private static object[] BuildInputsFromElement(IBHoMObject element, ParameterFormula formula,Type[] paramType, out bool isAllInputsTypeParam)
         {
-            int customDataCount = formula.CustomData.Count;
-            object[] inputs = new object[formula.InputParameters.Count + customDataCount];
+            int externalDataCount = formula.ExternalData != null ? formula.ExternalData.Count : 0;
+            object[] inputs = new object[formula.InputParameters.Count + externalDataCount];
 
             isAllInputsTypeParam = true;
 
@@ -197,9 +226,9 @@ namespace BH.Engine.Adapters.Revit
                 i++;
             }
 
-            if (customDataCount > 0)
+            if (externalDataCount > 0)
             {
-                foreach (var data in formula.CustomData)
+                foreach (var data in formula.ExternalData)
                 {
                     inputs[i] = data.Value;
                     i++;
