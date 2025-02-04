@@ -280,8 +280,17 @@ namespace BH.Revit.Adapter.Core
                         edges = element.Curves(geometryOptions, settings, true).FromRevit();
 
                     List<ISurface> surfaces = null;
+                    List<ElementId> categoryIds = null;
                     if (geometryConfig.PullSurfaces)
+                    {
                         surfaces = element.Faces(geometryOptions, settings).Select(x => x.IFromRevit()).ToList();
+                        categoryIds = element.FaceCategories(geometryOptions, settings);
+                    }
+                    //Get categories and assign
+                    for (int i = 0; i < surfaces.Count;  i++)
+                    {
+                        surfaces[i].SetPropertyValue("RevitCategory", categoryIds[i];
+                    }
 
                     List<oM.Geometry.Mesh> meshes = null;
                     if (geometryConfig.PullMeshes)
