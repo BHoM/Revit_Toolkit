@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
             if (string.IsNullOrWhiteSpace(result?.TypeId))
                 result = null;
 
-            return null;
+            return result;
         }
 
         /***************************************************/
