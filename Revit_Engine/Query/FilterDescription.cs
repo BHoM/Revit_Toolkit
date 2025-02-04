@@ -20,10 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Requests;
-using BH.oM.Data.Requests;
 using BH.oM.Base.Attributes;
+using BH.oM.Data.Requests;
+using BH.oM.Revit.Requests;
 using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
@@ -82,21 +82,19 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        //TODO: ADD DESCRIPTION FOR CONDITIONREQUEST!!
+        [Description("Returns a description of the filter represented by the given ConditionRequest request.")]
+        [Input("request", "ConditionRequest request to query the filter description from.")]
+        [Output("description", "Description of the filter represented by the input ConditionRequest request.")]
+        public static string FilterDescription(this ConditionRequest request)
+        {
+            if (request == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Cannot extract the filter description of a null request.");
+                return "";
+            }
 
-        //[Description("Returns a description of the filter represented by the given FilterByParameterBool request.")]
-        //[Input("request", "FilterByParameterBool request to query the filter description from.")]
-        //[Output("description", "Description of the filter represented by the input FilterByParameterBool request.")]
-        //public static string FilterDescription(this FilterByParameterBool request)
-        //{
-        //    if (request == null)
-        //    {
-        //        BH.Engine.Base.Compute.RecordError("Cannot extract the filter description of a null request.");
-        //        return "";
-        //    }
-
-        //    return $"Filter the elements and types with value of parameter '{request.ParameterName}' equal to {request.Value}.";
-        //}
+            return $"Filter the elements and types based on a condition.";
+        }
 
         /***************************************************/
 
