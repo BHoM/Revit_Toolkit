@@ -119,7 +119,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            View view = draftingInstance.View(document);
+            Autodesk.Revit.DB.View view = draftingInstance.View(document);
             if (view == null)
                 return null;
 
@@ -256,7 +256,7 @@ namespace BH.Revit.Engine.Core
         /****   Private Methods - Drafting Instances    ****/
         /***************************************************/
 
-        private static Element IToRevitElement(this DraftingInstance draftingInstance, ElementType elementType, View view, RevitSettings settings)
+        private static Element IToRevitElement(this DraftingInstance draftingInstance, ElementType elementType, Autodesk.Revit.DB.View view, RevitSettings settings)
         {
             if (elementType == null)
             {
@@ -269,7 +269,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static Element ToRevitElement(this DraftingInstance draftingInstance, FilledRegionType regionType, View view, RevitSettings settings)
+        private static Element ToRevitElement(this DraftingInstance draftingInstance, FilledRegionType regionType, Autodesk.Revit.DB.View view, RevitSettings settings)
         {
             ISurface location = draftingInstance.Location as ISurface;
 
@@ -310,7 +310,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static Element ToRevitElement(this DraftingInstance draftingInstance, FamilySymbol familySymbol, View view, RevitSettings settings)
+        private static Element ToRevitElement(this DraftingInstance draftingInstance, FamilySymbol familySymbol, Autodesk.Revit.DB.View view, RevitSettings settings)
         {
             if (draftingInstance?.Location == null)
                 return null;
@@ -328,7 +328,7 @@ namespace BH.Revit.Engine.Core
         /****              Fallback Methods             ****/
         /***************************************************/
 
-        private static Element ToRevitElement(this DraftingInstance draftingInstance, ElementType elementType, View view, RevitSettings settings)
+        private static Element ToRevitElement(this DraftingInstance draftingInstance, ElementType elementType, Autodesk.Revit.DB.View view, RevitSettings settings)
         {
             return null;
         }

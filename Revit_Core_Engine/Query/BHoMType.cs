@@ -53,6 +53,38 @@ namespace BH.Revit.Engine.Core
         /****              Public Methods               ****/
         /***************************************************/
 
+        [Description("Finds a suitable BHoM type to convert the given Revit View to, based on the requested engineering discipline and adapter settings.")]
+        [Input("view", "Revit View to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit View to.")]
+        public static Type BHoMType(this View view, Discipline discipline, RevitSettings settings = null)
+        {
+            switch (discipline)
+            {
+                default:
+                    return typeof(BH.oM.Adapters.Revit.Elements.View);
+            }
+        }
+
+        /***************************************************/
+
+        [Description("Finds a suitable BHoM type to convert the given Revit ParameterFilterElement to, based on the requested engineering discipline and adapter settings.")]
+        [Input("viewFilter", "Revit ParameterFilterElement to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit ParameterFilterElement to.")]
+        public static Type BHoMType(this ParameterFilterElement viewFilter, Discipline discipline, RevitSettings settings = null)
+        {
+            switch (discipline)
+            {
+                default:
+                    return typeof(BH.oM.Adapters.Revit.Elements.ViewFilter);
+            }
+        }
+
+        /***************************************************/
+
         [Description("Finds a suitable BHoM type to convert the given Revit ProjectInfo to, based on the requested engineering discipline and adapter settings.")]
         [Input("projectInfo", "Revit ProjectInfo to find a correspondent BHoM type.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
