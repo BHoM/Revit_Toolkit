@@ -29,7 +29,6 @@ using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
 using BH.oM.Data.Requests;
-using BH.oM.Revit.Requests;
 using BH.oM.Verification.Conditions;
 using System;
 using System.Collections.Generic;

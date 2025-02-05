@@ -21,9 +21,9 @@
  */
 
 using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
-using BH.oM.Revit.Requests;
 using BH.oM.Verification;
 using BH.oM.Verification.Conditions;
 using System;

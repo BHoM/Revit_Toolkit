@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.oM.Revit.Requests
+namespace BH.oM.Adapters.Revit.Requests
 {
     //TODO: move to data engine??
     //TODO: add Create methods that would reflect the previous constructors and add versioning if possible

@@ -23,7 +23,6 @@
 using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Base.Attributes;
 using BH.oM.Data.Requests;
-using BH.oM.Revit.Requests;
 using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit

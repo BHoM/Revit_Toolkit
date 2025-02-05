@@ -31,7 +31,6 @@ using BH.oM.Base.Attributes;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using BH.oM.Revit.Requests;
 
 namespace BH.Revit.Engine.Core
 {
