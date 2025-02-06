@@ -47,10 +47,11 @@ namespace BH.Engine.Adapters.Revit
 		[Input("parametersDeclaration", "A string representing the parameters of the formula.")]
 		[Input("returnType", "The return type of the formula.")]
 		[Input("formulaString", "The formula string to be compiled into a delegate.")]
-		[Input("formulaName", "The name of the formula method. Defaults to 'anonymous'.")]
-		[Output("Delegate", "A delegate representing the compiled formula.")]
+		[Input("formulaName", "The name of the formula method for reuse through reflection. Defaults to 'anonymous'.")]
+        [Input("blockCode", "A block of code to be included in the compiled method, for complex function use case.")]
+        [Output("Delegate", "A delegate representing the compiled formula.")]
 
-		public static Delegate CreateFormula(string parametersDeclaration, string returnType, string formulaString, string formulaName = "anonymous")
+		public static Delegate CreateFormula(string parametersDeclaration, string returnType, string formulaString, string formulaName = "anonymous", string blockCode = null)
 		{
 			Assembly[] assemblies = new Assembly[]
 			{
@@ -105,15 +106,13 @@ namespace BH.Engine.Adapters.Revit
 
 				}
 
-				// If success, load the assembly from the stream
 				ms.Seek(0, SeekOrigin.Begin);
 				Assembly assembly = Assembly.Load(ms.ToArray());
 
-				// Retrieve our class and method via reflection
 				Type type = assembly.GetType("CustomMethodsClass");
 				if (type == null)
 				{
-                    BH.Engine.Base.Compute.RecordError("Type 'MyRuntimeClass' not found in the assembly.");
+                    BH.Engine.Base.Compute.RecordError("Type 'CustomMethodsClass' not found in the assembly.");
                     return null;
                 }
 
@@ -134,7 +133,7 @@ namespace BH.Engine.Adapters.Revit
 
 		[Description("Creates a delegate from a formula string with specified parameters and return type.")]
 		[Input("parameterFormula", "A ParameterFormula object containing input RevitParameters, return type, and formula string.")]
-		[Input("formulaName", "The name of the formula method. Defaults to 'anonymous'.")]
+		[Input("formulaName", "The name of the formula method. Default to GUID string.")]
 		[Output("Delegate", "A delegate representing the compiled formula.")]
 
 		public static Delegate CreateFormula(ParameterFormula parameterFormula, string formulaName = null)
@@ -180,7 +179,7 @@ namespace BH.Engine.Adapters.Revit
 
 			if (formula == null)
 			{
-                return null;
+				return null;
             }
 			m_cachedFormula.GetOrAdd(formulaKey, formula);
 			return formula;
@@ -193,24 +192,25 @@ namespace BH.Engine.Adapters.Revit
 		/// <summary>
 		/// This Template allows to use all methods from math enumerable types, and custom methods from BH.Engine.Adapters.Revit.Compute
 		/// </summary>
-		private static string CodeTemplate(string parametersDeclaration, string returnType, string formulaString, string formulaName)
+		private static string CodeTemplate(string parametersDeclaration, string returnType, string formulaString, string formulaName, string blockCode = null)
 		{
 			return 
-	$@"
-	using System;
-	using System.Linq;
-	using System.Collections.Generic;
-	using static System.Math;
-	using static System.String;
-	using static BH.Engine.Adapters.Revit.Compute;
+$@"
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using static System.Math;
+using static System.String;
+using static BH.Engine.Adapters.Revit.Compute;
 
-	public static class CustomMethodsClass
+public static class CustomMethodsClass
+{{
+	public static {returnType} {formulaName}({parametersDeclaration})
 	{{
-		public static {returnType} {formulaName}({parametersDeclaration})
-		{{
-			return {formulaString};
-		}}
-	}}";
+		{blockCode};
+		return {formulaString};
+	}}
+}}";
 		}
 
 		private static string ComputeFormulaKey(string parametersDeclaration, string returnType, string formulaString)
