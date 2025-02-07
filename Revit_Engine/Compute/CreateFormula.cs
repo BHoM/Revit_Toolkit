@@ -33,6 +33,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis;
 using System.Collections.Concurrent;
+using System.Text.RegularExpressions;
 using System.Text;
 
 namespace BH.Engine.Adapters.Revit
@@ -51,7 +52,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("blockCode", "A block of code to be included in the compiled method, for complex function use case.")]
         [Output("Delegate", "A delegate representing the compiled formula.")]
 
-		public static Delegate CreateFormula(string parametersDeclaration, string returnType, string formulaString, string formulaName = "anonymous", string blockCode = null)
+		public static Delegate CreateFormula(string parametersDeclaration, string returnType, string formulaString, string formulaName = "anonymous")
 		{
 			Assembly[] assemblies = new Assembly[]
 			{
@@ -68,9 +69,13 @@ namespace BH.Engine.Adapters.Revit
 				.ToList();
 
 			// Wrap user code in a class and method
-			string codeString = CodeTemplate(parametersDeclaration, returnType, formulaString, formulaName);
+            string codeString = CodeTemplate(parametersDeclaration, returnType, formulaString, formulaName);
+            if (codeString == null)
+            {
+                return null;
+            }
 
-			SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(codeString);
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(codeString);
 			CSharpCompilation compilation = CSharpCompilation.Create(
 				assemblyName: "RuntimeAssembly_" + Guid.NewGuid().ToString("N"),
 				syntaxTrees: new[] { syntaxTree },
@@ -86,7 +91,6 @@ namespace BH.Engine.Adapters.Revit
 				{
 					StringBuilder err = new StringBuilder("Failed, Error :");
 					err.AppendLine($"params : {parametersDeclaration}");
-                    err.AppendLine($"returnType : {returnType}");
                     // If compilation failed, print errors
                     IEnumerable<Diagnostic> failures =
 						result.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error);
@@ -192,9 +196,33 @@ namespace BH.Engine.Adapters.Revit
 		/// <summary>
 		/// This Template allows to use all methods from math enumerable types, and custom methods from BH.Engine.Adapters.Revit.Compute
 		/// </summary>
-		private static string CodeTemplate(string parametersDeclaration, string returnType, string formulaString, string formulaName, string blockCode = null)
+		private static string CodeTemplate(string parametersDeclaration, string returnType, string formulaString, string formulaName)
 		{
-			return 
+			char[] specialChars = {';', '\n', '{' };
+            var keywords = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "if", "case", "else", "while", "for", "foreach", "switch", "try", "catch", "finally", "do", "break", "continue", "return", "goto", "throw", "using", "lock", "checked", "unchecked", "fixed", "unsafe", "default", "delegate", "event", "explicit", "implicit", "namespace", "operator", "params", "partial", "private", "protected", "public", "readonly", "sealed", "static", "this", "base", "new", "as", "is", "sizeof", "typeof", "stackalloc", "checked", "unchecked", "virtual", "abstract", "override", "extern", "ref", "out", "in", "object", "string", "int", "float", "double", "decimal", "bool", "char", "byte", "sbyte", "short", "ushort", "uint", "long", "ulong", "void", "null", "true", "false", "class", "struct", "interface", "enum", "void", "using", "get", "set", "add", "remove", "value", "alias", "global", "checked", "unchecked", "fixed", "unsafe", "implicit", "explicit", "operator", "params", "ref", "out", "in", "is", "as", "sizeof", "typeof", "stackalloc", "delegate", "event", "object", "string", "int", "float", "double", "decimal", "bool", "char", "byte", "sbyte", "short", "ushort", "uint", "long", "ulong", "void", "null", "true", "false", "class", "struct", "interface", "enum", "void", "using", "get", "set", "add", "remove", "value", "alias", "global", "checked", "unchecked", "fixed", "unsafe", "implicit", "explicit", "operator", "params", "ref", "out", "in", "is", "as", "sizeof", "typeof", "stackalloc", "delegate", "event", "object", "string", "int", "float", "double", "decimal", "bool", "char", "byte", "sbyte", "short", "ushort" };
+
+            bool containsSpecialChars = formulaString.IndexOfAny(specialChars) >= 0;
+            bool containsKeyword = keywords.Any(keyword => Regex.IsMatch(formulaString, $@"\b{Regex.Escape(keyword)}\b"));
+            bool isComplexFormula = containsSpecialChars || containsKeyword;
+
+            string blockCode;
+            if (isComplexFormula)
+            {
+                blockCode = formulaString;
+				if (!Regex.IsMatch(blockCode, @"\breturn\b"))
+				{
+                    BH.Engine.Base.Compute.RecordError("Syntax Error: Complex formula must contain a return statement.");
+                    return null;
+				}
+				
+				formulaString = string.Empty;
+            }
+            else
+            {
+                blockCode = $"return {formulaString};";
+            }
+            return
+
 $@"
 using System;
 using System.Linq;
@@ -207,8 +235,7 @@ public static class CustomMethodsClass
 {{
 	public static {returnType} {formulaName}({parametersDeclaration})
 	{{
-		{blockCode};
-		return {formulaString};
+		{blockCode}
 	}}
 }}";
 		}
