@@ -20,8 +20,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base.Attributes;
-using BH.oM.Revit.Parameters;
 using BH.oM.Verification.Reporting;
 using System.ComponentModel;
 

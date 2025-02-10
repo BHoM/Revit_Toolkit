@@ -21,9 +21,9 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
-using BH.oM.Revit.Parameters;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
