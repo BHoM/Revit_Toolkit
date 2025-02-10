@@ -25,12 +25,12 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Base;
 using BH.Engine.Diffing;
 using BH.Engine.Verification;
-using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Mapping;
 using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
+using BH.oM.Revit.Parameters;
 using BH.oM.Verification.Conditions;
 using System;
 using System.Collections.Generic;
@@ -54,7 +54,7 @@ namespace BH.Revit.Engine.Core
         [Output("elementIds", "Collection of filtered Revit ElementIds.")]
         public static List<ElementId> ElementIdsByCondition(this Document document, ConditionRequest request, Discipline discipline, RevitSettings settings = null, IEnumerable<ElementId> ids = null)
         {
-            if (document == null)
+            if (document == null || request?.Condition == null)
                 return null;
 
             if (ids != null && !ids.Any())

@@ -39,7 +39,13 @@ namespace BH.Revit.Engine.Core
         [Output("label", "Human readable label generated for the input value source.")]
         public static string ValueSourceLabel(this ParameterValueSource valueSource, IValueConditionReportingConfig reportingConfig = null)
         {
-            if (!string.IsNullOrWhiteSpace(reportingConfig.ValueSourceLabelOverride))
+            if (valueSource == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Can't find label of a null value source.");
+                return null;
+            }
+
+            if (!string.IsNullOrWhiteSpace(reportingConfig?.ValueSourceLabelOverride))
                 return reportingConfig.ValueSourceLabelOverride;
             else
                 return $"Parameter {valueSource.ParameterName}";
