@@ -25,7 +25,6 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    //TODO: potentially could be replaced with ConditionRequest + IsViewSpecificCondition? or even value condition with prop value
     [Description("IRequest that filters elements specific to (owned by) a given view in Revit.")]
     public class FilterByViewSpecific : IRequest
     {

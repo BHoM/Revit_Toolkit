@@ -25,7 +25,6 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    //TODO: potentially could be replaced with ConditionRequest + IsUsedCondition?
     [Description("IRequest that filters used/unused elements in a Revit document.")]
     public class FilterByUsage : IRequest
     {

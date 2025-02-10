@@ -20,8 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit;
+using BH.oM.Base.Attributes;
+using BH.oM.Revit.Parameters;
 using BH.oM.Verification.Reporting;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -31,6 +33,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Generates a human readable label for a value source based on provided value condition reporting config.")]
+        [Input("valueSource", "Value source to get the label for.")]
+        [Input("reportingConfig", "Reporting config to apply when generating the label.")]
+        [Output("label", "Human readable label generated for the input value source.")]
         public static string ValueSourceLabel(this ParameterValueSource valueSource, IValueConditionReportingConfig reportingConfig = null)
         {
             if (!string.IsNullOrWhiteSpace(reportingConfig.ValueSourceLabelOverride))

@@ -25,7 +25,6 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    //TODO: could become a ConditionRequest, new condition needed?
     [Description("IRequest that filters elements the have (or do not have) a parameter with given name.")]
     public class FilterByParameterExistence : IRequest
     {
