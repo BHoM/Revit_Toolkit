@@ -60,14 +60,10 @@ namespace BH.Engine.Adapters.Revit
             }
 
             Delegate function;
+            function = CreateFormula(formula);
 
-            try
+            if (function == null)
             {
-                function = CreateFormula(formula);
-            }
-            catch (Exception e)
-            {
-                BH.Engine.Base.Compute.RecordError($"{e.Message}");
                 return null;
             }
 
@@ -102,15 +98,12 @@ namespace BH.Engine.Adapters.Revit
                 BH.Engine.Base.Compute.RecordError($"Insufficient Inputs");
                 return null;
             }
-            Delegate function;
 
-            try
+            Delegate function;
+            function = CreateFormula(formula);
+
+            if (function == null)
             {
-                function = CreateFormula(formula);
-            }
-            catch (Exception e)
-            {
-                BH.Engine.Base.Compute.RecordError($"{e.Message}");
                 return null;
             }
 

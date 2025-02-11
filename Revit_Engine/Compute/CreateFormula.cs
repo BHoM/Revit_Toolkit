@@ -56,7 +56,7 @@ namespace BH.Engine.Adapters.Revit
 		{
 			Assembly[] assemblies = new Assembly[]
 			{
-				Assembly.GetAssembly(typeof(System.Math)),
+				Assembly.GetAssembly(typeof(Math)),
 				Assembly.GetAssembly(typeof(Enumerable)),
 				Assembly.GetAssembly(typeof(Compute)),
 			};
@@ -199,7 +199,7 @@ namespace BH.Engine.Adapters.Revit
 		private static string CodeTemplate(string parametersDeclaration, string returnType, string formulaString, string formulaName)
 		{
 			char[] specialChars = {';', '\n', '{' };
-            var keywords = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "if", "case", "else", "while", "for", "foreach", "switch", "try", "catch", "finally", "do", "break", "continue", "return", "goto", "throw", "using", "lock", "checked", "unchecked", "fixed", "unsafe", "default", "delegate", "event", "explicit", "implicit", "namespace", "operator", "params", "partial", "private", "protected", "public", "readonly", "sealed", "static", "this", "base", "new", "as", "is", "sizeof", "typeof", "stackalloc", "checked", "unchecked", "virtual", "abstract", "override", "extern", "ref", "out", "in", "object", "string", "int", "float", "double", "decimal", "bool", "char", "byte", "sbyte", "short", "ushort", "uint", "long", "ulong", "void", "null", "true", "false", "class", "struct", "interface", "enum", "void", "using", "get", "set", "add", "remove", "value", "alias", "global", "checked", "unchecked", "fixed", "unsafe", "implicit", "explicit", "operator", "params", "ref", "out", "in", "is", "as", "sizeof", "typeof", "stackalloc", "delegate", "event", "object", "string", "int", "float", "double", "decimal", "bool", "char", "byte", "sbyte", "short", "ushort", "uint", "long", "ulong", "void", "null", "true", "false", "class", "struct", "interface", "enum", "void", "using", "get", "set", "add", "remove", "value", "alias", "global", "checked", "unchecked", "fixed", "unsafe", "implicit", "explicit", "operator", "params", "ref", "out", "in", "is", "as", "sizeof", "typeof", "stackalloc", "delegate", "event", "object", "string", "int", "float", "double", "decimal", "bool", "char", "byte", "sbyte", "short", "ushort" };
+            var keywords = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {"if", "case", "else", "while", "for", "foreach", "switch", "try", "catch", "finally", "do", "break", "continue", "return", "goto", "throw", "using", "lock", "checked", "unchecked", "fixed", "unsafe", "default", "delegate", "event", "explicit", "implicit", "namespace", "operator", "params", "partial", "private", "protected", "public", "readonly", "sealed", "static", "this", "base", "new", "as", "is", "sizeof", "typeof", "stackalloc", "virtual", "abstract", "override", "extern", "ref", "out", "in", "object", "string", "int", "float", "double", "decimal", "bool", "char", "byte", "sbyte", "short", "ushort", "uint", "long", "ulong", "void", "null", "true", "false", "class", "struct", "interface", "enum", "get", "set", "add", "remove", "value", "alias", "global"};
 
             bool containsSpecialChars = formulaString.IndexOfAny(specialChars) >= 0;
             bool containsKeyword = keywords.Any(keyword => Regex.IsMatch(formulaString, $@"\b{Regex.Escape(keyword)}\b"));
