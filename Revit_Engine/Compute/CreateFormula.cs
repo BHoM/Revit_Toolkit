@@ -143,7 +143,7 @@ namespace BH.Engine.Adapters.Revit
 		public static Delegate CreateFormula(ParameterFormula parameterFormula, string formulaName = null)
 		{
 
-			string parametersDeclaration = string.Join(", ", parameterFormula.InputParameters.Select(p => p.Value.GetType().FullName + " " + p.Name));
+			string parametersDeclaration = string.Join(", ", parameterFormula.InputParameters.Select(p => p.Value.GetType().FullName + " " + p.Name.Replace(' ','_')));
 
 			if (parameterFormula.ExternalData != null)
 			{
