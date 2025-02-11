@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -22,11 +22,9 @@
 
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Requests;
-using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.Verification;
 using BH.oM.Verification.Conditions;
-using System;
 using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
@@ -38,32 +36,31 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
 
         [Description("Creates IRequest that filters elements by given parameter value criterion.")]
-        [InputFromProperty("parameterName")]
-        [Input("idElement", "BHoMObject that represents the pulled Revit element to extract the ElementId from (contains its ElementId in RevitIdentifiers).")]
+        [Input("parameterName", "Name of the parameter to query for value.")]
+        [Input("referenceValue", "Value to compare against.")]
+        [Input("comparisonType", "Comparison between parameter value and reference value.")]
+        [Input("tolerance", "Tolerance to apply. Currently only relevant for numbers, default value is 1e-6.")]
         [Output("request", "Created request.")]
-        public static ConditionRequest FilterByParameterElementId(string parameterName, IBHoMObject idElement)
+        public static ConditionRequest FilterByParameterValue(string parameterName, object referenceValue, ValueComparisonType comparisonType, object tolerance = null)
         {
-            int elementId = idElement.ElementId();
-            if (elementId == -1)
+            if (string.IsNullOrWhiteSpace(parameterName))
             {
-                BH.Engine.Base.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", idElement.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError("Can't filter by parameter without a name.");
                 return null;
             }
-            else
+
+            return new ConditionRequest
             {
-                return new ConditionRequest
+                Condition = new ValueCondition
                 {
-                    Condition = new ValueCondition
+                    ValueSource = new ParameterValueSource
                     {
-                        ValueSource = new ParameterValueSource
-                        {
-                            ParameterName = parameterName
-                        },
-                        ReferenceValue = elementId,
-                        ComparisonType = ValueComparisonType.EqualTo
-                    }
-                };
-            }
+                        ParameterName = parameterName
+                    },
+                    ReferenceValue = referenceValue,
+                    ComparisonType = comparisonType,
+                }
+            };
         }
 
         /***************************************************/
