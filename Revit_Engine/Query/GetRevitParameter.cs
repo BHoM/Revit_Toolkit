@@ -35,10 +35,10 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Retrieves value of a parameter attached to a BHoM object. If a parameter with given name exists in both collections of pulled parameters and the ones to push, the latter is returned.")]
+        [Description("Retrieves a parameter attached to a BHoM object. If a parameter with given name exists in both collections of pulled parameters and the ones to push, the latter is returned.")]
         [Input("bHoMObject", "BHoMObject to which the parameters will be attached.")]
         [Input("parameterName", "Name of the parameter to be sought for.")]
-        [Output("value")]
+        [Output("RevitParameter")]
         public static RevitParameter GetRevitParameter(this IBHoMObject bHoMObject, string parameterName)
         {
             if (bHoMObject == null)
