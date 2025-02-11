@@ -25,7 +25,6 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Parameters
 {
-    //TODO: add ConvertUnits prop to reflect the behaviour of FilterByParameterNumber? could actually be welcome, potentially helpful in other contexts as well
     [Description("Object pointing at a Revit parameter as the source of a value to extract.")]
     public class ParameterValueSource : IValueSource
     {
