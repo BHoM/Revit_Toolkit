@@ -42,7 +42,6 @@ namespace BH.Engine.Adapters.Revit
         [Input("elements", "List of BHoMObjects to which the formula will be applied.")]
         [Input("formula", "ParameterFormula containing the formula to be applied.")]
         [Input("toParameter", "RevitParameter to which the result of the formula will be set. Without this object, method will return result")]
-        [Input("startCalculation", "Flag to start the calculation process.")]
         [Input("applyResult", "Flag to transfer the result to the Revit parameters")]
         [Input("alwaysCalculate", "Flag to always calculate the formula, input parameters are set to default value if not found on element.")]
         [Output("bHoMObjects", "List of BHoMObjects with the applied calculation to the specified Revit parameter.")]
@@ -88,8 +87,8 @@ namespace BH.Engine.Adapters.Revit
         [Description("Applies a formula to a single BHoMObject and returns the result.")]
         [Input("element", "BHoMObject to which the formula will be applied.")]
         [Input("formula", "ParameterFormula containing the formula to be applied.")]
-        [Input("startCalculation", "Flag to start the calculation process.")]
-        [Input("applyCalculation", "Flag to transfer the result to the Revit parameter.")]
+        [Input("toParameter", "RevitParameter to which the result of the formula will be set. Without this object, method will return result")]
+        [Input("applyResult", "Flag to transfer the result to the Revit parameter.")]
         [Input("alwaysCalculate", "Flag to always calculate the formula, input parameters are set to default value if not found on element.")]
         [Output("result", "Result of the applied formula.")]
         public static object ApplyFormula(IBHoMObject element, ParameterFormula formula, string toParameter = null, bool applyResult = false, bool alwaysCalculate = false)
@@ -117,8 +116,6 @@ namespace BH.Engine.Adapters.Revit
             }
             return ExecuteCalculation(element, applyResult, function, inputs, isAllInputsTypeParam, toParameter);
         }
-
-
 
         [Description("Apply a calculation to a ParameterFormula objects with Input Parameters' values and returns the result. For testing a formula")]
         [Input("formula", "ParameterFormula containing the formula to be applied.")]
@@ -246,7 +243,7 @@ namespace BH.Engine.Adapters.Revit
                     BH.Engine.Base.Compute.RecordError($"Parameter {toParameter} doesn't exist in {element.ElementId()}");
                     return null;
                 }
-                bool isValidTransaction = isAllInputsTypeParam && !targetParam.IsInstance.Value;
+                bool isValidTransaction = !(isAllInputsTypeParam ^ !targetParam.IsInstance.Value);
                 if (isValidTransaction)
                 {
                     return element.SetRevitParameter(targetParam.Name, function.DynamicInvoke(inputs));
