@@ -59,6 +59,7 @@ namespace BH.Engine.Adapters.Revit
                     },
                     ReferenceValue = referenceValue,
                     ComparisonType = comparisonType,
+                    Tolerance = tolerance
                 }
             };
         }
