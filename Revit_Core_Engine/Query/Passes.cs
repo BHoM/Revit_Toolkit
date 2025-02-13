@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Verification;
 using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Adapters.Revit.Settings;
@@ -77,6 +78,19 @@ namespace BH.Revit.Engine.Core
             }
 
             return categoryName == soughtName;
+        }
+
+        /***************************************************/
+
+        [Description("Checks whether a given element passes the filtering criteria contained within the ConditionRequest request.")]
+        [Input("element", "Element to be checked against the ConditionRequest request.")]
+        [Input("request", "ConditionRequest request containing the filtering criteria, against which the element is checked.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while evaluating the element against the filtering criteria.")]
+        [Output("passes", "True if the element passes the filtering criteria contained within the ConditionRequest request, otherwise false.")]
+        public static bool Passes(this Element element, ConditionRequest request, Discipline discipline = Discipline.Undefined, RevitSettings settings = null)
+        {
+            return element.IPasses(request.Condition) == true;
         }
 
         /***************************************************/
