@@ -39,24 +39,39 @@ namespace BH.Engine.Adapters.Revit
         [Input("bHoMObjects", "The collection of BHoM objects to sort.")]
         [Input("parameterNames", "A list of Revit parameter names used for sorting.")]
         [Output("A sorted list of BHoM objects based on the given Revit parameters.")]
-        public static List<IBHoMObject> SortByRevitParametersValues(this IEnumerable<IBHoMObject> bHoMObjects, IEnumerable<string> parameterNames)
+        public static List<IBHoMObject> SortByRevitParametersValues(this IEnumerable<IBHoMObject> bHoMObjects, IEnumerable<string> parameterNames, List<bool> acendingSort = null)
         {
             if (bHoMObjects == null)
             {
                 Base.Compute.RecordError("bHoMObjects cannot be null.");
                 return null;
             }
-                
+
             if (parameterNames == null || !parameterNames.Any())
                 return bHoMObjects.ToList();
 
+            List<bool> sortOrders = acendingSort ?? new List<bool>();
+            while (sortOrders.Count < parameterNames.Count())
+                sortOrders.Add(true);
+
             IOrderedEnumerable<IBHoMObject> sortedObjects = null;
 
-            foreach (var parameterName in parameterNames)
+            using (var paramEnumerator = parameterNames.GetEnumerator())
+            using (var orderEnumerator = sortOrders.GetEnumerator())
             {
-                sortedObjects = sortedObjects == null
-                    ? bHoMObjects.OrderBy(obj => GetComparableValue(obj, parameterName))
-                    : sortedObjects.ThenBy(obj => GetComparableValue(obj, parameterName));
+                while (paramEnumerator.MoveNext() && orderEnumerator.MoveNext())
+                {
+                    string parameterName = paramEnumerator.Current;
+                    bool isAscending = orderEnumerator.Current;
+
+                    sortedObjects = sortedObjects == null
+                        ? (isAscending
+                            ? bHoMObjects.OrderBy(obj => GetComparableValue(obj, parameterName))
+                            : bHoMObjects.OrderByDescending(obj => GetComparableValue(obj, parameterName)))
+                        : (isAscending
+                            ? sortedObjects.ThenBy(obj => GetComparableValue(obj, parameterName))
+                            : sortedObjects.ThenByDescending(obj => GetComparableValue(obj, parameterName)));
+                }
             }
 
             return sortedObjects?.ToList() ?? bHoMObjects.ToList();
