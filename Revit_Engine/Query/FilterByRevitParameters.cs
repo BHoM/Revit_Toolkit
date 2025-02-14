@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using static BH.Engine.Adapters.Revit.Query;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -43,12 +44,38 @@ namespace BH.Engine.Adapters.Revit
         {
             // Validate that criteria contains exactly 3 lists
             if (criteria == null || criteria.Count != 3)
-                throw new ArgumentException("Criteria must contain exactly three lists: parameterNames, filterTypes, values.");
+            {
+                Base.Compute.RecordError("Criteria must contain exactly three lists: parameterNames, filterTypes, values.");
+                return null;
+            }
 
             var filterCriteria = BuildFilterCriteria(
                 criteria[0].Cast<string>().ToList(),
                 criteria[1].Cast<string>().ToList(),
                 criteria[2].ToList()
+            );
+
+            return FilterByRevitParameters(bHoMObjects, filterCriteria);
+        }
+
+        [Description("Filters a collection of BHoM objects by multiple Revit parameter criteria.")]
+        [Input("bHoMObjects", "The collection of BHoM objects to filter.")]
+        [Input("parameterNames", "A list of Revit parameter names to filter by.")]
+        [Input("filterTypes", "The types of filtering to apply.")]
+        [Input("values", "The values to filter the parameters against.")]
+        [Output("A list of BHoM objects that match the specified criteria.")]
+        public static List<IBHoMObject> FilterByRevitParameters(this IEnumerable<IBHoMObject> bHoMObjects, IEnumerable<string> parameterNames, IEnumerable<string> filterTypes, IEnumerable<object> values)
+        {
+            if (parameterNames == null || filterTypes == null || values == null)
+            {
+                Base.Compute.RecordError("One or more arguments are null.");
+                return null;
+            }
+
+            var filterCriteria = BuildFilterCriteria(
+                parameterNames.ToList(),
+                filterTypes.ToList(),
+                values.ToList()
             );
 
             return FilterByRevitParameters(bHoMObjects, filterCriteria);
@@ -63,7 +90,7 @@ namespace BH.Engine.Adapters.Revit
         public static List<IBHoMObject> FilterByRevitParameters(this IEnumerable<IBHoMObject> bHoMObjects, IEnumerable<RevitFilterCriteria> criteria)
         {
             if (criteria == null || !criteria.Any())
-                return bHoMObjects.ToList(); // No filters, return all objects.
+                return bHoMObjects.ToList();
 
             IRevitParameterFilterService filterService = new RevitParameterFilterService();
             return filterService.Filter(bHoMObjects, criteria);
@@ -76,10 +103,16 @@ namespace BH.Engine.Adapters.Revit
         private static IEnumerable<RevitFilterCriteria> BuildFilterCriteria(List<string> parameterNames, List<string> filterTypes, List<object> values)
         {
             if (parameterNames == null || filterTypes == null || values == null)
-                throw new ArgumentNullException("One or more arguments are null.");
+            {
+                Base.Compute.RecordError("One or more arguments are null.");
+                return null;
+            }
 
             if (parameterNames.Count != filterTypes.Count || parameterNames.Count != values.Count)
-                throw new ArgumentException("All lists (parameterNames, filterTypes, values) must have the same number of elements.");
+            {
+                Base.Compute.RecordError("All lists (parameterNames, filterTypes, values) must have the same number of elements.");
+                return null;
+            }                
 
             var filters = new List<RevitFilterCriteria>();
 
@@ -90,7 +123,7 @@ namespace BH.Engine.Adapters.Revit
                 if (!string.IsNullOrEmpty(filterTypes[i]) && filterTypes[i] != "-")
                 {
                     if (!Enum.TryParse(filterTypes[i], out filterTypeEnum))
-                        throw new ArgumentException($"Invalid filter type: {filterTypes[i]}");
+                        BH.Engine.Base.Compute.RecordError($"Invalid filter type: {filterTypes[i]}");
                 }
 
                 filters.Add(new RevitFilterCriteria

@@ -68,7 +68,6 @@ namespace BH.Engine.Adapters.Revit
 				.Select(loc => MetadataReference.CreateFromFile(loc))
 				.ToList();
 
-			// Wrap user code in a class and method
             string codeString = CodeTemplate(parametersDeclaration, returnType, formulaString, formulaName);
             if (codeString == null)
             {
@@ -91,12 +90,10 @@ namespace BH.Engine.Adapters.Revit
 				{
 					StringBuilder err = new StringBuilder("Failed, Error :");
 					err.AppendLine($"params : {parametersDeclaration}");
-                    // If compilation failed, print errors
                     IEnumerable<Diagnostic> failures =
 						result.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error);
 					foreach (Diagnostic diag in failures)
 					{
-						//Console.WriteLine($"{diag.Id}: {diag.GetMessage()}");
 						err.AppendLine($"{diag.Id}: {diag.GetMessage()}");
 					}
 					err.Replace("System.", "");
@@ -193,9 +190,6 @@ namespace BH.Engine.Adapters.Revit
 		/****              Private methods              ****/
 		/***************************************************/
 
-		/// <summary>
-		/// This Template allows to use all methods from math enumerable types, and custom methods from BH.Engine.Adapters.Revit.Compute
-		/// </summary>
 		private static string CodeTemplate(string parametersDeclaration, string returnType, string formulaString, string formulaName)
 		{
 			char[] specialChars = {';', '\n', '{' };
@@ -242,7 +236,6 @@ public static class CustomMethodsClass
 
 		private static string ComputeFormulaKey(string parametersDeclaration, string returnType, string formulaString)
 		{
-			// create a string that uniquely identifies the formula.
 			return $"{parametersDeclaration} - {returnType} - {formulaString}";
 		}
 

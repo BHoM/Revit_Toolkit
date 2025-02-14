@@ -40,8 +40,8 @@ namespace BH.Engine.Adapters.Revit
             {
                 foreach (var crit in criteria)
                 {
-                    IRevitParameterFilter strategy = Create(crit.FilterType);
-                    bHoMObjects = bHoMObjects.Where(x => strategy.IsMatch(x, crit.ParameterName, crit.ParameterValue));
+                    IRevitParameterFilter filter = Create(crit.FilterType);
+                    bHoMObjects = bHoMObjects.Where(x => filter.IsMatch(x, crit.ParameterName, crit.ParameterValue));
                 }
                 return bHoMObjects.ToList();
             }
@@ -146,8 +146,6 @@ namespace BH.Engine.Adapters.Revit
         {
             public bool IsMatch(IBHoMObject obj, string parameterName, object parameterValue)
             {
-                // If the parameter is simply present (non-null), it "exists"
-                // You could refine this logic if "Existance" means something else in your context.
                 object objValue = obj.GetRevitParameterValue(parameterName);
                 return objValue != null;
             }
@@ -208,7 +206,6 @@ namespace BH.Engine.Adapters.Revit
             {
                 object objValue = obj.GetRevitParameterValue(parameterName);
 
-                // Basic string "Contains" logic
                 if (objValue is string strVal && parameterValue is string strParam)
                     return strVal.Contains(strParam);
 
@@ -247,7 +244,6 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /****              Private methods              ****/
         /***************************************************/
-
 
         private static int? SafeCompare(object value1, object value2)
         {
