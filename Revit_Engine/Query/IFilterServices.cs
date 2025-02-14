@@ -40,7 +40,7 @@ namespace BH.Engine.Adapters.Revit
             {
                 foreach (var crit in criteria)
                 {
-                    IRevitParameterFilter filter = Create(crit.FilterType);
+                    IRevitParameterFilter filter = CreateFilter(crit.FilterType);
                     bHoMObjects = bHoMObjects.Where(x => filter.IsMatch(x, crit.ParameterName, crit.ParameterValue));
                 }
                 return bHoMObjects.ToList();
@@ -75,7 +75,7 @@ namespace BH.Engine.Adapters.Revit
             NoFilter,
         }
 
-        public static IRevitParameterFilter Create(FilterType filterType)
+        public static IRevitParameterFilter CreateFilter(FilterType filterType)
         {
             switch (filterType)
             {
