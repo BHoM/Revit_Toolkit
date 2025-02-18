@@ -74,6 +74,11 @@
       <HintPath>$(ProgramData)\BHoM\Assemblies\Quantities_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Verification_oM">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Verification_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   
 </Project>

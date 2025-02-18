@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -19,29 +19,23 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
- 
+
+using BH.oM.Data.Requests;
+using BH.oM.Verification.Conditions;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
-    [Description("IRequest that filters elements based on given Boolean parameter value criterion.")]
-    public class FilterByParameterBool : IParameterValueRequest
+    [Description("IRequest that filters all elements that meet a given condition.")]
+    public class ConditionRequest : IRequest
     {
         /***************************************************/
-        /****                Properties                 ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Case sensitive name of the parameter to be used as filter criterion.")]
-        public virtual string ParameterName { get; set; } = "";
-
-        [Description("Value to compare the parameter against.")]
-        public virtual bool Value { get; set; } = true;
+        [Description("Condition for the elements to be met in order not to be filtered out.")]
+        public virtual ICondition Condition { get; set; } = null;
 
         /***************************************************/
     }
 }
-
-
-
-
-

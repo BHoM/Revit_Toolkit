@@ -62,7 +62,7 @@ namespace BH.Revit.Engine.Core
         [Output("identifiers", "Input Revit graphics style's identification information in a form of RevitIdentifiers fragment.")]
         public static RevitIdentifiers Identifiers(this GraphicsStyle graphicsStyle)
         {
-            return new RevitIdentifiers(graphicsStyle.UniqueId, graphicsStyle.Id.IntegerValue, graphicsStyle.GraphicsStyleCategory.Parent.Name);
+            return new RevitIdentifiers(graphicsStyle.UniqueId, graphicsStyle.Id.IntegerValue, graphicsStyle.GraphicsStyleCategory?.Parent?.Name ?? "");
         }
 
         /***************************************************/

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -20,34 +20,53 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit.Parameters;
+using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Base.Attributes;
+using BH.oM.Verification;
+using BH.oM.Verification.Conditions;
 using System.ComponentModel;
 
-namespace BH.Revit.Engine.Core
+namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Query
+    public static partial class Create
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Gets the parameter type of a Revit parameter definition.")]
-        [Input("definition", "Revit parameter definition to extract the parameter type from.")]
-        [Output("parameterType", "Parameter type extracted from the input Revit parameter definition.")]
-        public static ForgeTypeId ParameterType(this Definition definition)
+        [Description("Creates IRequest that filters elements by given parameter value criterion.")]
+        [Input("parameterName", "Name of the parameter to query for value.")]
+        [Input("referenceValue", "Value to compare against.")]
+        [Input("comparisonType", "Comparison between parameter value and reference value.")]
+        [Input("tolerance", "Tolerance to apply. Currently only relevant for numbers, default value is 1e-6.")]
+        [Output("request", "Created request.")]
+        public static ConditionRequest FilterByParameterValue(string parameterName, object referenceValue, ValueComparisonType comparisonType, object tolerance = null)
         {
-            ForgeTypeId result = definition?.GetDataType();
-            if (string.IsNullOrWhiteSpace(result?.TypeId))
-                result = null;
+            if (string.IsNullOrWhiteSpace(parameterName))
+            {
+                BH.Engine.Base.Compute.RecordError("Can't filter by parameter without a name.");
+                return null;
+            }
 
-            return result;
+            return new ConditionRequest
+            {
+                Condition = new ValueCondition
+                {
+                    ValueSource = new ParameterValueSource
+                    {
+                        ParameterName = parameterName
+                    },
+                    ReferenceValue = referenceValue,
+                    ComparisonType = comparisonType,
+                    Tolerance = tolerance
+                }
+            };
         }
 
         /***************************************************/
     }
 }
-
 
 
 

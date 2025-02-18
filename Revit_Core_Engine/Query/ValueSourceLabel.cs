@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -20,34 +20,37 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Parameters;
+using BH.oM.Base.Attributes;
+using BH.oM.Verification.Reporting;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Enums
+namespace BH.Revit.Engine.Core
 {
-    /***************************************************/
-
-    [Description("Enumerator defining the way in which two numbers are compared.")]
-    public enum NumberComparisonType
+    public static partial class Query
     {
-        [Description("Check if input number and reference number are equal.")]
-        Equal,
-        [Description("Check if input number and reference number are not equal.")]
-        NotEqual,
-        [Description("Check if input number is greater than reference number.")]
-        Greater,
-        [Description("Check if input number is smaller than reference number.")]
-        Less,
-        [Description("Check if input number is smaller than or equal to reference number.")]
-        LessOrEqual,
-        [Description("Check if input number is greater than or equal to reference number.")]
-        GreaterOrEqual,
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+
+        [Description("Generates a human readable label for a value source based on provided value condition reporting config.")]
+        [Input("valueSource", "Value source to get the label for.")]
+        [Input("reportingConfig", "Reporting config to apply when generating the label.")]
+        [Output("label", "Human readable label generated for the input value source.")]
+        public static string ValueSourceLabel(this ParameterValueSource valueSource, IValueConditionReportingConfig reportingConfig = null)
+        {
+            if (valueSource == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Can't find label of a null value source.");
+                return null;
+            }
+
+            if (!string.IsNullOrWhiteSpace(reportingConfig?.ValueSourceLabelOverride))
+                return reportingConfig.ValueSourceLabelOverride;
+            else
+                return $"Parameter {valueSource.ParameterName}";
+        }
+
+        /***************************************************/
     }
-
-    /***************************************************/
 }
-
-
-
-
-
-

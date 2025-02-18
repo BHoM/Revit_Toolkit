@@ -75,7 +75,7 @@ namespace BH.Revit.Adapter.Core
             {
                 if (pullConfig.Discipline == Discipline.Undefined)
                 {
-                    pullConfig = pullConfig.DeepClone();
+                    pullConfig = pullConfig.ShallowClone();
                     pullConfig.Discipline = requestDiscipline.Value;
                     BH.Engine.Base.Compute.RecordNote($"Discipline {pullConfig.Discipline} has been deducted from the provided request and will be used in the Pull.");
                 }
@@ -158,6 +158,13 @@ namespace BH.Revit.Adapter.Core
             }
 
             pullConfig = pullConfig.DefaultIfNull();
+            if (pullConfig.Discipline == Discipline.Undefined)
+            {
+                pullConfig = pullConfig.ShallowClone();
+                pullConfig.Discipline = Discipline.Physical;
+                BH.Engine.Base.Compute.RecordNote($"Conversion discipline has not been specified, default {Discipline.Physical} will be used.");
+            }
+
             settings = settings.DefaultIfNull();
 
             // Prefilter only elements from open worksets if requested
@@ -210,8 +217,9 @@ namespace BH.Revit.Adapter.Core
             Discipline discipline = pullConfig.Discipline;
             if (discipline == Discipline.Undefined)
             {
-                BH.Engine.Base.Compute.RecordNote($"Conversion discipline has not been specified, default {Discipline.Physical} will be used.");
+                pullConfig = pullConfig.ShallowClone();
                 discipline = Discipline.Physical;
+                BH.Engine.Base.Compute.RecordNote($"Conversion discipline has not been specified, default {Discipline.Physical} will be used.");
             }
 
             // Set up refObjects
