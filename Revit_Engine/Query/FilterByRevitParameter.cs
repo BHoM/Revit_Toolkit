@@ -22,9 +22,9 @@
 
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using BH.oM.Verification.Conditions;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -34,35 +34,31 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+
         [Description("Filters a collection of BHoM objects by a single Revit parameter criterion.")]
         [Input("bHoMObjects", "The collection of BHoM objects to filter.")]
-        [Input("criteria", "The filtering criteria to apply.")]
+        [Input("criterion", "The filtering criterion to apply.")]
+        [Output("A list of BHoM objects that match the specified criterion.")]
+        public static IEnumerable<IBHoMObject> FilterByRevitParameter(this IEnumerable<IBHoMObject> bHoMObjects, ValueCondition criterion)
+        {
+            return bHoMObjects.FilterByRevitParameters(new List<ValueCondition> { criterion });
+        }
+
+
+        [Description("Filters a collection of BHoM objects by a single Revit parameter criterion.")]
+        [Input("bHoMObjects", "The collection of BHoM objects to filter.")]
+        [Input("parameterName", "The name of the parameter to filter by.")]
+        [Input("filterType", "The type of filter to apply.")]
+        [Input("value", "The value to filter by.")]
         [Output("A list of BHoM objects that match the specified criteria.")]
-        public static List<IBHoMObject> FilterByRevitParameter(this IEnumerable<IBHoMObject> bHoMObjects, RevitFilterCriteria criteria)
+        public static IEnumerable<IBHoMObject> FilterByRevitParameter(this IEnumerable<IBHoMObject> bHoMObjects, string parameterName, object filterType, object value)
         {
-            IRevitParameterFilterService filterService = new RevitParameterFilterService();
-            return filterService.Filter(bHoMObjects, new List<RevitFilterCriteria> { criteria });
+
+            return FilterByRevitParameters(bHoMObjects, 
+                new List<string> () { parameterName}, 
+                new List<string>() {(string)filterType}, 
+                new List<object>() { value});
         }
 
-        public static List<IBHoMObject> FilterByRevitParameter(this IEnumerable<IBHoMObject> bHoMObjects, string parameterName, object filterType, object value)
-        {
-            IRevitParameterFilterService filterService = new RevitParameterFilterService();
-
-            FilterType filterTypeEnum;
-
-            if (filterType == null || (string) filterType == string.Empty)            
-                filterTypeEnum = FilterType.NoFilter;
-            else if (!Enum.TryParse((string)filterType, out filterTypeEnum))
-                throw new ArgumentException($"Invalid filter type: {filterType}");
-
-            var criteria = new RevitFilterCriteria
-            {
-                ParameterName = parameterName,
-                ParameterValue = value,
-                FilterType = filterTypeEnum
-            };
-            return FilterByRevitParameter(bHoMObjects, criteria);
-        }
-        /***************************************************/
     }
 }

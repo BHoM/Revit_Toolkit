@@ -22,11 +22,14 @@
 
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
+using BH.oM.Verification;
+using BH.oM.Verification.Conditions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using static BH.Engine.Adapters.Revit.Query;
+using BH.oM.Adapters.Revit.Parameters;
+using BH.Engine.Verification;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -36,11 +39,26 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+
+        [Description("Filters a collection of BHoM objects by a collection of RevitParameter criterion.")]
+        [Input("bHoMObjects", "The collection of BHoM objects to filter.")]
+        [Input("criteria", "The filtering criteria to apply.")]
+        [Output("A list of BHoM objects that match the specified criteria.")]
+        public static IEnumerable<IBHoMObject> FilterByRevitParameters(this IEnumerable<IBHoMObject> bHoMObjects, IEnumerable<ValueCondition> criteria)
+        {
+            foreach (var crit in criteria)
+            {
+                if (crit == null) return bHoMObjects;
+                bHoMObjects = bHoMObjects.Where(x => x.VerifyCondition(crit).Passed ?? false);
+            }
+            return bHoMObjects.ToList();
+        }
+
         [Description("Filters a collection of BHoM objects by multiple Revit parameter criteria.")]
         [Input("bHoMObjects", "The collection of BHoM objects to filter.")]
         [Input("criteria", "A compact list of filtering criteria: parameterNames, filterTypes, values")]
         [Output("A list of BHoM objects that match the specified criteria.")]
-        public static List<IBHoMObject> FilterByRevitParameters(this IEnumerable<IBHoMObject> bHoMObjects, List<List<object>> criteria)
+        public static IEnumerable<IBHoMObject> FilterByRevitParameters(this IEnumerable<IBHoMObject> bHoMObjects, List<List<object>> criteria)
         {
             // Validate that criteria contains exactly 3 lists
             if (criteria == null || criteria.Count != 3)
@@ -49,13 +67,13 @@ namespace BH.Engine.Adapters.Revit
                 return null;
             }
 
-            var filterCriteria = BuildFilterCriteria(
+            var filterCriteria = FiltersFromString(
                 criteria[0].Cast<string>().ToList(),
                 criteria[1].Cast<string>().ToList(),
                 criteria[2].ToList()
             );
 
-            return FilterByRevitParameters(bHoMObjects, filterCriteria);
+            return bHoMObjects.FilterByRevitParameters(filterCriteria);
         }
 
         [Description("Filters a collection of BHoM objects by multiple Revit parameter criteria.")]
@@ -64,43 +82,28 @@ namespace BH.Engine.Adapters.Revit
         [Input("filterTypes", "The types of filtering to apply.")]
         [Input("values", "The values to filter the parameters against.")]
         [Output("A list of BHoM objects that match the specified criteria.")]
-        public static List<IBHoMObject> FilterByRevitParameters(this IEnumerable<IBHoMObject> bHoMObjects, IEnumerable<string> parameterNames, IEnumerable<string> filterTypes, IEnumerable<object> values)
+        public static IEnumerable<IBHoMObject> FilterByRevitParameters(this IEnumerable<IBHoMObject> bHoMObjects, IEnumerable<string> parameterNames, IEnumerable<string> filterTypes, IEnumerable<object> referenceValues)
         {
-            if (parameterNames == null || filterTypes == null || values == null)
+            if (parameterNames == null || filterTypes == null || referenceValues == null)
             {
                 Base.Compute.RecordError("One or more arguments are null.");
                 return null;
             }
 
-            var filterCriteria = BuildFilterCriteria(
+            var filterCriteria = FiltersFromString(
                 parameterNames.ToList(),
                 filterTypes.ToList(),
-                values.ToList()
+                referenceValues.ToList()
             );
 
-            return FilterByRevitParameters(bHoMObjects, filterCriteria);
-        }
-
-        [Description("Filters a collection of BHoM objects by multiple Revit parameter criteria.")]
-        [Input("bHoMObjects", "The collection of BHoM objects to filter.")]
-        [Input("parameterNames", "A list of parameter names to filter by.")]
-        [Input("filterTypes", "A list of filter types corresponding to the parameters.")]
-        [Input("values", "A list of values used for filtering.")]
-        [Output("A list of BHoM objects that match the specified criteria.")]
-        public static List<IBHoMObject> FilterByRevitParameters(this IEnumerable<IBHoMObject> bHoMObjects, IEnumerable<RevitFilterCriteria> criteria)
-        {
-            if (criteria == null || !criteria.Any())
-                return bHoMObjects.ToList();
-
-            IRevitParameterFilterService filterService = new RevitParameterFilterService();
-            return filterService.Filter(bHoMObjects, criteria);
+            return bHoMObjects.FilterByRevitParameters(filterCriteria);
         }
 
         /***************************************************/
         /****              Private methods              ****/
         /***************************************************/
 
-        private static IEnumerable<RevitFilterCriteria> BuildFilterCriteria(List<string> parameterNames, List<string> filterTypes, List<object> values)
+        private static IEnumerable<ValueCondition> FiltersFromString(List<string> parameterNames, List<string> filterTypes, List<object> values)
         {
             if (parameterNames == null || filterTypes == null || values == null)
             {
@@ -112,13 +115,13 @@ namespace BH.Engine.Adapters.Revit
             {
                 Base.Compute.RecordError("All lists (parameterNames, filterTypes, values) must have the same number of elements.");
                 return null;
-            }                
+            }
 
-            var filters = new List<RevitFilterCriteria>();
+            var filters = new List<ValueCondition>();
 
             for (int i = 0; i < parameterNames.Count; i++)
             {
-                FilterType filterTypeEnum = FilterType.NoFilter;
+                ValueComparisonType filterTypeEnum = ValueComparisonType.EqualTo;
 
                 if (!string.IsNullOrEmpty(filterTypes[i]) && filterTypes[i] != "-")
                 {
@@ -126,15 +129,23 @@ namespace BH.Engine.Adapters.Revit
                         BH.Engine.Base.Compute.RecordError($"Invalid filter type: {filterTypes[i]}");
                 }
 
-                filters.Add(new RevitFilterCriteria
+                if (string.IsNullOrEmpty(filterTypes[i]) || filterTypes[i] == "-")
                 {
-                    ParameterName = parameterNames[i],
-                    ParameterValue = values[i],
-                    FilterType = filterTypeEnum
-                });
-            }
+                    filters.Add(null);
+                }
 
+                else
+                {
+                    filters.Add(new ValueCondition
+                    {
+                        ValueSource = new ParameterValueSource() { ParameterName = parameterNames[i] },
+                        ReferenceValue = values[i],
+                        ComparisonType = filterTypeEnum
+                    });
+                }
+            }
             return filters;
         }
+
     }
 }
