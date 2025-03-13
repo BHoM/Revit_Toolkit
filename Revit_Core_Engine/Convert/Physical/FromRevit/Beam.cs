@@ -53,7 +53,7 @@ namespace BH.Revit.Engine.Core
 
             oM.Geometry.ICurve locationCurve = familyInstance.LocationCurveFraming(settings);
             IFramingElementProperty property = familyInstance.FramingElementProperty(settings, refObjects);
-            beam = BH.Engine.Physical.Create.Beam(locationCurve, property);
+            beam = BH.Engine.Physical.Create.Beam(locationCurve, property, familyInstance.FamilyTypeFullName());
 
             //Set identifiers, parameters & custom data
             beam.SetIdentifiers(familyInstance);

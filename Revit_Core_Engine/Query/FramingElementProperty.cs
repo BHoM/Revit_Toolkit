@@ -84,7 +84,7 @@ namespace BH.Revit.Engine.Core
             // Get rotation
             double rotation = familyInstance.OrientationAngle(settings);
             
-            framingProperty = BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, rotation, familyInstance.Symbol.Name);
+            framingProperty = BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, rotation, familyInstance.Symbol.FamilyTypeFullName());
 
             //Set identifiers, parameters & custom data
             framingProperty.SetIdentifiers(familyInstance.Symbol);
