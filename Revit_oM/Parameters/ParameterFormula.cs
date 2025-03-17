@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -21,40 +21,33 @@
  */
 
 using BH.oM.Base;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace BH.oM.Adapters.Revit.Parameters
 {
-    [Description("A BHoM wrapper class for a Revit parameter.")]
-    public class RevitParameter : IObject
+    [Description("A BHoMObject contains a formula to establish relationship with other parameters of a Revit Instance object")]
+    public class ParameterFormula : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
+        [Description("List of RevitParameters involved in the formula")]
+        public virtual List<RevitParameter> InputParameters{ get; set; } = null;
 
-        [Description("Name of the Revit parameter as seen in the UI.")]
-        public virtual string Name { get; set; } = "";
+        [Description("Formula string. RevitParameters' names are used as variables. using C# syntax, can use all methods from System.Math, System.Enumerable type, Ex: Pow(p1,2); Join(p1,p2,p3), ")]
+        public virtual string Formula { get; set; } = string.Empty;
 
-        [Description("Value of the Revit parameter. Enums are converted to strings, ElementIds to integers.")]
-        public virtual object Value { get; set; } = null;
+        [Description("Return type of the formula")]
+        public virtual string ReturnType { get; set; }
 
-        [Description("Unit type of the Revit parameter.")]
-        public virtual string UnitType { get; set; }
-
-        [Description("Current Using Unit of the Revit parameter.")]
-        public virtual string DisplayUnit { get; set; }
-
-        [Description("Whether the parameter is read only or modifiable by the Revit user.")]
-        public virtual bool IsReadOnly { get; set; } = false;
-
-        [Description("Whether the parameter is instance parameter.")]
-        public virtual bool? IsInstance { get; set; }
+        [Description("Custom additional data, Ex: List<List<object>> object represent a lookup table")]
+        public virtual Dictionary<string,object> ExternalData { get; set; } = null;
 
         /***************************************************/
     }
 }
+
 
 
 

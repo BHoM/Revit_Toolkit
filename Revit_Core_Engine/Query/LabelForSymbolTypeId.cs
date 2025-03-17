@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -20,44 +20,55 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
-using System;
+using Autodesk.Revit.DB;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
-namespace BH.oM.Adapters.Revit.Parameters
+namespace BH.Revit.Engine.Core
 {
-    [Description("A BHoM wrapper class for a Revit parameter.")]
-    public class RevitParameter : IObject
+    public static partial class Query
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Name of the Revit parameter as seen in the UI.")]
-        public virtual string Name { get; set; } = "";
+        [Description("Render unit symbol for corresponding unit of the display value of the parameter")]
+        [Input("specTypeId", "origine SpecTypeId of the parameter.")]
+        [Output("Unit symbol", "Rendered symbol using converted BHoMUnitType")]
+        public static string LabelForSymbolTypeId(this ForgeTypeId specTypeId)
+        {
+#if REVIT2021
+            if (bhomUnitType == null)
+#else
+            if (specTypeId.NameEquals(SpecTypeId.Currency) || specTypeId == null || !UnitUtils.IsMeasurableSpec(specTypeId))
+#endif
+            {             
+                return string.Empty;
+            }
 
-        [Description("Value of the Revit parameter. Enums are converted to strings, ElementIds to integers.")]
-        public virtual object Value { get; set; } = null;
+            string typeId = specTypeId.TypeId;
 
-        [Description("Unit type of the Revit parameter.")]
-        public virtual string UnitType { get; set; }
+            ForgeTypeId validSymbol = FormatOptions.GetValidSymbols(specTypeId.BHoMUnitType()).Last();
+            if (validSymbol.TypeId == "")
+                return string.Empty;         
 
-        [Description("Current Using Unit of the Revit parameter.")]
-        public virtual string DisplayUnit { get; set; }
+            if (!m_LabelForSymbolTypeId.ContainsKey(typeId))
+                m_LabelForSymbolTypeId.Add(typeId, LabelUtils.GetLabelForSymbol(validSymbol));
 
-        [Description("Whether the parameter is read only or modifiable by the Revit user.")]
-        public virtual bool IsReadOnly { get; set; } = false;
+            return m_LabelForSymbolTypeId[typeId];
+        }
 
-        [Description("Whether the parameter is instance parameter.")]
-        public virtual bool? IsInstance { get; set; }
+
+        /***************************************************/
+        /****              Private fields               ****/
+        /***************************************************/
+
+        private static Dictionary<string, string> m_LabelForSymbolTypeId = new Dictionary<string, string>();
 
         /***************************************************/
     }
 }
-
-
-
-
 
 

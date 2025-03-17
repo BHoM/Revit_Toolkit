@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -20,38 +20,35 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
-using System;
-using System.Collections.Generic;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
+using System.Linq;
+using System.Collections.Generic;
 
-namespace BH.oM.Adapters.Revit.Parameters
+namespace BH.Engine.Adapters.Revit
 {
-    [Description("A BHoM wrapper class for a Revit parameter.")]
-    public class RevitParameter : IObject
+    public static partial class Query
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Name of the Revit parameter as seen in the UI.")]
-        public virtual string Name { get; set; } = "";
-
-        [Description("Value of the Revit parameter. Enums are converted to strings, ElementIds to integers.")]
-        public virtual object Value { get; set; } = null;
-
-        [Description("Unit type of the Revit parameter.")]
-        public virtual string UnitType { get; set; }
-
-        [Description("Current Using Unit of the Revit parameter.")]
-        public virtual string DisplayUnit { get; set; }
-
-        [Description("Whether the parameter is read only or modifiable by the Revit user.")]
-        public virtual bool IsReadOnly { get; set; } = false;
-
-        [Description("Whether the parameter is instance parameter.")]
-        public virtual bool? IsInstance { get; set; }
-
+        [Description("Retrieves values of a parameter attached to a groupe of BHoM objects. It will return null values for objects that do not have  the parameter defined")]
+        [Input("List<bHoMObject>", "BHoMObjects to which the parameters will be attached.")]
+        [Input("parameterName", "Name of the parameter to be sought for.")]
+        [Output("List of values in same order as objects' list")]
+        public static List<object> GetRevitParameterValues(this List<IBHoMObject> bHoMObjects, string parameterName)
+        {
+            List<object> values = new List<object>();
+            for (int i = 0; i < bHoMObjects.Count; i++)
+            {
+                object value = GetRevitParameterValue(bHoMObjects[i], parameterName);
+                values.Add(value);
+            }
+            return values;
+        }
         /***************************************************/
     }
 }
