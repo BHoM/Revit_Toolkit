@@ -67,7 +67,7 @@ namespace BH.Revit.Engine.Core
                 case StorageType.Integer:
                     if (parameter.IsBooleanParameter())
                         value = parameter.AsInteger() == 1;
-                    else if (parameter.Definition.ParameterType() == null)
+                    else if (parameter.IsEnumParameter())
                         value = parameter.AsValueString();
                     else
                         value = parameter.AsInteger();
