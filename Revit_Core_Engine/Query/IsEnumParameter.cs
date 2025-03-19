@@ -42,9 +42,9 @@ namespace BH.Revit.Engine.Core
 
             ForgeTypeId dataType = parameter.Definition.ParameterType();
 #if REVIT2021
-            return dataType == null || (dataType == SpecTypeId.Number && !int.TryParse(parameter.AsValueString(), out _));
+            return dataType == null || parameter.Definition.ParameterType == Autodesk.Revit.DB.ParameterType.Text || parameter.Definition.ParameterType == Autodesk.Revit.DB.ParameterType.Invalid;
 #else
-            return dataType == null;
+            return dataType == null || dataType == SpecTypeId.String.Text;
 #endif
         }
 
