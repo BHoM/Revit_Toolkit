@@ -84,6 +84,9 @@ namespace BH.Revit.Engine.Core
             Dictionary<Type, ICondition> conditionByType = new Dictionary<Type, ICondition>();
             foreach (Type bhomType in bhomTypes.Values.Distinct())
             {
+                if (bhomType == null)
+                    continue;
+
                 ICondition condition = valueCondition;
                 oM.Adapters.Revit.Mapping.ParameterMap parameterMap = settings?.MappingSettings?.ParameterMap(bhomType);
                 if (parameterMap != null)
