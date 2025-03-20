@@ -123,6 +123,11 @@ namespace BH.Revit.Engine.Core
                 result[kvp.Value].AddRange(elementsOfType);
             }
 
+            if (!result.ContainsKey(valueCondition))
+                result[valueCondition] = new List<Element>();
+
+            result[valueCondition].AddRange(bhomTypes.Where(x => x.Value == null).Select(x => x.Key));
+
             return result;
         }
 

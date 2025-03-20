@@ -208,6 +208,20 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Finds the ElementIds of all elements within the Revit document that pass the filtering criteria set in the given FilterByParameterExistence request.")]
+        [Input("request", "FilterByParameterExistence request containing the filtering criteria, against which the elements in the Revit document are checked.")]
+        [Input("document", "Revit Document queried for the filtered elements.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while evaluating the elements against the filtering criteria.")]
+        [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
+        [Output("elementIds", "Collection of filtered Revit ElementIds.")]
+        public static IEnumerable<ElementId> ElementIds(this FilterByParameterExistence request, Document document, Discipline discipline = Discipline.Undefined, RevitSettings settings = null, IEnumerable<ElementId> ids = null)
+        {
+            return document.ElementIdsByParameterExistence(request, discipline, settings, ids);
+        }
+
+        /***************************************************/
+
         [Description("Finds the ElementIds of all elements within the Revit document that pass the filtering criteria set in the given FilterByFamilyAndTypeName request.")]
         [Input("request", "FilterByFamilyAndTypeName request containing the filtering criteria, against which the elements in the Revit document are checked.")]
         [Input("document", "Revit Document queried for the filtered elements.")]
