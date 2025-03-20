@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -21,41 +21,45 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Adapters.Revit.Mapping;
-using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Convert
+    public static partial class Query
     {
         /***************************************************/
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Converts a Revit Parameter to BH.oM.Adapters.Revit.Parameters.RevitParameter.")]
-        [Input("parameter", "Revit Parameter to be converted.")]
-        [Input("parameterLinks", "A collection of names of RevitParameters and sets of their correspondent Revit parameter names to be used on name mapping.")]
-        [Input("onlyLinked", "If true, there needs to be a valid, relevant parameter link in parameterLinks in order for convert to succeed.")]
-        [Output("parameter", "BH.oM.Adapters.Revit.Parameters.RevitParameter resulting from converting the input Revit Parameter.")]
-        public static RevitParameter ParameterFromRevit(this Parameter parameter, IEnumerable<IParameterLink> parameterLinks = null, bool onlyLinked = false)
+        [Description("Extracts value from Revit parameter and converts it to BHoM-compliant form.")]
+        [Input("parameter", "Revit parameter to extract.")]
+        [Output("value", "Value extracted from Revit parameter and aligned to BHoM convention.")]
+        public static object ParameterValue(this Parameter parameter)
         {
             if (parameter == null)
                 return null;
 
-            string name = parameter.Definition.Name;
+            switch (parameter.StorageType)
+            {
+                case StorageType.Double:
+                    return parameter.AsDouble().ToSI(parameter.Definition.GetDataType());
+                case StorageType.ElementId:
+                    return parameter.AsElementId()?.IntegerValue;
+                case StorageType.Integer:
+                    if (parameter.IsBooleanParameter())
+                        return parameter.AsInteger() == 1;
+                    else if (parameter.IsEnumParameter())
+                        return parameter.AsValueString();
+                    else
+                        return parameter.AsInteger();
+                case StorageType.String:
+                    return parameter.AsString();
+                case StorageType.None:
+                    return parameter.AsValueString();
+            }
 
-            IParameterLink parameterLink = parameterLinks.ParameterLink(parameter);
-            if (parameterLink != null)
-                name = parameterLink.PropertyName;
-            else if (onlyLinked)
-                return null;
-
-            object value = parameter.ParameterValue();
-            string unitTypeIdentifier = parameter.SpecName();
-            return new RevitParameter { Name = name, Value = value, IsReadOnly = parameter.IsReadOnly, UnitType = unitTypeIdentifier };
+            return null;
         }
 
         /***************************************************/
