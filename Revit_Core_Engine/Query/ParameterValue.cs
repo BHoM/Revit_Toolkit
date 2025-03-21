@@ -51,6 +51,8 @@ namespace BH.Revit.Engine.Core
                         return parameter.AsInteger() == 1;
                     else if (parameter.IsEnumParameter())
                         return parameter.AsValueString();
+                    else if (string.IsNullOrEmpty(parameter.AsValueString()))
+                        return null;
                     else
                         return parameter.AsInteger();
                 case StorageType.String:
