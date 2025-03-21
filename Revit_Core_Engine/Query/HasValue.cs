@@ -35,7 +35,7 @@ namespace BH.Engine.Verification
         [Description("Checks if a given parameter has value.")]
         [Input("obj", "Parameter to check for valid value.")]
         [Output("hasValue", "True if the input parameter has value, otherwise false.")]
-        public static bool HasValue(this Parameter obj)
+        public static bool? HasValue(this Parameter obj)
         {
             return obj?.HasValue == true;
         }
