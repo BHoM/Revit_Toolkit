@@ -71,8 +71,8 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Base.Compute.RecordNote($"Element with id {element.Id} does not have a parameter named {valueSource.ParameterName}.");
                 return new Output<bool, object> { Item1 = false, Item2 = null };
             }
-
-            return new Output<bool, object> { Item1 = true, Item2 = param.ParameterValue() };
+            else
+                return new Output<bool, object> { Item1 = true, Item2 = param };
         }
 
         /***************************************************/

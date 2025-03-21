@@ -29,39 +29,15 @@ namespace BH.Revit.Engine.Core
     public static partial class Query
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public Methods               ****/
         /***************************************************/
 
-        [Description("Extracts value from Revit parameter and converts it to BHoM-compliant form.")]
-        [Input("parameter", "Revit parameter to extract.")]
-        [Output("value", "Value extracted from Revit parameter and aligned to BHoM convention.")]
-        public static object ParameterValue(this Parameter parameter)
+        [Description("Unpacks the parameter in preparation to solve a formula.")]
+        [Input("obj", "Parameter to unpack.")]
+        [Output("unpacked", "Input parameter unpacked and ready to use in formula solution.")]
+        public static object FormulaComponent(this Parameter obj)
         {
-            if (parameter == null)
-                return null;
-
-            switch (parameter.StorageType)
-            {
-                case StorageType.Double:
-                    return parameter.AsDouble().ToSI(parameter.Definition.GetDataType());
-                case StorageType.ElementId:
-                    return parameter.AsElementId()?.IntegerValue;
-                case StorageType.Integer:
-                    if (parameter.IsBooleanParameter())
-                        return parameter.AsInteger() == 1;
-                    else if (parameter.IsEnumParameter())
-                        return parameter.AsValueString();
-                    else if (string.IsNullOrEmpty(parameter.AsValueString()))
-                        return null;
-                    else
-                        return parameter.AsInteger();
-                case StorageType.String:
-                    return parameter.AsString();
-                case StorageType.None:
-                    return parameter.AsValueString();
-            }
-
-            return null;
+            return obj.ParameterValue();
         }
 
         /***************************************************/

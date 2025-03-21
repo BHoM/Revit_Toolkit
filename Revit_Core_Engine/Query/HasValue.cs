@@ -24,44 +24,20 @@ using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
-namespace BH.Revit.Engine.Core
+namespace BH.Engine.Verification
 {
     public static partial class Query
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public Methods               ****/
         /***************************************************/
 
-        [Description("Extracts value from Revit parameter and converts it to BHoM-compliant form.")]
-        [Input("parameter", "Revit parameter to extract.")]
-        [Output("value", "Value extracted from Revit parameter and aligned to BHoM convention.")]
-        public static object ParameterValue(this Parameter parameter)
+        [Description("Checks if a given parameter has value.")]
+        [Input("obj", "Parameter to check for valid value.")]
+        [Output("hasValue", "True if the input parameter has value, otherwise false.")]
+        public static bool? HasValue(this Parameter obj)
         {
-            if (parameter == null)
-                return null;
-
-            switch (parameter.StorageType)
-            {
-                case StorageType.Double:
-                    return parameter.AsDouble().ToSI(parameter.Definition.GetDataType());
-                case StorageType.ElementId:
-                    return parameter.AsElementId()?.IntegerValue;
-                case StorageType.Integer:
-                    if (parameter.IsBooleanParameter())
-                        return parameter.AsInteger() == 1;
-                    else if (parameter.IsEnumParameter())
-                        return parameter.AsValueString();
-                    else if (string.IsNullOrEmpty(parameter.AsValueString()))
-                        return null;
-                    else
-                        return parameter.AsInteger();
-                case StorageType.String:
-                    return parameter.AsString();
-                case StorageType.None:
-                    return parameter.AsValueString();
-            }
-
-            return null;
+            return obj?.HasValue == true;
         }
 
         /***************************************************/
