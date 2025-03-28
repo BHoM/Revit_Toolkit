@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,12 +20,13 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Data.Requests;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Requests
 {
     [Description("IRequest that filters elements the have (or do not have) a parameter with given name.")]
-    public class FilterByParameterExistence : IParameterRequest
+    public class FilterByParameterExistence : IRequest
     {
         /***************************************************/
         /****                Properties                 ****/
@@ -40,7 +41,3 @@ namespace BH.oM.Adapters.Revit.Requests
         /***************************************************/
     }
 }
-
-
-
-

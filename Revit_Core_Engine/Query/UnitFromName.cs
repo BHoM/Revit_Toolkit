@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -34,14 +34,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns Revit unit object (enum for Revit up to 2020 or ForgeTypeId for later versions) based on UnitTypeId property name that represents it.")]
+        [Description("Returns ForgeTypeId based on UnitTypeId property name that represents it.")]
         [Input("name", "Name of UnitTypeId property to be queried for the correspondent unit.")]
         [Output("unit", "Unit object under the input UnitTypeId property name.")]
-#if (REVIT2020)
-        public static DisplayUnitType UnitFromName(this string name)
-#else
         public static ForgeTypeId UnitFromName(this string name)
-#endif
         {
             if (m_UnitsWithNames == null)
                 CollectUnits();
@@ -54,42 +50,12 @@ namespace BH.Revit.Engine.Core
                     BH.Engine.Base.Compute.RecordWarning($"Unit with identifier {name} not found.");
             }
 
-#if (REVIT2020)
-            return DisplayUnitType.DUT_UNDEFINED;
-#else
             return null;
-#endif
         }
-
 
         /***************************************************/
         /****              Private methods              ****/
         /***************************************************/
-
-#if (REVIT2020)
-        private static void CollectUnits()
-        {
-            m_UnitsWithNames = new Dictionary<string, DisplayUnitType>();
-            foreach (PropertyInfo info in typeof(UnitTypeId).GetProperties())
-            {
-                if (info.GetGetMethod().GetCustomAttribute<NotImplementedAttribute>() == null)
-                {
-                    DisplayUnitType? dut = info.GetValue(null) as DisplayUnitType?;
-                    if (dut != null && dut != DisplayUnitType.DUT_UNDEFINED)
-                        m_UnitsWithNames.Add(info.Name, dut.Value);
-                }
-            }
-        }
-
-
-        /***************************************************/
-        /****               Private fields              ****/
-        /***************************************************/
-
-        private static Dictionary<string, DisplayUnitType> m_UnitsWithNames = null;
-
-        /***************************************************/
-#else
 
         private static void CollectUnits()
         {
@@ -106,15 +72,14 @@ namespace BH.Revit.Engine.Core
             BH.Engine.Base.Compute.StopSuppressRecordingEvents();
         }
 
-
         /***************************************************/
         /****               Private fields              ****/
         /***************************************************/
 
         private static Dictionary<string, ForgeTypeId> m_UnitsWithNames = null;
-#endif
 
         /***************************************************/
     }
 }
+
 

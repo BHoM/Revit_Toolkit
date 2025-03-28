@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,10 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Requests;
-using BH.oM.Data.Requests;
 using BH.oM.Base.Attributes;
+using BH.oM.Data.Requests;
 using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
@@ -82,10 +81,10 @@ namespace BH.Engine.Adapters.Revit
 
         /***************************************************/
 
-        [Description("Returns a description of the filter represented by the given FilterByParameterBool request.")]
-        [Input("request", "FilterByParameterBool request to query the filter description from.")]
-        [Output("description", "Description of the filter represented by the input FilterByParameterBool request.")]
-        public static string FilterDescription(this FilterByParameterBool request)
+        [Description("Returns a description of the filter represented by the given ConditionRequest request.")]
+        [Input("request", "ConditionRequest request to query the filter description from.")]
+        [Output("description", "Description of the filter represented by the input ConditionRequest request.")]
+        public static string FilterDescription(this ConditionRequest request)
         {
             if (request == null)
             {
@@ -93,146 +92,12 @@ namespace BH.Engine.Adapters.Revit
                 return "";
             }
 
-            return $"Filter the elements and types with value of parameter '{request.ParameterName}' equal to {request.Value}.";
-        }
-
-        /***************************************************/
-
-        [Description("Returns a description of the filter represented by the given FilterByParameterElementId request.")]
-        [Input("request", "FilterByParameterElementId request to query the filter description from.")]
-        [Output("description", "Description of the filter represented by the input FilterByParameterElementId request.")]
-        public static string FilterDescription(this FilterByParameterElementId request)
-        {
-            if (request == null)
-            {
-                BH.Engine.Base.Compute.RecordError("Cannot extract the filter description of a null request.");
-                return "";
-            }
-
-            return $"Filter the elements and types with parameter '{request.ParameterName}' referencing to a Revit element with ElementId {request.ElementId}.";
-        }
-
-        /***************************************************/
-
-        [Description("Returns a description of the filter represented by the given FilterByParameterExistence request.")]
-        [Input("request", "FilterByParameterExistence request to query the filter description from.")]
-        [Output("description", "Description of the filter represented by the input FilterByParameterExistence request.")]
-        public static string FilterDescription(this FilterByParameterExistence request)
-        {
-            if (request == null)
-            {
-                BH.Engine.Base.Compute.RecordError("Cannot extract the filter description of a null request.");
-                return "";
-            }
-
-            return $"Filter the elements and types that {(request.ParameterExists ? "" : "do not ")}have parameter named '{request.ParameterName}'.";
-        }
-
-        /***************************************************/
-
-        [Description("Returns a description of the filter represented by the given FilterByParameterInteger request.")]
-        [Input("request", "FilterByParameterInteger request to query the filter description from.")]
-        [Output("description", "Description of the filter represented by the input FilterByParameterInteger request.")]
-        public static string FilterDescription(this FilterByParameterInteger request)
-        {
-            if (request == null)
-            {
-                BH.Engine.Base.Compute.RecordError("Cannot extract the filter description of a null request.");
-                return "";
-            }
-
-            return $"Filter the elements and types with value of parameter '{request.ParameterName}' {request.NumberComparisonType.ComparisonDescription()} {request.Value}.";
-        }
-
-        /***************************************************/
-
-        [Description("Returns a description of the filter represented by the given FilterByParameterNumber request.")]
-        [Input("request", "FilterByParameterNumber request to query the filter description from.")]
-        [Output("description", "Description of the filter represented by the input FilterByParameterNumber request.")]
-        public static string FilterDescription(this FilterByParameterNumber request)
-        {
-            if (request == null)
-            {
-                BH.Engine.Base.Compute.RecordError("Cannot extract the filter description of a null request.");
-                return "";
-            }
-
-            return $"Filter the elements and types with value of parameter '{request.ParameterName}' {request.NumberComparisonType.ComparisonDescription()} {request.Value}.";
-        }
-
-        /***************************************************/
-
-        [Description("Returns a description of the filter represented by the given FilterByParameterText request.")]
-        [Input("request", "FilterByParameterText request to query the filter description from.")]
-        [Output("description", "Description of the filter represented by the input FilterByParameterText request.")]
-        public static string FilterDescription(this FilterByParameterText request)
-        {
-            if (request == null)
-            {
-                BH.Engine.Base.Compute.RecordError("Cannot extract the filter description of a null request.");
-                return "";
-            }
-
-            return $"Filter the elements and types with value of parameter '{request.ParameterName}' {request.TextComparisonType.ComparisonDescription()} '{request.Value}'.";
-        }
-
-
-        /***************************************************/
-        /****              Private methods              ****/
-        /***************************************************/
-
-        [Description("Returns a verbal description of number comparison enum.")]
-        [Input("comparisonType", "NumberComparisonType to be queried for its description.")]
-        [Output("description", "Verbal description of the input NumberComparisonType.")]
-        private static string ComparisonDescription(this NumberComparisonType comparisonType)
-        {
-            switch (comparisonType)
-            {
-                case NumberComparisonType.Equal:
-                    return "equal to";
-                case NumberComparisonType.Greater:
-                    return "greater than";
-                case NumberComparisonType.GreaterOrEqual:
-                    return "greater or equal than";
-                case NumberComparisonType.Less:
-                    return "smaller than";
-                case NumberComparisonType.LessOrEqual:
-                    return "smaller or equal than";
-                case NumberComparisonType.NotEqual:
-                    return "not equal to";
-                default:
-                    return "";
-            }
-        }
-
-        /***************************************************/
-
-        [Description("Returns a verbal description of text comparison enum.")]
-        [Input("comparisonType", "TextComparisonType to be queried for its description.")]
-        [Output("description", "Verbal description of the input TextComparisonType.")]
-        private static string ComparisonDescription(this TextComparisonType comparisonType)
-        {
-            switch (comparisonType)
-            {
-                case TextComparisonType.Contains:
-                    return "containing substring";
-                case TextComparisonType.ContainsNot:
-                    return "not containing substring";
-                case TextComparisonType.EndsWith:
-                    return "ending with substring";
-                case TextComparisonType.Equal:
-                    return "equal to string";
-                case TextComparisonType.NotEqual:
-                    return "not equal to string";
-                case TextComparisonType.StartsWith:
-                    return "starting with substring";
-                default:
-                    return "";
-            }
+            return $"Filter the elements and types based on a condition.";
         }
 
         /***************************************************/
     }
 }
+
 
 

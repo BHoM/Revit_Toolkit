@@ -8,17 +8,25 @@
     <Authors>BHoM</Authors>
     <Copyright>Copyright © https://github.com/BHoM</Copyright>
     <RootNamespace>BH.Engine.Revit</RootNamespace>
-    <FileVersion>8.0.0.0</FileVersion>
+    <FileVersion>8.1.0.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <OutputPath>..\Build\</OutputPath>
+		<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+		<AppendTargetFrameworkToOutputpath>false</AppendTargetFrameworkToOutputpath>
+		<ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot;  &quot;C:\ProgramData\BHoM\Assemblies&quot; /Y" />
   </Target>
+
+  <ItemGroup>
+    <Compile Remove="obj\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="obj\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Revit_oM\Revit_oM.csproj" />
@@ -148,6 +156,16 @@
     <Reference Include="Structure_oM">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(ProgramData)\BHoM\Assemblies\Structure_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Verification_Engine">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Verification_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Verification_oM">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Verification_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="WindowsBase" />

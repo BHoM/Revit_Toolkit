@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -28,7 +28,7 @@ namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
-#if (REVIT2020)
+#if REVIT2021
 
         /***************************************************/
         /****              Public methods               ****/
@@ -38,13 +38,6 @@ namespace BH.Revit.Engine.Core
                      "This BHoM implementation eliminates breaking changes between different Revit API versions. It returns the equivalent of UnitType from a Revit parameter Definition.")]
         [Input("definition", "Revit parameter Definition to extract the UnitType from.")]
         [Output("unitType", "UnitType extracted from the input Revit parameter Definition.")]
-        public static UnitType GetDataType(this Definition definition)
-        {
-            return definition.UnitType;
-        }
-
-        /***************************************************/
-#elif (REVIT2021)
         public static ForgeTypeId GetDataType(this Definition definition)
         {
             return definition.GetSpecTypeId();
@@ -52,6 +45,7 @@ namespace BH.Revit.Engine.Core
 #endif
     }
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -35,28 +35,19 @@ namespace BH.Revit.Engine.Core
         [Description("Gets the parameter type of a Revit parameter definition.")]
         [Input("definition", "Revit parameter definition to extract the parameter type from.")]
         [Output("parameterType", "Parameter type extracted from the input Revit parameter definition.")]
-#if (REVIT2020)
-        public static ParameterType? ParameterType(this Definition definition)
-        {
-            if (definition.ParameterType == Autodesk.Revit.DB.ParameterType.Invalid)
-                return null;
-            else
-                return definition.ParameterType;
-        }
-#else
         public static ForgeTypeId ParameterType(this Definition definition)
         {
             ForgeTypeId result = definition?.GetDataType();
             if (string.IsNullOrWhiteSpace(result?.TypeId))
                 result = null;
 
-            return null;
+            return result;
         }
 
         /***************************************************/
-#endif
     }
 }
+
 
 
 

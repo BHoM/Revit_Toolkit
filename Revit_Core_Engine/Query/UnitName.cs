@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -33,14 +33,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns name of UnitTypeId property that contains a given Revit unit object (enum for Revit up to 2020 or ForgeTypeId for later versions).")]
+        [Description("Returns name of UnitTypeId property that contains a given ForgeTypeId.")]
         [Input("unit", "Unit object to be queried for the correspondent UnitTypeId property name.")]
         [Output("name", "Name of UnitTypeId property that contains the input unit object.")]
-#if (REVIT2020)
-        public static string UnitName(this DisplayUnitType unit)
-#else
         public static string UnitName(this ForgeTypeId unit)
-#endif
         {
             if (m_UnitsWithNames == null)
                 CollectUnits();
@@ -53,7 +49,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Returns name of UnitTypeId property that contains given Revit parameter's unit object (enum for Revit up to 2020 or ForgeTypeId for later versions).")]
+        [Description("Returns name of UnitTypeId property that contains given Revit parameter's ForgeTypeId.")]
         [Input("parameter", "Parameter to be queried for the correspondent UnitTypeId property name.")]
         [Output("name", "Name of UnitTypeId property that contains the unit object correspondent to the input parameter.")]
         public static string UnitName(this Parameter parameter)
@@ -64,4 +60,5 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
+
 

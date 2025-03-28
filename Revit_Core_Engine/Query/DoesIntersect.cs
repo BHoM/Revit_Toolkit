@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -156,25 +156,7 @@ namespace BH.Revit.Engine.Core
         [Output("bool", "Result of the intersect checking.")]
         public static bool DoesIntersect(this XYZ point, Solid solid)
         {
-            if (point == null || solid == null)
-            {
-                return false;
-            }
-
-            Line line = Line.CreateBound(point, point.Add(XYZ.BasisZ));
-            SolidCurveIntersection sci = solid.IntersectWithCurve(line, new SolidCurveIntersectionOptions());
-
-            for (int i = 0; i < sci.SegmentCount; i++)
-            {
-                Curve c = sci.GetCurveSegment(i);
-
-                if (point.IsAlmostEqualTo(c.GetEndPoint(0), BH.oM.Geometry.Tolerance.Distance) || point.IsAlmostEqualTo(c.GetEndPoint(1), BH.oM.Geometry.Tolerance.Distance))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return IsContaining(solid, point);
         }
 
         /***************************************************/
@@ -243,4 +225,5 @@ namespace BH.Revit.Engine.Core
 
     }
 }
+
 

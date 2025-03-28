@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -34,14 +34,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns Revit spec object (enum for Revit up to 2020 or ForgeTypeId for later versions) based on SpecTypeId property name that represents it.")]
+        [Description("Returns ForgeTypeId based on SpecTypeId property name that represents it.")]
         [Input("name", "Name of SpecTypeId property to be queried for the correspondent spec.")]
         [Output("spec", "Spec object under the input SpecTypeId property name.")]
-#if (REVIT2020)
-        public static UnitType SpecFromName(this string name)
-#else
         public static ForgeTypeId SpecFromName(this string name)
-#endif
         {
             if (m_SpecsWithNames == null)
                 CollectSpecs();
@@ -54,11 +50,7 @@ namespace BH.Revit.Engine.Core
                     BH.Engine.Base.Compute.RecordWarning($"Spec with identifier {name} not found.");
             }
 
-#if (REVIT2020)
-            return UnitType.UT_Undefined;
-#else
             return null;
-#endif
         }
 
 
@@ -66,30 +58,6 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
-#if (REVIT2020)
-        private static void CollectSpecs()
-        {
-            m_SpecsWithNames = new Dictionary<string, UnitType>();
-            foreach (PropertyInfo info in typeof(SpecTypeId).GetProperties())
-            {
-                if (info.GetGetMethod().GetCustomAttribute<NotImplementedAttribute>() == null)
-                {
-                    UnitType? unitType = info.GetValue(null) as UnitType?;
-                    if (unitType != null && unitType != UnitType.UT_Undefined)
-                        m_SpecsWithNames.Add(info.Name, unitType.Value);
-                }
-            }
-        }
-
-
-        /***************************************************/
-        /****               Private fields              ****/
-        /***************************************************/
-
-        private static Dictionary<string, UnitType> m_SpecsWithNames = null;
-
-        /***************************************************/
-#else
         private static void CollectSpecs()
         {
             BH.Engine.Base.Compute.StartSuppressRecordingEvents(true, true, true);
@@ -105,15 +73,14 @@ namespace BH.Revit.Engine.Core
             BH.Engine.Base.Compute.StopSuppressRecordingEvents();
         }
 
-
         /***************************************************/
         /****               Private fields              ****/
         /***************************************************/
 
         private static Dictionary<string, ForgeTypeId> m_SpecsWithNames = null;
-#endif
 
         /***************************************************/
     }
 }
+
 

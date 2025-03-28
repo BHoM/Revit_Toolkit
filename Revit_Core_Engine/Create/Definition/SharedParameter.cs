@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
         [Input("instance", "If true, the created parameter will be an instance parameter, otherwise it will be a type parameter.")]
         [Input("categories", "Categories, to which the created parameter is bound. It will get bound to all categories if this value is null.")]
         [Output("definition", "Revit shared parameter Definition created based on the input properties.")]
-#if (REVIT2020 || REVIT2021 || REVIT2022)
+#if REVIT2021 || REVIT2022
         public static Definition SharedParameter(Document document, string parameterName, ParameterType parameterType, string parameterGroup, bool instance, IEnumerable<Category> categories)
 #else
         public static Definition SharedParameter(Document document, string parameterName, ForgeTypeId parameterType, string parameterGroup, bool instance, IEnumerable<Category> categories)
@@ -112,9 +112,10 @@ namespace BH.Revit.Engine.Core
 
             return def;
         }
-        
+
         /***************************************************/
     }
 }
+
 
 

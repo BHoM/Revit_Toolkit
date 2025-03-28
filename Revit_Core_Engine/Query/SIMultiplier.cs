@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -29,45 +29,6 @@ namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
-#if (REVIT2020)
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
-
-        [Description("Returns multiplier to be applied to achieve the conversion between internal Revit units and SI system used by BHoM." +
-                     "\nFor example, for Length it will be 0.3048 (conversion from feet to metres).")]
-        [Input("quantity", "Quantity for which the multiplier is to be found.")]
-        [Output("multiplier", "Multiplier between internal Revit units and SI system used by BHoM for the input quantity.")]
-        public static double ToSIMultiplier(this UnitType quantity)
-        {
-            if (!m_ToSIMultipliers.ContainsKey(quantity))
-                m_ToSIMultipliers.Add(quantity, UnitUtils.ConvertFromInternalUnits(1, quantity.BHoMUnitType()));
-
-            return m_ToSIMultipliers[quantity];
-        }
-
-        /***************************************************/
-
-        [Description("Returns multiplier to be applied to achieve the conversion between SI system used by BHoM and internal Revit units." +
-                     "\nFor example, for Length it will be 1/0.3048 (conversion from meters to feet).")]
-        [Input("quantity", "Quantity for which the multiplier is to be found.")]
-        [Output("multiplier", "Multiplier between SI system used by BHoM and internal Revit units for the input quantity.")]
-        public static double FromSIMultiplier(this UnitType quantity)
-        {
-            if (!m_ToSIMultipliers.ContainsKey(quantity))
-                m_ToSIMultipliers.Add(quantity, UnitUtils.ConvertFromInternalUnits(1, quantity.BHoMUnitType()));
-
-            return 1 / m_ToSIMultipliers[quantity];
-        }
-
-
-        /***************************************************/
-        /****              Private fields               ****/
-        /***************************************************/
-
-        private static Dictionary<UnitType, double> m_ToSIMultipliers = new Dictionary<UnitType, double>();
-
-#else
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
@@ -79,7 +40,7 @@ namespace BH.Revit.Engine.Core
         public static double ToSIMultiplier(this ForgeTypeId quantity)
         {
             // In case of unitless numbers
-#if(REVIT2021)
+#if REVIT2021
             if (quantity == null)
 #else
             if (quantity == null || !UnitUtils.IsMeasurableSpec(quantity))
@@ -102,7 +63,7 @@ namespace BH.Revit.Engine.Core
         public static double FromSIMultiplier(this ForgeTypeId quantity)
         {
             // In case of unitless numbers
-#if(REVIT2021)
+#if REVIT2021
             if (quantity == null)
 #else
             if (quantity == null || !UnitUtils.IsMeasurableSpec(quantity))
@@ -122,10 +83,10 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         private static Dictionary<string, double> m_ToSIMultipliers = new Dictionary<string, double>();
-#endif
 
-                /***************************************************/
+        /***************************************************/
     }
 }
+
 
 

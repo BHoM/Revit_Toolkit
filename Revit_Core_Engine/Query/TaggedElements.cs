@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -71,7 +71,7 @@ namespace BH.Revit.Engine.Core
 
         private static IEnumerable<ElementId> TaggedElements(this IndependentTag tag)
         {
-#if (REVIT2020 || REVIT2021)
+#if REVIT2021
             return new List<ElementId> { tag.TaggedLocalElementId };
 #else
             return tag.GetTaggedLocalElementIds();
@@ -89,4 +89,5 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
+
 

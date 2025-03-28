@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
             
             // Get bar curve
             List<oM.Geometry.ICurve> locationCurves = null;
-#if (REVIT2020 || REVIT2021 || REVIT2022)
+#if (REVIT2021 || REVIT2022)
             AnalyticalModelStick analyticalModel = familyInstance.GetAnalyticalModel() as AnalyticalModelStick;
             if (analyticalModel != null)
             {
@@ -178,6 +178,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
+
 
 
 

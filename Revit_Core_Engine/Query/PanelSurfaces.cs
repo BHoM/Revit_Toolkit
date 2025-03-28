@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -151,6 +151,11 @@ namespace BH.Revit.Engine.Core
                 FailureHandlingOptions failureHandlingOptions = t.GetFailureHandlingOptions().SetClearAfterRollback(true);
                 t.Start();
 
+                // Original geometries before any deletion occurs
+                Dictionary<ElementId, List<Solid>> originalSolids = toProcess.ToDictionary(x => x.Item1, x => doc.GetElement(x.Item1)?.Solids(new Options()).Select(y => SolidUtils.Clone(y)).ToList());
+
+                HashSet<ElementId> wallIds = new HashSet<ElementId>();
+
                 // Do the preprocessing by unjoining the elements from each other and deleting the openings meant to be ignored
                 HashSet<ElementId> insertsToDelete = new HashSet<ElementId>();
                 foreach ((ElementId, IEnumerable<ElementId>) tuple in toProcess)
@@ -167,6 +172,7 @@ namespace BH.Revit.Engine.Core
                     {
                         WallUtils.DisallowWallJoinAtEnd((Wall)hostObject, 0);
                         WallUtils.DisallowWallJoinAtEnd((Wall)hostObject, 1);
+                        wallIds.Add(tuple.Item1);
                     }
 
                     if (insertsToIgnore != null)
@@ -189,7 +195,13 @@ namespace BH.Revit.Engine.Core
                 foreach ((ElementId, IEnumerable<ElementId>) tuple in toProcess)
                 {
                     HostObject hostObject = doc.GetElement(tuple.Item1) as HostObject;
-                    withOpenings.Add(hostObject.Id, hostObject.Solids(new Options()).Select(x => SolidUtils.Clone(x)).ToList());
+                    List<Solid> solids;
+                    if (hostObject != null)
+                        solids = hostObject.Solids(new Options()).Select(x => SolidUtils.Clone(x)).ToList();
+                    else
+                        solids = originalSolids[tuple.Item1];
+
+                    withOpenings.Add(tuple.Item1, solids);
                 }
 
                 // Delete remaining openings
@@ -198,15 +210,14 @@ namespace BH.Revit.Engine.Core
                 foreach ((ElementId, IEnumerable<ElementId>) tuple in toProcess)
                 {
                     ElementId id = tuple.Item1;
-                    if (withOpenings[id] == null)
+                    HostObject hostObject = doc.GetElement(id) as HostObject;
+                    if (withOpenings[id] == null || hostObject == null)
                     {
                         insertsDeleted.Add(id, false);
                         continue;
                     }
 
-                    HostObject hostObject = doc.GetElement(id) as HostObject;
                     IEnumerable<ElementId> insertsToIgnore = tuple.Item2;
-
                     IList<ElementId> inserts = hostObject.FindInserts(true, true, true, true);
                     if (insertsToIgnore != null)
                         inserts = inserts.Where(x => insertsToIgnore.All(y => x.IntegerValue != y.IntegerValue)).ToList();
@@ -266,7 +277,7 @@ namespace BH.Revit.Engine.Core
                         Dictionary<PlanarSurface, List<PlanarSurface>> subResult = new Dictionary<PlanarSurface, List<PlanarSurface>>();
 
                         fullSolids = fullSolids.SelectMany(x => SolidUtils.SplitVolumes(x)).Where(x => x != null).ToList();
-                        if (hostObject is Wall)
+                        if (wallIds.Contains(id))
                         {
                             fullSolids.ForEach(x => BooleanOperationsUtils.CutWithHalfSpaceModifyingOriginalSolid(x, objectPlanes[0]));
                             fullSolids = fullSolids.Where(x => x != null).ToList();
@@ -427,6 +438,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
+
 
 
 

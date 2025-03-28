@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -77,6 +77,58 @@ namespace BH.oM.Revit.Enums
         [CategoryType("Annotation")]
         [CategoryDiscipline("Infrastructure")]
         OST_Alignments = -2001012,
+        [DisplayText("Analytical Beam Tags")]
+        [CategoryType("Annotation")]
+        [CategoryDiscipline("Structure")]
+        OST_BeamAnalyticalTags = -2009649,
+        [DisplayText("Analytical Beams")]
+        [CategoryType("Analytical")]
+        [CategoryDiscipline("Structure")]
+        OST_BeamAnalytical = -2009630,
+        [DisplayText("Analytical Brace Tags")]
+        [CategoryType("Annotation")]
+        [CategoryDiscipline("Structure")]
+        OST_BraceAnalyticalTags = -2009650,
+        [DisplayText("Analytical Braces")]
+        [CategoryType("Analytical")]
+        [CategoryDiscipline("Structure")]
+        OST_BraceAnalytical = -2009633,
+        [DisplayText("Analytical Column Tags")]
+        [CategoryType("Annotation")]
+        [CategoryDiscipline("Structure")]
+        OST_ColumnAnalyticalTags = -2009651,
+        [DisplayText("Analytical Columns")]
+        [CategoryType("Analytical")]
+        [CategoryDiscipline("Structure")]
+        OST_ColumnAnalytical = -2009636,
+        [DisplayText("Analytical Duct Segment Tags")]
+        [CategoryType("Annotation")]
+        [CategoryDiscipline("Mechanical")]
+        OST_DuctAnalyticalSegmentTags = -2001116,
+        [DisplayText("Analytical Duct Segments")]
+        [CategoryType("Analytical")]
+        [CategoryDiscipline("Mechanical")]
+        OST_DuctAnalyticalSegments = -2001115,
+        [DisplayText("Analytical Floor Tags")]
+        [CategoryType("Annotation")]
+        [CategoryDiscipline("Structure")]
+        OST_FloorAnalyticalTags = -2009652,
+        [DisplayText("Analytical Floors")]
+        [CategoryType("Analytical")]
+        [CategoryDiscipline("Structure")]
+        OST_FloorAnalytical = -2009639,
+        [DisplayText("Analytical Foundation Slabs")]
+        [CategoryType("Analytical")]
+        [CategoryDiscipline("Structure")]
+        OST_FoundationSlabAnalytical = -2009643,
+        [DisplayText("Analytical Isolated Foundation Tags")]
+        [CategoryType("Annotation")]
+        [CategoryDiscipline("Structure")]
+        OST_IsolatedFoundationAnalyticalTags = -2009654,
+        [DisplayText("Analytical Isolated Foundations")]
+        [CategoryType("Analytical")]
+        [CategoryDiscipline("Structure")]
+        OST_IsolatedFoundationAnalytical = -2009641,
         [DisplayText("Analytical Link Tags")]
         [CategoryType("Annotation")]
         [CategoryDiscipline("Structure")]
@@ -121,6 +173,18 @@ namespace BH.oM.Revit.Enums
         [CategoryType("Analytical")]
         [CategoryDiscipline("Piping")]
         OST_AnalyticalPipeConnections = -2000983,
+        [DisplayText("Analytical Pipe Segment Tags")]
+        [CategoryType("Annotation")]
+        [CategoryDiscipline("Piping")]
+        OST_PipeAnalyticalSegmentTags = -2001114,
+        [DisplayText("Analytical Pipe Segments")]
+        [CategoryType("Analytical")]
+        [CategoryDiscipline("Piping")]
+        OST_PipeAnalyticalSegments = -2001113,
+        [DisplayText("Analytical Slab Foundation Tags")]
+        [CategoryType("Annotation")]
+        [CategoryDiscipline("Structure")]
+        OST_FoundationSlabAnalyticalTags = -2009656,
         [DisplayText("Analytical Spaces")]
         [CategoryType("Analytical")]
         [CategoryDiscipline("Architecture", "Mechanical")]
@@ -129,6 +193,22 @@ namespace BH.oM.Revit.Enums
         [CategoryType("Analytical")]
         [CategoryDiscipline("Architecture", "Mechanical")]
         OST_AnalyticSurfaces = -2008186,
+        [DisplayText("Analytical Wall Foundation Tags")]
+        [CategoryType("Annotation")]
+        [CategoryDiscipline("Structure")]
+        OST_WallFoundationAnalyticalTags = -2009655,
+        [DisplayText("Analytical Wall Foundations")]
+        [CategoryType("Analytical")]
+        [CategoryDiscipline("Structure")]
+        OST_WallFoundationAnalytical = -2009642,
+        [DisplayText("Analytical Wall Tags")]
+        [CategoryType("Annotation")]
+        [CategoryDiscipline("Structure")]
+        OST_WallAnalyticalTags = -2009653,
+        [DisplayText("Analytical Walls")]
+        [CategoryType("Analytical")]
+        [CategoryDiscipline("Structure")]
+        OST_WallAnalytical = -2009640,
         [DisplayText("Anchor Tags")]
         [CategoryType("Annotation")]
         [CategoryDiscipline("Structure")]
@@ -665,6 +745,14 @@ namespace BH.oM.Revit.Enums
         [CategoryType("Model")]
         [CategoryDiscipline("Architecture", "Structure", "Mechanical", "Electrical", "Piping", "Infrastructure")]
         OST_MedicalEquipment = -2001046,
+        [DisplayText("MEP Ancillary Framing Tags")]
+        [CategoryType("Annotation")]
+        [CategoryDiscipline("Mechanical")]
+        OST_MEPAncillaryFramingTags = -2008236,
+        [DisplayText("MEP Ancillary Framing")]
+        [CategoryType("Model")]
+        [CategoryDiscipline("Mechanical")]
+        OST_MEPAncillaryFraming = -2008231,
         [DisplayText("MEP Fabrication Containment Tags")]
         [CategoryType("Annotation")]
         [CategoryDiscipline("Electrical")]
@@ -673,13 +761,21 @@ namespace BH.oM.Revit.Enums
         [CategoryType("Model")]
         [CategoryDiscipline("Electrical")]
         OST_FabricationContainment = -2008212,
-        [DisplayText("MEP Fabrication Ductwork Tags")]
+        [DisplayText("MEP Fabrication Ductwork Stiffener Tags")]
         [CategoryType("Annotation")]
         [CategoryDiscipline("Mechanical")]
+        OST_FabricationDuctworkStiffenerTags = -2008229,
+        [DisplayText("MEP Fabrication Ductwork Stiffeners")]
+        [CategoryType("Model")]
+        [CategoryDiscipline("Mechanical")]
+        OST_FabricationDuctworkStiffeners = -2008228,
+        [DisplayText("MEP Fabrication Ductwork Tags")]
+        [CategoryType("Annotation")]
+        [CategoryDiscipline("Mechanical", "Piping")]
         OST_FabricationDuctworkTags = -2008194,
         [DisplayText("MEP Fabrication Ductwork")]
         [CategoryType("Model")]
-        [CategoryDiscipline("Mechanical")]
+        [CategoryDiscipline("Mechanical", "Piping")]
         OST_FabricationDuctwork = -2008193,
         [DisplayText("MEP Fabrication Hanger Tags")]
         [CategoryType("Annotation")]
@@ -1169,6 +1265,10 @@ namespace BH.oM.Revit.Enums
         [CategoryType("Model")]
         [CategoryDiscipline("Structure", "Infrastructure")]
         OST_PathRein = -2009009,
+        [DisplayText("Structural Rebar Bending Details")]
+        [CategoryType("Annotation")]
+        [CategoryDiscipline("Structure")]
+        OST_RebarBendingDetails = -2001104,
         [DisplayText("Structural Rebar Coupler Tags")]
         [CategoryType("Annotation")]
         [CategoryDiscipline("Structure", "Infrastructure")]
@@ -1215,7 +1315,7 @@ namespace BH.oM.Revit.Enums
         OST_MEPSystemZoneTags = -2001007,
         [DisplayText("System-Zones")]
         [CategoryType("Analytical")]
-        [CategoryDiscipline("Mechanical")]
+        [CategoryDiscipline("Mechanical", "Piping")]
         OST_MEPSystemZone = -2001001,
         [DisplayText("Telephone Device Tags")]
         [CategoryType("Annotation")]
@@ -1249,6 +1349,18 @@ namespace BH.oM.Revit.Enums
         [CategoryType("Model")]
         [CategoryDiscipline("Architecture")]
         OST_Topography = -2001340,
+        [DisplayText("Toposolid Link Tags")]
+        [CategoryType("Annotation")]
+        [CategoryDiscipline("Architecture", "Infrastructure")]
+        OST_ToposolidLinkTags = -2001103,
+        [DisplayText("Toposolid Tags")]
+        [CategoryType("Annotation")]
+        [CategoryDiscipline("Architecture", "Infrastructure")]
+        OST_ToposolidTags = -2001094,
+        [DisplayText("Toposolid")]
+        [CategoryType("Model")]
+        [CategoryDiscipline("Architecture", "Infrastructure")]
+        OST_Toposolid = -2001079,
         [DisplayText("Vertical Circulation Tags")]
         [CategoryType("Annotation")]
         [CategoryDiscipline("Architecture", "Structure", "Mechanical", "Electrical", "Piping", "Infrastructure")]
@@ -1273,7 +1385,7 @@ namespace BH.oM.Revit.Enums
         [CategoryType("Model")]
         [CategoryDiscipline("Infrastructure")]
         OST_VibrationManagement = -2006261,
-        [DisplayText("View Reference")]
+        [DisplayText("View References")]
         [CategoryType("Annotation")]
         [CategoryDiscipline("Architecture", "Structure", "Mechanical", "Electrical", "Piping")]
         OST_ReferenceViewer = -2000198,
@@ -1320,7 +1432,8 @@ namespace BH.oM.Revit.Enums
         [DisplayText("Zone Tags")]
         [CategoryType("Annotation")]
         [CategoryDiscipline("Mechanical")]
-        OST_ZoneTags = -2008115
+        OST_ZoneTags = -2008115,
     }
 }
+
 

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -22,11 +22,10 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
+using System;
 
 namespace BH.Revit.Engine.Core
 {
@@ -49,7 +48,7 @@ namespace BH.Revit.Engine.Core
         [Output("definition", "Revit parameter Definition created based on the input properties.")]
         public static Definition Parameter(Document document, string parameterName, string typeName, string groupName, bool instance, IEnumerable<string> categoryNames, bool shared, string discipline = "")
         {
-#if (REVIT2020 || REVIT2021 || REVIT2022)
+#if REVIT2021 || REVIT2022
             List<ParameterType> parameterTypes = new List<ParameterType>();
             foreach (ParameterType pt in Enum.GetValues(typeof(ParameterType)))
             {
@@ -63,9 +62,9 @@ namespace BH.Revit.Engine.Core
 
                 }
             }
-            
+
             ParameterType parameterType = ParameterType.Invalid;
-            
+
             if (parameterTypes.Count == 0)
             {
                 BH.Engine.Base.Compute.RecordError($"Parameter type named {typeName} does not exist.");
@@ -118,17 +117,13 @@ namespace BH.Revit.Engine.Core
                 return Create.SharedParameter(document, parameterName, parameterType, groupName, instance, categories);
             else
             {
-                BuiltInParameterGroup parameterGroup = BuiltInParameterGroup.INVALID;
-                foreach (BuiltInParameterGroup bpg in System.Enum.GetValues(typeof(BuiltInParameterGroup)))
-                {
-                    if (LabelUtils.GetLabelFor(bpg) == groupName)
-                    {
-                        parameterGroup = bpg;
-                        break;
-                    }
-                }
-
+#if REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
+                BuiltInParameterGroup parameterGroup = groupName.GroupFromName();
                 if (parameterGroup == BuiltInParameterGroup.INVALID)
+#else
+                ForgeTypeId parameterGroup = groupName.GroupFromName();
+                if (parameterGroup == null)
+#endif
                 {
                     BH.Engine.Base.Compute.RecordError($"Parameter group named {groupName} does not exist.");
                     return null;
@@ -141,6 +136,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
+
 
 
 

@@ -1,0 +1,25 @@
+<!-- This file helps enable Batch Build of configurations that have a mix of .Net Framework and .Net targets. It also allows passing bot checks. It has to be this separate file because the same code if put in csproj files will be overridden by Visual Studio with default settings is has for Batch Build. -->
+<Project>
+	<PropertyGroup>
+
+		<!--Ensure each configuration gets its own project.assets.json file (and other intermediate build artefacts) under the obj\<ConfigurationName>
+			folder. More info: https://github.com/dotnet/msbuild/issues/1603-->
+		<BaseIntermediateOutputPath>$(MSBuildProjectDirectory)\obj\$(Configuration)\</BaseIntermediateOutputPath>
+
+		<!-- By default all .cs files in the project folder & subfolders are automatically included in the build, except those in $(DefaultItemExcludes), i.e. the bin	& obj folders. Since we added BaseIntermediateOutputPath above, adding obj/** to exclude all subfolders under obj. This also resolves the "Duplicated attributes" errors. More info: https://github.com/dotnet/msbuild/issues/6899-->
+		<DefaultItemExcludes>$(DefaultItemExcludes);obj/**</DefaultItemExcludes>
+	</PropertyGroup>
+
+	<!-- PrepareForBuild allows Visual Studio to do the restore right after opening the solution, so build time won't be affected -->
+	<Target Name="RestoreBeforeSolutionBuild" BeforeTargets="PrepareForBuild">
+
+		<ItemGroup>
+			<!-- Import all build configurations from the csproj file -->
+			<SelectedConfigurations Include="$(Configurations)" />
+		</ItemGroup>
+
+		<!-- Loop through all configurations and run dotnet restore on each one to generate the project.assets.json file and other intermediate build artefacts. Skip the restore if the json file already exists so in practice, this will only re-run if we purposefully delete the obj folder -->
+		<Exec Command="dotnet restore $(SolutionPath) -p:Configuration=%(SelectedConfigurations.Identity)"
+			Condition="!Exists('$(MSBuildProjectDirectory)\obj\%(SelectedConfigurations.Identity)\project.assets.json')" />
+	</Target>
+</Project>

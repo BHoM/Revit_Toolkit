@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -84,7 +84,7 @@ namespace BH.Revit.Engine.Core
             // Get rotation
             double rotation = familyInstance.OrientationAngle(settings);
             
-            framingProperty = BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, rotation, familyInstance.Symbol.Name);
+            framingProperty = BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, rotation, familyInstance.Symbol.FamilyTypeFullName());
 
             //Set identifiers, parameters & custom data
             framingProperty.SetIdentifiers(familyInstance.Symbol);
@@ -98,6 +98,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -30,123 +30,6 @@ namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
-#if (REVIT2020)
-
-        /***************************************************/
-        /****              Public methods               ****/
-        /***************************************************/
-
-        [Description("Finds a BHoM-specific Revit unit type for a given quantity.")]
-        [Input("quantity", "Quantity to find a BHoM-specific Revit unit type for.")]
-        [Output("unitType", "BHoM-specific Revit unit type for the input quantity.")]
-        public static DisplayUnitType BHoMUnitType(this UnitType quantity)
-        {
-            // Check if any display unit type applicable to given unit type is acceptable BHoM unit type.
-            IEnumerable<DisplayUnitType> duts = UnitUtils.GetValidDisplayUnits(quantity);
-            foreach (DisplayUnitType dut in duts)
-            {
-                if (BHoMUnitsOld.Contains(dut))
-                    return dut;
-            }
-
-            // Check if any display unit type applicable to given unit type has acceptable BHoM equivalent unit type.
-            foreach (DisplayUnitType dut in duts)
-            {
-                if (BHoMEquivalentsOld.ContainsKey(dut))
-                    return BHoMEquivalentsOld[dut];
-            }
-
-            // Find any SI display unit types.
-            List<DisplayUnitType> acceptable = duts.Where(x =>
-            {
-                string lower = x.ToString().ToLower();
-                return !NonSIUnitNames.Any(y => lower.Contains(y));
-            }).ToList();
-
-            // Return first SI display unit type or record error.
-            if (acceptable.Count != 0)
-            {
-                DisplayUnitType dut = acceptable.First();
-                BH.Engine.Base.Compute.RecordWarning($"Unit type {LabelUtils.GetLabelFor(quantity)} does not have a predefined SI equivalent in BHoM - the unit type used on the BHoM side of convert is {LabelUtils.GetLabelFor(dut)}. Please make sure the converted values are correct.");
-                return dut;
-            }
-            else
-            {
-                BH.Engine.Base.Compute.RecordError($"Unit type {LabelUtils.GetLabelFor(quantity)} has not been recognized and has not been converted - as a result, the output value can be wrong.");
-                return DisplayUnitType.DUT_GENERAL;
-            }
-        }
-
-
-        /***************************************************/
-        /****            Private collections            ****/
-        /***************************************************/
-
-        private static readonly DisplayUnitType[] BHoMUnitsOld = new DisplayUnitType[]
-        {
-            DisplayUnitType.DUT_METERS,
-            DisplayUnitType.DUT_SQUARE_METERS,
-            DisplayUnitType.DUT_CUBIC_METERS,
-            DisplayUnitType.DUT_JOULES,
-            DisplayUnitType.DUT_PASCALS_PER_METER,
-            DisplayUnitType.DUT_WATTS,
-            DisplayUnitType.DUT_WATTS_PER_SQUARE_METER,
-            DisplayUnitType.DUT_PASCALS,
-            DisplayUnitType.DUT_CELSIUS,
-            DisplayUnitType.DUT_METERS_PER_SECOND,
-            DisplayUnitType.DUT_CUBIC_METERS_PER_SECOND,
-            DisplayUnitType.DUT_AMPERES,
-            DisplayUnitType.DUT_KILOGRAMS_MASS,
-            DisplayUnitType.DUT_VOLTS,
-            DisplayUnitType.DUT_HERTZ,
-            DisplayUnitType.DUT_LUX,
-            DisplayUnitType.DUT_CANDELAS_PER_SQUARE_METER,
-            DisplayUnitType.DUT_CANDELAS,
-            DisplayUnitType.DUT_LUMENS,
-            DisplayUnitType.DUT_NEWTONS,
-            DisplayUnitType.DUT_NEWTONS_PER_METER,
-            DisplayUnitType.DUT_NEWTON_METERS,
-            DisplayUnitType.DUT_PASCAL_SECONDS,
-            DisplayUnitType.DUT_INV_CELSIUS,
-            DisplayUnitType.DUT_NEWTON_METERS_PER_METER,
-            DisplayUnitType.DUT_WATTS_PER_SQUARE_METER_KELVIN,
-            DisplayUnitType.DUT_WATTS_PER_CUBIC_METER,
-            DisplayUnitType.DUT_LUMENS_PER_WATT,
-            DisplayUnitType.DUT_SQUARE_METER_KELVIN_PER_WATT,
-            DisplayUnitType.DUT_JOULES_PER_KELVIN,
-            DisplayUnitType.DUT_METERS_PER_SECOND_SQUARED,
-            DisplayUnitType.DUT_METERS_TO_THE_FOURTH_POWER,
-            DisplayUnitType.DUT_METERS_TO_THE_SIXTH_POWER,
-            DisplayUnitType.DUT_RADIANS,
-            DisplayUnitType.DUT_RADIANS_PER_SECOND,
-            DisplayUnitType.DUT_SECONDS,
-            DisplayUnitType.DUT_WATTS_PER_METER_KELVIN,
-            DisplayUnitType.DUT_OHM_METERS,
-            DisplayUnitType.DUT_KELVIN_DIFFERENCE,
-            DisplayUnitType.DUT_KILOGRAMS_PER_CUBIC_METER,
-            DisplayUnitType.DUT_KILOGRAMS_MASS_PER_METER,
-            DisplayUnitType.DUT_KILOGRAMS_MASS_PER_SQUARE_METER,
-            DisplayUnitType.DUT_JOULES_PER_KILOGRAM_CELSIUS,
-            DisplayUnitType.DUT_NEWTONS_PER_SQUARE_METER,
-            DisplayUnitType.DUT_GENERAL
-        };
-
-        /***************************************************/
-
-        private static readonly Dictionary<DisplayUnitType, DisplayUnitType> BHoMEquivalentsOld = new Dictionary<DisplayUnitType, DisplayUnitType>
-        {
-            { DisplayUnitType.DUT_CURRENCY,  DisplayUnitType.DUT_GENERAL },
-            { DisplayUnitType.DUT_KELVIN,  DisplayUnitType.DUT_CELSIUS },
-            { DisplayUnitType.DUT_PERCENTAGE,  DisplayUnitType.DUT_FIXED },
-            { DisplayUnitType.DUT_SQUARE_METERS_PER_METER,  DisplayUnitType.DUT_METERS },
-            { DisplayUnitType.DUT_MILLIMETERS,  DisplayUnitType.DUT_METERS }
-        };
-
-        /***************************************************/
-
-#endif
-#if (!REVIT2020)
-
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
@@ -263,7 +146,7 @@ namespace BH.Revit.Engine.Core
         };
 
         /***************************************************/
-#endif
+
         private static readonly string[] NonSIUnitNames = new string[]
         {
             "inch",
@@ -284,6 +167,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
+
 
 
 

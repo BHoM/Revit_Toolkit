@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -53,7 +53,7 @@ namespace BH.Revit.Engine.Core
 
             oM.Geometry.ICurve locationCurve = familyInstance.LocationCurveFraming(settings);
             IFramingElementProperty property = familyInstance.FramingElementProperty(settings, refObjects);
-            beam = BH.Engine.Physical.Create.Beam(locationCurve, property);
+            beam = BH.Engine.Physical.Create.Beam(locationCurve, property, familyInstance.FamilyTypeFullName());
 
             //Set identifiers, parameters & custom data
             beam.SetIdentifiers(familyInstance);
@@ -67,6 +67,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
+
 
 
 

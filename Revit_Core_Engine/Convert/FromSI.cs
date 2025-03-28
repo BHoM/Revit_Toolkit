@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -36,11 +36,7 @@ namespace BH.Revit.Engine.Core
         [Input("value", "Numerical value to be converted to BHoM-specific units.")]
         [Input("quantity", "Quantity type to use when converting from Revit internal units to BHoM-specific units.")]
         [Output("converted", "Input value converted from internal Revit units to BHoM-specific units for the input quantity type.")]
-#if (REVIT2020)
-        public static double FromSI(this double value, UnitType quantity)
-#else
         public static double FromSI(this double value, ForgeTypeId quantity)
-#endif
         {
             if (double.IsNaN(value) || value == double.MaxValue || value == double.MinValue || double.IsNegativeInfinity(value) || double.IsPositiveInfinity(value))
                 return value;
@@ -51,6 +47,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
+
 
 
 

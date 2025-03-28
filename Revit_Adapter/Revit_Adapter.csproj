@@ -8,17 +8,25 @@
     <Authors>BHoM</Authors>
     <Copyright>Copyright © https://github.com/BHoM</Copyright>
     <RootNamespace>BH.Adapter.Revit</RootNamespace>
-    <FileVersion>8.0.0.0</FileVersion>
+    <FileVersion>8.1.0.0</FileVersion>
   </PropertyGroup>
   
   <PropertyGroup>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <OutputPath>..\Build\</OutputPath>
+		<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+		<AppendTargetFrameworkToOutputpath>false</AppendTargetFrameworkToOutputpath>
+		<ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot;  &quot;C:\ProgramData\BHoM\Assemblies&quot; /Y" />
   </Target>
+
+  <ItemGroup>
+    <Compile Remove="obj\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="obj\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Revit_Engine\Revit_Engine.csproj" />

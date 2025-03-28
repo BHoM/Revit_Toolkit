@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -53,33 +53,7 @@ namespace BH.Revit.Engine.Core
             else if (onlyLinked)
                 return null;
 
-            object value = null;
-            switch (parameter.StorageType)
-            {
-                case StorageType.Double:
-                    value = parameter.AsDouble().ToSI(parameter.Definition.GetDataType());
-                    break;
-                case StorageType.ElementId:
-                    ElementId elementID = parameter.AsElementId();
-                    if (elementID != null)
-                        value = elementID.IntegerValue;
-                    break;
-                case StorageType.Integer:
-                    if (parameter.IsBooleanParameter())
-                        value = parameter.AsInteger() == 1;
-                    else if (parameter.Definition.ParameterType() == null)
-                        value = parameter.AsValueString();
-                    else
-                        value = parameter.AsInteger();
-                    break;
-                case StorageType.String:
-                    value = parameter.AsString();
-                    break;
-                case StorageType.None:
-                    value = parameter.AsValueString();
-                    break;
-            }
-
+            object value = parameter.ParameterValue();
             string unitTypeIdentifier = parameter.SpecName();
             return new RevitParameter { Name = name, Value = value, IsReadOnly = parameter.IsReadOnly, UnitType = unitTypeIdentifier };
         }
@@ -87,8 +61,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-
-
-
