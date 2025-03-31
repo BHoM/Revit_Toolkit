@@ -17,7 +17,6 @@
 		<ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
 					<Configurations>Debug;Release;Debug2021;Release2021;Debug2022;Release2022;Debug2023;Release2023;Debug2024;Release2024;Debug2025;Release2025</Configurations>
 	</PropertyGroup>
-
 	<PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
 		<RevitVersion>2021</RevitVersion>
 		<TargetFramework>net48</TargetFramework>
@@ -48,31 +47,25 @@
 		<TargetFramework>net8.0-windows</TargetFramework>
 		<DefineConstants>REVIT2025</DefineConstants>
 	</PropertyGroup>
-
 	<PropertyGroup>
 		<AssemblyName>Revit_Core_Engine_$(RevitVersion)</AssemblyName>
 		<StartProgram>C:\Program Files\Autodesk\Revit $(RevitVersion)\Revit.exe</StartProgram>
 	</PropertyGroup>
-
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="	xcopy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProgramData)\BHoM\Assemblies&quot; /Y&#xD;&#xA;					xcopy &quot;$(ProjectDir)Files\Families&quot; &quot;$(ProgramData)\BHoM\Resources\Revit\Families&quot; /Y /I /E" />
 	</Target>
-
 	<ItemGroup>
 	  <Compile Remove="obj\**" />
 	  <EmbeddedResource Remove="obj\**" />
 	  <None Remove="obj\**" />
 	</ItemGroup>
-
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 	</ItemGroup>
-
 	<ItemGroup>
 		<ProjectReference Include="..\Revit_Engine\Revit_Engine.csproj" />
 		<ProjectReference Include="..\Revit_oM\Revit_oM.csproj" />
 	</ItemGroup>
-
 	<ItemGroup>
 		<Reference Include="RevitAPI">
 			<HintPath>..\libs\$(RevitVersion)\RevitAPI.dll</HintPath>
@@ -83,7 +76,6 @@
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>
-
 	<ItemGroup>
 		<Reference Include="Analytical_oM">
 			<SpecificVersion>False</SpecificVersion>
@@ -236,7 +228,6 @@
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>
-
 	<ItemGroup>
 		<None Include="Files\Families\StructuralColumns_AngleProfile.rfa" />
 		<None Include="Files\Families\StructuralColumns_BoxProfile.rfa" />
@@ -265,5 +256,4 @@
 		<None Include="Files\Families\StructuralFraming_TProfile.rfa" />
 		<None Include="Files\Families\StructuralFraming_TubeProfile.rfa" />
 	</ItemGroup>
-
 </Project>
