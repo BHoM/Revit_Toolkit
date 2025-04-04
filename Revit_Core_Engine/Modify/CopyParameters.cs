@@ -62,9 +62,16 @@ namespace BH.Revit.Engine.Core
                 {
                     foreach (Parameter parameter in elementType.ParametersMap)
                     {
-                        RevitParameter bHoMParameter = parameter.ParameterFromRevit(typeParameterLinks, true);
-                        if (bHoMParameter != null)
-                            parameters.Add(bHoMParameter);
+                        try
+                        {
+                            RevitParameter bHoMParameter = parameter.ParameterFromRevit(typeParameterLinks, true, element);
+                            if (bHoMParameter != null)
+                                parameters.Add(bHoMParameter);
+                        }
+                        catch (Exception e)
+                        {
+                            BH.Engine.Base.Compute.RecordWarning(e.Message);
+                        }
                     }
                 }
 
@@ -77,7 +84,7 @@ namespace BH.Revit.Engine.Core
 
             foreach (Parameter parameter in elementParams)
             {
-                parameters.Add(parameter.ParameterFromRevit(parameterLinks, false));
+                parameters.Add(parameter.ParameterFromRevit(parameterLinks, false, element));
             }
 
             bHoMObject.Fragments.Add(new RevitPulledParameters(parameters));
