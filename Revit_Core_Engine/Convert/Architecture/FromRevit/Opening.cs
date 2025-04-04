@@ -57,7 +57,7 @@ namespace BH.Revit.Engine.Core
             if (opening != null)
                 return opening;
             
-            opening = new oM.Architecture.BuildersWork.Opening { Name = instance.Name };
+            opening = new oM.Architecture.BuildersWork.Opening { Name = instance.FamilyTypeFullName() };
 
             //Set coordinate system
             opening.CoordinateSystem = instance.CoordinateSystem();

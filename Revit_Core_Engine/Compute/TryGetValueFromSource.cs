@@ -71,35 +71,8 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Base.Compute.RecordNote($"Element with id {element.Id} does not have a parameter named {valueSource.ParameterName}.");
                 return new Output<bool, object> { Item1 = false, Item2 = null };
             }
-
-            return new Output<bool, object> { Item1 = true, Item2 = param.ParameterValue() };
-        }
-
-
-        /***************************************************/
-        /****              Private Methods              ****/
-        /***************************************************/
-
-        private static object ParameterValue(this Parameter parameter)
-        {
-            switch (parameter.StorageType)
-            {
-                case StorageType.Double:
-                    return parameter.AsDouble().ToSI(parameter.Definition.GetDataType());
-                case StorageType.ElementId:
-                    return parameter.AsValueString();
-                case StorageType.Integer:
-                    if (parameter.Definition.ParameterType() == null)
-                        return parameter.AsValueString();
-                    else if (parameter.IsBooleanParameter())
-                        return parameter.AsInteger() == 1;
-                    else
-                        return parameter.AsInteger();
-                case StorageType.String:
-                    return parameter.AsString();
-                default:
-                    return parameter.AsValueString();
-            }
+            else
+                return new Output<bool, object> { Item1 = true, Item2 = param };
         }
 
         /***************************************************/

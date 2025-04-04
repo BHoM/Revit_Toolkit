@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -21,54 +21,49 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
-using BH.oM.Physical.Elements;
-using BH.oM.Physical.FramingProperties;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Convert
+    public static partial class Query
     {
         /***************************************************/
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Converts a Revit FamilyInstance to BH.oM.Physical.Elements.Beam.")]
-        [Input("familyInstance", "Revit FamilyInstance to be converted.")]
-        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
-        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("beam", "BH.oM.Physical.Elements.Beam resulting from converting the input Revit FamilyInstance.")]
-        public static Beam BeamFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Description("Extracts value from Revit parameter and converts it to BHoM-compliant form.")]
+        [Input("parameter", "Revit parameter to extract.")]
+        [Output("value", "Value extracted from Revit parameter and aligned to BHoM convention.")]
+        public static object ParameterValue(this Parameter parameter)
         {
-            settings = settings.DefaultIfNull();
+            if (parameter == null)
+                return null;
 
-            Beam beam = refObjects.GetValue<Beam>(familyInstance.Id);
-            if (beam != null)
-                return beam;
+            switch (parameter.StorageType)
+            {
+                case StorageType.Double:
+                    return parameter.AsDouble().ToSI(parameter.Definition.GetDataType());
+                case StorageType.ElementId:
+                    return parameter.AsElementId()?.IntegerValue;
+                case StorageType.Integer:
+                    if (parameter.IsBooleanParameter())
+                        return parameter.AsInteger() == 1;
+                    else if (parameter.IsEnumParameter())
+                        return parameter.AsValueString();
+                    else if (string.IsNullOrEmpty(parameter.AsValueString()))
+                        return null;
+                    else
+                        return parameter.AsInteger();
+                case StorageType.String:
+                    return parameter.AsString();
+                case StorageType.None:
+                    return parameter.AsValueString();
+            }
 
-            oM.Geometry.ICurve locationCurve = familyInstance.LocationCurveFraming(settings);
-            IFramingElementProperty property = familyInstance.FramingElementProperty(settings, refObjects);
-            beam = BH.Engine.Physical.Create.Beam(locationCurve, property, familyInstance.FamilyTypeFullName());
-
-            //Set identifiers, parameters & custom data
-            beam.SetIdentifiers(familyInstance);
-            beam.CopyParameters(familyInstance, settings.MappingSettings);
-            beam.SetProperties(familyInstance, settings.MappingSettings);
-
-            refObjects.AddOrReplace(familyInstance.Id, beam);
-            return beam;
+            return null;
         }
 
         /***************************************************/
     }
 }
-
-
-
-
-
