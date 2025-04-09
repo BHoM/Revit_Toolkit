@@ -49,7 +49,15 @@ namespace BH.Engine.Adapters.Revit
             foreach (var crit in criteria)
             {
                 if (crit == null) return bHoMObjects;
-                bHoMObjects = bHoMObjects.Where(x => x.VerifyCondition(crit).Passed ?? false);
+                bHoMObjects = bHoMObjects.Where(x => {
+                    var typeId = x.GetRevitElementType().ElementId();
+                    var isType = typeId == -1;
+                    var validateCrit = crit.ValueSource as ParameterValueSource;
+                    validateCrit.FromType = isType;
+                    crit.ValueSource = validateCrit;
+                    var result = x.VerifyCondition(crit);
+                    return result.Passed != null && result.Passed.Value;
+                });
             }
             return bHoMObjects.ToList();
         }
