@@ -44,21 +44,29 @@ namespace BH.Engine.Adapters.Revit
         [Input("bHoMObjects", "The collection of BHoM objects to filter.")]
         [Input("criteria", "The filtering criteria to apply.")]
         [Output("A list of BHoM objects that match the specified criteria.")]
-        public static IEnumerable<IBHoMObject> FilterByRevitParameters(this IEnumerable<IBHoMObject> bHoMObjects, IEnumerable<ValueCondition> criteria)
+        public static IEnumerable<IBHoMObject> FilterByRevitParameters(this IEnumerable<IBHoMObject> bHoMObjects, ILogicalCollectionCondition criteria)
         {
-            foreach (var crit in criteria)
-            {
-                if (crit == null) return bHoMObjects;
-                bHoMObjects = bHoMObjects.Where(x => {
-                    var typeId = x.GetRevitElementType().ElementId();
-                    var isType = typeId == -1;
-                    var validateCrit = crit.ValueSource as ParameterValueSource;
-                    validateCrit.FromType = isType;
-                    crit.ValueSource = validateCrit;
-                    var result = x.VerifyCondition(crit);
-                    return result.Passed != null && result.Passed.Value;
+
+            if (criteria == null) return bHoMObjects;
+
+            bHoMObjects = bHoMObjects.Where(item => {
+
+                var typeId = item.GetRevitElementType().ElementId();
+                var isType = typeId == -1;
+
+                var validateCrit = criteria.Conditions.Cast<ValueCondition>();
+
+                validateCrit = validateCrit.Select(c =>
+                {
+                    ParameterValueSource z = (ParameterValueSource)c.ValueSource;
+                    z.FromType = isType;
+                    c.ValueSource = z;
+                    return c;
                 });
-            }
+
+                return item.VerifyCondition(criteria).Passed != null && item.VerifyCondition(criteria).Passed.Value;
+            });
+
             return bHoMObjects.ToList();
         }
 
@@ -69,17 +77,18 @@ namespace BH.Engine.Adapters.Revit
         public static IEnumerable<IBHoMObject> FilterByRevitParameters(this IEnumerable<IBHoMObject> bHoMObjects, List<List<object>> criteria)
         {
             // Validate that criteria contains exactly 3 lists
-            if (criteria == null || criteria.Count != 3)
+            if (criteria == null)
             {
-                Base.Compute.RecordError("Criteria must contain exactly three lists: parameterNames, filterTypes, values.");
+                Base.Compute.RecordError("Criteria must contain exactly three rows: parameterNames, filterTypes, values.");
                 return null;
             }
 
-            var filterCriteria = FiltersFromString(
-                criteria[0].Cast<string>().ToList(),
-                criteria[1].Cast<string>().ToList(),
-                criteria[2].ToList()
-            );
+            List<string> parameterNames = criteria.Select(x => x[0]).Cast<string>().ToList();
+            List<string> filterTypes = criteria.Select(x => x[1]).Cast<string>().ToList();
+            List<object> values = criteria.Select(x => x[2]).ToList();
+
+
+            var filterCriteria = FiltersFromString(parameterNames, filterTypes, values);
 
             return bHoMObjects.FilterByRevitParameters(filterCriteria);
         }
@@ -111,7 +120,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Private methods              ****/
         /***************************************************/
 
-        private static IEnumerable<ValueCondition> FiltersFromString(List<string> parameterNames, List<string> filterTypes, List<object> values)
+        private static ILogicalCollectionCondition FiltersFromString(List<string> parameterNames, List<string> filterTypes, List<object> values)
         {
             if (parameterNames == null || filterTypes == null || values == null)
             {
@@ -125,7 +134,7 @@ namespace BH.Engine.Adapters.Revit
                 return null;
             }
 
-            var filters = new List<ValueCondition>();
+            LogicalAndCondition filters = new LogicalAndCondition ();
 
             for (int i = 0; i < parameterNames.Count; i++)
             {
@@ -139,12 +148,12 @@ namespace BH.Engine.Adapters.Revit
 
                 if (string.IsNullOrEmpty(filterTypes[i]) || filterTypes[i] == "-")
                 {
-                    filters.Add(null);
+                    filters.Conditions.Add(null);
                 }
 
                 else
                 {
-                    filters.Add(new ValueCondition
+                    filters.Conditions.Add(new ValueCondition
                     {
                         ValueSource = new ParameterValueSource() { ParameterName = parameterNames[i] },
                         ReferenceValue = values[i],
@@ -152,6 +161,7 @@ namespace BH.Engine.Adapters.Revit
                     });
                 }
             }
+
             return filters;
         }
 

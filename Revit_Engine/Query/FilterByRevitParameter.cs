@@ -41,7 +41,10 @@ namespace BH.Engine.Adapters.Revit
         [Output("A list of BHoM objects that match the specified criterion.")]
         public static IEnumerable<IBHoMObject> FilterByRevitParameter(this IEnumerable<IBHoMObject> bHoMObjects, ValueCondition criterion)
         {
-            return bHoMObjects.FilterByRevitParameters(new List<ValueCondition> { criterion });
+            return bHoMObjects.FilterByRevitParameters(new LogicalAndCondition
+            {
+                Conditions = new List<ICondition>() { criterion }
+            });
         }
 
 
