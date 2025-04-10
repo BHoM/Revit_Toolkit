@@ -73,7 +73,6 @@ namespace BH.Engine.Adapters.Revit
                         UnitType = string.Empty,
                         DisplayUnit = string.Empty,
                         IsReadOnly = true,
-                        IsInstance = !typeProps.Contains(paramName),
                     }; 
             }
 

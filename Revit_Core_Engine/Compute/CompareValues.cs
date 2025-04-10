@@ -73,7 +73,7 @@ namespace BH.Revit.Engine.Core
                 return equal != invert;
             }
             else
-                return BH.Engine.Verification.Compute.ICompareValues(value.ParameterValue(), referenceValue, comparisonType, tolerance);
+                return BH.Engine.Verification.Compute.ICompareValues(value.ParameterValue(out _), referenceValue, comparisonType, tolerance);
         }
 
         /***************************************************/
