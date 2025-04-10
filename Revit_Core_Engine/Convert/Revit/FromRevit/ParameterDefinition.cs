@@ -82,6 +82,7 @@ namespace BH.Revit.Engine.Core
                 Shared = shared
             };
 
+            refObjects.AddOrReplace(parameter.Id, paramDef);
             return paramDef;
         }
 
