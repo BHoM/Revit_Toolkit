@@ -35,32 +35,66 @@ namespace BH.Revit.Engine.Core
         [Description("Extracts value from Revit parameter and converts it to BHoM-compliant form.")]
         [Input("parameter", "Revit parameter to extract.")]
         [Output("value", "Value extracted from Revit parameter and aligned to BHoM convention.")]
-        public static object ParameterValue(this Parameter parameter)
+        public static object ParameterValue(this Parameter parameter, out string displayUnit)
         {
+            ForgeTypeId spec = parameter.Definition.GetDataType();
             if (parameter == null)
+            {
+                displayUnit = string.Empty;
                 return null;
+            }                
 
             switch (parameter.StorageType)
             {
                 case StorageType.Double:
+                    displayUnit = spec.LabelForSymbolTypeId();
                     return parameter.AsDouble().ToSI(parameter.Definition.GetDataType());
                 case StorageType.ElementId:
+                    displayUnit = string.Empty;
                     return parameter.AsElementId()?.IntegerValue;
                 case StorageType.Integer:
                     if (parameter.IsBooleanParameter())
+                    {
+                        displayUnit = "Bool";
                         return parameter.AsInteger() == 1;
+                    }
+                        
                     else if (parameter.IsEnumParameter())
+                    {
+                        displayUnit = "Enum";
                         return parameter.AsValueString();
+                    }
+                        
                     else if (string.IsNullOrEmpty(parameter.AsValueString()))
+                    {
+                        displayUnit = string.Empty;
                         return null;
+                    }                        
                     else
+                    {
+                        displayUnit = "Int";
                         return parameter.AsInteger();
+                    }
+                        
                 case StorageType.String:
-                    return parameter.AsString();
+                    {
+                        if (spec.NameEquals(SpecTypeId.String.MultilineText))
+                            displayUnit = "MultiText";
+                        else if (spec.NameEquals(SpecTypeId.String.Url))
+                            displayUnit = "Url";
+                        else
+                            displayUnit = "Text";
+                        return parameter.AsString();
+                    }
+                    
                 case StorageType.None:
-                    return parameter.AsValueString();
-            }
+                    {
+                        displayUnit = string.Empty;
+                        return parameter.AsValueString();
+                    }
 
+            }
+            displayUnit = string.Empty;
             return null;
         }
 

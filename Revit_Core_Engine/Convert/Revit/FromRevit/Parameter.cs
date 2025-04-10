@@ -55,47 +55,7 @@ namespace BH.Revit.Engine.Core
             else if (onlyLinked)
                 return null;
 
-            ForgeTypeId spec = parameter.Definition.GetDataType();
-            object value = null;
-            switch (parameter.StorageType)
-            {
-                case StorageType.Double:
-                    value = parameter.AsDouble().ToSI(spec);
-                    displayUnit = spec.LabelForSymbolTypeId();
-                    break;
-                case StorageType.ElementId:
-                    ElementId elementID = parameter.AsElementId();
-                    if (elementID != null)
-                        value = elementID.IntegerValue;
-                    break;
-                case StorageType.Integer:
-                    if (parameter.IsBooleanParameter())
-                    {
-                        value = parameter.AsInteger() == 1;
-                        displayUnit = "Bool";
-                    }
-                    else if (parameter.Definition.ParameterType() == null)
-                        value = parameter.AsValueString();
-                    else
-                    {
-                        value = parameter.AsInteger();
-                        displayUnit = "Int";
-                    }
-                    break;
-                case StorageType.String:
-                    value = parameter.AsString();
-                    if (spec.NameEquals(SpecTypeId.String.Text))
-                        displayUnit = "Text";
-                    else if (spec.NameEquals(SpecTypeId.String.MultilineText))
-                        displayUnit = "MultiText";
-                    else if (spec.NameEquals(SpecTypeId.String.Url))
-                        displayUnit = "Url";
-                    break;
-                case StorageType.None:
-                    value = parameter.AsValueString();
-                    break;
-            }
-
+            object value = parameter.ParameterValue(out displayUnit);
             string unitTypeIdentifier = parameter.SpecName();
 
             return new RevitParameter { 
