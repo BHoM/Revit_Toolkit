@@ -22,7 +22,6 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Mapping;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
@@ -53,21 +52,31 @@ namespace BH.Revit.Engine.Core
                 return paramDef;
 
             Definition def = parameter.GetDefinition();
-            ElementBinding binding = document.ParameterBindings.get_Item(def) as ElementBinding;
+            Binding binding = document.ParameterBindings.get_Item(def);
+            ElementBinding elementBinding = binding as ElementBinding;
 
             string name = parameter.Name;
-            string parameterType = def.GetDataType().SpecName();
-            string discipline = def.GetDataType().UnitName();
-            string parameterGroup = def.GetDataType().GroupName();
-            bool instance = binding is InstanceBinding;
-            List<string> categories = binding.Categories.Cast<Category>().Select(c => c.Name).ToList() ;
-            bool shared = true;
+
+            string parameterType = def.GetDataType().TypeId;
+
+            ForgeTypeId groupTypeId = def.GetGroupTypeId();
+            string parameterGroup = LabelUtils.GetLabelForGroup(groupTypeId);
+
+            bool instance = elementBinding is InstanceBinding;
+
+            List<string> categories = new List<string>();
+            if (elementBinding?.Categories != null)
+            {
+                categories = elementBinding.Categories.Cast<Category>().Select(c => c.Name).ToList();
+            }
+
+            bool shared = def is ExternalDefinition;
 
             paramDef = new ParameterDefinition
             {
                 Name = name,
                 ParameterType = parameterType,
-                Discipline = discipline,
+                ParameterGroup = parameterGroup,
                 Instance = instance,
                 Categories = categories,
                 Shared = shared
