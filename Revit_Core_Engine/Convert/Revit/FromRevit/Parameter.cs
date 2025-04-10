@@ -41,13 +41,12 @@ namespace BH.Revit.Engine.Core
         [Input("parameterLinks", "A collection of names of RevitParameters and sets of their correspondent Revit parameter names to be used on name mapping.")]
         [Input("onlyLinked", "If true, there needs to be a valid, relevant parameter link in parameterLinks in order for convert to succeed.")]
         [Output("parameter", "BH.oM.Adapters.Revit.Parameters.RevitParameter resulting from converting the input Revit Parameter.")]
-        public static RevitParameter ParameterFromRevit(this Parameter parameter, IEnumerable<IParameterLink> parameterLinks = null, bool onlyLinked = false, Element checkOn = null)
+        public static RevitParameter ParameterFromRevit(this Parameter parameter, IEnumerable<IParameterLink> parameterLinks = null, bool onlyLinked = false)
         {
             if (parameter == null)
                 return null;
 
             string displayUnit = string.Empty;
-            bool? isInstance = null;
             string name = parameter.Definition.Name;
 
             IParameterLink parameterLink = parameterLinks.ParameterLink(parameter);
@@ -98,14 +97,11 @@ namespace BH.Revit.Engine.Core
             }
 
             string unitTypeIdentifier = parameter.SpecName();
-            if (checkOn != null)
-                isInstance = parameter.IsInstanceParameter(checkOn);
 
             return new RevitParameter { 
                 Name = name, 
                 Value = value, 
                 IsReadOnly = parameter.IsReadOnly,
-                IsInstance = isInstance,
                 UnitType = unitTypeIdentifier,
                 DisplayUnit = displayUnit
             };
