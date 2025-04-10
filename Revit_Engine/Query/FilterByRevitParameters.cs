@@ -64,6 +64,8 @@ namespace BH.Engine.Adapters.Revit
                     return c;
                 });
 
+                criteria.Conditions = validateCrit.Cast<ICondition>().ToList();
+
                 return item.VerifyCondition(criteria).Passed != null && item.VerifyCondition(criteria).Passed.Value;
             });
 
