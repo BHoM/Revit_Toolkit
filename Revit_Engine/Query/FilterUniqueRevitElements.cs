@@ -45,6 +45,7 @@ namespace BH.Engine.Adapters.Revit
 
         ///***************************************************/
 
+        //TODO: move to Base_Engine?
         public static IEnumerable<IObject> Unique(this IEnumerable<IObject> objects, BaseComparisonConfig comparisonConfig = null)
         {
             HashSet<string> hashes = new HashSet<string>();

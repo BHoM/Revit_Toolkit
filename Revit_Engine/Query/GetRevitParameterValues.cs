@@ -35,6 +35,7 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        //TODO: to be rather solved by improving Excel_UI?
         [Description("Retrieves values of a parameter attached to a groupe of BHoM objects. It will return null values for objects that do not have  the parameter defined")]
         [Input("List<bHoMObject>", "BHoMObjects to which the parameters will be attached.")]
         [Input("parameterName", "Name of the parameter to be sought for.")]

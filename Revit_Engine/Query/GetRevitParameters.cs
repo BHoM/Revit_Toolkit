@@ -35,7 +35,6 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-
         [Description("Retrieves parameters that are attached to a BHoM object. If a parameter with given name exists in both collections of pulled parameters and the ones to push, the latter is returned.")]
         [Input("bHoMObject", "BHoMObject to which the parameters will be attached.")]
         [Output("revitParameters")]
