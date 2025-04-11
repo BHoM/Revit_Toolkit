@@ -41,61 +41,63 @@ namespace BH.Engine.Adapters.Revit
         [Output("RevitParameter")]
         public static RevitParameter GetRevitParameter(this IBHoMObject bHoMObject, string parameterName)
         {
-            if (bHoMObject == null)
-                return null;
+            return bHoMObject?.GetRevitParameters()?.FirstOrDefault(x => x.Name == parameterName);
 
-            RevitParametersToPush pushFragment = bHoMObject.Fragments?.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
-            if (pushFragment?.Parameters != null)
-            {
-                RevitParameter param = pushFragment.Parameters.FirstOrDefault(x => x.Name == parameterName);
-                if (param != null)
-                    return param;
-            }
+            //if (bHoMObject == null)
+            //    return null;
 
-            RevitPulledParameters pullFragment = bHoMObject.Fragments?.FirstOrDefault(x => x is RevitPulledParameters) as RevitPulledParameters;
-            if (pullFragment?.Parameters != null)
-            {
-                RevitParameter param = pullFragment.Parameters.FirstOrDefault(x => x.Name == parameterName);
-                if (param != null)
-                    return param;
-            }
+            //RevitParametersToPush pushFragment = bHoMObject.Fragments?.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
+            //if (pushFragment?.Parameters != null)
+            //{
+            //    RevitParameter param = pushFragment.Parameters.FirstOrDefault(x => x.Name == parameterName);
+            //    if (param != null)
+            //        return param;
+            //}
 
-            RevitIdentifiers identifierFragment = bHoMObject.Fragments?.FirstOrDefault(x => x is RevitIdentifiers) as RevitIdentifiers;
-            if (identifierFragment != null)
-            {
-                string[] typeProps = { "CategoryName", "FamilyName", "FamilyTypeName", "FamilyTypeId" };
-                string paramName = string.Concat(parameterName.Where(c => !char.IsWhiteSpace(c)));
-                if (BH.Engine.Reflection.Query.PropertyNames(identifierFragment).Contains(paramName))
-                    return new RevitParameter()
-                    {
-                        Name = paramName,
-                        Value = Base.Query.PropertyValue(identifierFragment, paramName),
-                        Quantity = string.Empty,
-                        Unit = string.Empty,
-                        IsReadOnly = true,
-                    }; 
-            }
+            //RevitPulledParameters pullFragment = bHoMObject.Fragments?.FirstOrDefault(x => x is RevitPulledParameters) as RevitPulledParameters;
+            //if (pullFragment?.Parameters != null)
+            //{
+            //    RevitParameter param = pullFragment.Parameters.FirstOrDefault(x => x.Name == parameterName);
+            //    if (param != null)
+            //        return param;
+            //}
 
-            Dictionary<string, object> bHoMPropDic = BH.Engine.Reflection.Query.PropertyDictionary(bHoMObject);
-            foreach (KeyValuePair<string, object> bHoMPropEntry in bHoMPropDic)
-            {
-                IBHoMObject bHoMProp = bHoMPropEntry.Value as IBHoMObject;
-                if (bHoMProp != null)
-                {
-                    RevitPulledParameters typePullFragment = bHoMProp.Fragments?.FirstOrDefault(x => x is RevitPulledParameters) as RevitPulledParameters;
-                    if (typePullFragment?.Parameters != null)
-                    {
-                        RevitParameter param = typePullFragment.Parameters.FirstOrDefault(x => x.Name == parameterName);
-                        if (param != null)
-                        {
-                            Engine.Base.Compute.RecordWarning("The parameter " + parameterName + " for the object with BHoM_Guid " + bHoMObject.BHoM_Guid + " has been retrieved from its property " + bHoMPropEntry.Key + ".");
-                            return param;
-                        }
-                    }
-                }
-            }
+            //RevitIdentifiers identifierFragment = bHoMObject.Fragments?.FirstOrDefault(x => x is RevitIdentifiers) as RevitIdentifiers;
+            //if (identifierFragment != null)
+            //{
+            //    string[] typeProps = { "CategoryName", "FamilyName", "FamilyTypeName", "FamilyTypeId" };
+            //    string paramName = string.Concat(parameterName.Where(c => !char.IsWhiteSpace(c)));
+            //    if (BH.Engine.Reflection.Query.PropertyNames(identifierFragment).Contains(paramName))
+            //        return new RevitParameter()
+            //        {
+            //            Name = paramName,
+            //            Value = Base.Query.PropertyValue(identifierFragment, paramName),
+            //            Quantity = string.Empty,
+            //            Unit = string.Empty,
+            //            IsReadOnly = true,
+            //        }; 
+            //}
 
-            return null;
+            //Dictionary<string, object> bHoMPropDic = BH.Engine.Reflection.Query.PropertyDictionary(bHoMObject);
+            //foreach (KeyValuePair<string, object> bHoMPropEntry in bHoMPropDic)
+            //{
+            //    IBHoMObject bHoMProp = bHoMPropEntry.Value as IBHoMObject;
+            //    if (bHoMProp != null)
+            //    {
+            //        RevitPulledParameters typePullFragment = bHoMProp.Fragments?.FirstOrDefault(x => x is RevitPulledParameters) as RevitPulledParameters;
+            //        if (typePullFragment?.Parameters != null)
+            //        {
+            //            RevitParameter param = typePullFragment.Parameters.FirstOrDefault(x => x.Name == parameterName);
+            //            if (param != null)
+            //            {
+            //                Engine.Base.Compute.RecordWarning("The parameter " + parameterName + " for the object with BHoM_Guid " + bHoMObject.BHoM_Guid + " has been retrieved from its property " + bHoMPropEntry.Key + ".");
+            //                return param;
+            //            }
+            //        }
+            //    }
+            //}
+
+            //return null;
         }
 
         /***************************************************/
