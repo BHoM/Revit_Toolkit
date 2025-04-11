@@ -38,7 +38,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("valueSource", "Object defining how to extract the value from the input object.")]
         [MultiOutput(0, "found", "True if value source exists in the input object (i.e. value could be extracted from the object), otherwise false.")]
         [MultiOutput(1, "value", "Value extracted from the input object based on the provided instruction.")]
-        public static Output<bool, object> TryGetValueFromSource(this BHoMObject bHoMObject, ParameterValueSource valueSource)
+        public static Output<bool, object> TryGetValueFromSource(this IBHoMObject bHoMObject, ParameterValueSource valueSource)
         {
             if (bHoMObject == null)
             {
@@ -54,39 +54,24 @@ namespace BH.Engine.Adapters.Revit
 
             if (valueSource.FromType)
             {
-                object currentValue = bHoMObject.GetRevitParameterValue(valueSource.ParameterName);
-                object typeValue = bHoMObject.GetRevitTypeParameterValue(valueSource.ParameterName);
                 IBHoMObject type = bHoMObject.IGetRevitElementType();
-
-                if (currentValue != null && type is null)
-                {                    
-                    return new Output<bool, object> { Item1 = true, Item2 = currentValue };
-                }                    
-                if (currentValue is null && type is null)
+                if (type != null)
+                    bHoMObject = type;
+                else
                 {
-                    BH.Engine.Base.Compute.RecordError($"Element with id {bHoMObject.ElementId()} is a type, but does not have the queried parameter.");
+                    BH.Engine.Base.Compute.RecordNote($"BHoM object with Guid {bHoMObject.BHoM_Guid} does not have a property representing Revit type, so Revit type parameter cannot be queried.");
                     return new Output<bool, object> { Item1 = false, Item2 = null };
                 }
-                if (typeValue != null && type != null)
-                {
-                    return new Output<bool, object> { Item1 = true, Item2 = typeValue };
-                }
-                if (typeValue is null && type != null)
-                {
-                    BH.Engine.Base.Compute.RecordError($"Element with id {bHoMObject.ElementId()} with type id {type.ElementId()}, does not have the queried parameter.");
-                    return new Output<bool, object> { Item1 = false, Item2 = null };
-                }
-
             }
 
-            var value = bHoMObject?.GetRevitParameterValue(valueSource.ParameterName);
-            if (value == null)
+            var param = bHoMObject.GetRevitParameter(valueSource.ParameterName);
+            if (param == null)
             {
                 BH.Engine.Base.Compute.RecordNote($"Element with id {bHoMObject.ElementId()} does not have a parameter named {valueSource.ParameterName}.");
                 return new Output<bool, object> { Item1 = false, Item2 = null };
             }
             else
-                return new Output<bool, object> { Item1 = true, Item2 = value };
+                return new Output<bool, object> { Item1 = true, Item2 = param.Value };
         }
 
         /***************************************************/

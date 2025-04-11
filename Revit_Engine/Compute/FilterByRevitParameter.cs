@@ -25,27 +25,28 @@ using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
 using BH.oM.Verification.Conditions;
+using BH.oM.Verification;
 
 namespace BH.Engine.Adapters.Revit
 {
-    public static partial class Query
+    public static partial class Compute
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
 
-        [Description("Filters a collection of BHoM objects by a single Revit parameter criterion.")]
-        [Input("bHoMObjects", "The collection of BHoM objects to filter.")]
-        [Input("criterion", "The filtering criterion to apply.")]
-        [Output("A list of BHoM objects that match the specified criterion.")]
-        public static IEnumerable<IBHoMObject> FilterByRevitParameter(this IEnumerable<IBHoMObject> bHoMObjects, ValueCondition criterion)
-        {
-            return bHoMObjects.FilterByRevitParameters(new LogicalAndCondition
-            {
-                Conditions = new List<ICondition>() { criterion }
-            });
-        }
+        //[Description("Filters a collection of BHoM objects by a single Revit parameter criterion.")]
+        //[Input("bHoMObjects", "The collection of BHoM objects to filter.")]
+        //[Input("criterion", "The filtering criterion to apply.")]
+        //[Output("A list of BHoM objects that match the specified criterion.")]
+        //public static IEnumerable<IBHoMObject> FilterByRevitParameter(this IEnumerable<IBHoMObject> bHoMObjects, ValueCondition criterion)
+        //{
+        //    return bHoMObjects.FilterByRevitParameters(new LogicalAndCondition
+        //    {
+        //        Conditions = new List<ICondition>() { criterion }
+        //    });
+        //}
 
 
         [Description("Filters a collection of BHoM objects by a single Revit parameter criterion.")]
@@ -54,14 +55,12 @@ namespace BH.Engine.Adapters.Revit
         [Input("filterType", "The type of filter to apply.")]
         [Input("value", "The value to filter by.")]
         [Output("A list of BHoM objects that match the specified criteria.")]
-        public static IEnumerable<IBHoMObject> FilterByRevitParameter(this IEnumerable<IBHoMObject> bHoMObjects, string parameterName, object filterType, object value)
+        public static IEnumerable<IBHoMObject> FilterByRevitParameter(this IEnumerable<IBHoMObject> bHoMObjects, string parameterName, ValueComparisonType comparisonType, object value)
         {
-
             return FilterByRevitParameters(bHoMObjects, 
                 new List<string> () { parameterName}, 
-                new List<string>() {(string)filterType}, 
+                new List<ValueComparisonType>() {comparisonType}, 
                 new List<object>() { value});
         }
-
     }
 }
