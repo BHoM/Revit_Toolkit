@@ -70,8 +70,8 @@ namespace BH.Engine.Adapters.Revit
                     {
                         Name = paramName,
                         Value = Base.Query.PropertyValue(identifierFragment, paramName),
-                        UnitType = string.Empty,
-                        DisplayUnit = string.Empty,
+                        Quantity = string.Empty,
+                        Unit = string.Empty,
                         IsReadOnly = true,
                     }; 
             }

@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
             if (m_SpecsWithNames.ContainsValue(spec))
                 return m_SpecsWithNames.FirstOrDefault(x => x.Value.Equals(spec)).Key;
             else
-                return null;
+                return "";
         }
 
         /***************************************************/
@@ -54,7 +54,7 @@ namespace BH.Revit.Engine.Core
         [Output("name", "Name of SpecTypeId property that contains the spec object correspondent to the input parameter.")]
         public static string SpecName(this Parameter parameter)
         {
-            return parameter.StorageType == StorageType.Double ? parameter.Definition.GetDataType().SpecName() : null;
+            return parameter.StorageType == StorageType.Double ? parameter.Definition.GetDataType().SpecName() : "";
         }
 
         /***************************************************/

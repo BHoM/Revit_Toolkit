@@ -46,7 +46,6 @@ namespace BH.Revit.Engine.Core
             if (parameter == null)
                 return null;
 
-            string displayUnit = string.Empty;
             string name = parameter.Definition.Name;
 
             IParameterLink parameterLink = parameterLinks.ParameterLink(parameter);
@@ -55,15 +54,16 @@ namespace BH.Revit.Engine.Core
             else if (onlyLinked)
                 return null;
 
-            object value = parameter.ParameterValue(out displayUnit);
-            string unitTypeIdentifier = parameter.SpecName();
+            object value = parameter.ParameterValue();
+            string quantity = parameter.SpecName();
+            string unit = parameter.UnitLabel(true, true);
 
             return new RevitParameter { 
                 Name = name, 
                 Value = value, 
                 IsReadOnly = parameter.IsReadOnly,
-                UnitType = unitTypeIdentifier,
-                DisplayUnit = displayUnit
+                Quantity = quantity,
+                Unit = unit
             };
         }
 

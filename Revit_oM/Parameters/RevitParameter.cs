@@ -40,12 +40,15 @@ namespace BH.oM.Adapters.Revit.Parameters
         [Description("Value of the Revit parameter. Enums are converted to strings, ElementIds to integers.")]
         public virtual object Value { get; set; } = null;
 
-        [Description("Unit type of the Revit parameter.")]
-        public virtual string UnitType { get; set; }
+        //TODO: potentially should be get only
+        [Description("Quantity of the Revit parameter.")]
+        public virtual string Quantity { get; set; }
 
-        [Description("Current Using Unit of the Revit parameter.")]
-        public virtual string DisplayUnit { get; set; }
+        //TODO: potentially should be get only
+        [Description("Unit of the Revit parameter.")]
+        public virtual string Unit { get; set; }
 
+        //TODO: potentially should be get only
         [Description("Whether the parameter is read only or modifiable by the Revit user.")]
         public virtual bool IsReadOnly { get; set; } = false;
 

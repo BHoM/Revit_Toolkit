@@ -37,7 +37,7 @@ namespace BH.Revit.Engine.Core
         [Output("unpacked", "Input parameter unpacked and ready to use in formula solution.")]
         public static object FormulaComponent(this Parameter obj)
         {
-            return obj.ParameterValue(out _);
+            return obj.ParameterValue();
         }
 
         /***************************************************/

@@ -128,7 +128,7 @@ namespace BH.Engine.Adapters.Revit
                         description += $"It had no value before, and it is now updated to value: `{parameter2.Value}`";
                     else
                         description += $"It had value: `{parameter1.Value}` and was updated to value: `{parameter2.Value}`";
-                    result.AddParameterDifference($"{paramName} (RevitParameter)", differenceFullName, parameter1.Value, parameter2.Value, parameter1.UnitType ?? parameter2.UnitType, RevitParameterDifferenceType.Modified, description);
+                    result.AddParameterDifference($"{paramName} (RevitParameter)", differenceFullName, parameter1.Value, parameter2.Value, parameter1.Quantity ?? parameter2.Quantity, RevitParameterDifferenceType.Modified, description);
                 }
 
 
@@ -153,13 +153,13 @@ namespace BH.Engine.Adapters.Revit
                         if (rcc != null && rcc.RevitParams_ConsiderRemovedUnassigned && string.IsNullOrWhiteSpace(deletedParameter.Value?.ToString()))
                         {
                             string description = $"A Revit Parameter named `{deletedParamName}` and which had no Value was removed from the object.";
-                            result.AddParameterDifference($"{deletedParamName} (RevitParameter)", differenceFullName, deletedParameter.Value, null, deletedParameter.UnitType, RevitParameterDifferenceType.RemovedUnassigned, description);
+                            result.AddParameterDifference($"{deletedParamName} (RevitParameter)", differenceFullName, deletedParameter.Value, null, deletedParameter.Quantity, RevitParameterDifferenceType.RemovedUnassigned, description);
                         }
 
                         if (rcc != null && rcc.RevitParams_ConsiderRemovedAssigned && !string.IsNullOrWhiteSpace(deletedParameter.Value?.ToString()))
                         {
                             string description = $"A Revit Parameter with name `{deletedParamName}` was removed from the object. It had value: {deletedParameter.Value}";
-                            result.AddParameterDifference($"{deletedParamName} (RevitParameter)", differenceFullName, deletedParameter.Value, null, deletedParameter.UnitType, RevitParameterDifferenceType.RemovedAssigned, description);
+                            result.AddParameterDifference($"{deletedParamName} (RevitParameter)", differenceFullName, deletedParameter.Value, null, deletedParameter.Quantity, RevitParameterDifferenceType.RemovedAssigned, description);
                         }
                     }
                 }
@@ -185,13 +185,13 @@ namespace BH.Engine.Adapters.Revit
                         if (rcc != null && rcc.RevitParams_ConsiderAddedUnassigned && string.IsNullOrWhiteSpace(addedParameter.Value?.ToString()))
                         {
                             string description = $"A Revit Parameter named `{addedParamName}` was added to the object, but with no Value assigned.";
-                            result.AddParameterDifference($"{addedParamName} (RevitParameter)", differenceFullName, null, addedParameter.Value, addedParameter.UnitType, RevitParameterDifferenceType.AddedUnassigned, description);
+                            result.AddParameterDifference($"{addedParamName} (RevitParameter)", differenceFullName, null, addedParameter.Value, addedParameter.Quantity, RevitParameterDifferenceType.AddedUnassigned, description);
                         }
 
                         if (rcc != null && rcc.RevitParams_ConsiderAddedAssigned && !string.IsNullOrWhiteSpace(addedParameter.Value?.ToString()))
                         {
                             string description = $"A Revit Parameter `{addedParamName}` with value `{addedParameter.Value}` was added to the object.";
-                            result.AddParameterDifference($"{addedParamName} (RevitParameter)", differenceFullName, null, addedParameter.Value, addedParameter.UnitType, RevitParameterDifferenceType.AddedAssigned, description);
+                            result.AddParameterDifference($"{addedParamName} (RevitParameter)", differenceFullName, null, addedParameter.Value, addedParameter.Quantity, RevitParameterDifferenceType.AddedAssigned, description);
                         }
                     }
                 }
