@@ -20,13 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit;
+using BH.Engine.Base;
 using BH.oM.Base;
-using BH.oM.Base.Attributes;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Xml.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -36,15 +32,34 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Filters the given collection of BHoM objects to return only unique Revit elements based on their UniqueId.")]
-        [Input("bHoMObjects", "The collection of BHoM objects to filter.")]
-        [Output("A list of unique BHoM objects.")]
-        public static List<IBHoMObject> FilterUniqueRevitElements(this IEnumerable<IBHoMObject> bHoMObjects)
-        {						
-            return bHoMObjects
-                .GroupBy(x => x.UniqueId())
-                .Select(g => g.First())
-                .ToList();
+        //[Description("Filters the given collection of BHoM objects to return only unique Revit elements based on their UniqueId.")]
+        //[Input("bHoMObjects", "The collection of BHoM objects to filter.")]
+        //[Output("A list of unique BHoM objects.")]
+        //public static List<IBHoMObject> FilterUniqueRevitElements(this IEnumerable<IBHoMObject> bHoMObjects)
+        //{						
+        //    return bHoMObjects
+        //        .GroupBy(x => x.UniqueId())
+        //        .Select(g => g.First())
+        //        .ToList();
+        //}
+
+        ///***************************************************/
+
+        public static IEnumerable<IObject> Unique(this IEnumerable<IObject> objects, BaseComparisonConfig comparisonConfig = null)
+        {
+            HashSet<string> hashes = new HashSet<string>();
+            foreach (IObject obj in objects)
+            {
+                if (objects == null)
+                    continue;
+
+                string hash = obj.Hash(comparisonConfig);
+                if (!hashes.Contains(hash))
+                {
+                    hashes.Add(hash);
+                    yield return obj;
+                }
+            }
         }
 
         /***************************************************/
