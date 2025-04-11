@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
         [Input("parameterLinks", "A collection of names of RevitParameters and sets of their correspondent Revit parameter names to be used on name mapping.")]
         [Input("onlyLinked", "If true, there needs to be a valid, relevant parameter link in parameterLinks in order for convert to succeed.")]
         [Output("parameterDefinition", "BH.oM.Adapters.Revit.Parameters.ParameterDefinition resulting from converting the input Revit Parameter.")]
-        public static ParameterDefinition ParameterDefinitionFromRevit(this ParameterElement parameter,Document document, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static ParameterDefinition ParameterElementFromRevit(this ParameterElement parameter, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
             ParameterDefinition paramDef = refObjects.GetValue<ParameterDefinition>(parameter.Id);
@@ -52,6 +52,7 @@ namespace BH.Revit.Engine.Core
                 return paramDef;
 
             Definition def = parameter.GetDefinition();
+            Document document = parameter.Document;
             Binding binding = document.ParameterBindings.get_Item(def);
             ElementBinding elementBinding = binding as ElementBinding;
 
