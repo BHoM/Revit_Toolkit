@@ -32,6 +32,7 @@ using System.ComponentModel;
 using System.Linq;
 using BH.oM.Base.Attributes;
 using BH.oM.Base;
+using System.Data.Common;
 
 namespace BH.Revit.Engine.Core
 {
@@ -71,8 +72,23 @@ namespace BH.Revit.Engine.Core
             ICurve curve = (familyInstance.Location as LocationCurve)?.Curve?.IFromRevit();
             if (curve == null || (!(curve is NurbsCurve) && curve.ILength() <= settings.DistanceTolerance))
             {
-                familyInstance.FramingCurveNotFoundWarning();
-                return null;
+                // Try getting the location directly from solid representation
+                Options options = new Options();
+                Solid alignedBox = familyInstance.AlignedBoundingBox(options);
+                XYZ centroid = familyInstance.Centroid(options);
+                Autodesk.Revit.DB.Plane plane = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(familyInstance.HandOrientation, centroid);
+                List<PlanarFace> faces = familyInstance.Solids(options).CleanUp().Select(x => x.PlaneIntersections(plane)).SelectMany(x => x).ToList();
+                centroid = faces.Select(x => (x.Centroid() * x.Area)).Aggregate((x, y) => x + y) / faces.Sum(x => x.Area);
+                XYZ extension = familyInstance.HandOrientation * 1000;
+                Autodesk.Revit.DB.Line toIntersect = Autodesk.Revit.DB.Line.CreateBound(centroid - extension, centroid + extension);
+                SolidCurveIntersection intersection = alignedBox.IntersectWithCurve(toIntersect, new SolidCurveIntersectionOptions());
+                if (intersection?.SegmentCount == 1)
+                    return intersection.GetCurveSegment(0).IFromRevit();
+                else
+                {
+                    familyInstance.FramingCurveNotFoundWarning();
+                    return null;
+                }
             }
 
             BH.oM.Geometry.Line line = curve as BH.oM.Geometry.Line;
@@ -146,6 +162,18 @@ namespace BH.Revit.Engine.Core
                     Vector direction = curve.Direction();
                     curve = new oM.Geometry.Line { Start = curve.Start - direction * startExtension, End = curve.End + direction * endExtension };
                 }
+            }
+            else
+            {
+                // Try getting the location directly from solid representation
+                Options options = new Options();
+                Solid alignedBox = familyInstance.AlignedBoundingBox(options);
+                XYZ centroid = familyInstance.Centroid(options);
+                XYZ extension = familyInstance.HandOrientation.CrossProduct(familyInstance.FacingOrientation) * 1000;
+                Autodesk.Revit.DB.Line toIntersect = Autodesk.Revit.DB.Line.CreateBound(centroid - extension, centroid + extension);
+                SolidCurveIntersection intersection = alignedBox.IntersectWithCurve(toIntersect, new SolidCurveIntersectionOptions());
+                if (intersection?.SegmentCount == 1)
+                    curve = intersection.GetCurveSegment(0).IFromRevit() as BH.oM.Geometry.Line;
             }
 
             if (curve == null)
