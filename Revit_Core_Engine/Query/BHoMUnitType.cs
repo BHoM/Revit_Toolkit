@@ -40,7 +40,7 @@ namespace BH.Revit.Engine.Core
         public static ForgeTypeId BHoMUnitType(this ForgeTypeId quantity)
         {
 #if (!REVIT2021)
-            if (quantity == SpecTypeId.Currency || !UnitUtils.IsMeasurableSpec(quantity))
+            if (!UnitUtils.IsMeasurableSpec(quantity))
                 return null;
 #endif
 
