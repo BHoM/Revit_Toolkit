@@ -41,9 +41,9 @@ namespace BH.Revit.Engine.Core
         [Input("element1", "First element in the pair.")]
         [Input("element2", "Second element in the pair.")]
         [Input("options", "Options to be applied when querying element solids.")]
-        [MultiOutput(1, "point1", "Point on first element that is closest to the second element.")]
-        [MultiOutput(2, "point2", "Point on second element that is closest to the first element.")]
-        [MultiOutput(3, "distance", "Distance between the found points.")]
+        [MultiOutput(0, "point1", "Point on first element that is closest to the second element.")]
+        [MultiOutput(1, "point2", "Point on second element that is closest to the first element.")]
+        [MultiOutput(2, "distance", "Distance between the found points.")]
         public static Output<XYZ, XYZ, double> Proximity(this Element element1, Element element2, Options options = null)
         {
             if (options == null)
@@ -69,9 +69,9 @@ namespace BH.Revit.Engine.Core
         [Description("Calculates a pair of closest points on two sets of solids as well as the distance between them.")]
         [Input("solids1", "First set of solids in the pair.")]
         [Input("solids2", "Second set of solids in the pair.")]
-        [MultiOutput(1, "point1", "Point on first set of solids that is closest to the second set of solids.")]
-        [MultiOutput(2, "point2", "Point on second set of solids that is closest to the first set of solids.")]
-        [MultiOutput(3, "distance", "Distance between the found points.")]
+        [MultiOutput(0, "point1", "Point on first set of solids that is closest to the second set of solids.")]
+        [MultiOutput(1, "point2", "Point on second set of solids that is closest to the first set of solids.")]
+        [MultiOutput(2, "distance", "Distance between the found points.")]
         public static Output<XYZ, XYZ, double> Proximity(this IEnumerable<Solid> solids1, IEnumerable<Solid> solids2)
         {
             Output<XYZ, XYZ, double> min = new Output<XYZ, XYZ, double> { Item3 = double.MaxValue };
@@ -102,9 +102,9 @@ namespace BH.Revit.Engine.Core
         [Description("Calculates a pair of closest points on two solids as well as the distance between them.")]
         [Input("solid1", "First solid in the pair.")]
         [Input("solid2", "Second solid in the pair.")]
-        [MultiOutput(1, "point1", "Point on first solid that is closest to the second solid.")]
-        [MultiOutput(2, "point2", "Point on second solid that is closest to the first solid.")]
-        [MultiOutput(3, "distance", "Distance between the found points.")]
+        [MultiOutput(0, "point1", "Point on first solid that is closest to the second solid.")]
+        [MultiOutput(1, "point2", "Point on second solid that is closest to the first solid.")]
+        [MultiOutput(2, "distance", "Distance between the found points.")]
         public static Output<XYZ, XYZ, double> Proximity(this Solid solid1, Solid solid2)
         {
             if (solid1.DoesIntersect(solid2))
@@ -163,9 +163,9 @@ namespace BH.Revit.Engine.Core
         [Description("Calculates a pair of closest points on two curves as well as the distance between them.")]
         [Input("curve1", "First curve in the pair.")]
         [Input("curve2", "Second curve in the pair.")]
-        [MultiOutput(1, "point1", "Point on first curve that is closest to the second curve.")]
-        [MultiOutput(2, "point2", "Point on second curve that is closest to the first curve.")]
-        [MultiOutput(3, "distance", "Distance between the found points.")]
+        [MultiOutput(0, "point1", "Point on first curve that is closest to the second curve.")]
+        [MultiOutput(1, "point2", "Point on second curve that is closest to the first curve.")]
+        [MultiOutput(2, "distance", "Distance between the found points.")]
         public static Output<XYZ, XYZ, double> Proximity(this Curve curve1, Curve curve2)
         {
             BH.oM.Geometry.Line line1 = curve1.IFromRevit() as BH.oM.Geometry.Line;

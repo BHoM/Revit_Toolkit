@@ -34,7 +34,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Finds a bounding box of an element in on its local coordinate system, which is:" +
+        [Description("Finds a bounding box of an element in its local coordinate system, which is:" +
                      "\n- for FamilyInstance: coordinate system as defined in the object definition (result of GetTotalTransform method )" +
                      "\n- for everything else: coordinate system based on normals of the major planar faces of the element")]
         [Input("element", "Element to query for aligned bounding box.")]
