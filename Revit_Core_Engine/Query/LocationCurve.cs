@@ -76,9 +76,6 @@ namespace BH.Revit.Engine.Core
                 Options options = new Options();
                 Solid alignedBox = familyInstance.AlignedBoundingBox(options);
                 XYZ centroid = familyInstance.Centroid(options);
-                Autodesk.Revit.DB.Plane plane = Autodesk.Revit.DB.Plane.CreateByNormalAndOrigin(familyInstance.HandOrientation, centroid);
-                List<PlanarFace> faces = familyInstance.Solids(options).CleanUp().Select(x => x.PlaneIntersections(plane)).SelectMany(x => x).ToList();
-                centroid = faces.Select(x => (x.Centroid() * x.Area)).Aggregate((x, y) => x + y) / faces.Sum(x => x.Area);
                 XYZ extension = familyInstance.HandOrientation * 1000;
                 Autodesk.Revit.DB.Line toIntersect = Autodesk.Revit.DB.Line.CreateBound(centroid - extension, centroid + extension);
                 SolidCurveIntersection intersection = alignedBox.IntersectWithCurve(toIntersect, new SolidCurveIntersectionOptions());
