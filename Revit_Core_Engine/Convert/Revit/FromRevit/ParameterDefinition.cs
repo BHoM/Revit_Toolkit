@@ -29,6 +29,7 @@ using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
+using BH.oM.Adapters.Revit.Elements;
 
 namespace BH.Revit.Engine.Core
 {
@@ -71,7 +72,14 @@ namespace BH.Revit.Engine.Core
                 categories = elementBinding.Categories.Cast<Category>().Select(c => c.Name).ToList();
             }
 
-            bool shared = def is ExternalDefinition;
+
+            if (parameter is SharedParameterElement sharedParameterElement)
+            {
+                var guid = sharedParameterElement.GuidValue.ToString();
+                paramDef.Shared = true;
+                paramDef.CustomData.Add("GUID", guid);
+
+            }
 
             paramDef = new ParameterDefinition
             {
@@ -80,9 +88,12 @@ namespace BH.Revit.Engine.Core
                 ParameterGroup = parameterGroup,
                 Instance = instance,
                 Categories = categories,
-                Shared = shared
             };
 
+            paramDef.SetIdentifiers(parameter);
+            paramDef.CopyParameters(parameter, settings.MappingSettings);
+            paramDef.SetProperties(parameter, settings.MappingSettings);
+        
             refObjects.AddOrReplace(parameter.Id, paramDef);
             return paramDef;
         }
