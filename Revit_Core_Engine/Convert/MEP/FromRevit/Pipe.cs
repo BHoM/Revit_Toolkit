@@ -71,6 +71,8 @@ namespace BH.Revit.Engine.Core
             if (type != null)
                 typeFragment = type.TypeFragmentFromRevit(settings, refObjects);
 
+            oM.MEP.System.MaterialFragments.PipeMaterial pipeMaterial = revitPipe.PipeSegment.PipeMaterialFromRevit(settings, refObjects);
+
             for (int i = 0; i < queried.Count; i++)
             {
                 BH.oM.Geometry.Line segment = queried[i];
@@ -85,6 +87,10 @@ namespace BH.Revit.Engine.Core
                 // Set the type fragment
                 if (typeFragment != null)
                     thisSegment.Fragments.Add(typeFragment);
+
+                // Set PipeMaterial fragment
+                if (pipeMaterial != null)
+                    thisSegment.CustomData.Add("PipeMaterial", pipeMaterial);
 
                 //Set identifiers, parameters & custom data
                 thisSegment.SetIdentifiers(revitPipe);
