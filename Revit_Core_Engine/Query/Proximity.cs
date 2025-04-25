@@ -37,14 +37,16 @@ namespace BH.Revit.Engine.Core
         /****               Public methods              ****/
         /***************************************************/
 
-        [Description("Calculates a pair of closest points on two elements as well as the distance between them.")]
+        [Description("Calculates a pair of closest points on two elements as well as the distance between them." +
+                     "\nThis is a backend method, working with the Revit object model and in Revit (imperial) units.")]
         [Input("element1", "First element in the pair.")]
         [Input("element2", "Second element in the pair.")]
         [Input("options", "Options to be applied when querying element solids.")]
+        [Input("tolerance", "Distance at which the solution is considered convergent. By default set to 1e-3 ft as a practical value.")]
         [MultiOutput(0, "point1", "Point on first element that is closest to the second element.")]
         [MultiOutput(1, "point2", "Point on second element that is closest to the first element.")]
         [MultiOutput(2, "distance", "Distance between the found points.")]
-        public static Output<XYZ, XYZ, double> Proximity(this Element element1, Element element2, Options options = null)
+        public static Output<XYZ, XYZ, double> Proximity(this Element element1, Element element2, Options options = null, double tolerance = 1e-3)
         {
             if (options == null)
             {
@@ -57,7 +59,7 @@ namespace BH.Revit.Engine.Core
             List<Solid> solids1 = element1.Solids(options);
             List<Solid> solids2 = element2.Solids(options);
 
-            Output<XYZ, XYZ, double> proximity = solids1.Proximity(solids2);
+            Output<XYZ, XYZ, double> proximity = solids1.Proximity(solids2, tolerance);
             if (double.IsNaN(proximity.Item3))
                 BH.Engine.Base.Compute.RecordWarning($"Can't compute the distance between elements {element1.Id.IntegerValue} and {element2.Id.IntegerValue}.");
 
@@ -66,24 +68,26 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Calculates a pair of closest points on two sets of solids as well as the distance between them.")]
+        [Description("Calculates a pair of closest points on two sets of solids as well as the distance between them." +
+                     "\nThis is a backend method, working with the Revit object model and in Revit (imperial) units.")]
         [Input("solids1", "First set of solids in the pair.")]
         [Input("solids2", "Second set of solids in the pair.")]
+        [Input("tolerance", "Distance at which the solution is considered convergent. By default set to 1e-3 ft as a practical value.")]
         [MultiOutput(0, "point1", "Point on first set of solids that is closest to the second set of solids.")]
         [MultiOutput(1, "point2", "Point on second set of solids that is closest to the first set of solids.")]
         [MultiOutput(2, "distance", "Distance between the found points.")]
-        public static Output<XYZ, XYZ, double> Proximity(this IEnumerable<Solid> solids1, IEnumerable<Solid> solids2)
+        public static Output<XYZ, XYZ, double> Proximity(this IEnumerable<Solid> solids1, IEnumerable<Solid> solids2, double tolerance = 1e-3)
         {
             Output<XYZ, XYZ, double> min = new Output<XYZ, XYZ, double> { Item3 = double.MaxValue };
             foreach (Solid solid1 in solids1)
             {
                 foreach (Solid solid2 in solids2)
                 {
-                    Output<XYZ, XYZ, double> proximity = solid1.Proximity(solid2);
+                    Output<XYZ, XYZ, double> proximity = solid1.Proximity(solid2, tolerance);
                     if (double.IsNaN(proximity.Item3))
                         continue;
 
-                    if (proximity.Item3 < BH.oM.Geometry.Tolerance.Distance)
+                    if (proximity.Item3 < tolerance)
                         return proximity;
 
                     if (proximity.Item3 < min.Item3)
@@ -99,19 +103,21 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Calculates a pair of closest points on two solids as well as the distance between them.")]
+        [Description("Calculates a pair of closest points on two solids as well as the distance between them." +
+                     "\nThis is a backend method, working with the Revit object model and in Revit (imperial) units.")]
         [Input("solid1", "First solid in the pair.")]
         [Input("solid2", "Second solid in the pair.")]
+        [Input("tolerance", "Distance at which the solution is considered convergent. By default set to 1e-3 ft as a practical value.")]
         [MultiOutput(0, "point1", "Point on first solid that is closest to the second solid.")]
         [MultiOutput(1, "point2", "Point on second solid that is closest to the first solid.")]
         [MultiOutput(2, "distance", "Distance between the found points.")]
-        public static Output<XYZ, XYZ, double> Proximity(this Solid solid1, Solid solid2)
+        public static Output<XYZ, XYZ, double> Proximity(this Solid solid1, Solid solid2, double tolerance = 1e-3)
         {
             if (solid1.DoesIntersect(solid2))
                 return new Output<XYZ, XYZ, double> { Item3 = 0 };
 
-            List<Face> faces1 = solid1.Faces.Cast<Face>().Where(x => x.Area > BH.oM.Geometry.Tolerance.Distance).ToList();
-            List<Face> faces2 = solid2.Faces.Cast<Face>().Where(x => x.Area > BH.oM.Geometry.Tolerance.Distance).ToList();
+            List<Face> faces1 = solid1.Faces.Cast<Face>().Where(x => x.Area > tolerance).ToList();
+            List<Face> faces2 = solid2.Faces.Cast<Face>().Where(x => x.Area > tolerance).ToList();
 
             Output<XYZ, XYZ, double> min = new Output<XYZ, XYZ, double> { Item3 = double.MaxValue };
             foreach (Face face1 in faces1)
@@ -121,11 +127,11 @@ namespace BH.Revit.Engine.Core
 
                 foreach (Face face2 in faces2)
                 {
-                    Output<XYZ, XYZ, double> proximity = face1.Proximity(face2, centre);
+                    Output<XYZ, XYZ, double> proximity = face1.Proximity(face2, centre, tolerance);
                     if (double.IsNaN(proximity.Item3))
                         continue;
 
-                    if (proximity.Item3 < BH.oM.Geometry.Tolerance.Distance)
+                    if (proximity.Item3 < tolerance)
                         return proximity;
 
                     if (proximity.Item3 < min.Item3)
@@ -140,11 +146,11 @@ namespace BH.Revit.Engine.Core
 
                 foreach (Face fc1 in faces1)
                 {
-                    Output<XYZ, XYZ, double> proximity = fc2.Proximity(fc1, centre);
+                    Output<XYZ, XYZ, double> proximity = fc2.Proximity(fc1, centre, tolerance);
                     if (double.IsNaN(proximity.Item3))
                         continue;
 
-                    if (proximity.Item3 < BH.oM.Geometry.Tolerance.Distance)
+                    if (proximity.Item3 < tolerance)
                         return proximity;
 
                     if (proximity.Item3 < min.Item3)
@@ -160,7 +166,8 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Calculates a pair of closest points on two curves as well as the distance between them.")]
+        [Description("Calculates a pair of closest points on two curves as well as the distance between them." +
+                     "\nThis is a backend method, working with the Revit object model and in Revit (imperial) units.")]
         [Input("curve1", "First curve in the pair.")]
         [Input("curve2", "Second curve in the pair.")]
         [MultiOutput(0, "point1", "Point on first curve that is closest to the second curve.")]
@@ -199,9 +206,8 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
-        private static Output<XYZ, XYZ, double> Proximity(this Face face1, Face face2, XYZ start)
+        private static Output<XYZ, XYZ, double> Proximity(this Face face1, Face face2, XYZ start, double tolerance)
         {
-            double tolerance = 1e-3;
             double difference;
             XYZ current = start;
             Face face = face2;
@@ -212,7 +218,7 @@ namespace BH.Revit.Engine.Core
 
             do
             {
-                (double, XYZ) prox = face.Proximity(current);
+                (double, XYZ) prox = face.Proximity(current, tolerance);
                 if (prox.Item2 == null)
                     return new Output<XYZ, XYZ, double> { Item3 = double.NaN };
 
@@ -238,7 +244,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static (double, XYZ) Proximity(this Face face, XYZ point)
+        private static (double, XYZ) Proximity(this Face face, XYZ point, double tolerance)
         {
             IntersectionResult ir = null;
             try
@@ -273,7 +279,7 @@ namespace BH.Revit.Engine.Core
                 if (ir.Distance < min.Item1)
                     min = (ir.Distance, ir.XYZPoint);
 
-                if (min.Item1 <= BH.oM.Geometry.Tolerance.Distance)
+                if (min.Item1 <= tolerance)
                     break;
             }
 

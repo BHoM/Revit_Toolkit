@@ -33,7 +33,8 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Computes the distance between a plane and point.")]
+        [Description("Computes the distance between a plane and point." +
+                     "\nThis is a backend method, working with the Revit object model and in Revit (imperial) units.")]
         [Input("plane", "Plane to compute distance.")]
         [Input("point", "Point to compute distance.")]
         [Output("distance", "Distance between the input plane and point.")]
