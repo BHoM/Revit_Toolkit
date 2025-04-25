@@ -42,10 +42,13 @@ namespace BH.Revit.Engine.Core
         public static IEnumerable<PlanarFace> PlaneIntersections(this Solid solid, Plane plane)
         {
             Solid cut = BooleanOperationsUtils.CutWithHalfSpace(solid, plane);
-            foreach (var pf in cut.Faces.OfType<PlanarFace>())
+            if (cut != null)
             {
-                if (1 - Math.Abs(plane.Normal.DotProduct(pf.FaceNormal)) <= 1e-6 && plane.Distance(pf.Origin) <= 1e-6)
-                    yield return pf;
+                foreach (PlanarFace pf in cut.Faces.OfType<PlanarFace>())
+                {
+                    if (1 - Math.Abs(plane.Normal.DotProduct(pf.FaceNormal)) <= 1e-6 && plane.Distance(pf.Origin) <= 1e-6)
+                        yield return pf;
+                }
             }
         }
 
