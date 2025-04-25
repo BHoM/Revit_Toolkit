@@ -40,8 +40,7 @@ namespace BH.Revit.Engine.Core
         [Output("centroid", "Geometrical centroid of the input element.")]
         public static XYZ Centroid(this Element element, Options options)
         {
-            var solids = element.Solids(options).Where(x => x.Volume > 1e-3).ToList();
-            return solids.Select(x => x.ComputeCentroid() * x.Volume).Aggregate((x, y) => x + y) / solids.Sum(x => x.Volume);
+            return element.Solids(options).Centroid();
         }
 
         /***************************************************/
@@ -51,7 +50,13 @@ namespace BH.Revit.Engine.Core
         [Output("centroid", "Geometrical centroid of the input collection of solids.")]
         public static XYZ Centroid(this IEnumerable<Solid> solids)
         {
-            solids = solids.Where(x => x.Volume > 1e-3).ToList();
+            solids = solids?.Where(x => x.Volume > 1e-3).ToList();
+            if (solids?.Any() != true)
+            {
+                BH.Engine.Base.Compute.RecordWarning("Could not find a centroid due to lack of valid solids.");
+                return null;
+            }
+
             return solids.Select(x => x.ComputeCentroid() * x.Volume).Aggregate((x, y) => x + y) / solids.Sum(x => x.Volume);
         }
 
