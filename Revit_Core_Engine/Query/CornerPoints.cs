@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
             if (bbox == null)
                 return null;
 
-            var bboxPoints = new List<XYZ>
+            List<XYZ> bboxPoints = new List<XYZ>
             {
                 new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Min.Z),
                 new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Min.Z),
@@ -57,7 +57,7 @@ namespace BH.Revit.Engine.Core
             Transform bboxTransform = bbox.Transform ?? Transform.Identity;
 
             if (!bboxTransform.IsIdentity)
-                bboxPoints.Select(x => bboxTransform.OfPoint(x)).ToList();
+                bboxPoints = bboxPoints.Select(x => bboxTransform.OfPoint(x)).ToList();
 
             return bboxPoints;
         }
