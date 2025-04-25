@@ -79,6 +79,7 @@ namespace BH.Revit.Engine.Core
 
             pipeMaterial.CustomData.Add("Description", revitPipeSegment.Description);
             pipeMaterial.CustomData.Add("MaterialId", revitPipeSegment.MaterialId.IntegerValue);
+            pipeMaterial.CustomData.Add("ScheduleTypeId", revitPipeSegment.ScheduleTypeId.IntegerValue);
             pipeMaterial.CustomData.Add("SizeTable", sizeTable);
 
             pipeMaterial.SetIdentifiers(revitPipeSegment);
