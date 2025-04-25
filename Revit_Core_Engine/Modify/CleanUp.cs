@@ -50,13 +50,13 @@ namespace BH.Revit.Engine.Core
                 return SolidUtils.SplitVolumes(solids[0]).ToList();
             else
             {
-                var sld = solids[0];
-                foreach (var s in solids.Skip(1))
+                Solid result = solids[0];
+                foreach (Solid solid in solids.Skip(1))
                 {
-                    sld = BooleanOperationsUtils.ExecuteBooleanOperation(sld, s, BooleanOperationsType.Union);
+                    result = BooleanOperationsUtils.ExecuteBooleanOperation(result, solid, BooleanOperationsType.Union);
                 }
 
-                return SolidUtils.SplitVolumes(sld).ToList();
+                return SolidUtils.SplitVolumes(result).ToList();
             }
         }
 
