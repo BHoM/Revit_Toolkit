@@ -50,7 +50,7 @@ namespace BH.Revit.Engine.Core
 
             double tolerance = 1e-3;
 
-            List<Line> lines = element.Curves(new Options()).OfType<Line>().ToList();
+            List<Line> lines = element.Curves(new Options(), null, true).OfType<Line>().ToList();
             Dictionary<XYZ, double> dirsWithLengths = new Dictionary<XYZ, double>();
             foreach (Line line in lines)
             {
@@ -107,8 +107,8 @@ namespace BH.Revit.Engine.Core
                 }
 
                 transform.BasisX = first;
-                transform.BasisY = second;
-                transform.BasisZ = first.CrossProduct(second);
+                transform.BasisZ = first.CrossProduct(second).Normalize();
+                transform.BasisY = transform.BasisZ.CrossProduct(first);
                 return transform;
             }
         }
