@@ -50,164 +50,69 @@ namespace BH.Revit.Engine.Core
 		[Output("pipe", "Revit Pipe resulting from converting the input BH.oM.MEP.System.Pipe.")]
 		public static Autodesk.Revit.DB.Plumbing.PipeSegment ToRevitPipeSegement(this PipeMaterial pipeMaterial, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
 		{
-			if (document == null)
-				return null;
+            if (document == null || pipeMaterial == null)
+                return null;
 
-			// Check valid pipe object
-			if (pipeMaterial == null)
-				return null;
+            // Retrieve existing PipeSegment from refObjects
+            PipeSegment revitPipeSegment = refObjects.GetValue<PipeSegment>(document, pipeMaterial.BHoM_Guid);
 
-			PipeSegment revitPipeSegment = refObjects.GetValue<PipeSegment>(document, pipeMaterial.BHoM_Guid);
-
-            if (revitPipeSegment == null)
-                revitPipeSegment = new PipeSegment();
-
-            // Prepare settings for conversion
-            var bHoMUnit = SpecTypeId.Length;
+            // Prepare settings
             settings = settings.DefaultIfNull();
+            double tolerance = settings.DistanceTolerance;
+            var bHoMUnit = SpecTypeId.Length;
 
-            // Construct Revit PipeSegment
-            var sizeTable = pipeMaterial.CustomData["SizeTable"] as Dictionary<double,List<Double>>;
-			var mEPSizes = sizeTable.Select(x => new MEPSize(
+            // Extract conversion data
+            var sizeTable = pipeMaterial.CustomData["SizeTable"] as Dictionary<double, List<double>>;
+            var mEPSizes = sizeTable.Select(x => new MEPSize(
                     x.Key.FromSI(bHoMUnit),
                     x.Value[0].FromSI(bHoMUnit),
                     x.Value[1].FromSI(bHoMUnit),
                     true, true)).ToArray();
 
             ElementId materialId = pipeMaterial.CustomData["MaterialId"] as ElementId;
-			ElementId ScheduleTypeId = pipeMaterial.CustomData["ScheduleTypeId"] as ElementId;
+            ElementId scheduleTypeId = pipeMaterial.CustomData["ScheduleTypeId"] as ElementId;
 
-            // Check if the PipeSegment already exists in the document
-            PipeSegment existingPipeSegment = document.GetElement(pipeMaterial.ElementId()) as PipeSegment;
-			if (existingPipeSegment == null)
-			{
-				PipeSegment converted = PipeSegment.Create( document, materialId, ScheduleTypeId, mEPSizes );
-                converted.Description = pipeMaterial.CustomData["Description"].ToString();
-                return converted;
+            // Retrieve from document if not in refObjects
+            if (revitPipeSegment == null)
+            {
+                revitPipeSegment = document.GetElement(pipeMaterial.ElementId()) as PipeSegment;
             }
 
-			// Settings
-			double tolerance = settings.DistanceTolerance;
+            // Create if not found
+            if (revitPipeSegment == null)
+            {
+                PipeSegment created = PipeSegment.Create(document, materialId, scheduleTypeId, mEPSizes);
+                created.Description = pipeMaterial.CustomData["Description"].ToString();
+                refObjects?.AddOrReplace(pipeMaterial, created);
+                return created;
+            }
 
-			// Update Description
-			revitPipeSegment.Description = pipeMaterial.CustomData["Description"].ToString();
+            // Update Description
+            revitPipeSegment.Description = pipeMaterial.CustomData["Description"].ToString();
 
-			// Pipe sizes
-			ICollection<MEPSize> existingSize = revitPipeSegment.GetSizes();
+            // Update Sizes
+            ICollection<MEPSize> existingSizes = revitPipeSegment.GetSizes();
 
-			foreach (var mEPSize in mEPSizes)
-			{
-				MEPSize similarSize = existingSize.Where(x => Math.Abs(x.NominalDiameter - mEPSize.NominalDiameter) <= tolerance).FirstOrDefault();
+            foreach (var newSize in mEPSizes)
+            {
+                var similarSize = existingSizes.FirstOrDefault(x => Math.Abs(x.NominalDiameter - newSize.NominalDiameter) <= tolerance);
 
-				if (similarSize == null)
-				{
-					revitPipeSegment.AddSize(mEPSize);
-				}
+                if (similarSize == null)
+                {
+                    revitPipeSegment.AddSize(newSize);
+                }
+                else if ((Math.Abs(similarSize.InnerDiameter - newSize.InnerDiameter) > tolerance) ||
+                         (Math.Abs(similarSize.OuterDiameter - newSize.OuterDiameter) > tolerance))
+                {
+                    revitPipeSegment.RemoveSize(similarSize.NominalDiameter);
+                    revitPipeSegment.AddSize(newSize);
+                }
+            }
 
-				else if ((Math.Abs(similarSize.InnerDiameter - mEPSize.InnerDiameter) > tolerance)
-					&& Math.Abs(similarSize.OuterDiameter - mEPSize.OuterDiameter) > tolerance)
-				{
-					revitPipeSegment.RemoveSize(similarSize.NominalDiameter);
-					revitPipeSegment.AddSize(mEPSize);
-				}
-				else continue;
-			}
+            // Update refObjects
+            refObjects?.AddOrReplace(pipeMaterial, revitPipeSegment);
 
-            refObjects.AddOrReplace(pipeMaterial, revitPipeSegment);
             return revitPipeSegment;
-
-            // Pipe type
-            //Autodesk.Revit.DB.Plumbing.PipeType pipeType = pipeMaterial.SectionProperty.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_PipingSystem }, settings, refObjects) as Autodesk.Revit.DB.Plumbing.PipeType;
-            //if(pipeType == null)
-            //{
-            //    BH.Engine.Base.Compute.RecordError("No valid family has been found in the Revit model. Pipe creation requires the presence of the default Pipe Family Type.");
-            //    return null;
-            //}
-
-            //// End points
-            //XYZ start = pipeMaterial.StartPoint.ToRevit();
-            //XYZ end = pipeMaterial.EndPoint.ToRevit();
-
-            //// Level
-            //Level level = document.LevelBelow(Math.Min(start.Z, end.Z), settings);
-            //if (level == null)
-            //    return null;
-
-            //// Default system used for now
-            //// TODO: in the future you could look for the existing connectors and check if any of them overlaps with start/end of this pipe - if so, use it in Pipe.Create.
-            //// hacky/heavy way of getting all connectors in the link below - however, i would rather filter the connecting elements out by type/bounding box first for performance reasons
-            //// https://thebuildingcoder.typepad.com/blog/2010/06/retrieve-mep-elements-and-connectors.html
-
-            //Autodesk.Revit.DB.Plumbing.PipingSystemType pst = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Plumbing.PipingSystemType)).OfType<Autodesk.Revit.DB.Plumbing.PipingSystemType>().FirstOrDefault();
-
-            //if (pst == null)
-            //{
-            //    BH.Engine.Base.Compute.RecordError("No valid PipingSystemType can be found in the Revit model. Creating a revit Pipe requires a PipingSystemType.");
-            //    return null;
-            //}
-
-            //BH.Engine.Base.Compute.RecordWarning("Pipe creation will utilise the first available PipingSystemType from the Revit model.");
-
-            //SectionProfile sectionProfile = pipeMaterial.SectionProperty.SectionProfile;
-            //if (sectionProfile == null)
-            //{
-            //    BH.Engine.Base.Compute.RecordError("Pipe creation requires a SectionProfile. \n No elements created.");
-            //    return null;
-            //}
-
-            //PipeSectionProperty pipeSectionProperty = pipeMaterial.SectionProperty;
-
-            //// Create Revit Pipe
-            //revitPipeSegment = Autodesk.Revit.DB.Plumbing.Pipe.Create(document, pst.Id, pipeType.Id, level.Id, start, end);
-            //if (revitPipeSegment == null)
-            //{
-            //    BH.Engine.Base.Compute.RecordError("No Revit Pipe has been created. Please check inputs prior to push attempt.");
-            //    return null;
-            //}
-
-            //// Copy parameters from BHoM object to Revit element
-            //revitPipeSegment.CopyParameters(pipeMaterial, settings);
-
-            //double flowRate = pipeMaterial.FlowRate;
-            //revitPipeSegment.SetParameter(BuiltInParameter.RBS_PIPE_FLOW_PARAM, flowRate);
-
-            //// Get first available pipeLiningType from document
-            //Autodesk.Revit.DB.Plumbing.PipeInsulationType pit = null;
-            //if (sectionProfile.InsulationProfile != null)
-            //{
-            //    pit = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Plumbing.PipeInsulationType)).FirstOrDefault() as Autodesk.Revit.DB.Plumbing.PipeInsulationType;
-            //    if (pit == null)
-            //    {
-            //        BH.Engine.Base.Compute.RecordError("Any pipe insulation type needs to be present in the Revit model in order to push pipes with insulation.\n" +
-            //            "Pipe has been created but no insulation has been applied.");
-            //    }
-            //}
-
-            //// Round Pipe 
-            //if (sectionProfile.ElementProfile is TubeProfile)
-            //{
-            //    TubeProfile elementProfile = sectionProfile.ElementProfile as TubeProfile;
-
-            //    // Set Element Diameter
-            //    double diameter = elementProfile.Diameter;
-            //    revitPipeSegment.SetParameter(BuiltInParameter.RBS_PIPE_DIAMETER_PARAM, diameter);
-
-            //    // Outer and Inner Diameters
-            //    double outDiameter = elementProfile.Diameter;
-            //    double inDiameter = (((outDiameter / 2) - elementProfile.Thickness) * 2);
-            //    revitPipeSegment.SetParameter(BuiltInParameter.RBS_PIPE_OUTER_DIAMETER, outDiameter);
-            //    revitPipeSegment.SetParameter(BuiltInParameter.RBS_PIPE_INNER_DIAM_PARAM, inDiameter);
-
-            //    // Set InsulationProfile
-            //    if (pit != null)
-            //    {
-            //        TubeProfile insulationProfile = sectionProfile.InsulationProfile as TubeProfile;
-            //        double insulationThickness = insulationProfile.Thickness;
-            //        // Create pipe Insulation
-            //        Autodesk.Revit.DB.Plumbing.PipeInsulation pIn = Autodesk.Revit.DB.Plumbing.PipeInsulation.Create(document, revitPipeSegment.Id, pit.Id, insulationThickness);
-            //    }       
-            //}
-
 
         }
 
