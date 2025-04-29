@@ -125,8 +125,15 @@ namespace BH.Revit.Engine.Core
             {
                 PipeSegment created = PipeSegment.Create(document, material.Id, scheduleTypeId, mEPSizes);
                 created.Description = pipeMaterial.CustomData["Description"].ToString();
+                created.Roughness = pipeMaterial.Roughness.FromSI(bHoMUnit);
                 refObjects?.AddOrReplace(pipeMaterial, created);
                 return created;
+            }
+
+            // Update Roughness
+            if (Math.Abs(revitPipeSegment.Roughness - pipeMaterial.Roughness.FromSI(bHoMUnit)) > tolerance)
+            {
+                revitPipeSegment.Roughness = pipeMaterial.Roughness.FromSI(bHoMUnit);
             }
 
             // Update Description
