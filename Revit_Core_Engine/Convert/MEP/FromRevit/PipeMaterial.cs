@@ -21,16 +21,13 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Plumbing;
 using BH.Engine.Adapters.Revit;
-using BH.Engine.Geometry;
-using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
-using BH.oM.MEP.System;
 using BH.oM.MEP.System.MaterialFragments;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
@@ -46,7 +43,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("pipes", "List of BHoM MEP pipes converted from a Revit pipes.")]
-        public static PipeMaterial PipeMaterialFromRevit(this Autodesk.Revit.DB.Plumbing.PipeSegment revitPipeSegment, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static PipeMaterial PipeMaterialFromRevit(this PipeSegment revitPipeSegment, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
@@ -61,6 +58,7 @@ namespace BH.Revit.Engine.Core
                 pipeMaterial = new PipeMaterial();
             }
 
+            Document document = revitPipeSegment.Document;
             pipeMaterial.Name = revitPipeSegment.Name;
             pipeMaterial.Roughness = revitPipeSegment.Roughness.ToSI(SpecTypeId.Length);
 
@@ -78,8 +76,8 @@ namespace BH.Revit.Engine.Core
             }
 
             pipeMaterial.CustomData.Add("Description", revitPipeSegment.Description);
-            pipeMaterial.CustomData.Add("MaterialId", revitPipeSegment.MaterialId.IntegerValue);
-            pipeMaterial.CustomData.Add("ScheduleTypeId", revitPipeSegment.ScheduleTypeId.IntegerValue);
+            pipeMaterial.CustomData.Add("Material", document.GetElement(revitPipeSegment.MaterialId).Name);
+            pipeMaterial.CustomData.Add("ScheduleType", document.GetElement(revitPipeSegment.ScheduleTypeId).Name);
             pipeMaterial.CustomData.Add("SizeTable", sizeTable);
 
             pipeMaterial.SetIdentifiers(revitPipeSegment);
