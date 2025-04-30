@@ -21,50 +21,40 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Geometry;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Query
+    public static partial class Create
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Queries corner points of BoundingBoxXYZ.")]
-        [Input("bbox", "BoundingBoxXYZ to get the points from.")]
-        [Output("cornerPoints", "List of corner points of the BoundingBoxXYZ.")]
-        public static List<XYZ> CornerPoints(this BoundingBoxXYZ bbox)
+        [Description("Creates ModelCurve based on a given Curve.")]
+        [Input("document", "Revit document, in which the new ModelCurve will be created.")]
+        [Input("curve", "Curve, based on which ModelCurve will be created.")]
+        [Output("modelCurve", "ModelCurve created based on the input curve.")]
+        public static ModelCurve ModelCurve(Document document, Curve curve)
         {
-            if (bbox == null)
-                return null;
-
-            List<XYZ> bboxPoints = new List<XYZ>
+            oM.Geometry.ICurve bhomCurve = curve.IFromRevit();
+            Plane revitPlane;
+            BH.oM.Geometry.Plane plane = bhomCurve.IFitPlane();
+            if (plane == null)
             {
-                new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Min.Z),
-                new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Min.Z),
-                new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Min.Z),
-                new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Min.Z),
-                new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Max.Z),
-                new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Max.Z),
-                new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Max.Z),
-                new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Max.Z)
-            };
+                XYZ point = curve.GetEndPoint(0);
+                XYZ vector = (curve.GetEndPoint(1) - point).Normalize();
+                revitPlane = Create.ArbitraryPlane(point, vector);
+            }
+            else
+                revitPlane = plane.ToRevit();
 
-            Transform bboxTransform = bbox.Transform ?? Transform.Identity;
-
-            if (!bboxTransform.IsIdentity)
-                bboxPoints = bboxPoints.Select(x => bboxTransform.OfPoint(x)).ToList();
-
-            return bboxPoints;
+            SketchPlane sketchPlane = Create.SketchPlane(document, revitPlane);
+            return document.Create.NewModelCurve(curve, sketchPlane);
         }
 
         /***************************************************/
     }
 }
-
-
-

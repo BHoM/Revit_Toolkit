@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -21,50 +21,37 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Query
+    public static partial class Create
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Queries corner points of BoundingBoxXYZ.")]
-        [Input("bbox", "BoundingBoxXYZ to get the points from.")]
-        [Output("cornerPoints", "List of corner points of the BoundingBoxXYZ.")]
-        public static List<XYZ> CornerPoints(this BoundingBoxXYZ bbox)
+        [Description("Creates SketchPlane based on the input plane. If a sketchplane in this plane already exists, it is returned without creating a new object.")]
+        [Input("document", "Revit document, in which the new SketchPlane will be created.")]
+        [Input("plane", "Plane, in which SketchPlane will be created.")]
+        [Input("tolerance", "Tolerance used when checking whether a plane with same geometry already exists.")]
+        [Output("sketchPlane", "SketchPlane created based on the input plane.")]
+        public static SketchPlane SketchPlane(Document document, Plane plane, double tolerance = Tolerance.Angle)
         {
-            if (bbox == null)
-                return null;
-
-            List<XYZ> bboxPoints = new List<XYZ>
+            SketchPlane existing = new FilteredElementCollector(document).OfClass(typeof(SketchPlane)).OfType<SketchPlane>().FirstOrDefault(x => 1 - Math.Abs(x.GetPlane().Normal.DotProduct(plane.Normal)) <= tolerance && x.GetPlane().Distance(plane.Origin) <= tolerance);
+            if (existing != null)
             {
-                new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Min.Z),
-                new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Min.Z),
-                new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Min.Z),
-                new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Min.Z),
-                new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Max.Z),
-                new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Max.Z),
-                new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Max.Z),
-                new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Max.Z)
-            };
+                BH.Engine.Base.Compute.RecordNote("Sketch plane with matching geometry already exists in the model, it has been reused.");
+                return existing;
+            }
 
-            Transform bboxTransform = bbox.Transform ?? Transform.Identity;
-
-            if (!bboxTransform.IsIdentity)
-                bboxPoints = bboxPoints.Select(x => bboxTransform.OfPoint(x)).ToList();
-
-            return bboxPoints;
+            return Autodesk.Revit.DB.SketchPlane.Create(document, plane);
         }
 
         /***************************************************/
     }
 }
-
-
-

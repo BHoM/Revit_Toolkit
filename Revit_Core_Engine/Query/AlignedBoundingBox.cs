@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -34,37 +34,20 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Queries corner points of BoundingBoxXYZ.")]
-        [Input("bbox", "BoundingBoxXYZ to get the points from.")]
-        [Output("cornerPoints", "List of corner points of the BoundingBoxXYZ.")]
-        public static List<XYZ> CornerPoints(this BoundingBoxXYZ bbox)
+        [Description("Finds a bounding box of an element in its local coordinate system, which is:" +
+                     "\n- for FamilyInstance: coordinate system as defined in the object definition (result of GetTotalTransform method )" +
+                     "\n- for everything else: coordinate system based on normals of the major planar faces of the element")]
+        [Input("element", "Element to query for aligned bounding box.")]
+        [Input("options", "Options to apply when extracting solid representation of an element.")]
+        [Output("alignedBBox", "Bounding box of the input element in on its local coordinate system.")]
+        public static Solid AlignedBoundingBox(this Element element, Options options)
         {
-            if (bbox == null)
-                return null;
-
-            List<XYZ> bboxPoints = new List<XYZ>
-            {
-                new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Min.Z),
-                new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Min.Z),
-                new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Min.Z),
-                new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Min.Z),
-                new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Max.Z),
-                new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Max.Z),
-                new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Max.Z),
-                new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Max.Z)
-            };
-
-            Transform bboxTransform = bbox.Transform ?? Transform.Identity;
-
-            if (!bboxTransform.IsIdentity)
-                bboxPoints = bboxPoints.Select(x => bboxTransform.OfPoint(x)).ToList();
-
-            return bboxPoints;
+            Transform transform = element.LocalCoordinateSystem();
+            List<Solid> solids = element.Solids(options).Select(x => SolidUtils.CreateTransformed(x, transform.Inverse)).ToList();
+            BoundingBoxXYZ bounds = solids.Select(x => x.GetBoundingBox()).Bounds();
+            return SolidUtils.CreateTransformed(bounds.ToSolid(), transform);
         }
 
         /***************************************************/
     }
 }
-
-
-

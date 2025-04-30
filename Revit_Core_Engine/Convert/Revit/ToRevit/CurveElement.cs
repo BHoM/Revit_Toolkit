@@ -25,8 +25,8 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Geometry;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -75,15 +75,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            Autodesk.Revit.DB.Plane revitPlane;
-            BH.oM.Geometry.Plane plane = curve.IFitPlane();
-            if (plane == null)
-                revitPlane = revitCurve.ArbitraryPlane();
-            else
-                revitPlane = plane.ToRevit();
-
-            SketchPlane sketchPlane = SketchPlane.Create(document, revitPlane);
-            curveElement = document.Create.NewModelCurve(revitCurve, sketchPlane);
+            curveElement = Create.ModelCurve(document, revitCurve);
 
             if (modelInstance.Properties != null)
             {
@@ -139,37 +131,18 @@ namespace BH.Revit.Engine.Core
             if (draftingInstance.Properties != null)
             {
                 string name = draftingInstance.Properties.Name;
-                if(!string.IsNullOrEmpty(name))
+                if (!string.IsNullOrEmpty(name))
                 {
                     Element element = new FilteredElementCollector(document).OfClass(typeof(GraphicsStyle)).ToList().Find(x => x.Name == name);
-                    if(element != null)
+                    if (element != null)
                         curveElement.LineStyle = element;
-                } 
+                }
             }
 
             refObjects.AddOrReplace(draftingInstance, curveElement);
             return curveElement;
         }
 
-
-        /***************************************************/
-        /****              Private methods              ****/
-        /***************************************************/
-
-        private static Autodesk.Revit.DB.Plane ArbitraryPlane(this Curve curve)
-        {
-            XYZ origin = curve.GetEndPoint(0);
-            XYZ x = (curve.GetEndPoint(1) - origin).Normalize();
-            XYZ helper = 1 - Math.Abs(x.DotProduct(XYZ.BasisZ)) > BH.oM.Geometry.Tolerance.Angle ? XYZ.BasisZ : XYZ.BasisX;
-            XYZ y = x.CrossProduct(helper).Normalize();
-            return Autodesk.Revit.DB.Plane.CreateByOriginAndBasis(origin, x, y);
-        }
-
         /***************************************************/
     }
 }
-
-
-
-
-

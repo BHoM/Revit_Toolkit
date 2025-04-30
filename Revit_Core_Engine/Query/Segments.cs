@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -22,9 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -34,37 +32,22 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Queries corner points of BoundingBoxXYZ.")]
-        [Input("bbox", "BoundingBoxXYZ to get the points from.")]
-        [Output("cornerPoints", "List of corner points of the BoundingBoxXYZ.")]
-        public static List<XYZ> CornerPoints(this BoundingBoxXYZ bbox)
+        [Description("Finds segments of a given CurveLoop.")]
+        [Input("loop", "CurveLoop to query for segments.")]
+        [Output("segments", "Segments of the input CurveLoop.")]
+        public static Curve[] Segments(this CurveLoop loop)
         {
-            if (bbox == null)
-                return null;
-
-            List<XYZ> bboxPoints = new List<XYZ>
+            Curve[] result = new Curve[loop.NumberOfCurves()];
+            int i = 0;
+            foreach (Curve c in loop)
             {
-                new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Min.Z),
-                new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Min.Z),
-                new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Min.Z),
-                new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Min.Z),
-                new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Max.Z),
-                new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Max.Z),
-                new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Max.Z),
-                new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Max.Z)
-            };
+                result[i] = c;
+                i++;
+            }
 
-            Transform bboxTransform = bbox.Transform ?? Transform.Identity;
-
-            if (!bboxTransform.IsIdentity)
-                bboxPoints = bboxPoints.Select(x => bboxTransform.OfPoint(x)).ToList();
-
-            return bboxPoints;
+            return result;
         }
 
         /***************************************************/
     }
 }
-
-
-

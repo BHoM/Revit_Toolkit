@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -22,9 +22,8 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -34,37 +33,16 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Queries corner points of BoundingBoxXYZ.")]
-        [Input("bbox", "BoundingBoxXYZ to get the points from.")]
-        [Output("cornerPoints", "List of corner points of the BoundingBoxXYZ.")]
-        public static List<XYZ> CornerPoints(this BoundingBoxXYZ bbox)
+        [Description("Computes the distance between a plane and point." +
+                     "\nThis is a backend method, working with the Revit object model and in Revit (imperial) units.")]
+        [Input("plane", "Plane to compute distance.")]
+        [Input("point", "Point to compute distance.")]
+        [Output("distance", "Distance between the input plane and point.")]
+        public static double Distance(this Plane plane, XYZ point)
         {
-            if (bbox == null)
-                return null;
-
-            List<XYZ> bboxPoints = new List<XYZ>
-            {
-                new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Min.Z),
-                new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Min.Z),
-                new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Min.Z),
-                new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Min.Z),
-                new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Max.Z),
-                new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Max.Z),
-                new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Max.Z),
-                new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Max.Z)
-            };
-
-            Transform bboxTransform = bbox.Transform ?? Transform.Identity;
-
-            if (!bboxTransform.IsIdentity)
-                bboxPoints = bboxPoints.Select(x => bboxTransform.OfPoint(x)).ToList();
-
-            return bboxPoints;
+            return Math.Abs(plane.Normal.DotProduct(point - plane.Origin));
         }
 
         /***************************************************/
     }
 }
-
-
-

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -28,43 +28,38 @@ using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Query
+    public static partial class Modify
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Queries corner points of BoundingBoxXYZ.")]
-        [Input("bbox", "BoundingBoxXYZ to get the points from.")]
-        [Output("cornerPoints", "List of corner points of the BoundingBoxXYZ.")]
-        public static List<XYZ> CornerPoints(this BoundingBoxXYZ bbox)
+        [Description("Cleans up given solids, which includes:" +
+                     "\n- removal of the ones with extremely small volume" +
+                     "\n- Boolean union of the remaining ones" +
+                     "\n- splitting disjoint volumes")]
+        [Input("solids", "Solids to clean up.")]
+        [Output("clean", "Cleaned up solids.")]
+        public static List<Solid> CleanUp(this List<Solid> solids)
         {
-            if (bbox == null)
-                return null;
+            solids = solids.Where(x => x.Volume > 1e-6).ToList();
 
-            List<XYZ> bboxPoints = new List<XYZ>
+            if (solids.Count == 0)
+                return new List<Solid>();
+            if (solids.Count == 1)
+                return SolidUtils.SplitVolumes(solids[0]).ToList();
+            else
             {
-                new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Min.Z),
-                new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Min.Z),
-                new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Min.Z),
-                new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Min.Z),
-                new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Max.Z),
-                new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Max.Z),
-                new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Max.Z),
-                new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Max.Z)
-            };
+                Solid result = solids[0];
+                foreach (Solid solid in solids.Skip(1))
+                {
+                    result = BooleanOperationsUtils.ExecuteBooleanOperation(result, solid, BooleanOperationsType.Union);
+                }
 
-            Transform bboxTransform = bbox.Transform ?? Transform.Identity;
-
-            if (!bboxTransform.IsIdentity)
-                bboxPoints = bboxPoints.Select(x => bboxTransform.OfPoint(x)).ToList();
-
-            return bboxPoints;
+                return SolidUtils.SplitVolumes(result).ToList();
+            }
         }
 
         /***************************************************/
     }
 }
-
-
-
