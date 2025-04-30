@@ -492,6 +492,7 @@ namespace BH.Revit.Adapter.Core
         private ExternalEvent m_PullEvent;
         private ExternalEvent m_RemoveEvent;
         private ExternalEvent m_UpdateTagsEvent;
+        private ExternalEvent m_ExecuteEvent;
         private Dictionary<Document, RevitListenerAdapter> m_Adapters = new Dictionary<Document, RevitListenerAdapter>();
         private PushButton m_ActivateButton;
         private PushButton m_UpdatePortsButton;
