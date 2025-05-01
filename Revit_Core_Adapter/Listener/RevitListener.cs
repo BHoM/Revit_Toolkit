@@ -187,6 +187,9 @@ namespace BH.Revit.Adapter.Core
             RemoveEvent removeEvent = new RemoveEvent();
             m_RemoveEvent = ExternalEvent.Create(removeEvent);
 
+            ExecuteEvent executeEvent = new ExecuteEvent();
+            m_ExecuteEvent = ExternalEvent.Create(executeEvent);
+
             //empty list for package holding
             LatestPackage = new List<IObject>();
 
