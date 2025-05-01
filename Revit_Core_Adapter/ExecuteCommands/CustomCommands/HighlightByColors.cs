@@ -37,45 +37,48 @@ namespace BH.Revit.Adapter.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public Output<List<object>, bool> Select(Dictionary<string, object> input, ActionConfig actionConfig = null)
+        public Output<List<object>, bool> HighlightByColors(Dictionary<string, object> input, ActionConfig actionConfig = null)
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 
-            if (!input.TryGetValue("BHoMObjects", out object objects))
-            {
-                BH.Engine.Base.Compute.RecordError("BHoMObjects is not retrieved; ensure selected objects are valid.");
-                return output;
-            }
-
-            if (!(objects is IEnumerable<BHoMObject> bHoMObjects) || !bHoMObjects.Any())
-            {
-                BH.Engine.Base.Compute.RecordError("No valid BHoMObjects provided.");
-                return output;
-            }
-
-            List<ElementId> elementIds = bHoMObjects
-                .Select(b => (b?.Fragments?.FirstOrDefault(f => f is RevitIdentifiers) as RevitIdentifiers)?.ElementId)
-                .Where(id => id.HasValue)
-                .Select(id => new ElementId(id.Value))
-                .ToList();
-
-            if (elementIds == null || elementIds.Count == 0)
+            if (!input.TryGetValue("ElementIds", out object idsObj) || !(idsObj is List<ElementId> elementIds) || elementIds.Count == 0)
             {
                 BH.Engine.Base.Compute.RecordError("ElementIds input is invalid or empty.");
                 return output;
             }
 
-            UIDocument uidoc = this.UIDocument;
-
-            try
+            if (!input.TryGetValue("Color", out object colorObj) || !(colorObj is System.Drawing.Color sysColor))
             {
-                uidoc.ShowElements(elementIds);
-                uidoc.Selection.SetElementIds(elementIds);
-            }
-            catch (Exception ex)
-            {
-                BH.Engine.Base.Compute.RecordError($"Failed to select elements: {ex.Message}");
+                BH.Engine.Base.Compute.RecordError("Color input is missing or invalid.");
                 return output;
+            }
+
+            Autodesk.Revit.DB.Color revitColor = new Autodesk.Revit.DB.Color(sysColor.R, sysColor.G, sysColor.B);
+            Document doc = this.Document;
+            View view = doc.ActiveView;
+
+            OverrideGraphicSettings ogs = new OverrideGraphicSettings();
+            ogs.SetProjectionLineColor(revitColor);
+            ogs.SetSurfaceForegroundPatternColor(revitColor);
+
+            FillPatternElement solidFill = new FilteredElementCollector(doc)
+                .OfClass(typeof(FillPatternElement))
+                .Cast<FillPatternElement>()
+                .FirstOrDefault(f => f.GetFillPattern().IsSolidFill);
+
+            if (solidFill != null)
+            {
+                ogs.SetSurfaceForegroundPatternId(solidFill.Id);
+            }
+
+            using (Transaction tx = new Transaction(doc, "Apply Color Overrides"))
+            {
+                tx.Start();
+                foreach (ElementId id in elementIds)
+                {
+                    view.SetElementOverrides(id, ogs);
+                }
+                tx.Commit();
             }
 
             output.Item1 = elementIds.Cast<object>().ToList();
