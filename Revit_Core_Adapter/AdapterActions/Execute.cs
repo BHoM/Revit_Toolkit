@@ -27,6 +27,7 @@ using BH.oM.Adapters.Revit;
 using BH.oM.Base;
 using BH.oM.Data.Requests;
 using System.Collections.Generic;
+using System;
 
 namespace BH.Revit.Adapter.Core
 {
@@ -68,7 +69,7 @@ namespace BH.Revit.Adapter.Core
             using (Transaction transaction = new Transaction(document, "---------"))
             {
                 transaction.Start();
-                result = Execute(command);
+                result = Execute(command as dynamic, actionConfig);
                 transaction.Commit();
             }
 
@@ -80,6 +81,8 @@ namespace BH.Revit.Adapter.Core
         }
 
         /***************************************************/
+
+
     }
 }
 

@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Base;
+using BH.oM.Data.Requests;
 
 namespace BH.Adapter.Revit
 {
@@ -42,46 +43,56 @@ namespace BH.Adapter.Revit
 
         public override Output<List<object>, bool> Execute(IExecuteCommand command, ActionConfig actionConfig = null)
         {
-            var output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
+            Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
+            if (command == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Command could not be executed because provided command is null.");
+                return output;
+            }
 
-            output.Item2 = RunCommand(command as dynamic);
+            //Initialize Revit config
+            RevitExecutionConfig executionConfig = actionConfig as RevitExecutionConfig;
+
+            //If internal adapter is loaded call it directly
+            if (InternalAdapter != null)
+            {
+                InternalAdapter.RevitSettings = RevitSettings;
+                return InternalAdapter.Execute(command, executionConfig);
+            }
+
+            if (!this.IsValid())
+            {
+                BH.Engine.Base.Compute.RecordError("Revit Adapter is not valid. Please check if it has been set up correctly and activated.");
+                return output;
+            }
+
+            //Reset the wait event
+            m_WaitEvent.Reset();
+
+            if (!CheckConnection())
+                return output;
+
+            //Send data through the socket link
+            m_LinkIn.SendData(new List<object>() { PackageType.Execute, command, executionConfig, RevitSettings });
+
+            //Wait until the return message has been received
+            if (!m_WaitEvent.WaitOne(TimeSpan.FromMinutes(m_WaitTime)))
+                Engine.Base.Compute.RecordError("The connection with Revit timed out. If working on a big model, try to increase the max wait time");
+
+            //Grab the return objects from the latest package
+            List<object> returnObjs = new List<object>(m_ReturnPackage);
+
+            //Raise returned events
+            RaiseEvents();
+
+            //Check if the return package contains error message
+            if (returnObjs.Count == 1 && returnObjs[0] is string)
+            {
+                Engine.Base.Compute.RecordError(returnObjs[0] as string);
+                return output;
+            }
 
             return output;
-        }
-
-        /***************************************************/
-        /**** Commands                                  ****/
-        /***************************************************/
-
-
-        /***************************************************/
-
-        public bool RunCommand(CustomCommand command)
-        {
-            bool success = true;
-
-            return success;
-        }
-
-        /***************************************************/
-
-        public bool RunCommand(IExecuteCommand command)
-        {
-            Engine.Base.Compute.RecordWarning($"The command {command.GetType().Name} is not supported by this Adapter.");
-            return false;
-        }
-
-        /***************************************************/
-        /**** Private helper methods                    ****/
-        /***************************************************/
-
-        private bool Analyse(IEnumerable<object> cases = null)
-        {
-            bool success;
-
-
-            success  = true;
-            return success;
         }
 
         /***************************************************/

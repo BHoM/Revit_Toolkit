@@ -19,69 +19,43 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
-
+ 
+using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using BH.oM.Adapter;
+using BH.oM.Adapters.Revit;
+using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
+using BH.oM.Data.Requests;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.Revit.Adapter.Core
 {
-    public class ExecuteEvent : IExternalEventHandler
+    public partial class RevitListenerAdapter
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        public void Execute(UIApplication app)
+        public Output<List<object>, bool> Execute(BH.oM.Adapter.Commands.CustomCommand command, ActionConfig actionConfig = null)
         {
-            lock (RevitListener.Listener.m_PackageLock)
-            {
-                try
-                {
-                    //Clear the event log
-                    BH.Engine.Base.Compute.ClearCurrentEvents();
-
-                    //Get instance of listener
-                    RevitListener listener = RevitListener.Listener;
-
-                    Output<List<object>, bool> result = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
-
-                    // Do not attempt to remove if no document is open.
-                    if (app.ActiveUIDocument == null || app.ActiveUIDocument.Document == null)
-                        BH.Engine.Base.Compute.RecordError("The adaper has successfully connected to Revit, but open document could not be found. Command aborted.");
-                    else
-                    {
-                        //Get the revit adapter
-                        RevitListenerAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
-
-                        //Execute TODO: Create the Execute method in the adapter                       
-                        result = adapter.Execute(listener.LatestCommand, listener.LatestConfig);
-                    }
-                    
-                    //Clear the previous data
-                    listener.LatestConfig = null;
-
-                    //Return the number of deleted elements
-                    listener.ReturnData(new List<object> { result });
-                }
-                catch (Exception e)
-                {
-                    RevitListener.Listener.ReturnData(new List<string> { "Failed to remove. Exception from the adapter: " + e.Message });
-                }
-            }
+            Output<List<object>, bool> result = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
+            return m_RevitCustomCommands[command.Command](command.Parameters, actionConfig);
         }
-
+        
         /***************************************************/
 
-        public string GetName()
+        private void RegisterRevitCustomCommands()
         {
-            return "Execute event";
+            m_RevitCustomCommands.Add("LocateAndIsolateObjects", LocateAndIsolateObjects);
         }
 
         /***************************************************/
     }
 }
+
 
 
 

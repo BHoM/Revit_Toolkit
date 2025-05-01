@@ -24,7 +24,9 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using BH.Adapter;
 using BH.Adapter.Revit;
+using BH.oM.Adapter;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
@@ -42,11 +44,13 @@ namespace BH.Revit.Adapter.Core
 
         private Document m_Document;
 
+        private Dictionary<string, Func<Dictionary<string, object>, ActionConfig, Output<List<object>, bool>>> m_RevitCustomCommands;
+
 
         /***************************************************/
         /****            Public Constructors            ****/
         /***************************************************/
-        
+
         [Description("Revit listener adapter constructor.")]
         [Input("uIControlledApplication","The Revit UI controlled application.")]
         [Input("document", "The Revit document.")]
@@ -58,7 +62,8 @@ namespace BH.Revit.Adapter.Core
 
             m_Document = document;
             m_UIControlledApplication = uIControlledApplication;
-            
+            RegisterRevitCustomCommands();
+
             AdapterComparers = new Dictionary<Type, object>
             {
                 //{typeof(ISectionProperty), new BHoMObjectNameOrToStringComparer() },
