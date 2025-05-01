@@ -41,26 +41,45 @@ namespace BH.Revit.Adapter.Core
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 
-            if (!input.TryGetValue("ElementIds", out object idsObj) || !(idsObj is List<ElementId> elementIds) || elementIds.Count == 0)
+            // Validate and extract BHoMObjects
+            if (!input.TryGetValue("BHoMObjects", out object objects) || !(objects is IEnumerable<BHoMObject> bHoMObjects) || !bHoMObjects.Any())
             {
-                BH.Engine.Base.Compute.RecordError("ElementIds input is invalid or empty.");
+                BH.Engine.Base.Compute.RecordError("BHoMObjects input is missing or invalid.");
                 return output;
             }
 
+            // Validate and extract Color
             if (!input.TryGetValue("Color", out object colorObj) || !(colorObj is System.Drawing.Color sysColor))
             {
                 BH.Engine.Base.Compute.RecordError("Color input is missing or invalid.");
                 return output;
             }
 
+            // Convert System.Drawing.Color to Autodesk.Revit.DB.Color
             Autodesk.Revit.DB.Color revitColor = new Autodesk.Revit.DB.Color(sysColor.R, sysColor.G, sysColor.B);
+
+            // Extract ElementIds from BHoMObjects
+            List<ElementId> elementIds = bHoMObjects
+                .Select(b => (b?.Fragments?.FirstOrDefault(f => f is RevitIdentifiers) as RevitIdentifiers)?.ElementId)
+                .Where(id => id.HasValue)
+                .Select(id => new ElementId(id.Value))
+                .ToList();
+
+            if (!elementIds.Any())
+            {
+                BH.Engine.Base.Compute.RecordError("No valid ElementIds found in BHoMObjects.");
+                return output;
+            }
+
             Document doc = this.Document;
             View view = doc.ActiveView;
 
+            // Create OverrideGraphicSettings
             OverrideGraphicSettings ogs = new OverrideGraphicSettings();
             ogs.SetProjectionLineColor(revitColor);
             ogs.SetSurfaceForegroundPatternColor(revitColor);
 
+            // Retrieve solid fill pattern
             FillPatternElement solidFill = new FilteredElementCollector(doc)
                 .OfClass(typeof(FillPatternElement))
                 .Cast<FillPatternElement>()
@@ -71,6 +90,7 @@ namespace BH.Revit.Adapter.Core
                 ogs.SetSurfaceForegroundPatternId(solidFill.Id);
             }
 
+            // Apply overrides within a transaction
             using (Transaction tx = new Transaction(doc, "Apply Color Overrides"))
             {
                 tx.Start();
@@ -81,10 +101,9 @@ namespace BH.Revit.Adapter.Core
                 tx.Commit();
             }
 
-            output.Item1 = elementIds.Cast<object>().ToList();
+            output.Item1 = bHoMObjects.Cast<object>().ToList();
             output.Item2 = true;
             return output;
         }
-
     }
 }
