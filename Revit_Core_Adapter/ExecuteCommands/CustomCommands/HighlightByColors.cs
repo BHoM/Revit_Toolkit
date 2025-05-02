@@ -37,7 +37,7 @@ namespace BH.Revit.Adapter.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public Output<List<object>, bool> HighlightByColors(Dictionary<string, object> input, ActionConfig actionConfig = null)
+        public Output<List<object>, bool> HighlightByColor(Dictionary<string, object> input, ActionConfig actionConfig = null)
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 

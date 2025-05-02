@@ -44,16 +44,56 @@ namespace BH.Revit.Adapter.Core
             Output<List<object>, bool> result = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
             return m_RevitCustomCommands[command.Command](command.Parameters, actionConfig);
         }
-        
+
         /***************************************************/
 
         public void RegisterRevitCustomCommands()
         {
             this.m_RevitCustomCommands.Add("LocateAndIsolate", LocateAndIsolate);
             this.m_RevitCustomCommands.Add("Select", Select);
+            this.m_RevitCustomCommands.Add("HighlightByColor", HighlightByColor);
         }
 
         /***************************************************/
+
+        /***************************************************/
+        /****              Helper methods               ****/
+        /***************************************************/
+
+        private bool TryGetElementId(IEnumerable<Object> objects, out List<ElementId> ids )
+        {
+            ids = null;
+
+            if (objects == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Input object list is null.");
+                return false;
+            }
+
+            List<BHoMObject> bHoMObjects = objects.OfType<BHoMObject>().ToList();
+
+            if (bHoMObjects.Count == 0)
+            {
+                BH.Engine.Base.Compute.RecordError("No valid BHoMObjects provided.");
+                return false;
+            }
+
+            var elementIds = bHoMObjects
+                .Select(b => (b?.Fragments?.FirstOrDefault(f => f is RevitIdentifiers) as RevitIdentifiers)?.ElementId)
+                .Where(id => id.HasValue)
+                .Select(id => new ElementId(id.Value))
+                .ToList();
+
+            if (elementIds.Count == 0)
+            {
+                BH.Engine.Base.Compute.RecordError("No valid ElementIds found.");
+                return false;
+            }
+
+            ids = elementIds;
+            return true;
+
+        }
     }
 }
 

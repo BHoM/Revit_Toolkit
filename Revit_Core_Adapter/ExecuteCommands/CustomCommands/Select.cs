@@ -47,19 +47,7 @@ namespace BH.Revit.Adapter.Core
                 return output;
             }
 
-            if (!(objects is IEnumerable<BHoMObject> bHoMObjects) || !bHoMObjects.Any())
-            {
-                BH.Engine.Base.Compute.RecordError("No valid BHoMObjects provided.");
-                return output;
-            }
-
-            List<ElementId> elementIds = bHoMObjects
-                .Select(b => (b?.Fragments?.FirstOrDefault(f => f is RevitIdentifiers) as RevitIdentifiers)?.ElementId)
-                .Where(id => id.HasValue)
-                .Select(id => new ElementId(id.Value))
-                .ToList();
-
-            if (elementIds == null || elementIds.Count == 0)
+            if (!TryGetElementId(objects as IEnumerable<object>, out List<ElementId> elementIds))
             {
                 BH.Engine.Base.Compute.RecordError("ElementIds input is invalid or empty.");
                 return output;

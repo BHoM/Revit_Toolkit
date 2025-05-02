@@ -54,7 +54,6 @@ namespace BH.Revit.Adapter.Core
                     {
                         //Get the revit adapter
                         RevitListenerAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
-                        adapter.RegisterRevitCustomCommands();
 
                         //Try to execute the script in the adapter                       
                         result = adapter.Execute(listener.LatestCommand, listener.LatestConfig);
@@ -68,7 +67,7 @@ namespace BH.Revit.Adapter.Core
                 }
                 catch (Exception e)
                 {
-                    RevitListener.Listener.ReturnData(new List<string> { "Failed to remove. Exception from the adapter: " + e.Message });
+                    RevitListener.Listener.ReturnData(new List<string> { "Failed to execute. Exception from the adapter: " + e.Message });
                 }
             }
         }

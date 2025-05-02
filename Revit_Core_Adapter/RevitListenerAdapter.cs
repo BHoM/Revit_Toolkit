@@ -61,7 +61,9 @@ namespace BH.Revit.Adapter.Core
             m_AdapterSettings.UseAdapterId = false;
 
             m_Document = document;
-            m_UIControlledApplication = uIControlledApplication;            
+            m_UIControlledApplication = uIControlledApplication;
+            m_RevitCustomCommands = new Dictionary<string, Func<Dictionary<string, object>, ActionConfig, Output<List<object>, bool>>>();
+            RegisterRevitCustomCommands();
 
             AdapterComparers = new Dictionary<Type, object>
             {
