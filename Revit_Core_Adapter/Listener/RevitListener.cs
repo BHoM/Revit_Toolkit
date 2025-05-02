@@ -347,6 +347,7 @@ namespace BH.Revit.Adapter.Core
                     packageSize = 5;
                     break;
                 case PackageType.Remove:
+                case PackageType.Execute:
                     packageSize = 4;
                     break;
             }
