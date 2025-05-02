@@ -41,15 +41,9 @@ namespace BH.Revit.Adapter.Core
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 
-            if (!input.TryGetValue("BHoMObjects", out object objects))
+            if (!TryGetElementId(input, out List<ElementId> elementIds))
             {
-                BH.Engine.Base.Compute.RecordError("BHoMObjects is not retrieved; ensure selected objects are valid.");
-                return output;
-            }
-
-            if (!TryGetElementId(objects as IEnumerable<object>, out List<ElementId> elementIds))
-            {
-                BH.Engine.Base.Compute.RecordError("ElementIds input is invalid or empty.");
+                BH.Engine.Base.Compute.RecordError("ElementIds is invalid or empty.");
                 return output;
             }
 

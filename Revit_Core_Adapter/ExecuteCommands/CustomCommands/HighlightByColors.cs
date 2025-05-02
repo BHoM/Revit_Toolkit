@@ -41,10 +41,9 @@ namespace BH.Revit.Adapter.Core
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 
-            // Validate and extract BHoMObjects
-            if (!input.TryGetValue("BHoMObjects", out object objects) || !(objects is IEnumerable<BHoMObject> bHoMObjects) || !bHoMObjects.Any())
+            if (!TryGetElementId(input, out List<ElementId> elementIds))
             {
-                BH.Engine.Base.Compute.RecordError("BHoMObjects input is missing or invalid.");
+                BH.Engine.Base.Compute.RecordError("ElementIds is invalid or empty.");
                 return output;
             }
 
@@ -57,19 +56,6 @@ namespace BH.Revit.Adapter.Core
 
             // Convert System.Drawing.Color to Autodesk.Revit.DB.Color
             Autodesk.Revit.DB.Color revitColor = new Autodesk.Revit.DB.Color(sysColor.R, sysColor.G, sysColor.B);
-
-            // Extract ElementIds from BHoMObjects
-            List<ElementId> elementIds = bHoMObjects
-                .Select(b => (b?.Fragments?.FirstOrDefault(f => f is RevitIdentifiers) as RevitIdentifiers)?.ElementId)
-                .Where(id => id.HasValue)
-                .Select(id => new ElementId(id.Value))
-                .ToList();
-
-            if (!elementIds.Any())
-            {
-                BH.Engine.Base.Compute.RecordError("No valid ElementIds found in BHoMObjects.");
-                return output;
-            }
 
             Document doc = this.Document;
             View view = doc.ActiveView;
@@ -101,7 +87,7 @@ namespace BH.Revit.Adapter.Core
                 tx.Commit();
             }
 
-            output.Item1 = bHoMObjects.Cast<object>().ToList();
+            output.Item1 = elementIds.Cast<object>().ToList();
             output.Item2 = true;
             return output;
         }

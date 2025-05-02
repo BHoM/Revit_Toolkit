@@ -40,25 +40,11 @@ namespace BH.Revit.Adapter.Core
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 
-            if (!input.TryGetValue("BHoMObjects", out object objects))
+            if (!TryGetElementId(input, out List<ElementId> elementIds))
             {
-                BH.Engine.Base.Compute.RecordError("BHoMObjects is not retrieved, make sure selected objects are valid.");
+                BH.Engine.Base.Compute.RecordError("ElementIds is invalid or empty.");
                 return output;
             }
-
-            IEnumerable<BHoMObject> bHoMObjects = objects as IEnumerable<BHoMObject>;
-            if (bHoMObjects == null || !bHoMObjects.Any())
-                return output;
-
-            IEnumerable<int> elementIdInts = bHoMObjects
-                .Select(b => (b?.Fragments?.FirstOrDefault(f => f is RevitIdentifiers) as RevitIdentifiers)?.ElementId)
-                .Where(id => id.HasValue)
-                .Select(id => id.Value);
-
-            List<ElementId> elementIds = elementIdInts.Select(i => new ElementId(i)).ToList();
-
-            if (elementIds.Count == 0)
-                return output;
 
             UIDocument uidoc = this.UIDocument;
             Document doc = this.Document;
@@ -77,7 +63,7 @@ namespace BH.Revit.Adapter.Core
             ZoomToFit(uidoc, elementIds);
 
             uidoc.Selection.SetElementIds(elementIds);
-            output.Item1 = new List<object>(bHoMObjects); // Return objects as output
+            output.Item1 = elementIds.Cast<object>().ToList();
             output.Item2 = true;
             return output;
         }

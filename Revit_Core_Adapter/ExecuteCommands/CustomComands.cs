@@ -60,9 +60,15 @@ namespace BH.Revit.Adapter.Core
         /****              Helper methods               ****/
         /***************************************************/
 
-        private bool TryGetElementId(IEnumerable<Object> objects, out List<ElementId> ids )
+        private bool TryGetElementId(Dictionary<string, object> input, out List<ElementId> ids )
         {
             ids = null;
+
+            if (!input.TryGetValue("BHoMObjects", out object objects))
+            {
+                BH.Engine.Base.Compute.RecordError("BHoMObjects is not found, make sure command inputs are valid.");
+                return false;
+            }
 
             if (objects == null)
             {
@@ -70,7 +76,7 @@ namespace BH.Revit.Adapter.Core
                 return false;
             }
 
-            List<BHoMObject> bHoMObjects = objects.OfType<BHoMObject>().ToList();
+            List<BHoMObject> bHoMObjects = (objects as IEnumerable<object>).OfType<BHoMObject>().ToList();
 
             if (bHoMObjects.Count == 0)
             {
