@@ -47,10 +47,10 @@ namespace BH.Revit.Adapter.Core
         
         /***************************************************/
 
-        private void RegisterRevitCustomCommands()
+        public void RegisterRevitCustomCommands()
         {
-            m_RevitCustomCommands.Add("LocateAndIsolate", LocateAndIsolate);
-            m_RevitCustomCommands.Add("Select", Select);
+            this.m_RevitCustomCommands.Add("LocateAndIsolate", LocateAndIsolate);
+            this.m_RevitCustomCommands.Add("Select", Select);
         }
 
         /***************************************************/

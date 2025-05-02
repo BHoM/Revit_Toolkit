@@ -47,15 +47,16 @@ namespace BH.Revit.Adapter.Core
 
                     Output<List<object>, bool> result = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 
-                    // Do not attempt to remove if no document is open.
+                    // Do not attempt to run if no document is open.
                     if (app.ActiveUIDocument == null || app.ActiveUIDocument.Document == null)
                         BH.Engine.Base.Compute.RecordError("The adaper has successfully connected to Revit, but open document could not be found. Command aborted.");
                     else
                     {
                         //Get the revit adapter
                         RevitListenerAdapter adapter = listener.GetAdapter(app.ActiveUIDocument.Document);
+                        adapter.RegisterRevitCustomCommands();
 
-                        //Execute TODO: Create the Execute method in the adapter                       
+                        //Try to execute the script in the adapter                       
                         result = adapter.Execute(listener.LatestCommand, listener.LatestConfig);
                     }
                     
