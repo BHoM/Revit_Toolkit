@@ -49,9 +49,8 @@ namespace BH.Revit.Adapter.Core
 
         public void RegisterRevitCustomCommands()
         {
-            this.m_RevitCustomCommands.Add("LocateAndIsolate", LocateAndIsolate);
-            this.m_RevitCustomCommands.Add("Select", Select);
-            this.m_RevitCustomCommands.Add("HighlightByColor", HighlightByColor);
+            m_RevitCustomCommands.Add("Isolate", Isolate);
+            m_RevitCustomCommands.Add("Select", Select);
         }
 
         /***************************************************/
