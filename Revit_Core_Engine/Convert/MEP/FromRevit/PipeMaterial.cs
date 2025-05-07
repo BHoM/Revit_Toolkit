@@ -29,6 +29,7 @@ using BH.oM.Base.Attributes;
 using BH.oM.MEP.System.MaterialFragments;
 using System.Collections.Generic;
 using System.ComponentModel;
+using BH.oM.Adapters.Revit.Elements;
 
 namespace BH.Revit.Engine.Core
 {
@@ -64,21 +65,27 @@ namespace BH.Revit.Engine.Core
 
             ForgeTypeId forgeTypeId = SpecTypeId.Length;
 
-            Dictionary<double, IEnumerable<double>> sizeTable = new Dictionary<double, IEnumerable<double>>();
+            Dictionary<double, PipeSize> sizeSet = new Dictionary<double, PipeSize> ();
 
             foreach (MEPSize size in revitPipeSegment.GetSizes())
             {
+                PipeSize pipeSize = new PipeSize() { 
+                    InnerDiameter = size.InnerDiameter.ToSI(forgeTypeId), 
+                    OuterDiameter = size.OuterDiameter.ToSI(forgeTypeId) };
                 double nominalDiameter = size.NominalDiameter.ToSI(forgeTypeId);
-                double innerDiameter = size.InnerDiameter.ToSI(forgeTypeId);
-                double outerDiameter = size.OuterDiameter.ToSI(forgeTypeId);
 
-                sizeTable.Add(nominalDiameter, new List<double> { innerDiameter, outerDiameter});
+                sizeSet.Add(nominalDiameter, pipeSize);
             }
 
-            pipeMaterial.CustomData.Add("Description", revitPipeSegment.Description);
-            pipeMaterial.CustomData.Add("Material", document.GetElement(revitPipeSegment.MaterialId).Name);
-            pipeMaterial.CustomData.Add("ScheduleType", document.GetElement(revitPipeSegment.ScheduleTypeId).Name);
-            pipeMaterial.CustomData.Add("SizeTable", sizeTable);
+            PipeSizeTable designDataSet = new PipeSizeTable() 
+            {
+                ScheduleType = document.GetElement(revitPipeSegment.ScheduleTypeId).Name,
+                Material = document.GetElement(revitPipeSegment.MaterialId).Name,
+                Description = revitPipeSegment.Description,
+                SizeSet = sizeSet
+            };
+
+            pipeMaterial.Fragments.Add(designDataSet);
 
             pipeMaterial.SetIdentifiers(revitPipeSegment);
 
