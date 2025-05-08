@@ -28,7 +28,7 @@ using System.ComponentModel;
 namespace BH.oM.Adapters.Revit.Elements
 {
     [Description("A wrapper BHoM type for Revit MEPSize, used to create or update Revit MEPSize (on Push) and represent them as BHoMObjects (on Pull).")]
-    public class PipeSizeTable : IFragment
+    public class PipeDesignDataset : IFragment
     {
         /***************************************************/
         /****             Public Properties             ****/

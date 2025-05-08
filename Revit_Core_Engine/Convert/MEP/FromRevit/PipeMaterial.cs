@@ -77,7 +77,7 @@ namespace BH.Revit.Engine.Core
                 sizeSet.Add(nominalDiameter, pipeSize);
             }
 
-            PipeSizeTable designDataSet = new PipeSizeTable() 
+            PipeDesignDataset designDataSet = new PipeDesignDataset() 
             {
                 ScheduleType = document.GetElement(revitPipeSegment.ScheduleTypeId).Name,
                 Material = document.GetElement(revitPipeSegment.MaterialId).Name,

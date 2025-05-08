@@ -24,6 +24,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Plumbing;
 using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
 using BH.oM.MEP.System.MaterialFragments;
@@ -80,8 +81,10 @@ namespace BH.Revit.Engine.Core
                     usedInSizeLists: true, usedInSizing: true));
             }
 
-            string materialName = pipeMaterial.CustomData["Material"].ToString();
-            string scheduleTypeName = pipeMaterial.CustomData["ScheduleType"].ToString();
+            PipeDesignDataset designDataset = pipeMaterial.Fragments.OfType<PipeDesignDataset>().FirstOrDefault();
+
+            string materialName = designDataset.Material;
+            string scheduleTypeName = designDataset.ScheduleType;
 
             // MaterialName must be valid
             Autodesk.Revit.DB.Material material = new FilteredElementCollector(document)
