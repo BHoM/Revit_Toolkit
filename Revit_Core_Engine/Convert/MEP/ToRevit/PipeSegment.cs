@@ -57,34 +57,33 @@ namespace BH.Revit.Engine.Core
             PipeSegment revitPipeSegment = refObjects.GetValue<PipeSegment>(document, pipeMaterial.BHoM_Guid);
 
             // Prepare settings
-            settings = settings.DefaultIfNull();
-
-            // Roughness and pipe diameter are very small, so we need to scale down the tolerance
-            double tolerance = settings.DistanceTolerance * 1E-3;
+            settings = settings.DefaultIfNull();                       
+            double tolerance = settings.DistanceTolerance * 1E-3;// Roughness and pipe diameter are very small, so we need to scale down the tolerance
             ForgeTypeId bHoMUnit = SpecTypeId.Length;
 
+            PipeDesignData designData = pipeMaterial.Fragments.OfType<PipeDesignData>().FirstOrDefault();
+
             // Extract conversion data
-            var sizeTable = pipeMaterial.CustomData["SizeTable"] as Dictionary<double, List<object>>;
-            if (sizeTable == null)
+            Dictionary<double, PipeSize> sizeSet = designData.SizeSet;
+            if (sizeSet == null)
             {
                 BH.Engine.Base.Compute.RecordNote("No size table has been found in the PipeMaterial. Pipe creation requires a valid size table.");
                 return null;
             }
 
             List<MEPSize> mEPSizes = new List<MEPSize>();
-            foreach (var kvp in sizeTable)
+            foreach (KeyValuePair<double, PipeSize> size in sizeSet) 
             {
                 mEPSizes.Add(new MEPSize(
-                    kvp.Key.FromSI(bHoMUnit),
-                    ((double)kvp.Value[0]).FromSI(bHoMUnit),
-                    ((double)kvp.Value[1]).FromSI(bHoMUnit),
+                    size.Key.FromSI(bHoMUnit),
+                    size.Value.InnerDiameter.FromSI(bHoMUnit),
+                    size.Value.OuterDiameter.FromSI(bHoMUnit),
                     usedInSizeLists: true, usedInSizing: true));
             }
 
-            PipeDesignDataset designDataset = pipeMaterial.Fragments.OfType<PipeDesignDataset>().FirstOrDefault();
 
-            string materialName = designDataset.Material;
-            string scheduleTypeName = designDataset.ScheduleType;
+            string materialName = designData.Material;
+            string scheduleTypeName = designData.ScheduleType;
 
             // MaterialName must be valid
             Autodesk.Revit.DB.Material material = new FilteredElementCollector(document)
@@ -127,7 +126,7 @@ namespace BH.Revit.Engine.Core
             if (revitPipeSegment == null)
             {
                 PipeSegment created = PipeSegment.Create(document, material.Id, scheduleTypeId, mEPSizes);
-                created.Description = pipeMaterial.CustomData["Description"].ToString();
+                created.Description = designData.Description;
                 created.Roughness = pipeMaterial.Roughness.FromSI(bHoMUnit);
                 refObjects?.AddOrReplace(pipeMaterial, created);
                 return created;
@@ -140,14 +139,14 @@ namespace BH.Revit.Engine.Core
             }
 
             // Update Description
-            revitPipeSegment.Description = pipeMaterial.CustomData["Description"].ToString();
+            revitPipeSegment.Description = designData.Description;
 
-            // Update Sizes
+            // Retrieve existing sizes
             ICollection<MEPSize> existingSizes = revitPipeSegment.GetSizes();
             Dictionary<double, MEPSize> checkedSizes = existingSizes.ToDictionary(x => x.NominalDiameter, x => x);
 
             // Update or Add
-            foreach (var newSize in mEPSizes)
+            foreach (MEPSize newSize in mEPSizes)
             {
                 var similarSize = existingSizes.FirstOrDefault(x => Math.Abs(x.NominalDiameter - newSize.NominalDiameter) <= tolerance);
 

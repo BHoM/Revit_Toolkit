@@ -77,7 +77,7 @@ namespace BH.Revit.Engine.Core
                 sizeSet.Add(nominalDiameter, pipeSize);
             }
 
-            PipeDesignDataset designDataSet = new PipeDesignDataset() 
+            PipeDesignData designData = new PipeDesignData() 
             {
                 ScheduleType = document.GetElement(revitPipeSegment.ScheduleTypeId).Name,
                 Material = document.GetElement(revitPipeSegment.MaterialId).Name,
@@ -85,7 +85,7 @@ namespace BH.Revit.Engine.Core
                 SizeSet = sizeSet
             };
 
-            pipeMaterial.Fragments.Add(designDataSet);
+            pipeMaterial.Fragments.Add(designData);
 
             pipeMaterial.SetIdentifiers(revitPipeSegment);
 

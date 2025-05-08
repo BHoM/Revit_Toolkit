@@ -28,7 +28,7 @@ using System.ComponentModel;
 namespace BH.oM.Adapters.Revit.Elements
 {
     [Description("A wrapper BHoM type for Revit MEPSize, used to create or update Revit MEPSize (on Push) and represent them as BHoMObjects (on Pull).")]
-    public class PipeDesignDataset : IFragment
+    public class PipeDesignData : IFragment
     {
         /***************************************************/
         /****             Public Properties             ****/
@@ -41,7 +41,7 @@ namespace BH.oM.Adapters.Revit.Elements
         public string Material { get; set; }
 
         [Description("Revit description of Segment.")]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         [Description("All sizes in a design dataset.")]
         public Dictionary<double, PipeSize> SizeSet { get; set; }
