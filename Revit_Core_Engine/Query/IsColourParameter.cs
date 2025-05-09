@@ -21,11 +21,20 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+
+        [Description("Checks whether the Revit parameter represents a colour.")]
+        [Input("parameter", "Revit parameter to check whether it is an enum.")]
+        [Output("colour", "True if the Revit parameter is a colour, otherwise false.")]
         public static bool IsColourParameter(this Parameter parameter)
         {
             if (parameter?.StorageType != StorageType.Integer)
@@ -37,5 +46,7 @@ namespace BH.Revit.Engine.Core
             return parameter.Definition.GetGroupTypeId() == Autodesk.Revit.DB.GroupTypeId.Graphics;
 #endif
         }
+
+        /***************************************************/
     }
 }
