@@ -29,44 +29,22 @@ namespace BH.Revit.Engine.Core
     public static partial class Query
     {
         /***************************************************/
-        /****               Public Methods              ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts value from Revit parameter and converts it to BHoM-compliant form.")]
-        [Input("parameter", "Revit parameter to extract.")]
-        [Output("value", "Value extracted from Revit parameter and aligned to BHoM convention.")]
-        public static object ParameterValue(this Parameter parameter)
+        [Description("Checks whether the Revit parameter represents a colour.")]
+        [Input("parameter", "Revit parameter to check whether it is an enum.")]
+        [Output("colour", "True if the Revit parameter is a colour, otherwise false.")]
+        public static bool IsColourParameter(this Parameter parameter)
         {
-            if (parameter == null)
-                return null;
+            if (parameter?.StorageType != StorageType.Integer)
+                return false;
 
-            switch (parameter.StorageType)
-            {
-                case StorageType.Double:
-                    return parameter.AsDouble().ToSI(parameter.Definition.GetDataType());
-                case StorageType.ElementId:
-                    return parameter.AsElementId()?.IntegerValue;
-                case StorageType.Integer:
-                    if (parameter.IsBooleanParameter())
-                        return parameter.AsInteger() == 1;
-                    else if (parameter.IsColourParameter())
-                    {
-                        int argb = parameter.AsInteger();
-                        return new Color((byte)(argb & byte.MaxValue), (byte)((argb >> 8) & byte.MaxValue), (byte)((argb >> 16) & byte.MaxValue)).FromRevit();
-                    }
-                    else if (parameter.IsEnumParameter())
-                        return parameter.AsValueString();
-                    else if (string.IsNullOrEmpty(parameter.AsValueString()))
-                        return null;
-                    else
-                        return parameter.AsInteger();
-                case StorageType.String:
-                    return parameter.AsString();
-                case StorageType.None:
-                    return parameter.AsValueString();
-            }
-
-            return null;
+#if REVIT2021
+            return parameter.Definition.ParameterGroup == BuiltInParameterGroup.PG_GRAPHICS;
+#else
+            return parameter.Definition.GetGroupTypeId() == Autodesk.Revit.DB.GroupTypeId.Graphics;
+#endif
         }
 
         /***************************************************/
