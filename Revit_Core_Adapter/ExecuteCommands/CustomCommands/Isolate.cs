@@ -56,8 +56,6 @@ namespace BH.Revit.Adapter.Core
                 return output;
             }
 
-            uidoc.ActiveView = targetView;
-
             EnsureVisibility(doc, targetView, elementIds);
             IsolateElements(doc, targetView, elementIds);
             ZoomToFit(uidoc, elementIds);
@@ -128,7 +126,7 @@ namespace BH.Revit.Adapter.Core
             Parameter CropViewDisabled = view.get_Parameter(BuiltInParameter.VIEWER_CROP_REGION_DISABLED);
             if (CropViewDisabled.AsInteger() == 0)
             {
-                CropViewDisabled.Set(1);
+                view.CropBoxActive = false;
             }
         }
 
