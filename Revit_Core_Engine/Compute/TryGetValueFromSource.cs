@@ -53,7 +53,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            if (valueSource.FromType)
+            if (valueSource.FromType == true)
             {
                 Element type = element.Document.GetElement(element.GetTypeId());
                 if (type != null)
@@ -66,6 +66,9 @@ namespace BH.Revit.Engine.Core
             }
 
             Parameter param = element?.LookupParameter(valueSource.ParameterName);
+            if (param == null && valueSource.FromType == null)
+                param = element.Document.GetElement(element.GetTypeId())?.LookupParameter(valueSource.ParameterName);
+
             if (param == null)
             {
                 BH.Engine.Base.Compute.RecordNote($"Element with id {element.Id} does not have a parameter named {valueSource.ParameterName}.");
