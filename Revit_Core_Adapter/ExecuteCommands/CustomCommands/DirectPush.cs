@@ -41,27 +41,24 @@ namespace BH.Revit.Adapter.Core
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 
-            if (!TryGetElementId(input, out List<ElementId> elementIds))
+            if(!input.TryGetValue("BHoMObjects", out object objects))
             {
-                BH.Engine.Base.Compute.RecordError("ElementIds is invalid or empty.");
+                BH.Engine.Base.Compute.RecordError("BHoMObjects is not found, make sure command inputs are valid.");
                 return output;
             }
 
-            UIDocument uidoc = this.UIDocument;
-
+            if (objects == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Input object list is null.");
+                return output;
+            }
             try
             {
-                uidoc.ShowElements(elementIds);
-                uidoc.Selection.SetElementIds(elementIds);
+                Push(objects as IEnumerable<object>);
+                output.Item2 = true;
             }
-            catch (Exception ex)
-            {
-                BH.Engine.Base.Compute.RecordError($"Failed to select elements: {ex.Message}");
-                return output;
-            }
-
-            output.Item1 = elementIds.Cast<object>().ToList();
-            output.Item2 = true;
+            catch { }
+            
             return output;
         }
 
