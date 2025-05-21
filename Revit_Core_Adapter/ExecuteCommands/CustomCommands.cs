@@ -41,7 +41,6 @@ namespace BH.Revit.Adapter.Core
 
         public Output<List<object>, bool> Execute(BH.oM.Adapter.Commands.CustomCommand command, ActionConfig actionConfig = null)
         {
-            Output<List<object>, bool> result = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
             return m_RevitCustomCommands[command.Command](command.Parameters, actionConfig);
         }
 
@@ -51,6 +50,8 @@ namespace BH.Revit.Adapter.Core
         {
             m_RevitCustomCommands.Add("Isolate", Isolate);
             m_RevitCustomCommands.Add("Select", Select);
+            m_RevitCustomCommands.Add("DirectPush", DirectPush);
+            m_RevitCustomCommands.Add("DirectPull", DirectPull);
         }
 
         /***************************************************/

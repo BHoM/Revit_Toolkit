@@ -92,6 +92,11 @@ namespace BH.Adapter.Revit
                 return output;
             }
 
+            if (returnObjs.Count == 1 && returnObjs[0] is Output<List<object>, bool> result)
+            {                
+                return result;
+            }
+
             return output;
         }
 
