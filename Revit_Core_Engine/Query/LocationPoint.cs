@@ -37,7 +37,7 @@ namespace BH.Revit.Engine.Core
             else if (locationPoint == null && element.Location is LocationCurve lc)
             {
                 Curve curve = lc?.Curve;
-                locationPoint = curve.Evaluate(0.5, true); // Midpoint of the curve
+                locationPoint = curve?.Evaluate(0.5, true); // Midpoint of the curve
             }
 
             // Fallback to bounding box center
