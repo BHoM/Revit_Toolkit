@@ -45,19 +45,19 @@ namespace BH.Revit.Adapter.Core
             Document document = this.Document;
             if (document == null)
             {
-                BH.Engine.Base.Compute.RecordError("--------- Revit Document is null (possibly there is no open documents in Revit).");
+                BH.Engine.Base.Compute.RecordError("Revit Document is null (possibly there is no open documents in Revit).");
                 return result;
             }
 
             if (document.IsReadOnly)
             {
-                BH.Engine.Base.Compute.RecordError("--------- Revit Document is read only.");
+                BH.Engine.Base.Compute.RecordError("Revit Document is read only.");
                 return result;
             }
 
             if (document.IsModifiable)
             {
-                BH.Engine.Base.Compute.RecordError("--------- another transaction is open in Revit.");
+                BH.Engine.Base.Compute.RecordError("Command can not run when another transaction is open in Revit.");
                 return result;
             }
 
@@ -65,8 +65,16 @@ namespace BH.Revit.Adapter.Core
             if (UIControlledApplication != null)
                 UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
 
+            if (command is BH.oM.Adapter.Commands.CustomCommand customCommand && customCommand.Parameters.TryGetValue("IsLazy", out object isLazy) && (bool)isLazy)
+            {
+                // Execute the command in a lazy way
+                result = Execute(command as dynamic, actionConfig);
+                return result;
+            }
+
+
             // Remove the objects based on the request
-            using (Transaction transaction = new Transaction(document, "---------"))
+            using (Transaction transaction = new Transaction(document, "BHoM Commands"))
             {
                 transaction.Start();
                 result = Execute(command as dynamic, actionConfig);
