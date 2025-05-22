@@ -41,9 +41,12 @@ namespace BH.Revit.Engine.Core
                     .ToList();
             }
 
+            XYZ locationPoint = element.LocationPoint(useRoomCalculationPoint);
+            Transform elementTransform = element.Document.IsLinked ? element.Document.LinkInstance().GetTotalTransform() : Transform.Identity;
+
             foreach (var sp in spaces)
             {
-                if (element.IsInSpace(sp, useRoomCalculationPoint))
+                if (locationPoint.IsInSpace(elementTransform, sp))
                     return sp;
             }
 
@@ -55,15 +58,9 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
-        private static bool IsInSpace(this Element element, Space space, bool useRoomCalculationPoint)
+        private static bool IsInSpace(this XYZ locationPoint, Transform elementTransform, Space space)
         {
-            if (element is FamilyInstance && element.Document.Equals(space.Document))
-                return (element as FamilyInstance).Space?.Id == space.Id;
-
-            Transform elementTransform = element.Document.IsLinked ? element.Document.LinkInstance().GetTotalTransform() : Transform.Identity;
             Transform spaceTransform = space.Document.IsLinked ? space.Document.LinkInstance().GetTotalTransform() : Transform.Identity;
-
-            XYZ locationPoint = element.LocationPoint(useRoomCalculationPoint);
 
             if (!elementTransform.IsIdentity)
                 locationPoint = elementTransform.OfPoint(locationPoint);

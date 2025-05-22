@@ -16,6 +16,9 @@ namespace BH.Revit.Engine.Core
         [Output("locationPoint", "The 3D point representing the location of the input Revit element")]
         public static XYZ LocationPoint(this Element element, bool useRoomCalculationPoint = false)
         {
+            if (element == null)
+                return null;
+
             XYZ locationPoint = null;
 
             // Handle FamilyInstance with Room Calculation Point
@@ -28,12 +31,12 @@ namespace BH.Revit.Engine.Core
             // Handle LocationPoint
             if (locationPoint == null && element.Location is LocationPoint lp)
             {
-                locationPoint = lp.Point;
+                locationPoint = lp?.Point;
             }
             // Handle LocationCurve
             else if (locationPoint == null && element.Location is LocationCurve lc)
             {
-                Curve curve = lc.Curve;
+                Curve curve = lc?.Curve;
                 locationPoint = curve.Evaluate(0.5, true); // Midpoint of the curve
             }
 
