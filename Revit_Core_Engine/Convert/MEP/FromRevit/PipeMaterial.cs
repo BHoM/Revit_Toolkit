@@ -23,13 +23,13 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Plumbing;
 using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.MEP.System.MaterialFragments;
 using System.Collections.Generic;
 using System.ComponentModel;
-using BH.oM.Adapters.Revit.Elements;
 
 namespace BH.Revit.Engine.Core
 {
@@ -65,22 +65,24 @@ namespace BH.Revit.Engine.Core
 
             ForgeTypeId forgeTypeId = SpecTypeId.Length;
 
-            Dictionary<double, PipeSize> sizeSet = new Dictionary<double, PipeSize> ();
+            Dictionary<double, PipeSize> sizeSet = new Dictionary<double, PipeSize>();
 
             foreach (MEPSize size in revitPipeSegment.GetSizes())
             {
-                PipeSize pipeSize = new PipeSize() { 
-                    InnerDiameter = size.InnerDiameter.ToSI(forgeTypeId), 
-                    OuterDiameter = size.OuterDiameter.ToSI(forgeTypeId) };
+                PipeSize pipeSize = new PipeSize()
+                {
+                    InnerDiameter = size.InnerDiameter.ToSI(forgeTypeId),
+                    OuterDiameter = size.OuterDiameter.ToSI(forgeTypeId)
+                };
                 double nominalDiameter = size.NominalDiameter.ToSI(forgeTypeId);
 
                 sizeSet.Add(nominalDiameter, pipeSize);
             }
 
-            PipeDesignData designData = new PipeDesignData() 
+            PipeDesignData designData = new PipeDesignData()
             {
-                ScheduleType = document.GetElement(revitPipeSegment.ScheduleTypeId).Name,
-                Material = document.GetElement(revitPipeSegment.MaterialId).Name,
+                ScheduleType = document.GetElement(revitPipeSegment.ScheduleTypeId)?.Name,
+                Material = document.GetElement(revitPipeSegment.MaterialId)?.Name,
                 Description = revitPipeSegment.Description,
                 SizeSet = sizeSet
             };
@@ -88,7 +90,6 @@ namespace BH.Revit.Engine.Core
             pipeMaterial.Fragments.Add(designData);
 
             pipeMaterial.SetIdentifiers(revitPipeSegment);
-
             refObjects.AddOrReplace(revitPipeSegment.Id, pipeMaterial);
             return pipeMaterial;
         }
@@ -96,8 +97,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-
-
-

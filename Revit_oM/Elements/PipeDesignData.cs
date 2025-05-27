@@ -20,7 +20,6 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Base;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -49,10 +48,3 @@ namespace BH.oM.Adapters.Revit.Elements
         /***************************************************/
     }
 }
-
-
-
-
-
-
-
