@@ -47,7 +47,7 @@ namespace BH.Revit.Engine.Core
         public static List<BH.oM.MEP.System.Pipe> PipeFromRevit(this Autodesk.Revit.DB.Plumbing.Pipe revitPipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
-            
+
             // Reuse a BHoM duct from refObjects if it has been converted before
             List<BH.oM.MEP.System.Pipe> bhomPipes = refObjects.GetValues<BH.oM.MEP.System.Pipe>(revitPipe.Id);
             if (bhomPipes != null)
@@ -58,20 +58,18 @@ namespace BH.Revit.Engine.Core
             {
                 bhomPipes = new List<BH.oM.MEP.System.Pipe>();
             }
-            
+
             List<BH.oM.Geometry.Line> queried = Query.LocationCurveMEP(revitPipe, settings);
             // Flow rate
             double flowRate = revitPipe.LookupParameterDouble(BuiltInParameter.RBS_PIPE_FLOW_PARAM); // Flow rate 
             // Pipe section property
-            BH.oM.MEP.System.SectionProperties.PipeSectionProperty sectionProperty = revitPipe.PipeSectionProperty(settings);
-            
+            BH.oM.MEP.System.SectionProperties.PipeSectionProperty sectionProperty = revitPipe.PipeSectionProperty(settings, refObjects);
+
             // Revit element type proxy
             RevitTypeFragment typeFragment = null;
             ElementType type = revitPipe.Document.GetElement(revitPipe.GetTypeId()) as ElementType;
             if (type != null)
                 typeFragment = type.TypeFragmentFromRevit(settings, refObjects);
-
-            oM.MEP.System.MaterialFragments.PipeMaterial pipeMaterial = revitPipe.PipeSegment.PipeMaterialFromRevit(settings, refObjects);
 
             for (int i = 0; i < queried.Count; i++)
             {
@@ -88,17 +86,13 @@ namespace BH.Revit.Engine.Core
                 if (typeFragment != null)
                     thisSegment.Fragments.Add(typeFragment);
 
-                // Set PipeMaterial fragment
-                if (pipeMaterial != null)
-                    thisSegment.CustomData.Add("PipeMaterial", pipeMaterial);
-
                 //Set identifiers, parameters & custom data
                 thisSegment.SetIdentifiers(revitPipe);
                 thisSegment.CopyParameters(revitPipe, settings.MappingSettings);
                 thisSegment.SetProperties(revitPipe, settings.MappingSettings);
                 bhomPipes.Add(thisSegment);
             }
-            
+
             refObjects.AddOrReplace(revitPipe.Id, bhomPipes);
             return bhomPipes;
         }
