@@ -256,18 +256,8 @@ namespace BH.Revit.Engine.Core
 
             element.CopyParameters(bHoMObject, settings);
 
-            //TODO: is name needed?
             if (!string.IsNullOrWhiteSpace(bHoMObject.Name) && element.Name != bHoMObject.Name)
-            {
-                try
-                {
-                    element.Name = bHoMObject.Name;
-                }
-                catch
-                {
-
-                }
-            }
+                element.Name = bHoMObject.Name;
 
             PipeDesignData designData = bHoMObject.FindFragment<PipeDesignData>();
             if (designData != null)
