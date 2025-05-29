@@ -34,16 +34,16 @@ namespace BH.oM.Adapters.Revit.Elements
         /***************************************************/
 
         [Description("Revit identification of used Schedule in design dataset.")]
-        public string ScheduleType { get; set; }
+        public virtual string ScheduleType { get; set; }
 
         [Description("Revit identification of used Material in design dataset.")]
-        public string Material { get; set; }
+        public virtual string Material { get; set; }
 
         [Description("Revit description of Segment.")]
-        public string Description { get; set; } = string.Empty;
+        public virtual string Description { get; set; } = string.Empty;
 
         [Description("All sizes in a design dataset.")]
-        public Dictionary<double, PipeSize> SizeSet { get; set; }
+        public virtual Dictionary<double, PipeSize> SizeSet { get; set; }
 
         /***************************************************/
     }

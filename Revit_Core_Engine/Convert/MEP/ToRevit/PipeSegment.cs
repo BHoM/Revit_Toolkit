@@ -1,4 +1,3 @@
-
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
@@ -42,12 +41,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Converts BH.oM.MEP.System.Pipe to a Revit Pipe.")]
-        [Input("pipe", "BH.oM.MEP.System.Pipe to be converted.")]
+        [Description("Converts BH.oM.MEP.System.MaterialFragments.PipeMaterial to a Revit PipeSegment.")]
+        [Input("pipeMaterial", "BH.oM.MEP.System.MaterialFragments.PipeMaterial to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("pipe", "Revit Pipe resulting from converting the input BH.oM.MEP.System.Pipe.")]
+        [Output("pipeSegment", "Revit PipeSegment resulting from converting the input BH.oM.MEP.System.MaterialFragments.PipeMaterial.")]
         public static PipeSegment ToRevitPipeSegement(this PipeMaterial pipeMaterial, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
             if (document == null || pipeMaterial == null)

@@ -40,15 +40,15 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Converts a Revit PipeSegment into a BHoM PipeMaterial object, including its properties such as name, roughness, and size table. Avoids duplicate processing by utilizing a reference object collection.")]
-        [Input("revitPipeSegment", "Revit PipeSegment to be converted.")]
+        [Input("pipeSegment", "Revit PipeSegment to be converted.")]
         [Input("settings", "Revit adapter settings.")]
         [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("pipes", "List of BHoM MEP pipes converted from a Revit pipes.")]
-        public static PipeMaterial PipeMaterialFromRevit(this PipeSegment revitPipeSegment, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        [Output("pipesMaterial", "BHoM PipeMaterial converted from a Revit PipeSegment.")]
+        public static PipeMaterial PipeMaterialFromRevit(this PipeSegment pipeSegment, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 
-            PipeMaterial pipeMaterial = refObjects.GetValue<PipeMaterial>(revitPipeSegment.Id);
+            PipeMaterial pipeMaterial = refObjects.GetValue<PipeMaterial>(pipeSegment.Id);
 
             if (pipeMaterial != null)
             {
@@ -59,15 +59,15 @@ namespace BH.Revit.Engine.Core
                 pipeMaterial = new PipeMaterial();
             }
 
-            Document document = revitPipeSegment.Document;
-            pipeMaterial.Name = revitPipeSegment.Name;
-            pipeMaterial.Roughness = revitPipeSegment.Roughness.ToSI(SpecTypeId.Length);
+            Document document = pipeSegment.Document;
+            pipeMaterial.Name = pipeSegment.Name;
+            pipeMaterial.Roughness = pipeSegment.Roughness.ToSI(SpecTypeId.Length);
 
             ForgeTypeId forgeTypeId = SpecTypeId.Length;
 
             Dictionary<double, PipeSize> sizeSet = new Dictionary<double, PipeSize>();
 
-            foreach (MEPSize size in revitPipeSegment.GetSizes())
+            foreach (MEPSize size in pipeSegment.GetSizes())
             {
                 PipeSize pipeSize = new PipeSize()
                 {
@@ -81,16 +81,16 @@ namespace BH.Revit.Engine.Core
 
             PipeDesignData designData = new PipeDesignData()
             {
-                ScheduleType = document.GetElement(revitPipeSegment.ScheduleTypeId)?.Name,
-                Material = document.GetElement(revitPipeSegment.MaterialId)?.Name,
-                Description = revitPipeSegment.Description,
+                ScheduleType = document.GetElement(pipeSegment.ScheduleTypeId)?.Name,
+                Material = document.GetElement(pipeSegment.MaterialId)?.Name,
+                Description = pipeSegment.Description,
                 SizeSet = sizeSet
             };
 
             pipeMaterial.Fragments.Add(designData);
 
-            pipeMaterial.SetIdentifiers(revitPipeSegment);
-            refObjects.AddOrReplace(revitPipeSegment.Id, pipeMaterial);
+            pipeMaterial.SetIdentifiers(pipeSegment);
+            refObjects.AddOrReplace(pipeSegment.Id, pipeMaterial);
             return pipeMaterial;
         }
 

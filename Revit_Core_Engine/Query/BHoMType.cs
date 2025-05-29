@@ -377,11 +377,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Finds a suitable BHoM type to convert the given Revit Pipe to, based on the requested engineering discipline and adapter settings.")]
-        [Input("pipe", "Revit Pipe to find a correspondent BHoM type.")]
+        [Description("Finds a suitable BHoM type to convert the given Revit PipeSegment to, based on the requested engineering discipline and adapter settings.")]
+        [Input("pipeSegment", "Revit PipeSegment to find a correspondent BHoM type.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
-        [Output("bHoMType", "A suitable BHoM type to convert the given Revit Pipe to.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit PipeSegment to.")]
         public static Type BHoMType(this Autodesk.Revit.DB.Plumbing.PipeSegment pipeSegment, Discipline discipline, RevitSettings settings = null)
         {
             switch (discipline)
