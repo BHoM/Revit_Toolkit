@@ -35,6 +35,29 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Retrieves a parameter attached to a BHoM object. If a parameter with given name exists in both collections of pulled parameters and the ones to push, the latter is returned.")]
+        [Input("bHoMObject", "BHoMObject to which the parameters will be attached.")]
+        [Input("parameterName", "Name of the parameter to be sought for.")]
+        [Output("RevitParameter")]
+        public static RevitParameter GetRevitParameter(this IBHoMObject bHoMObject, string parameterName)
+        {
+            if (bHoMObject == null || string.IsNullOrWhiteSpace(parameterName))
+                return null;
+
+            List<RevitParameter> parameters = new List<RevitParameter>();
+
+            RevitParametersToPush pushFragment = bHoMObject.Fragments?.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
+            if (pushFragment?.Parameters != null)
+                parameters.AddRange(pushFragment.Parameters);
+
+            RevitPulledParameters pullFragment = bHoMObject.Fragments?.FirstOrDefault(x => x is RevitPulledParameters) as RevitPulledParameters;
+            if (pullFragment?.Parameters != null)
+                parameters.AddRange(pullFragment.Parameters);
+
+            return parameters.FirstOrDefault(x => x.Name == parameterName);
+        }
+
+        /***************************************************/
 
         [Description("Retrieves parameters that are attached to a BHoM object. If a parameter with given name exists in both collections of pulled parameters and the ones to push, the latter is returned.")]
         [Input("bHoMObject", "BHoMObject to which the parameters will be attached.")]
@@ -77,9 +100,3 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
     }
 }
-
-
-
-
-
-

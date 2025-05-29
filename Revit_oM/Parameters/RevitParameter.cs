@@ -21,37 +21,46 @@
  */
 
 using BH.oM.Base;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.Revit.Parameters
 {
     [Description("A BHoM wrapper class for a Revit parameter.")]
-    public class RevitParameter : IObject
+    public class RevitParameter : IImmutable
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
         [Description("Name of the Revit parameter as seen in the UI.")]
-        public virtual string Name { get; set; } = "";
+        public virtual string Name { get; } = "";
 
         [Description("Value of the Revit parameter. Enums are converted to strings, ElementIds to integers.")]
-        public virtual object Value { get; set; } = null;
+        public virtual object Value { get; } = null;
 
-        [Description("Unit type of the Revit parameter.")]
-        public virtual string UnitType { get; set; }
+        [Description("Quantity of the Revit parameter.")]
+        public virtual string Quantity { get; }
+
+        [Description("Unit of the Revit parameter.")]
+        public virtual string Unit { get; }
 
         [Description("Whether the parameter is read only or modifiable by the Revit user.")]
-        public virtual bool IsReadOnly { get; set; } = false;
+        public virtual bool IsReadOnly { get; } = false;
+
+
+        /***************************************************/
+        /****                Constructor                ****/
+        /***************************************************/
+
+        public RevitParameter(string name, object value, string quantity, string unit, bool isReadOnly)
+        {
+            Name = name;
+            Value = value;
+            Quantity = quantity;
+            Unit = unit;
+            IsReadOnly = isReadOnly;
+        }
 
         /***************************************************/
     }
 }
-
-
-
-
-
-
