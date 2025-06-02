@@ -65,18 +65,18 @@ namespace BH.Revit.Engine.Core
 
             ForgeTypeId forgeTypeId = SpecTypeId.Length;
 
-            Dictionary<double, PipeSize> sizeSet = new Dictionary<double, PipeSize>();
+            List<PipeSize> sizeSet = new List<PipeSize>();
 
             foreach (MEPSize size in pipeSegment.GetSizes())
             {
                 PipeSize pipeSize = new PipeSize()
                 {
+                    NominalDiameter = size.NominalDiameter.ToSI(forgeTypeId),
                     InnerDiameter = size.InnerDiameter.ToSI(forgeTypeId),
                     OuterDiameter = size.OuterDiameter.ToSI(forgeTypeId)
                 };
-                double nominalDiameter = size.NominalDiameter.ToSI(forgeTypeId);
 
-                sizeSet.Add(nominalDiameter, pipeSize);
+                sizeSet.Add(pipeSize);
             }
 
             PipeDesignData designData = new PipeDesignData()

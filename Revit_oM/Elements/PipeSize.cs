@@ -32,6 +32,9 @@ namespace BH.oM.Adapters.Revit.Elements
         /****             Public Properties             ****/
         /***************************************************/
 
+        [Description("Nominal diameter of MEP Size.")]
+        public virtual double NominalDiameter { get; set; }
+
         [Description("Inner diameter of MEP Size.")]
         public virtual double InnerDiameter { get; set; }
 

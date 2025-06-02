@@ -43,7 +43,7 @@ namespace BH.oM.Adapters.Revit.Elements
         public virtual string Description { get; set; } = string.Empty;
 
         [Description("All sizes in a design dataset.")]
-        public virtual Dictionary<double, PipeSize> SizeSet { get; set; }
+        public virtual List<PipeSize> SizeSet { get; set; }
 
         /***************************************************/
     }

@@ -274,17 +274,17 @@ namespace BH.Revit.Engine.Core
                 // Update Description
                 element.Description = designData.Description;
 
-                Dictionary<double, PipeSize> sizeSet = designData.SizeSet;
+                List<PipeSize> sizeSet = designData.SizeSet;
                 if (sizeSet != null)
                 {
                     // Extract conversion data
                     List<MEPSize> mepSizes = new List<MEPSize>();
-                    foreach (KeyValuePair<double, PipeSize> size in sizeSet)
+                    foreach (PipeSize size in sizeSet)
                     {
                         mepSizes.Add(new MEPSize(
-                            size.Key.FromSI(bHoMUnit),
-                            size.Value.InnerDiameter.FromSI(bHoMUnit),
-                            size.Value.OuterDiameter.FromSI(bHoMUnit),
+                            size.NominalDiameter.FromSI(bHoMUnit),
+                            size.InnerDiameter.FromSI(bHoMUnit),
+                            size.OuterDiameter.FromSI(bHoMUnit),
                             usedInSizeLists: true, usedInSizing: true));
                     }
 

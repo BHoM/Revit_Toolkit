@@ -63,7 +63,7 @@ namespace BH.Revit.Engine.Core
             PipeDesignData designData = pipeMaterial.FindFragment<PipeDesignData>();
 
             // Extract conversion data
-            Dictionary<double, PipeSize> sizeSet = designData?.SizeSet;
+            List<PipeSize> sizeSet = designData?.SizeSet;
             if (sizeSet == null)
             {
                 BH.Engine.Base.Compute.RecordWarning("No size table has been found in the PipeMaterial. Pipe creation requires a valid size table.");
@@ -72,12 +72,12 @@ namespace BH.Revit.Engine.Core
 
             ForgeTypeId bHoMUnit = SpecTypeId.Length;
             List<MEPSize> mepSizes = new List<MEPSize>();
-            foreach (KeyValuePair<double, PipeSize> size in sizeSet)
+            foreach (PipeSize size in sizeSet)
             {
                 mepSizes.Add(new MEPSize(
-                    size.Key.FromSI(bHoMUnit),
-                    size.Value.InnerDiameter.FromSI(bHoMUnit),
-                    size.Value.OuterDiameter.FromSI(bHoMUnit),
+                    size.NominalDiameter.FromSI(bHoMUnit),
+                    size.InnerDiameter.FromSI(bHoMUnit),
+                    size.OuterDiameter.FromSI(bHoMUnit),
                     usedInSizeLists: true, usedInSizing: true));
             }
 
