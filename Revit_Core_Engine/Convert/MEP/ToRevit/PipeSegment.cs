@@ -70,6 +70,15 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
+            oM.Base.Output<bool, List<PipeSize>> validated = sizeSet.Validate();
+            if (validated.Item1)
+                sizeSet = validated.Item2;
+            else
+            {
+                BH.Engine.Base.Compute.RecordWarning("Invalid size table has been found in the PipeMaterial.");
+                return null;
+            }
+
             ForgeTypeId bHoMUnit = SpecTypeId.Length;
             List<MEPSize> mepSizes = new List<MEPSize>();
             foreach (PipeSize size in sizeSet)

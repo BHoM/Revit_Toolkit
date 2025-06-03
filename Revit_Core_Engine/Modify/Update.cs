@@ -277,45 +277,54 @@ namespace BH.Revit.Engine.Core
                 List<PipeSize> sizeSet = designData.SizeSet;
                 if (sizeSet != null)
                 {
-                    // Extract conversion data
-                    List<MEPSize> mepSizes = new List<MEPSize>();
-                    foreach (PipeSize size in sizeSet)
+                    oM.Base.Output<bool, List<PipeSize>> validated = sizeSet.Validate();
+                    if (validated.Item1)
                     {
-                        mepSizes.Add(new MEPSize(
-                            size.NominalDiameter.FromSI(bHoMUnit),
-                            size.InnerDiameter.FromSI(bHoMUnit),
-                            size.OuterDiameter.FromSI(bHoMUnit),
-                            usedInSizeLists: true, usedInSizing: true));
-                    }
+                        sizeSet = validated.Item2;
 
-                    // Retrieve existing sizes
-                    ICollection<MEPSize> existingSizes = element.GetSizes();
-                    Dictionary<double, MEPSize> checkedSizes = existingSizes.ToDictionary(x => x.NominalDiameter, x => x);
-
-                    // Update or Add
-                    foreach (MEPSize newSize in mepSizes)
-                    {
-                        MEPSize similarSize = existingSizes.FirstOrDefault(x => Math.Abs(x.NominalDiameter - newSize.NominalDiameter) <= tolerance);
-                        if (similarSize == null)
+                        // Extract conversion data
+                        List<MEPSize> mepSizes = new List<MEPSize>();
+                        foreach (PipeSize size in sizeSet)
                         {
-                            element.AddSize(newSize);
+                            mepSizes.Add(new MEPSize(
+                                size.NominalDiameter.FromSI(bHoMUnit),
+                                size.InnerDiameter.FromSI(bHoMUnit),
+                                size.OuterDiameter.FromSI(bHoMUnit),
+                                usedInSizeLists: true, usedInSizing: true));
                         }
-                        else
+
+                        // Retrieve existing sizes
+                        ICollection<MEPSize> existingSizes = element.GetSizes();
+                        Dictionary<double, MEPSize> checkedSizes = existingSizes.ToDictionary(x => x.NominalDiameter, x => x);
+
+                        // Update or Add
+                        foreach (MEPSize newSize in mepSizes)
                         {
-                            checkedSizes.Remove(similarSize.NominalDiameter);
-                            if ((Math.Abs(similarSize.InnerDiameter - newSize.InnerDiameter) > tolerance) ||
-                                     (Math.Abs(similarSize.OuterDiameter - newSize.OuterDiameter) > tolerance))
+                            MEPSize similarSize = existingSizes.FirstOrDefault(x => Math.Abs(x.NominalDiameter - newSize.NominalDiameter) <= tolerance);
+                            if (similarSize == null)
                             {
-                                element.RemoveSize(similarSize.NominalDiameter);
                                 element.AddSize(newSize);
                             }
+                            else
+                            {
+                                checkedSizes.Remove(similarSize.NominalDiameter);
+                                if ((Math.Abs(similarSize.InnerDiameter - newSize.InnerDiameter) > tolerance) ||
+                                         (Math.Abs(similarSize.OuterDiameter - newSize.OuterDiameter) > tolerance))
+                                {
+                                    element.RemoveSize(similarSize.NominalDiameter);
+                                    element.AddSize(newSize);
+                                }
+                            }
+                        }
+
+                        // Clean oudated sizes
+                        foreach (MEPSize size in checkedSizes.Values)
+                        {
+                            element.RemoveSize(size.NominalDiameter);
                         }
                     }
-                    // Clean oudated sizes
-                    foreach (MEPSize size in checkedSizes.Values)
-                    {
-                        element.RemoveSize(size.NominalDiameter);
-                    }
+                    else
+                        BH.Engine.Base.Compute.RecordWarning("Invalid size table has been found in the PipeMaterial.");
                 }
                 else
                     BH.Engine.Base.Compute.RecordNote("No size table has been found in the PipeMaterial. Sizes of PipeSegment could not be updated.");
