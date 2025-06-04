@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -22,9 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -34,37 +32,48 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Queries corner points of BoundingBoxXYZ.")]
-        [Input("bbox", "BoundingBoxXYZ to get the points from.")]
-        [Output("cornerPoints", "List of corner points of the BoundingBoxXYZ.")]
-        public static List<XYZ> CornerPoints(this BoundingBoxXYZ bbox)
+        [Description("Returns the label of the unit of a Revit parameter.")]
+        [Input("parameter", "Revit parameter to get the unit label for.")]
+        [Input("inSi", "If true, returns the label in SI units. If false, returns the label in the units used in the Revit document.")]
+        [Input("abbreviation", "If true, returns the abbreviated label. If false, returns the full label.")]
+        [Output("label", "Label of the unit of the input Revit parameter.")]
+        public static string UnitLabel(this Parameter parameter, bool inSi, bool abbreviation)
         {
-            if (bbox == null)
+            if (parameter == null)
                 return null;
 
-            List<XYZ> bboxPoints = new List<XYZ>
+            ForgeTypeId spec = parameter.Definition.GetDataType();
+            switch (parameter.StorageType)
             {
-                new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Min.Z),
-                new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Min.Z),
-                new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Min.Z),
-                new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Min.Z),
-                new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Max.Z),
-                new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Max.Z),
-                new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Max.Z),
-                new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Max.Z)
-            };
+                case StorageType.Double:
+                    return (inSi ? spec.BHoMUnitType() : spec.UnitFromSpec(parameter.Element.Document)).Label(abbreviation);
+                case StorageType.ElementId:
+                    return "ElementId";
+                case StorageType.Integer:
+                    if (parameter.IsBooleanParameter())
+                        return "Bool";
+                    else if (parameter.IsEnumParameter())
+                        return "Enum";
+                    else if (string.IsNullOrEmpty(parameter.AsValueString()))
+                        return string.Empty;
+                    else
+                        return "Int";
+                case StorageType.String:
+                    {
+#if !REVIT2021
+                        if (spec.NameEquals(SpecTypeId.String.MultilineText))
+                            return "Multiline Text";
+                        else if (spec.NameEquals(SpecTypeId.String.Url))
+                            return "Url";
+#endif
 
-            Transform bboxTransform = bbox.Transform ?? Transform.Identity;
-
-            if (!bboxTransform.IsIdentity)
-                bboxPoints = bboxPoints.Select(x => bboxTransform.OfPoint(x)).ToList();
-
-            return bboxPoints;
+                        return "Text";
+                    }
+                default:
+                    return string.Empty;
+            }
         }
 
         /***************************************************/
     }
 }
-
-
-

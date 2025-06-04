@@ -20,45 +20,39 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
+using Autodesk.Revit.DB;
+using BH.Engine.Geometry;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Parameters
+namespace BH.Revit.Engine.Core
 {
-    [Description("A BHoM wrapper class for a Revit parameter.")]
-    public class RevitParameter : IImmutable
+    public static partial class Create
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Name of the Revit parameter as seen in the UI.")]
-        public virtual string Name { get; } = "";
-
-        [Description("Value of the Revit parameter. Enums are converted to strings, ElementIds to integers.")]
-        public virtual object Value { get; } = null;
-
-        [Description("Quantity of the Revit parameter.")]
-        public virtual string Quantity { get; }
-
-        [Description("Unit of the Revit parameter.")]
-        public virtual string Unit { get; }
-
-        [Description("Whether the parameter is read only or modifiable by the Revit user.")]
-        public virtual bool IsReadOnly { get; } = false;
-
-
-        /***************************************************/
-        /****                Constructor                ****/
-        /***************************************************/
-
-        public RevitParameter(string name, object value, string quantity, string unit, bool isReadOnly)
+        [Description("Creates ModelCurve based on a given Curve.")]
+        [Input("document", "Revit document, in which the new ModelCurve will be created.")]
+        [Input("curve", "Curve, based on which ModelCurve will be created.")]
+        [Output("modelCurve", "ModelCurve created based on the input curve.")]
+        public static ModelCurve ModelCurve(Document document, Curve curve)
         {
-            Name = name;
-            Value = value;
-            Quantity = quantity;
-            Unit = unit;
-            IsReadOnly = isReadOnly;
+            oM.Geometry.ICurve bhomCurve = curve.IFromRevit();
+            Plane revitPlane;
+            BH.oM.Geometry.Plane plane = bhomCurve.IFitPlane();
+            if (plane == null)
+            {
+                XYZ point = curve.GetEndPoint(0);
+                XYZ vector = (curve.GetEndPoint(1) - point).Normalize();
+                revitPlane = Create.ArbitraryPlane(point, vector);
+            }
+            else
+                revitPlane = plane.ToRevit();
+
+            SketchPlane sketchPlane = Create.SketchPlane(document, revitPlane);
+            return document.Create.NewModelCurve(curve, sketchPlane);
         }
 
         /***************************************************/

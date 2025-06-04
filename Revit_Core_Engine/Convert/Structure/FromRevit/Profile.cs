@@ -705,7 +705,7 @@ namespace BH.Revit.Engine.Core
             }
 
             // Check if one and only one solid exists to make sure that the column is a single piece
-            Solid solid = null;
+            List<Solid> solids = null;
             Options options = new Options();
             options.DetailLevel = ViewDetailLevel.Fine;
             options.IncludeNonVisibleObjects = false;
@@ -722,9 +722,9 @@ namespace BH.Revit.Engine.Core
 
                         familySymbol.Activate();
                         doc.Regenerate();
-                        solid = familySymbol.get_Geometry(options).SingleSolid();
-                        if (solid != null)
-                            solid = SolidUtils.Clone(solid);
+                        solids = familySymbol.Solids(options);
+                        if (solids != null)
+                            solids = solids.Select(x => SolidUtils.Clone(x)).ToList();
 
                         tempTransaction.RollBack();
                     }
@@ -737,62 +737,66 @@ namespace BH.Revit.Engine.Core
 
                         familySymbol.Activate();
                         doc.Regenerate();
-                        solid = familySymbol.get_Geometry(options).SingleSolid();
-                        if (solid != null)
-                            solid = SolidUtils.Clone(solid);
+                        solids = familySymbol.Solids(options);
+                        if (solids != null)
+                            solids = solids.Select(x => SolidUtils.Clone(x)).ToList();
 
                         tempTransaction.RollBack();
                     }
                 }
             }
             else
-                solid = familySymbol.get_Geometry(options).SingleSolid();
+                solids = familySymbol.Solids(options);
 
-            if (solid == null)
+            solids = solids?.Where(x => x.SurfaceArea > Tolerance.Distance).ToList();
+            if (solids == null || solids.Count == 0)
             {
-                BH.Engine.Base.Compute.RecordWarning("The profile of a family type could not be found because it is empty or it consists of more than one solid. ElementId: " + familySymbol.Id.IntegerValue.ToString());
-                return null;
-            }
-
-            Autodesk.Revit.DB.Face face = null;
-            foreach (Autodesk.Revit.DB.Face f in solid.Faces)
-            {
-                if (f is PlanarFace && (f as PlanarFace).FaceNormal.Normalize().IsAlmostEqualTo(-direction, 0.001))
-                {
-                    if (face == null)
-                        face = f;
-                    else
-                    {
-                        BH.Engine.Base.Compute.RecordWarning("The profile of a family type could not be found. ElementId: " + familySymbol.Id.IntegerValue.ToString());
-                        return null;
-                    }
-                }
-            }
-
-            if (face == null)
-            {
-                BH.Engine.Base.Compute.RecordWarning("The profile of a family type could not be found. ElementId: " + familySymbol.Id.IntegerValue.ToString());
+                BH.Engine.Base.Compute.RecordWarning("The profile of a family type could not be found because it is empty. ElementId: " + familySymbol.Id.IntegerValue.ToString());
                 return null;
             }
 
             List<ICurve> profileCurves = new List<ICurve>();
-            foreach (EdgeArray curveArray in (face as PlanarFace).EdgeLoops)
+            foreach (Solid solid in solids)
             {
-                foreach (Edge c in curveArray)
+                Autodesk.Revit.DB.Face face = null;
+                foreach (Autodesk.Revit.DB.Face f in solid.Faces)
                 {
-                    ICurve curve = c.AsCurve().IFromRevit();
-                    if (curve == null)
+                    if (f is PlanarFace && (f as PlanarFace).FaceNormal.Normalize().IsAlmostEqualTo(-direction, 0.001))
                     {
-                        BH.Engine.Base.Compute.RecordWarning("The profile of a family type could not be converted due to curve conversion issues. ElementId: " + familySymbol.Id.IntegerValue.ToString());
-                        return null;
+                        if (face == null)
+                            face = f;
+                        else
+                        {
+                            BH.Engine.Base.Compute.RecordWarning("The profile of a family type could not be found. ElementId: " + familySymbol.Id.IntegerValue.ToString());
+                            return null;
+                        }
                     }
-                    profileCurves.Add(curve);
+                }
+
+                if (face == null)
+                {
+                    BH.Engine.Base.Compute.RecordWarning("The profile of a family type could not be found. ElementId: " + familySymbol.Id.IntegerValue.ToString());
+                    return null;
+                }
+
+                foreach (EdgeArray curveArray in (face as PlanarFace).EdgeLoops)
+                {
+                    foreach (Edge c in curveArray)
+                    {
+                        ICurve curve = c.AsCurve().IFromRevit();
+                        if (curve == null)
+                        {
+                            BH.Engine.Base.Compute.RecordWarning("The profile of a family type could not be converted due to curve conversion issues. ElementId: " + familySymbol.Id.IntegerValue.ToString());
+                            return null;
+                        }
+                        profileCurves.Add(curve);
+                    }
                 }
             }
 
             if (profileCurves.Count != 0)
             {
-                BH.oM.Geometry.Point centroid = solid.ComputeCentroid().PointFromRevit();
+                BH.oM.Geometry.Point centroid = (solids.Select(x => x.ComputeCentroid() * x.Volume).Aggregate((x, y) => x + y) / solids.Sum(x => x.Volume)).PointFromRevit();
                 Vector tan = direction.VectorFromRevit().Normalise();
 
                 // Adjustment of the origin to global (0,0,0).
@@ -818,32 +822,6 @@ namespace BH.Revit.Engine.Core
             }
 
             return BHS.Create.FreeFormProfile(profileCurves);
-        }
-
-        /***************************************************/
-
-        [Description("Queries a single solid from the Revit GeometryElement. If there is more than one solid inside the GeometryElement, null is returned.")]
-        [Input("geometryElement", "Revit GeometryElement to be queried.")]
-        [Output("solid", "Single solid from the input Revit GeometryElement. If there is more than one solid inside the GeometryElement, null is returned.")]
-        private static Solid SingleSolid(this GeometryElement geometryElement)
-        {
-            Solid solid = null;
-            foreach (GeometryObject obj in geometryElement)
-            {
-                if (obj is Solid)
-                {
-                    Solid s = obj as Solid;
-                    if (!s.Faces.IsEmpty)
-                    {
-                        if (solid != null)
-                            return null;
-
-                        solid = s;
-                    }
-                }
-            }
-
-            return solid;
         }
 
         /***************************************************/
