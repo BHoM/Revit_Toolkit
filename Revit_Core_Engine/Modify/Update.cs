@@ -21,11 +21,15 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Plumbing;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Base;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
+using BH.oM.MEP.System.MaterialFragments;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -202,6 +206,131 @@ namespace BH.Revit.Engine.Core
 
                 }
             }
+
+            return true;
+        }
+
+        /***************************************************/
+
+        [Description("Updates the existing Revit Pipe based on the given BHoM Pipe.")]
+        [Input("element", "Revit Pipe to be updated.")]
+        [Input("bHoMObject", "BHoM Pipe, based on which the Revit element will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Input("setLocationOnUpdate", "If false, only parameters and properties of the FamilyInstance will be updated, if true, its location will be updated too.")]
+        [Output("success", "True if the Revit Pipe has been updated successfully based on the input BHoM Pipe.")]
+        public static bool Update(this Autodesk.Revit.DB.Plumbing.Pipe element, BH.oM.MEP.System.Pipe bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            if (bHoMObject.SectionProperty?.PipeMaterial?.Properties?.FirstOrDefault(x => x is PipeMaterial) is PipeMaterial pipeMaterial)
+            {
+                PipeDesignData designData = pipeMaterial.FindFragment<PipeDesignData>();
+                if (designData != null)
+                {
+                    PipeSegment pipeSegment = element.Document.PipeSegment(designData.Material, designData.ScheduleType);
+                    if (pipeSegment == null)
+                        pipeSegment = pipeMaterial.ToRevitPipeSegement(element.Document, settings);
+
+                    if (pipeSegment != null)
+                    {
+                        if (element.SetParameter(BuiltInParameter.RBS_PIPE_SEGMENT_PARAM, pipeSegment.Id))
+                            BH.Engine.Base.Compute.RecordNote($"PipeSegment {pipeSegment.Name} has been set to the updated pipe, but its values were not updated. To update PipeSegment itself, pull and update it separately.");
+                        else
+                            BH.Engine.Base.Compute.RecordWarning($"PipeSegment {pipeSegment.Name} could not be set on the pipe, default value has been used.");
+                    }
+                }
+            }
+
+            return ((Element)element).Update(bHoMObject, settings, setLocationOnUpdate);
+        }
+
+        /***************************************************/
+
+        [Description("Updates the existing Revit PipeSegment based on the given BHoM PipeMaterial.")]
+        [Input("element", "Revit PipeSegment to be updated.")]
+        [Input("bHoMObject", "BHoM PipeMaterial, based on which the Revit element will be updated.")]
+        [Input("settings", "Revit adapter settings to be used while performing the action.")]
+        [Input("setLocationOnUpdate", "Revit PipeSegment does not have location property, therefore this parameter is irrelevant.")]
+        [Output("success", "True if the Revit PipeSegment has been updated successfully based on the input BHoM PipeMaterial.")]
+        public static bool Update(this PipeSegment element, PipeMaterial bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            Document document = element.Document;
+
+            element.CopyParameters(bHoMObject, settings);
+
+            if (!string.IsNullOrWhiteSpace(bHoMObject.Name) && element.Name != bHoMObject.Name)
+                element.Name = bHoMObject.Name;
+
+            PipeDesignData designData = bHoMObject.FindFragment<PipeDesignData>();
+            if (designData != null)
+            {
+                ForgeTypeId bHoMUnit = SpecTypeId.Length;
+                double tolerance = Tolerance.MicroDistance; // Roughness and pipe diameter are very small, so we need to scale down the tolerance
+
+                // Update Roughness
+                if (Math.Abs(element.Roughness - bHoMObject.Roughness.FromSI(bHoMUnit)) > tolerance)
+                {
+                    element.Roughness = bHoMObject.Roughness.FromSI(bHoMUnit);
+                }
+
+                // Update Description
+                element.Description = designData.Description;
+
+                List<PipeSize> sizeSet = designData.SizeSet;
+                if (sizeSet != null)
+                {
+                    oM.Base.Output<bool, List<PipeSize>> validated = sizeSet.Validate();
+                    if (validated.Item1)
+                    {
+                        sizeSet = validated.Item2;
+
+                        // Extract conversion data
+                        List<MEPSize> mepSizes = new List<MEPSize>();
+                        foreach (PipeSize size in sizeSet)
+                        {
+                            mepSizes.Add(new MEPSize(
+                                size.NominalDiameter.FromSI(bHoMUnit),
+                                size.InnerDiameter.FromSI(bHoMUnit),
+                                size.OuterDiameter.FromSI(bHoMUnit),
+                                usedInSizeLists: true, usedInSizing: true));
+                        }
+
+                        // Retrieve existing sizes
+                        ICollection<MEPSize> existingSizes = element.GetSizes();
+                        Dictionary<double, MEPSize> checkedSizes = existingSizes.ToDictionary(x => x.NominalDiameter, x => x);
+
+                        // Update or Add
+                        foreach (MEPSize newSize in mepSizes)
+                        {
+                            MEPSize similarSize = existingSizes.FirstOrDefault(x => Math.Abs(x.NominalDiameter - newSize.NominalDiameter) <= tolerance);
+                            if (similarSize == null)
+                            {
+                                element.AddSize(newSize);
+                            }
+                            else
+                            {
+                                checkedSizes.Remove(similarSize.NominalDiameter);
+                                if ((Math.Abs(similarSize.InnerDiameter - newSize.InnerDiameter) > tolerance) ||
+                                         (Math.Abs(similarSize.OuterDiameter - newSize.OuterDiameter) > tolerance))
+                                {
+                                    element.RemoveSize(similarSize.NominalDiameter);
+                                    element.AddSize(newSize);
+                                }
+                            }
+                        }
+
+                        // Clean oudated sizes
+                        foreach (MEPSize size in checkedSizes.Values)
+                        {
+                            element.RemoveSize(size.NominalDiameter);
+                        }
+                    }
+                    else
+                        BH.Engine.Base.Compute.RecordWarning("Invalid size table has been found in the PipeMaterial.");
+                }
+                else
+                    BH.Engine.Base.Compute.RecordNote("No size table has been found in the PipeMaterial. Sizes of PipeSegment could not be updated.");
+            }
+            else
+                BH.Engine.Base.Compute.RecordNote("No PipeDesignData has been found in the PipeMaterial. Sizes, description and roughness of PipeSegment could not be updated.");
 
             return true;
         }
