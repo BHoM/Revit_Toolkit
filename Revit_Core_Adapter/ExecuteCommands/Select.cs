@@ -20,10 +20,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.Creation;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using Autodesk.Revit.UI.Selection;
 using BH.oM.Adapter;
 using BH.oM.Adapter.Commands;
 using BH.oM.Adapters.Revit.Parameters;
@@ -40,34 +38,41 @@ namespace BH.Revit.Adapter.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public Output<List<object>, bool> DirectPull(DirectPull command)
+        public Output<List<object>, bool> Select(Select command)
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
-            return output;
-        }
+            List<IBHoMObject> target = command.Identifiers.Cast<IBHoMObject>().ToList();
 
-
-        public Output<List<object>, bool> DirectPull(Dictionary<string, object> input, ActionConfig actionConfig = null)
-        {
-            Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
-
-            UIDocument uidoc = this.UIDocument;
-
-            ICollection<ElementId> selectedIds = uidoc.Selection.GetElementIds();
-
-            if (selectedIds.Count == 0)
+            if (target == null)
             {
+                BH.Engine.Base.Compute.RecordError("Invalid objects.");
                 return output;
             }
 
-            List<ElementId> elementIds = new List<ElementId>(selectedIds);
-            Transform transform = Transform.Identity;
-            List<object> result = Read(this.Document, transform, elementIds.ToList()).Cast<object>().ToList();
+            UIDocument uidoc = this.UIDocument;
 
-            output.Item1 = result; 
+            if (!TryGetElementId(target, out List<ElementId> elementIds))
+            {
+                BH.Engine.Base.Compute.RecordError("ElementIds is invalid or empty.");
+                return output;
+            }
+
+            try
+            {
+                uidoc.ShowElements(elementIds);
+                uidoc.Selection.SetElementIds(elementIds);
+            }
+            catch (Exception ex)
+            {
+                BH.Engine.Base.Compute.RecordError($"Failed to select elements: {ex.Message}");
+                return output;
+            }
+
+            output.Item1 = elementIds.Cast<object>().ToList();
             output.Item2 = true;
             return output;
         }
 
+        /***************************************************/
     }
 }

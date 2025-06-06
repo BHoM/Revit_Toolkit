@@ -20,15 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.Creation;
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-using Autodesk.Revit.UI.Selection;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapter;
 using BH.oM.Adapter.Commands;
-using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -40,34 +36,57 @@ namespace BH.Revit.Adapter.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public Output<List<object>, bool> DirectPull(DirectPull command)
+        public Output<List<object>, bool> IRunCommand(IExecuteCommand command)
         {
-            Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
-            return output;
+            return RunCommand(command as dynamic);
         }
 
+        /***************************************************/
 
-        public Output<List<object>, bool> DirectPull(Dictionary<string, object> input, ActionConfig actionConfig = null)
+        public Output<List<object>, bool> RunCommand(Select command)
         {
-            Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
-
-            UIDocument uidoc = this.UIDocument;
-
-            ICollection<ElementId> selectedIds = uidoc.Selection.GetElementIds();
-
-            if (selectedIds.Count == 0)
-            {
-                return output;
-            }
-
-            List<ElementId> elementIds = new List<ElementId>(selectedIds);
-            Transform transform = Transform.Identity;
-            List<object> result = Read(this.Document, transform, elementIds.ToList()).Cast<object>().ToList();
-
-            output.Item1 = result; 
-            output.Item2 = true;
-            return output;
+            return Select(command);
         }
 
+        /***************************************************/
+
+        public Output<List<object>, bool> RunCommand(Isolate command)
+        {
+            return Isolate(command);
+        }
+
+        /***************************************************/
+
+        public Output<List<object>, bool> RunCommand(DirectPull command)
+        {
+            return DirectPull(command);
+        }
+
+        /***************************************************/
+
+        public Output<List<object>, bool> RunCommand(DirectPush command)
+        {
+            return DirectPush(command);
+        }
+
+        /***************************************************/
+        /****              Helper methods               ****/
+        /***************************************************/
+
+        private bool TryGetElementId(List<IBHoMObject> bHoMObjects, out List<ElementId> ids)
+        {
+            var elementIds = bHoMObjects.Select(x => x.GetRevitIdentifiers()?.ElementId)
+                .Where(x => x.HasValue)
+                .Select(x => new ElementId(x.Value))
+                .ToList();
+            ids = elementIds;
+
+            return true;
+        }
     }
 }
+
+
+
+
+

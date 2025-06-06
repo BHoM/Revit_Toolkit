@@ -23,6 +23,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using BH.oM.Adapter;
+using BH.oM.Adapter.Commands;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
 using System;
@@ -36,6 +37,13 @@ namespace BH.Revit.Adapter.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
+
+        public Output<List<object>, bool> DirectPush(DirectPush command)
+        {
+            Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
+            return output;
+        }
+
 
         public Output<List<object>, bool> DirectPush(Dictionary<string, object> input, ActionConfig actionConfig = null)
         {

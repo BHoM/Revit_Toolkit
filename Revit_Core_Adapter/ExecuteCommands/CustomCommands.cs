@@ -22,6 +22,7 @@
  
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Parameters;
@@ -60,7 +61,7 @@ namespace BH.Revit.Adapter.Core
         /****              Helper methods               ****/
         /***************************************************/
 
-        private bool TryGetElementId(Dictionary<string, object> input, out List<ElementId> ids )
+        private bool TryGetElementId(Dictionary<string, object> input, out List<ElementId> ids)
         {
             ids = null;
 
@@ -98,12 +99,6 @@ namespace BH.Revit.Adapter.Core
 
             ids = elementIds;
             return true;
-
         }
     }
 }
-
-
-
-
-
