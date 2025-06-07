@@ -65,19 +65,11 @@ namespace BH.Revit.Adapter.Core
             if (UIControlledApplication != null)
                 UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
 
-            if (command is BH.oM.Adapter.Commands.CustomCommand customCommand && customCommand.Parameters.TryGetValue("IsLazy", out object isLazy) && (bool)isLazy)
-            {
-                // Execute the command in a lazy way
-                result = Execute(command as dynamic, actionConfig);
-                return result;
-            }
-
-
             // Remove the objects based on the request
             using (Transaction transaction = new Transaction(document, "BHoM Commands"))
             {
                 transaction.Start();
-                result = Execute(command as dynamic, actionConfig);
+                result = IRunCommand(command as dynamic);
                 transaction.Commit();
             }
 

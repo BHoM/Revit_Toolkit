@@ -21,12 +21,15 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
+using Autodesk.Revit.UI;
 using BH.oM.Adapter;
 using BH.oM.Adapter.Commands;
+using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using static Autodesk.Revit.DB.SpecTypeId;
 
 namespace BH.Revit.Adapter.Core
 {
@@ -36,65 +39,15 @@ namespace BH.Revit.Adapter.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public Output<List<object>, bool> IRunCommand(IExecuteCommand command)
+        public Output<List<object>, bool> Template(Dictionary<string, object> input, ActionConfig actionConfig = null)
         {
-            return RunCommand(command as dynamic);
+            Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
+
+            string template = "This template is reserved for future ideas";
+            output.Item1 = new List<object>() { template };
+            output.Item2 = true;
+            return output;
         }
 
-        /***************************************************/
-
-        public Output<List<object>, bool> RunCommand(Select command)
-        {
-            return Select(command);
-        }
-
-        /***************************************************/
-
-        public Output<List<object>, bool> RunCommand(Isolate command)
-        {
-            return Isolate(command);
-        }
-
-        /***************************************************/
-
-        public Output<List<object>, bool> RunCommand(DirectPull command)
-        {
-            return DirectPull(command);
-        }
-
-        /***************************************************/
-
-        public Output<List<object>, bool> RunCommand(DirectPush command)
-        {
-            return DirectPush(command);
-        }
-
-        /***************************************************/
-
-        public Output<List<object>, bool> RunCommand(CustomCommand command)
-        {
-            return CustomCommand(command);
-        }
-
-
-        /***************************************************/
-        /****              Helper methods               ****/
-        /***************************************************/
-
-        private bool TryGetElementId(List<IBHoMObject> bHoMObjects, out List<ElementId> ids)
-        {
-            var elementIds = bHoMObjects.Select(x => x.GetRevitIdentifiers()?.ElementId)
-                .Where(x => x.HasValue)
-                .Select(x => new ElementId(x.Value))
-                .ToList();
-            ids = elementIds;
-
-            return true;
-        }
     }
 }
-
-
-
-
-
