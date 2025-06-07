@@ -57,9 +57,15 @@ namespace BH.Revit.Adapter.Core
                 return output;
             }
 
-            EnsureVisibility(doc, targetView, elementIds);
-            IsolateElements(doc, targetView, elementIds);
-            ZoomToFit(uidoc, elementIds);
+
+            using (Transaction transaction = new Transaction(doc, "BHoM temporary isolates objects"))
+            {
+                transaction.Start();
+                EnsureVisibility(doc, targetView, elementIds);
+                IsolateElements(doc, targetView, elementIds);
+                ZoomToFit(uidoc, elementIds);
+                transaction.Commit();
+            }
 
             uidoc.Selection.SetElementIds(elementIds);
             output.Item1 = elementIds.Cast<object>().ToList();

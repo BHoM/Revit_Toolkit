@@ -43,6 +43,7 @@ namespace BH.Revit.Adapter.Core
             // Check the document
             UIDocument uiDocument = this.UIDocument;
             Document document = this.Document;
+
             if (document == null)
             {
                 BH.Engine.Base.Compute.RecordError("Revit Document is null (possibly there is no open documents in Revit).");
@@ -53,7 +54,6 @@ namespace BH.Revit.Adapter.Core
             if (UIControlledApplication != null)
                 UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
 
-            // Remove the objects based on the request
             using (Transaction transaction = new Transaction(document, "BHoM Commands"))
             {
                 transaction.Start();
