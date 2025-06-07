@@ -57,7 +57,6 @@ namespace BH.Revit.Adapter.Core
                 return output;
             }
 
-
             using (Transaction transaction = new Transaction(doc, "BHoM temporary isolates objects"))
             {
                 transaction.Start();

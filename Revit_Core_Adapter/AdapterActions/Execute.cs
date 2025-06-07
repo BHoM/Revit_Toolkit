@@ -54,12 +54,7 @@ namespace BH.Revit.Adapter.Core
             if (UIControlledApplication != null)
                 UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
 
-            using (Transaction transaction = new Transaction(document, "BHoM Commands"))
-            {
-                transaction.Start();
-                result = IRunCommand(command as dynamic);
-                transaction.Commit();
-            }
+            result = IRunCommand(command);
 
             // Switch of warning suppression
             if (UIControlledApplication != null)
