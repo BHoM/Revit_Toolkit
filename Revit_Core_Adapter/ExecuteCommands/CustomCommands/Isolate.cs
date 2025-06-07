@@ -37,12 +37,6 @@ namespace BH.Revit.Adapter.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public Output<List<object>, bool> Isolate(Isolate command)
-        {
-            Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
-            return output;
-        }
-
         public Output<List<object>, bool> Isolate(Dictionary<string, object> input, ActionConfig actionConfig = null)
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
@@ -73,81 +67,5 @@ namespace BH.Revit.Adapter.Core
             return output;
         }
 
-        /***************************************************/
-        /****             Private methods               ****/
-        /***************************************************/
-
-        private View GetTargetView(Document doc, View currentView, List<ElementId> elementIds)
-        {
-            bool hasDetailItem = elementIds.Any(id =>
-            {
-                Element el = doc.GetElement(id);
-                return el?.Category?.Id.IntegerValue == (int)BuiltInCategory.OST_DetailComponents;
-            });
-
-            if (hasDetailItem)
-            {
-                Element detailElement = doc.GetElement(elementIds.First());
-                if (detailElement.ViewSpecific)
-                {
-                    View boundView = doc.GetElement(detailElement.OwnerViewId) as View;
-                    if (boundView != null && !boundView.IsTemplate)
-                        return boundView;
-                }
-            }
-
-            return new FilteredElementCollector(doc)
-                .OfClass(typeof(View3D))
-                .Cast<View3D>()
-                .FirstOrDefault(v => !v.IsTemplate && !v.IsPerspective && v.ViewType == ViewType.ThreeD);
-        }
-
-        private void EnsureVisibility(Document doc, View view, List<ElementId> elementIds)
-        {
-            foreach (ElementId id in elementIds)
-            {
-                Element el = doc.GetElement(id);
-                Category cat = el?.Category;
-
-                if (cat != null && cat.get_AllowsVisibilityControl(view) && view.GetCategoryHidden(cat.Id))
-                {
-                    view.SetCategoryHidden(cat.Id, false);
-                }
-
-                if (el.IsHidden(view))
-                {
-                    try
-                    {
-                        view.SetElementOverrides(id, new OverrideGraphicSettings());
-                    }
-                    catch { }
-                }
-            }
-
-            if (view is View3D v3d)
-            {
-                if (v3d.CropBoxActive) v3d.CropBoxActive = false;
-            }
-
-            // Ensure the crop region is disabled
-            Parameter CropViewDisabled = view.get_Parameter(BuiltInParameter.VIEWER_CROP_REGION_DISABLED);
-            if (CropViewDisabled.AsInteger() == 0)
-            {
-                view.CropBoxActive = false;
-            }
-        }
-
-        private void IsolateElements(Document doc, View view, List<ElementId> elementIds)
-        {
-            view.IsolateElementsTemporary(elementIds);
-        }
-
-        private void ZoomToFit(UIDocument uidoc, List<ElementId> elementIds)
-        {
-            if (elementIds.Count > 0)
-            {
-                uidoc.ShowElements(elementIds);
-            }
-        }
     }
 }
