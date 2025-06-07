@@ -49,18 +49,6 @@ namespace BH.Revit.Adapter.Core
                 return result;
             }
 
-            if (document.IsReadOnly)
-            {
-                BH.Engine.Base.Compute.RecordError("Revit Document is read only.");
-                return result;
-            }
-
-            if (document.IsModifiable)
-            {
-                BH.Engine.Base.Compute.RecordError("Command can not run when another transaction is open in Revit.");
-                return result;
-            }
-
             // Suppress warnings
             if (UIControlledApplication != null)
                 UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;

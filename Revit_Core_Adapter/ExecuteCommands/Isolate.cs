@@ -58,6 +58,19 @@ namespace BH.Revit.Adapter.Core
             UIDocument uidoc = this.UIDocument;
             Document doc = this.Document;
 
+
+            if (doc.IsReadOnly)
+            {
+                BH.Engine.Base.Compute.RecordError("Revit Document is read only.");
+                return output;
+            }
+
+            if (doc.IsModifiable)
+            {
+                BH.Engine.Base.Compute.RecordError("Command can not run when another transaction is open in Revit.");
+                return output;
+            }
+
             View targetView = GetTargetView(doc, uidoc.ActiveView, elementIds);
             if (targetView == null)
             {
