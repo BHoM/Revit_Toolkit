@@ -27,15 +27,12 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapter.Commands
 {
-    [Description("")]
+    [Description("Pull action allows quick retrieval of selected elements from External Application.")]
     public class DirectPull : IExecuteCommand
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
-
-        [Description("")]
-        public virtual List<IObject> Identifiers { get; set; }
 
         /***************************************************/
     }

@@ -37,12 +37,6 @@ namespace BH.oM.Adapters.Revit
         [Description("If true, Revit warnings and failure messages will be suppressed (not shown to the user). Whilst this option may speed the pushing process up in case of multiple warnings, it may lead to important issues.")]
         public virtual bool SuppressFailureMessages { get; set; } = false;
 
-        [Description("Elements from closed worksets will be processed if true.")]
-        public virtual bool IncludeClosedWorksets { get; set; } = false;
-
-        [Description("Pinned elements will be processed if true.")]
-        public virtual bool RemovePinned { get; set; } = false;
-
         /***************************************************/
     }
 }

@@ -23,7 +23,6 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using BH.oM.Adapter;
-using BH.oM.Adapters.Revit;
 using BH.oM.Data.Requests;
 using System.Collections.Generic;
 

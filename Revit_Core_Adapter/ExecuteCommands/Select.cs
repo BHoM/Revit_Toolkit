@@ -22,9 +22,7 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using BH.oM.Adapter;
 using BH.oM.Adapter.Commands;
-using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
 using System;
 using System.Collections.Generic;
@@ -50,6 +48,12 @@ namespace BH.Revit.Adapter.Core
             }
 
             UIDocument uidoc = this.UIDocument;
+
+            if (uidoc == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Revit UI is not available).");
+                return output;
+            }
 
             if (!TryGetElementId(target, out List<ElementId> elementIds))
             {

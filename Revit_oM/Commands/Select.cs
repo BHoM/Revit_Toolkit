@@ -27,14 +27,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapter.Commands
 {
-    [Description("")]
+    [Description("Select action allows direct interaction with External Application.")]
     public class Select : IExecuteCommand
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("")]
+        [Description("Target objects of commands.")]
         public virtual List<IObject> Identifiers { get; set; }
 
         /***************************************************/

@@ -22,12 +22,9 @@
 
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit;
-using BH.oM.Adapter.Commands;
+using BH.oM.Base;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using BH.oM.Base;
-using BH.oM.Data.Requests;
 
 namespace BH.Adapter.Revit
 {

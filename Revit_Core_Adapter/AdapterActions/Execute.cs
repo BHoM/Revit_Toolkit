@@ -19,15 +19,12 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
- 
-using Autodesk.Revit.DB;
+
 using Autodesk.Revit.UI;
 using BH.oM.Adapter;
 using BH.oM.Adapters.Revit;
 using BH.oM.Base;
-using BH.oM.Data.Requests;
 using System.Collections.Generic;
-using System;
 
 namespace BH.Revit.Adapter.Core
 {
@@ -40,24 +37,16 @@ namespace BH.Revit.Adapter.Core
         public override Output<List<object>, bool> Execute(IExecuteCommand command, ActionConfig actionConfig = null)
         {
             Output<List<object>, bool> result = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
-            // Check the document
-            UIDocument uiDocument = this.UIDocument;
-            Document document = this.Document;
-
-            if (document == null)
-            {
-                BH.Engine.Base.Compute.RecordError("Revit Document is null (possibly there is no open documents in Revit).");
-                return result;
-            }
+            RevitExecutionConfig config = (actionConfig as RevitExecutionConfig) ?? new RevitExecutionConfig() { SuppressFailureMessages = true};
 
             // Suppress warnings
-            if (UIControlledApplication != null)
+            if (UIControlledApplication != null && config.SuppressFailureMessages)
                 UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
 
             result = IRunCommand(command);
 
             // Switch of warning suppression
-            if (UIControlledApplication != null)
+            if (UIControlledApplication != null && config.SuppressFailureMessages)
                 UIControlledApplication.ControlledApplication.FailuresProcessing -= ControlledApplication_FailuresProcessing;
 
             return result;

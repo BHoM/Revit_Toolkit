@@ -58,6 +58,12 @@ namespace BH.Revit.Adapter.Core
             UIDocument uidoc = this.UIDocument;
             Document doc = this.Document;
 
+            #region Check accesibility
+            if (doc == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Revit Document is null (possibly there is no open documents in Revit).");
+                return output;
+            }
 
             if (doc.IsReadOnly)
             {
@@ -70,6 +76,7 @@ namespace BH.Revit.Adapter.Core
                 BH.Engine.Base.Compute.RecordError("Command can not run when another transaction is open in Revit.");
                 return output;
             }
+            #endregion 
 
             View targetView = GetTargetView(doc, uidoc.ActiveView, elementIds);
             if (targetView == null)

@@ -27,14 +27,14 @@ using System.ComponentModel;
 
 namespace BH.oM.Adapter.Commands
 {
-    [Description("")]
+    [Description("Push action allows quick transfer of selected objects on current UI to External Application.")]
     public class DirectPush : IExecuteCommand
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("")]
+        [Description("Source objects to be pushed")]
         public virtual List<IObject> Identifiers { get; set; }
 
         /***************************************************/
