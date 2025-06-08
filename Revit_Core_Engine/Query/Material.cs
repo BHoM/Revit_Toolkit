@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -20,45 +20,29 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
+using Autodesk.Revit.DB;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
+using System.Linq;
 
-namespace BH.oM.Adapters.Revit.Parameters
+namespace BH.Revit.Engine.Core
 {
-    [Description("A BHoM wrapper class for a Revit parameter.")]
-    public class RevitParameter : IImmutable
+    public static partial class Query
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Name of the Revit parameter as seen in the UI.")]
-        public virtual string Name { get; } = "";
-
-        [Description("Value of the Revit parameter. Enums are converted to strings, ElementIds to integers.")]
-        public virtual object Value { get; } = null;
-
-        [Description("Quantity of the Revit parameter.")]
-        public virtual string Quantity { get; }
-
-        [Description("Unit of the Revit parameter.")]
-        public virtual string Unit { get; }
-
-        [Description("Whether the parameter is read only or modifiable by the Revit user.")]
-        public virtual bool IsReadOnly { get; } = false;
-
-
-        /***************************************************/
-        /****                Constructor                ****/
-        /***************************************************/
-
-        public RevitParameter(string name, object value, string quantity, string unit, bool isReadOnly)
+        [Description("Queries a material by its name from the Revit document.")]
+        [Input("document", "Revit document to query the material from.")]
+        [Input("materialName", "Name of the material to be queried.")]
+        [Output("material", "Revit Material with the specified name, or null if not found.")]
+        public static Material Material(this Document document, string materialName)
         {
-            Name = name;
-            Value = value;
-            Quantity = quantity;
-            Unit = unit;
-            IsReadOnly = isReadOnly;
+            return new FilteredElementCollector(document)
+                    .OfClass(typeof(Material))
+                    .FirstOrDefault(ps =>
+                    ps.Name == materialName) as Material;
         }
 
         /***************************************************/

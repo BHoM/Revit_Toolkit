@@ -20,18 +20,15 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Base;
 using BH.oM.Adapters.Revit;
-using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
-using BH.oM.Diffing;
 using BH.oM.Base.Attributes;
+using BH.oM.Diffing;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Xml.Linq;
-using BH.oM.Adapters.Revit.Enums;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -69,8 +66,8 @@ namespace BH.Engine.Adapters.Revit
         {
             List<IPropertyDifference> result = new List<IPropertyDifference>();
 
-            var allParamsDict_obj1 = new Dictionary<string, Dictionary<string, RevitParameter>>();
-            var allParamsDict_obj2 = new Dictionary<string, Dictionary<string, RevitParameter>>();
+            Dictionary<string, Dictionary<string, RevitParameter>> allParamsDict_obj1 = new Dictionary<string, Dictionary<string, RevitParameter>>();
+            Dictionary<string, Dictionary<string, RevitParameter>> allParamsDict_obj2 = new Dictionary<string, Dictionary<string, RevitParameter>>();
 
             allParamsDict_obj1 = BH.Engine.Reflection.Query.PropertyFullNameValueGroups<RevitParameter>(obj1 as IBHoMObject, typeof(T));
             allParamsDict_obj2 = BH.Engine.Reflection.Query.PropertyFullNameValueGroups<RevitParameter>(obj2 as IBHoMObject, typeof(T));
@@ -87,20 +84,20 @@ namespace BH.Engine.Adapters.Revit
 
         [Description("Given two input sets of parameters, finds those with the same Name between the two sets, and returns a List of PropertyDifferences containing any difference found.")]
         private static List<IPropertyDifference> ParameterDifferences(
-            Dictionary<string, Dictionary<string, RevitParameter>> allParamsDict_obj1, 
-            Dictionary<string, Dictionary<string, RevitParameter>> allParamsDict_obj2, 
+            Dictionary<string, Dictionary<string, RevitParameter>> allParamsDict_obj1,
+            Dictionary<string, Dictionary<string, RevitParameter>> allParamsDict_obj2,
             BaseComparisonConfig comparisonConfig)
         {
             List<IPropertyDifference> result = new List<IPropertyDifference>();
 
             // Check if we have a RevitComparisonConfig input.
             RevitComparisonConfig rcc = comparisonConfig as RevitComparisonConfig ?? new RevitComparisonConfig();
-            
+
             // Find the overlapping nesting levels, i.e. those object property levels where RevitParameters were found, and which are common between obj1 and obj2.
             // We look for differences in Parameters only in those. If there is a difference in nesting levels between obj1 and obj2,
             // the difference is picked as an object property difference, which is higher-importance than RevitParameters.
-            var overlappingNestingLevels = allParamsDict_obj1.Keys.Intersect(allParamsDict_obj2.Keys);
-            foreach (var overlappingNestingLevel in overlappingNestingLevels)
+            IEnumerable<string> overlappingNestingLevels = allParamsDict_obj1.Keys.Intersect(allParamsDict_obj2.Keys);
+            foreach (string overlappingNestingLevel in overlappingNestingLevels)
             {
                 List<string> overlappingParams = allParamsDict_obj1[overlappingNestingLevel].Values.Select(p => p.Name)
                     .Intersect(allParamsDict_obj2[overlappingNestingLevel].Values.Select(p => p.Name)).ToList();
@@ -128,7 +125,7 @@ namespace BH.Engine.Adapters.Revit
                         description += $"It had no value before, and it is now updated to value: `{parameter2.Value}`";
                     else
                         description += $"It had value: `{parameter1.Value}` and was updated to value: `{parameter2.Value}`";
-                    result.AddParameterDifference($"{paramName} (RevitParameter)", differenceFullName, parameter1.Value, parameter2.Value, parameter1.UnitType ?? parameter2.UnitType, RevitParameterDifferenceType.Modified, description);
+                    result.AddParameterDifference($"{paramName} (RevitParameter)", differenceFullName, parameter1.Value, parameter2.Value, parameter1.Quantity ?? parameter2.Quantity, RevitParameterDifferenceType.Modified, description);
                 }
 
 
@@ -153,13 +150,13 @@ namespace BH.Engine.Adapters.Revit
                         if (rcc != null && rcc.RevitParams_ConsiderRemovedUnassigned && string.IsNullOrWhiteSpace(deletedParameter.Value?.ToString()))
                         {
                             string description = $"A Revit Parameter named `{deletedParamName}` and which had no Value was removed from the object.";
-                            result.AddParameterDifference($"{deletedParamName} (RevitParameter)", differenceFullName, deletedParameter.Value, null, deletedParameter.UnitType, RevitParameterDifferenceType.RemovedUnassigned, description);
+                            result.AddParameterDifference($"{deletedParamName} (RevitParameter)", differenceFullName, deletedParameter.Value, null, deletedParameter.Quantity, RevitParameterDifferenceType.RemovedUnassigned, description);
                         }
 
                         if (rcc != null && rcc.RevitParams_ConsiderRemovedAssigned && !string.IsNullOrWhiteSpace(deletedParameter.Value?.ToString()))
                         {
                             string description = $"A Revit Parameter with name `{deletedParamName}` was removed from the object. It had value: {deletedParameter.Value}";
-                            result.AddParameterDifference($"{deletedParamName} (RevitParameter)", differenceFullName, deletedParameter.Value, null, deletedParameter.UnitType, RevitParameterDifferenceType.RemovedAssigned, description);
+                            result.AddParameterDifference($"{deletedParamName} (RevitParameter)", differenceFullName, deletedParameter.Value, null, deletedParameter.Quantity, RevitParameterDifferenceType.RemovedAssigned, description);
                         }
                     }
                 }
@@ -185,13 +182,13 @@ namespace BH.Engine.Adapters.Revit
                         if (rcc != null && rcc.RevitParams_ConsiderAddedUnassigned && string.IsNullOrWhiteSpace(addedParameter.Value?.ToString()))
                         {
                             string description = $"A Revit Parameter named `{addedParamName}` was added to the object, but with no Value assigned.";
-                            result.AddParameterDifference($"{addedParamName} (RevitParameter)", differenceFullName, null, addedParameter.Value, addedParameter.UnitType, RevitParameterDifferenceType.AddedUnassigned, description);
+                            result.AddParameterDifference($"{addedParamName} (RevitParameter)", differenceFullName, null, addedParameter.Value, addedParameter.Quantity, RevitParameterDifferenceType.AddedUnassigned, description);
                         }
 
                         if (rcc != null && rcc.RevitParams_ConsiderAddedAssigned && !string.IsNullOrWhiteSpace(addedParameter.Value?.ToString()))
                         {
                             string description = $"A Revit Parameter `{addedParamName}` with value `{addedParameter.Value}` was added to the object.";
-                            result.AddParameterDifference($"{addedParamName} (RevitParameter)", differenceFullName, null, addedParameter.Value, addedParameter.UnitType, RevitParameterDifferenceType.AddedAssigned, description);
+                            result.AddParameterDifference($"{addedParamName} (RevitParameter)", differenceFullName, null, addedParameter.Value, addedParameter.Quantity, RevitParameterDifferenceType.AddedAssigned, description);
                         }
                     }
                 }

@@ -23,43 +23,23 @@
 using BH.oM.Base;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Parameters
+namespace BH.oM.Adapters.Revit.Elements
 {
-    [Description("A BHoM wrapper class for a Revit parameter.")]
-    public class RevitParameter : IImmutable
+    [Description("A wrapper BHoM type for Revit MEPSize, used to create or update Revit MEPSize (on Push) and represent them as BHoMObjects (on Pull).")]
+    public class PipeSize : BHoMObject
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Name of the Revit parameter as seen in the UI.")]
-        public virtual string Name { get; } = "";
+        [Description("Nominal diameter of MEP Size.")]
+        public virtual double NominalDiameter { get; set; }
 
-        [Description("Value of the Revit parameter. Enums are converted to strings, ElementIds to integers.")]
-        public virtual object Value { get; } = null;
+        [Description("Inner diameter of MEP Size.")]
+        public virtual double InnerDiameter { get; set; }
 
-        [Description("Quantity of the Revit parameter.")]
-        public virtual string Quantity { get; }
-
-        [Description("Unit of the Revit parameter.")]
-        public virtual string Unit { get; }
-
-        [Description("Whether the parameter is read only or modifiable by the Revit user.")]
-        public virtual bool IsReadOnly { get; } = false;
-
-
-        /***************************************************/
-        /****                Constructor                ****/
-        /***************************************************/
-
-        public RevitParameter(string name, object value, string quantity, string unit, bool isReadOnly)
-        {
-            Name = name;
-            Value = value;
-            Quantity = quantity;
-            Unit = unit;
-            IsReadOnly = isReadOnly;
-        }
+        [Description("Inner diameter of MEP Size.")]
+        public virtual double OuterDiameter { get; set; }
 
         /***************************************************/
     }

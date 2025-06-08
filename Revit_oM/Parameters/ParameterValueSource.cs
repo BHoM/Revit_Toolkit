@@ -35,8 +35,9 @@ namespace BH.oM.Adapters.Revit.Parameters
         [Description("Name of the parameter to extract the value from.")]
         public virtual string ParameterName { get; set; } = "";
 
-        [Description("If true, the value to be extracted from the underlying type, not the instance.")]
-        public virtual bool FromType { get; set; } = false;
+        [Description("If true, the value to be extracted from the underlying type, not the instance." +
+                     "\nIf set to null, first instance will be checked for the parameter with given name, and if not found then same will be done with its type.")]
+        public virtual bool? FromType { get; set; } = null;
 
         /***************************************************/
     }

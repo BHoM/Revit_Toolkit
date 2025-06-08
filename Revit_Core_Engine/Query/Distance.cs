@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -20,45 +20,27 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
+using Autodesk.Revit.DB;
+using BH.oM.Base.Attributes;
+using System;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Parameters
+namespace BH.Revit.Engine.Core
 {
-    [Description("A BHoM wrapper class for a Revit parameter.")]
-    public class RevitParameter : IImmutable
+    public static partial class Query
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Name of the Revit parameter as seen in the UI.")]
-        public virtual string Name { get; } = "";
-
-        [Description("Value of the Revit parameter. Enums are converted to strings, ElementIds to integers.")]
-        public virtual object Value { get; } = null;
-
-        [Description("Quantity of the Revit parameter.")]
-        public virtual string Quantity { get; }
-
-        [Description("Unit of the Revit parameter.")]
-        public virtual string Unit { get; }
-
-        [Description("Whether the parameter is read only or modifiable by the Revit user.")]
-        public virtual bool IsReadOnly { get; } = false;
-
-
-        /***************************************************/
-        /****                Constructor                ****/
-        /***************************************************/
-
-        public RevitParameter(string name, object value, string quantity, string unit, bool isReadOnly)
+        [Description("Computes the distance between a plane and point." +
+                     "\nThis is a backend method, working with the Revit object model and in Revit (imperial) units.")]
+        [Input("plane", "Plane to compute distance.")]
+        [Input("point", "Point to compute distance.")]
+        [Output("distance", "Distance between the input plane and point.")]
+        public static double Distance(this Plane plane, XYZ point)
         {
-            Name = name;
-            Value = value;
-            Quantity = quantity;
-            Unit = unit;
-            IsReadOnly = isReadOnly;
+            return Math.Abs(plane.Normal.DotProduct(point - plane.Origin));
         }
 
         /***************************************************/

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -20,45 +20,31 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
+using Autodesk.Revit.DB;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Parameters
+namespace BH.Revit.Engine.Core
 {
-    [Description("A BHoM wrapper class for a Revit parameter.")]
-    public class RevitParameter : IImmutable
+    public static partial class Query
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Name of the Revit parameter as seen in the UI.")]
-        public virtual string Name { get; } = "";
-
-        [Description("Value of the Revit parameter. Enums are converted to strings, ElementIds to integers.")]
-        public virtual object Value { get; } = null;
-
-        [Description("Quantity of the Revit parameter.")]
-        public virtual string Quantity { get; }
-
-        [Description("Unit of the Revit parameter.")]
-        public virtual string Unit { get; }
-
-        [Description("Whether the parameter is read only or modifiable by the Revit user.")]
-        public virtual bool IsReadOnly { get; } = false;
-
-
-        /***************************************************/
-        /****                Constructor                ****/
-        /***************************************************/
-
-        public RevitParameter(string name, object value, string quantity, string unit, bool isReadOnly)
+        [Description("Checks whether the Revit parameter represents a colour.")]
+        [Input("parameter", "Revit parameter to check whether it is an enum.")]
+        [Output("colour", "True if the Revit parameter is a colour, otherwise false.")]
+        public static bool IsColourParameter(this Parameter parameter)
         {
-            Name = name;
-            Value = value;
-            Quantity = quantity;
-            Unit = unit;
-            IsReadOnly = isReadOnly;
+            if (parameter?.StorageType != StorageType.Integer)
+                return false;
+
+#if REVIT2021
+            return parameter.Definition.ParameterGroup == BuiltInParameterGroup.PG_GRAPHICS;
+#else
+            return parameter.Definition.GetGroupTypeId() == Autodesk.Revit.DB.GroupTypeId.Graphics;
+#endif
         }
 
         /***************************************************/

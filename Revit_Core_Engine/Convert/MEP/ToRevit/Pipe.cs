@@ -21,10 +21,14 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Plumbing;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Base;
+using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.MEP.System.SectionProperties;
 using BH.oM.Base.Attributes;
+using BH.oM.MEP.System.MaterialFragments;
+using BH.oM.MEP.System.SectionProperties;
 using BH.oM.Spatial.ShapeProfiles;
 using System;
 using System.Collections.Generic;
@@ -64,7 +68,7 @@ namespace BH.Revit.Engine.Core
 
             // Pipe type
             Autodesk.Revit.DB.Plumbing.PipeType pipeType = pipe.SectionProperty.ToRevitElementType(document, new List<BuiltInCategory> { BuiltInCategory.OST_PipingSystem }, settings, refObjects) as Autodesk.Revit.DB.Plumbing.PipeType;
-            if(pipeType == null)
+            if (pipeType == null)
             {
                 BH.Engine.Base.Compute.RecordError("No valid family has been found in the Revit model. Pipe creation requires the presence of the default Pipe Family Type.");
                 return null;
@@ -118,7 +122,7 @@ namespace BH.Revit.Engine.Core
             revitPipe.SetParameter(BuiltInParameter.RBS_PIPE_FLOW_PARAM, flowRate);
 
             // Get first available pipeLiningType from document
-            Autodesk.Revit.DB.Plumbing.PipeInsulationType pit = null;
+            PipeInsulationType pit = null;
             if (sectionProfile.InsulationProfile != null)
             {
                 pit = new FilteredElementCollector(document).OfClass(typeof(Autodesk.Revit.DB.Plumbing.PipeInsulationType)).FirstOrDefault() as Autodesk.Revit.DB.Plumbing.PipeInsulationType;
@@ -151,7 +155,26 @@ namespace BH.Revit.Engine.Core
                     double insulationThickness = insulationProfile.Thickness;
                     // Create pipe Insulation
                     Autodesk.Revit.DB.Plumbing.PipeInsulation pIn = Autodesk.Revit.DB.Plumbing.PipeInsulation.Create(document, revitPipe.Id, pit.Id, insulationThickness);
-                }       
+                }
+            }
+
+            if (pipe.SectionProperty?.PipeMaterial?.Properties?.FirstOrDefault(x => x is PipeMaterial) is PipeMaterial pipeMaterial)
+            {
+                PipeDesignData designData = pipeMaterial.FindFragment<PipeDesignData>();
+                if (designData != null)
+                {
+                    PipeSegment pipeSegment = document.PipeSegment(designData.Material, designData.ScheduleType);
+                    if (pipeSegment == null)
+                        pipeSegment = pipeMaterial.ToRevitPipeSegement(document, settings, refObjects);
+
+                    if (pipeSegment != null)
+                    {
+                        if (revitPipe.SetParameter(BuiltInParameter.RBS_PIPE_SEGMENT_PARAM, pipeSegment.Id))
+                            BH.Engine.Base.Compute.RecordNote($"PipeSegment {pipeSegment.Name} has been set to the created pipe, but its values were not updated. To update PipeSegment itself, pull and update it separately.");
+                        else
+                            BH.Engine.Base.Compute.RecordWarning($"PipeSegment {pipeSegment.Name} could not be set on the pipe, default value has been used.");
+                    }
+                }
             }
 
             refObjects.AddOrReplace(pipe, revitPipe);
@@ -161,8 +184,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-
-
-

@@ -46,7 +46,7 @@ namespace BH.Engine.Adapters.Revit
             if (bHoMObject == null)
                 return null;
 
-            List<RevitParameter> parameters = new List<RevitParameter> { new RevitParameter { Name = paramName, Value = value } };
+            List<RevitParameter> parameters = new List<RevitParameter> { new RevitParameter(paramName, value, "", "", false) };
 
             RevitParametersToPush existingFragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
             if (existingFragment != null)
@@ -57,7 +57,7 @@ namespace BH.Engine.Adapters.Revit
                         parameters.Add(parameter);
                 }
             }
-            
+
             RevitParametersToPush fragment = new RevitParametersToPush { Parameters = parameters };
 
             IBHoMObject obj = bHoMObject.ShallowClone();
@@ -65,7 +65,7 @@ namespace BH.Engine.Adapters.Revit
             obj.Fragments.Add(fragment);
             return obj;
         }
-        
+
         /***************************************************/
 
         [Description("Attaches parameters to a BHoM object, which will be applied to a correspondent Revit element on Push.")]
@@ -84,7 +84,7 @@ namespace BH.Engine.Adapters.Revit
                 return bHoMObject;
             }
 
-            List<RevitParameter> parameters = paramNames.Zip(values, (x, y) => new RevitParameter { Name = x, Value = y }).ToList();
+            List<RevitParameter> parameters = paramNames.Zip(values, (x, y) => new RevitParameter(x, y, "", "", false)).ToList();
 
             RevitParametersToPush existingFragment = bHoMObject.Fragments.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
             if (existingFragment != null)

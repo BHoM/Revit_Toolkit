@@ -49,6 +49,11 @@ namespace BH.Revit.Engine.Core
                 case StorageType.Integer:
                     if (parameter.IsBooleanParameter())
                         return parameter.AsInteger() == 1;
+                    else if (parameter.IsColourParameter())
+                    {
+                        int argb = parameter.AsInteger();
+                        return new Color((byte)(argb & byte.MaxValue), (byte)((argb >> 8) & byte.MaxValue), (byte)((argb >> 16) & byte.MaxValue)).FromRevit();
+                    }
                     else if (parameter.IsEnumParameter())
                         return parameter.AsValueString();
                     else if (string.IsNullOrEmpty(parameter.AsValueString()))
