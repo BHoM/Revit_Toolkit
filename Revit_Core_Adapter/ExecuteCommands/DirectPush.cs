@@ -41,19 +41,8 @@ namespace BH.Revit.Adapter.Core
         public Output<List<object>, bool> DirectPush(DirectPush command)
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
-            return output;
-        }
 
-
-        public Output<List<object>, bool> DirectPush(Dictionary<string, object> input, ActionConfig actionConfig = null)
-        {
-            Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
-
-            if(!input.TryGetValue("BHoMObjects", out object objects))
-            {
-                BH.Engine.Base.Compute.RecordError("BHoMObjects is not found, make sure command inputs are valid.");
-                return output;
-            }
+            object objects = command.Identifiers;
 
             if (objects == null)
             {
