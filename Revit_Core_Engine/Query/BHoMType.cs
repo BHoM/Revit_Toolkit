@@ -696,7 +696,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Finds a suitable BHoM type to convert the given Revit FilledRegion to, based on the requested engineering discipline and adapter settings.")]
-        [Input("filledRegion", "Revit FilledRegion to find a correspondent BHoM type.")]
+        [Input("parameterElement", "Revit ParameterElement to find a correspondent BHoM type.")]
         [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
         [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
         [Output("bHoMType", "A suitable BHoM type to convert the given Revit FilledRegion to.")]
