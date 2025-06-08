@@ -43,13 +43,6 @@ namespace BH.Revit.Adapter.Core
         public Output<List<object>, bool> DirectPull(DirectPull command)
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
-            return output;
-        }
-
-
-        public Output<List<object>, bool> DirectPull(Dictionary<string, object> input, ActionConfig actionConfig = null)
-        {
-            Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 
             UIDocument uidoc = this.UIDocument;
 
