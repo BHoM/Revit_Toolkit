@@ -24,7 +24,7 @@ using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
-namespace BH.Engine.Verification
+namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
