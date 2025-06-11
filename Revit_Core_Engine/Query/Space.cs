@@ -40,7 +40,7 @@ namespace BH.Revit.Engine.Core
         [Input("spaces", "An optional collection of Revit Spaces to search. If not provided, all Spaces in the element's document will be used.")]
         [Input("useRoomCalculationPoint", "If true and the element is a FamilyInstance with a spatial element calculation point, that point will be used for containment checks.")]
         [Output("space", "The Revit Space containing the element, or the element itself if it is a Space. Returns null if no containing Space is found.")]
-        public static Space Space(this Element element, IEnumerable<Space> spaces = null, bool useRoomCalculationPoint = false)
+        public static Space Space(this Element element, IEnumerable<Space> spaces, bool useRoomCalculationPoint = false)
         {
             if (element == null)
                 return null;
