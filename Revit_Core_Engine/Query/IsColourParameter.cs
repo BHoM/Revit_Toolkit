@@ -37,7 +37,7 @@ namespace BH.Revit.Engine.Core
         [Output("colour", "True if the Revit parameter is a colour, otherwise false.")]
         public static bool IsColourParameter(this Parameter parameter)
         {
-            if (parameter?.StorageType != StorageType.Integer || parameter?.AsValueString() != null)
+            if (parameter?.StorageType != StorageType.Integer || parameter?.AsValueString() != null || !parameter.HasValue)
                 return false;
 
 #if REVIT2021
