@@ -37,13 +37,13 @@ namespace BH.Revit.Engine.Core
         [Output("colour", "True if the Revit parameter is a colour, otherwise false.")]
         public static bool IsColourParameter(this Parameter parameter)
         {
-            if (parameter?.StorageType != StorageType.Integer || parameter?.AsValueString() != null || !parameter.HasValue)
+            if (parameter?.StorageType != StorageType.Integer)
                 return false;
 
 #if REVIT2021
-            return parameter.Definition.ParameterGroup == BuiltInParameterGroup.PG_GRAPHICS;
+            return parameter.Definition.ParameterGroup == BuiltInParameterGroup.PG_GRAPHICS && parameter.HasValue && parameter.AsValueString() == null;
 #else
-            return parameter.Definition.GetGroupTypeId() == Autodesk.Revit.DB.GroupTypeId.Graphics;
+            return parameter.Definition.GetGroupTypeId() == Autodesk.Revit.DB.GroupTypeId.Graphics && parameter.HasValue && parameter.AsValueString() == null;
 #endif
         }
 
