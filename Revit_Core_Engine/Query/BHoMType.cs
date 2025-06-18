@@ -97,6 +97,9 @@ namespace BH.Revit.Engine.Core
                     else if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains(category)
                             || familyInstance.StructuralType == Autodesk.Revit.DB.Structure.StructuralType.Column)
                         return typeof(BH.oM.Physical.Elements.Column);
+                    else if (typeof(BH.oM.Physical.Elements.Pile).BuiltInCategories().Contains(category)
+                            || familyInstance.StructuralType == Autodesk.Revit.DB.Structure.StructuralType.Footing)
+                        return typeof(BH.oM.Physical.Elements.Pile);
                     else if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains(category)
                             || familyInstance.StructuralUsage == StructuralInstanceUsage.Brace
                             || familyInstance.StructuralUsage == StructuralInstanceUsage.HorizontalBracing

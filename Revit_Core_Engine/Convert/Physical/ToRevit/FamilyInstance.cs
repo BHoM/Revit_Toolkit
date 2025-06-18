@@ -145,8 +145,109 @@ namespace BH.Revit.Engine.Core
         [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.Pile.")]
         public static FamilyInstance ToRevitFamilyInstance(this Pile framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            BH.Engine.Base.Compute.RecordError(string.Format("Push of pile foundations is not supported in current version of BHoM. BHoM element Guid: {0}", framingElement.BHoM_Guid));
-            return null;
+            if (framingElement == null || document == null)
+                return null;
+
+            FamilyInstance familyInstance = refObjects.GetValue<FamilyInstance>(document, framingElement.BHoM_Guid);
+            if (familyInstance != null)
+                return familyInstance;
+
+            settings = settings.DefaultIfNull();
+
+            BH.oM.Geometry.Line locationLine = framingElement.PileLine();
+            if (locationLine == null)
+                return null;
+
+            Level level = document.LevelBelow(locationLine, settings);
+            if (level == null)
+                return null;
+
+            // Extract base point from pile line geometry (use the lower Z point as base)
+            BH.oM.Geometry.Point basePoint = locationLine.Start.Z < locationLine.End.Z ? locationLine.Start : locationLine.End;
+            XYZ pileBasePoint = basePoint.ToRevit();
+
+            FamilySymbol familySymbol = framingElement.ElementType(document, settings);
+            if (familySymbol == null)
+            {
+                Compute.ElementTypeNotFoundWarning(framingElement);
+                return null;
+            }
+
+            FamilyPlacementType familyPlacementType = familySymbol.Family.FamilyPlacementType;
+            // Accept point-based placement types for piles instead of curve-based
+            if (familyPlacementType != FamilyPlacementType.OneLevelBased && 
+                familyPlacementType != FamilyPlacementType.OneLevelBasedHosted && 
+                familyPlacementType != FamilyPlacementType.TwoLevelsBased)
+            {
+                Compute.InvalidFamilyPlacementTypeError(framingElement, familySymbol);
+                return null;
+            }
+
+            // Use point-based creation for piles as they are typically placed by point with height constraints
+            familyInstance = document.Create.NewFamilyInstance(pileBasePoint, familySymbol, level, StructuralType.Footing);
+            document.Regenerate();
+
+            familyInstance.CheckIfNullPush(framingElement);
+            if (familyInstance == null)
+                return null;
+
+            oM.Physical.FramingProperties.ConstantFramingProperty pileProperty = framingElement.Property as oM.Physical.FramingProperties.ConstantFramingProperty;
+            if (pileProperty != null)
+            {
+                //TODO: if the material does not get assigned an error should be thrown?
+                if (pileProperty.Material != null)
+                {
+                    Autodesk.Revit.DB.Material material = document.GetElement(new ElementId(BH.Engine.Adapters.Revit.Query.ElementId(pileProperty.Material))) as Autodesk.Revit.DB.Material;
+                    if (material != null)
+                    {
+                        Parameter param = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
+                        if (param != null && param.HasValue && !param.IsReadOnly)
+                            familyInstance.StructuralMaterialId = material.Id;
+                        else
+                            BH.Engine.Base.Compute.RecordWarning(string.Format("The BHoM material has been correctly converted, but the property could not be assigned to the Revit element. ElementId: {0}", familyInstance.Id));
+                    }
+                }
+            }
+
+            // Set pile height constraint using the height from the original line geometry
+            double pileHeight = Math.Abs(locationLine.End.Z - locationLine.Start.Z);
+            
+            // Try to set the height using different possible parameters for pile families
+            bool heightSet = false;
+            
+            // Try setting height offset parameter
+            Parameter heightOffsetParam = familyInstance.get_Parameter(BuiltInParameter.INSTANCE_FREE_HOST_OFFSET_PARAM);
+            if (heightOffsetParam != null && !heightOffsetParam.IsReadOnly)
+            {
+                heightOffsetParam.Set(pileHeight);
+                heightSet = true;
+            }
+            
+            // Try setting top level offset if available
+            Parameter topOffsetParam = familyInstance.get_Parameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM);
+            if (!heightSet && topOffsetParam != null && !topOffsetParam.IsReadOnly)
+            {
+                topOffsetParam.Set(pileHeight);
+                heightSet = true;
+            }
+            
+            // Set base level offset to zero (pile starts at base level)
+            Parameter baseOffsetParam = familyInstance.get_Parameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM);
+            if (baseOffsetParam != null && !baseOffsetParam.IsReadOnly)
+            {
+                baseOffsetParam.Set(0.0);
+            }
+            
+            if (!heightSet)
+            {
+                BH.Engine.Base.Compute.RecordWarning(string.Format("Could not set pile height constraint. Pile may not display correctly. ElementId: {0}", familyInstance.Id));
+            }
+
+            familyInstance.CopyParameters(framingElement, settings);
+            familyInstance.SetLocation(framingElement, settings);
+            
+            refObjects.AddOrReplace(framingElement, familyInstance);
+            return familyInstance;
         }
 
         /***************************************************/

@@ -96,6 +96,82 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        [Description("Extracts the framing element property from a Revit FamilyInstance specifically for pile elements.")]
+        [Input("familyInstance", "Revit FamilyInstance representing a pile to be queried.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("property", "BHoM framing element property extracted from the input Revit pile FamilyInstance.")]
+        public static IFramingElementProperty PileFramingElementProperty(this FamilyInstance familyInstance, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            if (familyInstance == null || familyInstance.Symbol == null)
+                return null;
+            
+            ConstantFramingProperty framingProperty = refObjects.GetValue<ConstantFramingProperty>(familyInstance.Id);
+            if (framingProperty != null)
+                return framingProperty;
+
+            // Convert the material to BHoM
+            BH.oM.Physical.Materials.Material material = familyInstance.FramingMaterial(settings, refObjects);
+
+            // For piles, try multiple approaches to extract profile information
+            IProfile profile = null;
+            
+            // First try the standard profile extraction method
+            profile = familyInstance.Symbol.ProfileFromRevit(settings, refObjects);
+            
+            // If standard profile extraction fails, try alternative methods for pile families
+            if (profile == null)
+            {
+                profile = familyInstance.ExtractPileProfile(settings);
+            }
+            
+            // If still no profile, create a generic circular profile based on common pile parameters
+            if (profile == null)
+            {
+                profile = familyInstance.CreateDefaultPileProfile();
+                if (profile == null)
+                {
+                    BH.Engine.Base.Compute.RecordWarning($"Could not extract profile information from pile family. Using default circular profile. ElementId: {familyInstance.Id}");
+                    // Create a default 300mm diameter circular pile as fallback
+                    profile = BH.Engine.Spatial.Create.CircleProfile(0.15); // 150mm radius = 300mm diameter
+                }
+            }
+
+            if (familyInstance.Mirrored && profile != null)
+            {
+                if (profile is FreeFormProfile)
+                {
+                    BH.oM.Geometry.Plane mirror = new oM.Geometry.Plane { Normal = BH.oM.Geometry.Vector.XAxis };
+                    profile = BH.Engine.Spatial.Create.FreeFormProfile(profile.Edges.Select(x => x.IMirror(mirror)));
+                }
+                else if (profile is AngleProfile)
+                {
+                    AngleProfile angle = ((AngleProfile)profile);
+                    profile = BH.Engine.Spatial.Create.AngleProfile(angle.Height, angle.Width, angle.WebThickness, angle.FlangeThickness, angle.RootRadius, angle.ToeRadius, true, false);
+                }
+                else if (profile is ChannelProfile)
+                {
+                    ChannelProfile channel = ((ChannelProfile)profile);
+                    profile = BH.Engine.Spatial.Create.ChannelProfile(channel.Height, channel.FlangeWidth, channel.WebThickness, channel.FlangeThickness, channel.RootRadius, channel.ToeRadius, true);
+                }
+            }
+
+            // Get rotation (piles are typically not rotated, but include for completeness)
+            double rotation = familyInstance.OrientationAngle(settings);
+            
+            framingProperty = BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, rotation, familyInstance.Symbol.FamilyTypeFullName());
+
+            //Set identifiers, parameters & custom data
+            framingProperty.SetIdentifiers(familyInstance.Symbol);
+            framingProperty.CopyParameters(familyInstance.Symbol, settings.MappingSettings);
+            framingProperty.SetProperties(familyInstance.Symbol, settings.MappingSettings);
+
+            refObjects.AddOrReplace(familyInstance.Id, framingProperty);
+            return framingProperty;
+        }
+
+        /***************************************************/
     }
 }
 

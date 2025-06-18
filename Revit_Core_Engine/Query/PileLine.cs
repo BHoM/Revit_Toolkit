@@ -1,0 +1,75 @@
+/*
+ * This file is part of the Buildings and Habitats object Model (BHoM)
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ *
+ * Each contributor holds copyright over their respective contributions.
+ * The project versioning (Git) records all such contribution source information.
+ *                                           
+ *                                                                              
+ * The BHoM is free software: you can redistribute it and/or modify         
+ * it under the terms of the GNU Lesser General Public License as published by  
+ * the Free Software Foundation, either version 3.0 of the License, or          
+ * (at your option) any later version.                                          
+ *                                                                              
+ * The BHoM is distributed in the hope that it will be useful,              
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of               
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                 
+ * GNU Lesser General Public License for more details.                          
+ *                                                                            
+ * You should have received a copy of the GNU Lesser General Public License     
+ * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
+ */
+
+using BH.Engine.Geometry;
+using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
+using BH.oM.Physical.Elements;
+using System;
+using System.ComponentModel;
+
+namespace BH.Revit.Engine.Core
+{
+    public static partial class Query
+    {
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+
+        [Description("Extracts the location line of a BHoM Pile object in preparation to push to Revit. Includes validity checks and flipping reversed nodes.")]
+        [Input("pile", "A BHoM Pile object to extract the line from.")]
+        [Output("line", "Preprocessed location line of the BHoM Pile object to be used on push to Revit.")]
+        public static Line PileLine(this Pile pile)
+        {
+            if (pile == null)
+            {
+                BH.Engine.Base.Compute.RecordError(string.Format("Cannot read location line because pile is null. BHoM_Guid: {0}", pile?.BHoM_Guid));
+                return null;
+            }
+
+            Line pileLine = pile.Location as BH.oM.Geometry.Line;
+            if (pileLine == null)
+            {
+                BH.Engine.Base.Compute.RecordError(string.Format("Invalid pile line. Only linear piles are allowed in Revit. BHoM_Guid: {0}", pile.BHoM_Guid));
+                return null;
+            }
+
+            if (Math.Abs(pileLine.Start.Z - pileLine.End.Z) <= BH.oM.Geometry.Tolerance.Distance)
+            {
+                BH.Engine.Base.Compute.RecordError(string.Format("Pile line's start and end points have the same elevation. BHoM_Guid: {0}", pile.BHoM_Guid));
+                return null;
+            }
+            
+            // For piles, typically the top is higher than the bottom (opposite orientation compared to some conventions)
+            // Ensure the pile goes from top to bottom (higher Z to lower Z for driven piles)
+            if (pileLine.Start.Z < pileLine.End.Z)
+            {
+                BH.Engine.Base.Compute.RecordNote(string.Format("The input pile line's top was below its bottom. This line has been flipped to allow pushing to Revit. BHoM_Guid: {0}", pile.BHoM_Guid));
+                pileLine = pileLine.Flip();
+            }
+            
+            return pileLine;
+        }
+
+        /***************************************************/
+    }
+} 
