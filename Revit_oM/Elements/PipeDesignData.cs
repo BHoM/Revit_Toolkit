@@ -21,45 +21,29 @@
  */
 
 using BH.oM.Base;
+using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Parameters
+namespace BH.oM.Adapters.Revit.Elements
 {
-    [Description("A BHoM wrapper class for a Revit parameter.")]
-    public class RevitParameter : IImmutable
+    [Description("A wrapper BHoM type for Revit MEPSize, used to create or update Revit MEPSize (on Push) and represent them as BHoMObjects (on Pull).")]
+    public class PipeDesignData : IFragment
     {
         /***************************************************/
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Name of the Revit parameter as seen in the UI.")]
-        public virtual string Name { get; } = "";
+        [Description("Revit identification of used Schedule in design dataset.")]
+        public virtual string ScheduleType { get; set; }
 
-        [Description("Value of the Revit parameter. Enums are converted to strings, ElementIds to integers.")]
-        public virtual object Value { get; } = null;
+        [Description("Revit identification of used Material in design dataset.")]
+        public virtual string Material { get; set; }
 
-        [Description("Quantity of the Revit parameter.")]
-        public virtual string Quantity { get; }
+        [Description("Revit description of Segment.")]
+        public virtual string Description { get; set; } = string.Empty;
 
-        [Description("Unit of the Revit parameter.")]
-        public virtual string Unit { get; }
-
-        [Description("Whether the parameter is read only or modifiable by the Revit user.")]
-        public virtual bool IsReadOnly { get; } = false;
-
-
-        /***************************************************/
-        /****                Constructor                ****/
-        /***************************************************/
-
-        public RevitParameter(string name, object value, string quantity, string unit, bool isReadOnly)
-        {
-            Name = name;
-            Value = value;
-            Quantity = quantity;
-            Unit = unit;
-            IsReadOnly = isReadOnly;
-        }
+        [Description("All sizes in a design dataset.")]
+        public virtual List<PipeSize> SizeSet { get; set; }
 
         /***************************************************/
     }

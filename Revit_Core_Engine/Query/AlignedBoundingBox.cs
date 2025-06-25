@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -20,45 +20,32 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
+using Autodesk.Revit.DB;
+using BH.oM.Base.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
-namespace BH.oM.Adapters.Revit.Parameters
+namespace BH.Revit.Engine.Core
 {
-    [Description("A BHoM wrapper class for a Revit parameter.")]
-    public class RevitParameter : IImmutable
+    public static partial class Query
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Name of the Revit parameter as seen in the UI.")]
-        public virtual string Name { get; } = "";
-
-        [Description("Value of the Revit parameter. Enums are converted to strings, ElementIds to integers.")]
-        public virtual object Value { get; } = null;
-
-        [Description("Quantity of the Revit parameter.")]
-        public virtual string Quantity { get; }
-
-        [Description("Unit of the Revit parameter.")]
-        public virtual string Unit { get; }
-
-        [Description("Whether the parameter is read only or modifiable by the Revit user.")]
-        public virtual bool IsReadOnly { get; } = false;
-
-
-        /***************************************************/
-        /****                Constructor                ****/
-        /***************************************************/
-
-        public RevitParameter(string name, object value, string quantity, string unit, bool isReadOnly)
+        [Description("Finds a bounding box of an element in its local coordinate system, which is:" +
+                     "\n- for FamilyInstance: coordinate system as defined in the object definition (result of GetTotalTransform method )" +
+                     "\n- for everything else: coordinate system based on normals of the major planar faces of the element")]
+        [Input("element", "Element to query for aligned bounding box.")]
+        [Input("options", "Options to apply when extracting solid representation of an element.")]
+        [Output("alignedBBox", "Bounding box of the input element in on its local coordinate system.")]
+        public static Solid AlignedBoundingBox(this Element element, Options options)
         {
-            Name = name;
-            Value = value;
-            Quantity = quantity;
-            Unit = unit;
-            IsReadOnly = isReadOnly;
+            Transform transform = element.LocalCoordinateSystem();
+            List<Solid> solids = element.Solids(options).Select(x => SolidUtils.CreateTransformed(x, transform.Inverse)).ToList();
+            BoundingBoxXYZ bounds = solids.Select(x => x.GetBoundingBox()).Bounds();
+            return SolidUtils.CreateTransformed(bounds.ToSolid(), transform);
         }
 
         /***************************************************/

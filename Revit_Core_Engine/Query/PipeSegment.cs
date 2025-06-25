@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -20,45 +20,41 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Plumbing;
+using BH.oM.Base.Attributes;
 using System.ComponentModel;
+using System.Linq;
 
-namespace BH.oM.Adapters.Revit.Parameters
+namespace BH.Revit.Engine.Core
 {
-    [Description("A BHoM wrapper class for a Revit parameter.")]
-    public class RevitParameter : IImmutable
+    public static partial class Query
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Name of the Revit parameter as seen in the UI.")]
-        public virtual string Name { get; } = "";
-
-        [Description("Value of the Revit parameter. Enums are converted to strings, ElementIds to integers.")]
-        public virtual object Value { get; } = null;
-
-        [Description("Quantity of the Revit parameter.")]
-        public virtual string Quantity { get; }
-
-        [Description("Unit of the Revit parameter.")]
-        public virtual string Unit { get; }
-
-        [Description("Whether the parameter is read only or modifiable by the Revit user.")]
-        public virtual bool IsReadOnly { get; } = false;
-
-
-        /***************************************************/
-        /****                Constructor                ****/
-        /***************************************************/
-
-        public RevitParameter(string name, object value, string quantity, string unit, bool isReadOnly)
+        [Description("Queries a PipeSegment by its material name and schedule type name from the Revit document.")]
+        [Input("document", "Revit document to query the PipeSegment from.")]
+        [Input("materialName", "Name of the material of PipeSegment to be queried.")]
+        [Input("scheduleTypeName", "Name of the schedule type of PipeSegment to be queried.")]
+        [Output("pipeSegment", "Revit PipeSegment with the specified material and schedule type, or null if not found.")]
+        public static PipeSegment PipeSegment(this Document document, string materialName, string scheduleTypeName)
         {
-            Name = name;
-            Value = value;
-            Quantity = quantity;
-            Unit = unit;
-            IsReadOnly = isReadOnly;
+            ElementId materialId = document.Material(materialName)?.Id ?? Autodesk.Revit.DB.ElementId.InvalidElementId;
+            if (materialId == Autodesk.Revit.DB.ElementId.InvalidElementId)
+                return null;
+
+            ElementId scheduleTypeId = PipeScheduleType.GetPipeScheduleId(document, scheduleTypeName);
+            if (scheduleTypeId == Autodesk.Revit.DB.ElementId.InvalidElementId)
+                return null;
+
+            return new FilteredElementCollector(document)
+                    .OfClass(typeof(PipeSegment))
+                    .Cast<PipeSegment>()
+                    .FirstOrDefault(ps =>
+                    ps.MaterialId == materialId &&
+                    ps.ScheduleTypeId == scheduleTypeId);
         }
 
         /***************************************************/

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -20,45 +20,36 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
+using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit;
+using BH.oM.Base.Attributes;
+using System;
 using System.ComponentModel;
+using System.Linq;
 
-namespace BH.oM.Adapters.Revit.Parameters
+namespace BH.Revit.Engine.Core
 {
-    [Description("A BHoM wrapper class for a Revit parameter.")]
-    public class RevitParameter : IImmutable
+    public static partial class Create
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Name of the Revit parameter as seen in the UI.")]
-        public virtual string Name { get; } = "";
-
-        [Description("Value of the Revit parameter. Enums are converted to strings, ElementIds to integers.")]
-        public virtual object Value { get; } = null;
-
-        [Description("Quantity of the Revit parameter.")]
-        public virtual string Quantity { get; }
-
-        [Description("Unit of the Revit parameter.")]
-        public virtual string Unit { get; }
-
-        [Description("Whether the parameter is read only or modifiable by the Revit user.")]
-        public virtual bool IsReadOnly { get; } = false;
-
-
-        /***************************************************/
-        /****                Constructor                ****/
-        /***************************************************/
-
-        public RevitParameter(string name, object value, string quantity, string unit, bool isReadOnly)
+        [Description("Creates SketchPlane based on the input plane. If a sketchplane in this plane already exists, it is returned without creating a new object.")]
+        [Input("document", "Revit document, in which the new SketchPlane will be created.")]
+        [Input("plane", "Plane, in which SketchPlane will be created.")]
+        [Input("tolerance", "Tolerance used when checking whether a plane with same geometry already exists.")]
+        [Output("sketchPlane", "SketchPlane created based on the input plane.")]
+        public static SketchPlane SketchPlane(Document document, Plane plane, double tolerance = Tolerance.Angle)
         {
-            Name = name;
-            Value = value;
-            Quantity = quantity;
-            Unit = unit;
-            IsReadOnly = isReadOnly;
+            SketchPlane existing = new FilteredElementCollector(document).OfClass(typeof(SketchPlane)).OfType<SketchPlane>().FirstOrDefault(x => 1 - Math.Abs(x.GetPlane().Normal.DotProduct(plane.Normal)) <= tolerance && x.GetPlane().Distance(plane.Origin) <= tolerance);
+            if (existing != null)
+            {
+                BH.Engine.Base.Compute.RecordNote("Sketch plane with matching geometry already exists in the model, it has been reused.");
+                return existing;
+            }
+
+            return Autodesk.Revit.DB.SketchPlane.Create(document, plane);
         }
 
         /***************************************************/

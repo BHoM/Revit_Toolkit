@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -21,44 +21,28 @@
  */
 
 using BH.oM.Base;
+using BH.oM.Base.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
-namespace BH.oM.Adapters.Revit.Parameters
+namespace BH.Engine.Adapters.Revit
 {
-    [Description("A BHoM wrapper class for a Revit parameter.")]
-    public class RevitParameter : IImmutable
+    public static partial class Query
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Name of the Revit parameter as seen in the UI.")]
-        public virtual string Name { get; } = "";
-
-        [Description("Value of the Revit parameter. Enums are converted to strings, ElementIds to integers.")]
-        public virtual object Value { get; } = null;
-
-        [Description("Quantity of the Revit parameter.")]
-        public virtual string Quantity { get; }
-
-        [Description("Unit of the Revit parameter.")]
-        public virtual string Unit { get; }
-
-        [Description("Whether the parameter is read only or modifiable by the Revit user.")]
-        public virtual bool IsReadOnly { get; } = false;
-
-
-        /***************************************************/
-        /****                Constructor                ****/
-        /***************************************************/
-
-        public RevitParameter(string name, object value, string quantity, string unit, bool isReadOnly)
+        [Description("Filters the given collection of BHoM objects to return only unique Revit elements based on their UniqueId.")]
+        [Input("bHoMObjects", "The collection of BHoM objects to filter.")]
+        [Output("A list of unique BHoM objects.")]
+        public static List<IBHoMObject> FilterUniqueRevitElements(this IEnumerable<IBHoMObject> bHoMObjects)
         {
-            Name = name;
-            Value = value;
-            Quantity = quantity;
-            Unit = unit;
-            IsReadOnly = isReadOnly;
+            return bHoMObjects
+                .GroupBy(x => x.UniqueId())
+                .Select(g => g.First())
+                .ToList();
         }
 
         /***************************************************/

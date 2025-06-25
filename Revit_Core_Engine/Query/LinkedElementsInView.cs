@@ -43,6 +43,12 @@ namespace BH.Revit.Engine.Core
             if (view == null || linkInstance == null)
                 return null;
 
+            if (!(view is ViewPlan || view is View3D || view is ViewSection))
+            {
+                BH.Engine.Base.Compute.RecordWarning("Cannot get linked elements because provided view is not a ViewPlan, View3D, or ViewSection.");
+                return new List<ElementId>();
+            }
+
             Document linkDoc = linkInstance.GetLinkDocument();
             Solid viewSolid = view.TransformedViewSolid(linkInstance);
             ElementIntersectsSolidFilter solidFilter = new ElementIntersectsSolidFilter(viewSolid);

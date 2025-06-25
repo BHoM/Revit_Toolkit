@@ -54,8 +54,9 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             object value = parameter.ParameterValue();
-            string unitTypeIdentifier = parameter.SpecName();
-            return new RevitParameter { Name = name, Value = value, IsReadOnly = parameter.IsReadOnly, UnitType = unitTypeIdentifier };
+            string quantity = parameter.SpecName();
+            string unit = parameter.UnitLabel(true, true);
+            return new RevitParameter(name, value, quantity, unit, parameter.IsReadOnly);
         }
 
         /***************************************************/

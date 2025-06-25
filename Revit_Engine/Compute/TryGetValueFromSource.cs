@@ -20,13 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using System.ComponentModel;
 
-namespace BH.Revit.Engine.Core
+namespace BH.Engine.Adapters.Revit
 {
     public static partial class Compute
     {
@@ -34,14 +33,14 @@ namespace BH.Revit.Engine.Core
         /****              Public Methods               ****/
         /***************************************************/
 
-        [Description("Tries to extract a value from an element based on the instruction embedded in the provided " + nameof(ParameterValueSource) + ".")]
-        [Input("element", "Element to extract the value from.")]
+        [Description("Tries to extract a value from an BHoMObject based on the instruction embedded in the provided " + nameof(ParameterValueSource) + ".")]
+        [Input("bHoMObject", "bHoMObject to extract the value from.")]
         [Input("valueSource", "Object defining how to extract the value from the input object.")]
         [MultiOutput(0, "found", "True if value source exists in the input object (i.e. value could be extracted from the object), otherwise false.")]
         [MultiOutput(1, "value", "Value extracted from the input object based on the provided instruction.")]
-        public static Output<bool, object> TryGetValueFromSource(this Element element, ParameterValueSource valueSource)
+        public static Output<bool, object> TryGetValueFromSource(this IBHoMObject bHoMObject, ParameterValueSource valueSource)
         {
-            if (element == null)
+            if (bHoMObject == null)
             {
                 BH.Engine.Base.Compute.RecordError("Could not extract value from a null element.");
                 return null;
@@ -55,31 +54,31 @@ namespace BH.Revit.Engine.Core
 
             if (valueSource.FromType == true)
             {
-                Element type = element.Document.GetElement(element.GetTypeId());
+                IBHoMObject type = bHoMObject.IGetRevitElementType();
                 if (type != null)
-                    element = type;
+                    bHoMObject = type;
                 else
                 {
-                    BH.Engine.Base.Compute.RecordNote($"Element with id {element.Id} does not have a type, so type parameter cannot be queried.");
+                    BH.Engine.Base.Compute.RecordNote($"BHoM object with Guid {bHoMObject.BHoM_Guid} does not have a property representing Revit type, so Revit type parameter cannot be queried.");
                     return new Output<bool, object> { Item1 = false, Item2 = null };
                 }
             }
 
-            Parameter param = element?.LookupParameter(valueSource.ParameterName);
+            RevitParameter param = bHoMObject.GetRevitParameter(valueSource.ParameterName);
             if (param == null && valueSource.FromType == null)
             {
-                param = element.Document.GetElement(element.GetTypeId())?.LookupParameter(valueSource.ParameterName);
+                param = bHoMObject.IGetRevitElementType()?.GetRevitParameter(valueSource.ParameterName);
                 if (param != null)
-                    BH.Engine.Base.Compute.RecordNote($"Parameter {valueSource.ParameterName} was not found in the instance of element {element.Id.IntegerValue}, but was found in the type.");
+                    BH.Engine.Base.Compute.RecordNote($"Parameter {valueSource.ParameterName} was not found in the instance of object with Guid {bHoMObject.BHoM_Guid}, but was found in the type.");
             }
 
             if (param == null)
             {
-                BH.Engine.Base.Compute.RecordNote($"Element with id {element.Id} does not have a parameter named {valueSource.ParameterName}.");
+                BH.Engine.Base.Compute.RecordNote($"Element with id {bHoMObject.ElementId()} does not have a parameter named {valueSource.ParameterName}.");
                 return new Output<bool, object> { Item1 = false, Item2 = null };
             }
             else
-                return new Output<bool, object> { Item1 = true, Item2 = param };
+                return new Output<bool, object> { Item1 = true, Item2 = param.Value };
         }
 
         /***************************************************/

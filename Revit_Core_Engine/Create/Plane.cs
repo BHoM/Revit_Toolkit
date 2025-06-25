@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -20,45 +20,29 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
+using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit;
+using BH.oM.Base.Attributes;
+using System;
 using System.ComponentModel;
 
-namespace BH.oM.Adapters.Revit.Parameters
+namespace BH.Revit.Engine.Core
 {
-    [Description("A BHoM wrapper class for a Revit parameter.")]
-    public class RevitParameter : IImmutable
+    public static partial class Create
     {
         /***************************************************/
-        /****             Public Properties             ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Name of the Revit parameter as seen in the UI.")]
-        public virtual string Name { get; } = "";
-
-        [Description("Value of the Revit parameter. Enums are converted to strings, ElementIds to integers.")]
-        public virtual object Value { get; } = null;
-
-        [Description("Quantity of the Revit parameter.")]
-        public virtual string Quantity { get; }
-
-        [Description("Unit of the Revit parameter.")]
-        public virtual string Unit { get; }
-
-        [Description("Whether the parameter is read only or modifiable by the Revit user.")]
-        public virtual bool IsReadOnly { get; } = false;
-
-
-        /***************************************************/
-        /****                Constructor                ****/
-        /***************************************************/
-
-        public RevitParameter(string name, object value, string quantity, string unit, bool isReadOnly)
+        [Description("Creates plane based on a point and a parallel vector (perpendicular to the normal of created plane).")]
+        [Input("point", "Point on created plane.")]
+        [Input("vectorInPlane", "Vector parallel to the created plane.")]
+        [Output("plane", "Arbitrary plane created based on the provided inputs.")]
+        public static Plane ArbitraryPlane(XYZ point, XYZ vectorInPlane)
         {
-            Name = name;
-            Value = value;
-            Quantity = quantity;
-            Unit = unit;
-            IsReadOnly = isReadOnly;
+            XYZ helper = 1 - Math.Abs(vectorInPlane.DotProduct(XYZ.BasisZ)) > Tolerance.Angle ? XYZ.BasisZ : XYZ.BasisX;
+            XYZ y = vectorInPlane.CrossProduct(helper).Normalize();
+            return Plane.CreateByOriginAndBasis(point, vectorInPlane, y);
         }
 
         /***************************************************/
