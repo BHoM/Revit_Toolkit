@@ -70,14 +70,6 @@ namespace BH.Revit.Adapter.Core
         }
 
         /***************************************************/
-
-        public Output<List<object>, bool> RunCommand(CustomCommand command)
-        {
-            return CustomCommand(command);
-        }
-
-
-        /***************************************************/
         /****              Helper methods               ****/
         /***************************************************/
 
