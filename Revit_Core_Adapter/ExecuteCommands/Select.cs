@@ -36,7 +36,7 @@ namespace BH.Revit.Adapter.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public Output<List<object>, bool> Select(Select command)
+        public Output<List<object>, bool> Select(Select command, bool show = true)
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
             List<IBHoMObject> target = command.Identifiers.Cast<IBHoMObject>().ToList();
@@ -63,13 +63,13 @@ namespace BH.Revit.Adapter.Core
 
             try
             {
-                uidoc.ShowElements(elementIds);
+                if (show) 
+                    uidoc.ShowElements(elementIds);
                 uidoc.Selection.SetElementIds(elementIds);
             }
             catch (Exception ex)
             {
-                BH.Engine.Base.Compute.RecordError($"Failed to select elements: {ex.Message}");
-                return output;
+                BH.Engine.Base.Compute.RecordError($"Some elements cannot be selected or do not have views: {ex.Message}");
             }
 
             output.Item1 = elementIds.Cast<object>().ToList();
