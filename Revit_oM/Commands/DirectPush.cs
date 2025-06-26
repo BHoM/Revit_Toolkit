@@ -35,7 +35,7 @@ namespace BH.oM.Adapter.Commands
         /***************************************************/
 
         [Description("Source objects to be pushed")]
-        public virtual List<IObject> Identifiers { get; set; }
+        public virtual List<IObject> ObjectsToPush { get; set; }
 
         /***************************************************/
     }

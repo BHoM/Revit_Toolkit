@@ -40,13 +40,13 @@ namespace BH.Revit.Adapter.Core
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 
-            if (command.Identifiers == null)
+            if (command.Targets == null)
             {
                 BH.Engine.Base.Compute.RecordError("No selected objects found.");
                 return output;
             }
 
-            if (!command.Identifiers.TryGetElementIds(out List<ElementId> elementIds))
+            if (!command.Targets.TryGetElementIds(out List<ElementId> elementIds))
             {
                 BH.Engine.Base.Compute.RecordError("ElementIds is invalid or empty.");
                 return output;

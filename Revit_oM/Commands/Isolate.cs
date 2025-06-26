@@ -34,8 +34,8 @@ namespace BH.oM.Adapter.Commands
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Target objects of commands.")]
-        public virtual List<object> Identifiers { get; set; }
+        [Description("Elements to be isolated.")]
+        public virtual List<object> Targets { get; set; }
 
         /***************************************************/
     }
