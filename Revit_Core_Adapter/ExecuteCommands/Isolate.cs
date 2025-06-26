@@ -79,6 +79,7 @@ namespace BH.Revit.Adapter.Core
             #endregion 
 
             View targetView = GetTargetView(doc, uidoc.ActiveView, elementIds);
+
             if (targetView == null)
             {
                 BH.Engine.Base.Compute.RecordError("No suitable view found.");
@@ -89,7 +90,7 @@ namespace BH.Revit.Adapter.Core
             {
                 transaction.Start();
                 EnsureVisibility(doc, targetView, elementIds);
-                IsolateElements(doc, targetView, elementIds);
+                IsolateElements( targetView, elementIds);
                 ZoomToFit(uidoc, elementIds);
                 transaction.Commit();
             }
@@ -169,7 +170,7 @@ namespace BH.Revit.Adapter.Core
 
         /***************************************************/
 
-        private void IsolateElements(Document doc, View view, List<ElementId> elementIds)
+        private void IsolateElements(View view, List<ElementId> elementIds)
         {
             view.IsolateElementsTemporary(elementIds);
         }

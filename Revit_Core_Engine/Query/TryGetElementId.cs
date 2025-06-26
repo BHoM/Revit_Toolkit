@@ -53,6 +53,8 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+        /****               Private methods             ****/
+        /***************************************************/
 
         private static List<ElementId> ElementIds(this List<IBHoMObject> bHoMObjects)
         {

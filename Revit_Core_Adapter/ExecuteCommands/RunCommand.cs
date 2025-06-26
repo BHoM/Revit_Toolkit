@@ -70,6 +70,16 @@ namespace BH.Revit.Adapter.Core
         }
 
         /***************************************************/
+        /****               Private methods             ****/
+        /***************************************************/
+
+        private Output<List<object>, bool> RunCommand(IExecuteCommand command)
+        {
+            BH.Engine.Base.Compute.RecordError($"Command {nameof(command)} is not supported");
+            return new Output<List<object>, bool>();
+        }
+
+        /***************************************************/
     }
 }
 
