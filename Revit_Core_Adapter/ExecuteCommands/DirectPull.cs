@@ -40,22 +40,17 @@ namespace BH.Revit.Adapter.Core
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 
             UIDocument uidoc = this.UIDocument;
-
-            ICollection<ElementId> selectedIds = uidoc.Selection.GetElementIds();
-
-            if (selectedIds.Count == 0)
-            {
+            if (uidoc == null)
                 return output;
-            }
 
-            List<ElementId> elementIds = new List<ElementId>(selectedIds);
-            Transform transform = Transform.Identity;
-            List<object> result = Read(this.Document, transform, elementIds.ToList()).Cast<object>().ToList();
-
-            output.Item1 = result; 
+            output.Item1 = new List<object>();
             output.Item2 = true;
+            
+            ICollection<ElementId> selectedIds = uidoc.Selection.GetElementIds();
+            if (selectedIds.Count != 0)
+                output.Item2.AddRange(Read(this.Document, Transform.Identity, selectedIds.ToList()).Cast<object>());
+
             return output;
         }
-
     }
 }
