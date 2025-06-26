@@ -24,6 +24,7 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -35,27 +36,37 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        [Description("Try to extract ElementIds from a collection of BHoM Objects")]
-        [Input("bHoMObjects", "BHoMObjects to extract ElementIds.")]
+        [Description("Try to extract ElementIds from a collection of objects")]
+        [Input("objects", "objects to extract ElementIds.")]
         [Input("ids", "variable to store returned ElementIds")]
         [Output("Boolean", "True if the operation succeed")]
-        public static bool TryGetElementIds(this List<IBHoMObject> bHoMObjects, out List<ElementId> ids)
+        public static bool TryGetElementIds(this List<object> objects, out List<ElementId> ids)
         {
-            if (bHoMObjects == null || bHoMObjects.Count == 0)
-            {
-                BH.Engine.Base.Compute.RecordError("BHoMObjects is null or empty.");
-                ids = null;
-                return false;
-            }
+            ids = new List<ElementId>();
+            List<IBHoMObject> bHoMObjects = objects?.Where(x => x is IBHoMObject).Cast<IBHoMObject>().ToList();
+            List<int> elementIds = objects?.Where(x => x is int).Cast<int>().ToList();
 
-            var elementIds = bHoMObjects.Select(x => x.GetRevitIdentifiers()?.ElementId)
+            ids.AddRange(bHoMObjects.ElementIds());
+            ids.AddRange(elementIds.ElementIds());
+
+            return ids.Count > 0;
+        }
+
+        /***************************************************/
+
+        private static List<ElementId> ElementIds(this List<IBHoMObject> bHoMObjects)
+        {
+            return bHoMObjects.Select(x => x.GetRevitIdentifiers()?.ElementId)
                 .Where(x => x.HasValue)
                 .Select(x => new ElementId(x.Value))
                 .ToList();
-            ids = elementIds;
-            bool result = elementIds != null;
+        }
 
-            return result;
+        /***************************************************/
+
+        private static List<ElementId> ElementIds(this List<int> ElementId)
+        {
+            return ElementId.Select(x => new ElementId(x)).ToList();
         }
 
         /***************************************************/

@@ -35,7 +35,7 @@ namespace BH.oM.Adapter.Commands
         /***************************************************/
 
         [Description("Target objects of commands.")]
-        public virtual List<IObject> Identifiers { get; set; }
+        public virtual List<object> Identifiers { get; set; }
 
         /***************************************************/
     }

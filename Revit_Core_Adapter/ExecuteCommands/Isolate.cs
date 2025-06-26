@@ -39,15 +39,14 @@ namespace BH.Revit.Adapter.Core
         public Output<List<object>, bool> Isolate(Isolate command)
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
-            List<IBHoMObject> target = command?.Identifiers?.Cast<IBHoMObject>().ToList();
 
-            if (target == null)
+            if (command.Identifiers == null)
             {
-                BH.Engine.Base.Compute.RecordError("Invalid objects.");
+                BH.Engine.Base.Compute.RecordError("No selected objects found.");
                 return output;
             }
 
-            if (!target.TryGetElementIds(out List<ElementId> elementIds))
+            if (!command.Identifiers.TryGetElementIds(out List<ElementId> elementIds))
             {
                 BH.Engine.Base.Compute.RecordError("ElementIds is invalid or empty.");
                 return output;
