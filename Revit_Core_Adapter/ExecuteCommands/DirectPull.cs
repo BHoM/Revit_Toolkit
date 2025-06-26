@@ -48,7 +48,7 @@ namespace BH.Revit.Adapter.Core
             
             ICollection<ElementId> selectedIds = uidoc.Selection.GetElementIds();
             if (selectedIds.Count != 0)
-                output.Item2.AddRange(Read(this.Document, Transform.Identity, selectedIds.ToList()).Cast<object>());
+                output.Item1.AddRange(Read(this.Document, Transform.Identity, selectedIds.ToList()).Cast<object>());
 
             return output;
         }

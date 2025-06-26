@@ -22,6 +22,7 @@
 
 using BH.oM.Adapter.Commands;
 using BH.oM.Base;
+using System;
 using System.Collections.Generic;
 
 namespace BH.Revit.Adapter.Core
@@ -48,7 +49,10 @@ namespace BH.Revit.Adapter.Core
                 Push(objects as IEnumerable<object>);
                 output.Item2 = true;
             }
-            catch { }
+            catch (Exception e)
+            {
+                BH.Engine.Base.Compute.RecordError($"Failed to push objects: {e.Message}");
+            }
             
             return output;
         }

@@ -41,7 +41,7 @@ namespace BH.Revit.Adapter.Core
         public Output<List<object>, bool> Isolate(Isolate command)
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
-            List<IBHoMObject> target = command.Identifiers.Cast<IBHoMObject>().ToList();
+            List<IBHoMObject> target = command?.Identifiers?.Cast<IBHoMObject>().ToList();
 
             if (target == null)
             {
@@ -57,6 +57,9 @@ namespace BH.Revit.Adapter.Core
 
             UIDocument uidoc = this.UIDocument;
             Document doc = this.Document;
+
+            if (uidoc == null)
+                return output;
 
             #region Check accesibility
             if (doc == null)
@@ -130,6 +133,8 @@ namespace BH.Revit.Adapter.Core
                 .FirstOrDefault(v => !v.IsTemplate && !v.IsPerspective && v.ViewType == ViewType.ThreeD);
         }
 
+        /***************************************************/
+
         private void EnsureVisibility(Document doc, View view, List<ElementId> elementIds)
         {
             foreach (ElementId id in elementIds)
@@ -165,10 +170,14 @@ namespace BH.Revit.Adapter.Core
             }
         }
 
+        /***************************************************/
+
         private void IsolateElements(Document doc, View view, List<ElementId> elementIds)
         {
             view.IsolateElementsTemporary(elementIds);
         }
+
+        /***************************************************/
 
         private void ZoomToFit(UIDocument uidoc, List<ElementId> elementIds)
         {
@@ -177,5 +186,7 @@ namespace BH.Revit.Adapter.Core
                 uidoc.ShowElements(elementIds);
             }
         }
+
+        /***************************************************/
     }
 }
