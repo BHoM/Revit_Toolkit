@@ -57,9 +57,9 @@ namespace BH.Revit.Adapter.Core
 
         /***************************************************/
 
-        public Output<List<object>, bool> RunCommand(DirectPull command)
+        public Output<List<object>, bool> RunCommand(PullSlection command)
         {
-            return DirectPull(command);
+            return PullSelection(command);
         }
 
         /***************************************************/
@@ -69,8 +69,6 @@ namespace BH.Revit.Adapter.Core
             return DirectPush(command);
         }
 
-        /***************************************************/
-        /****              Helper methods               ****/
         /***************************************************/
     }
 }
