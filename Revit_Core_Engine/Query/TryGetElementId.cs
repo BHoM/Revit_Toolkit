@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -21,61 +21,41 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-using BH.oM.Adapter.Commands;
+using BH.Engine.Adapters.Revit;
 using BH.oM.Base;
-using BH.Revit.Engine.Core;
-using System;
+using BH.oM.Base.Attributes;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
-namespace BH.Revit.Adapter.Core
+namespace BH.Revit.Engine.Core
 {
-    public partial class RevitListenerAdapter
+    public static partial class Query
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-
-        public Output<List<object>, bool> Select(Select command, bool show = true)
+        [Description("Try to extract ElementIds from a collection of BHoM Objects")]
+        [Input("bHoMObjects", "BHoMObjects to extract ElementIds.")]
+        [Input("ids", "variable to store returned ElementIds")]
+        [Output("Boolean", "True if the operation succeed")]
+        public static bool TryGetElementIds(this List<IBHoMObject> bHoMObjects, out List<ElementId> ids)
         {
-            Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
-            List<IBHoMObject> target = command.Identifiers.Cast<IBHoMObject>().ToList();
-
-            if (target == null)
+            if (bHoMObjects == null || bHoMObjects.Count == 0)
             {
-                BH.Engine.Base.Compute.RecordError("Invalid objects.");
-                return output;
+                BH.Engine.Base.Compute.RecordError("BHoMObjects is null or empty.");
+                ids = null;
+                return false;
             }
 
-            UIDocument uidoc = this.UIDocument;
+            var elementIds = bHoMObjects.Select(x => x.GetRevitIdentifiers()?.ElementId)
+                .Where(x => x.HasValue)
+                .Select(x => new ElementId(x.Value))
+                .ToList();
+            ids = elementIds;
+            bool result = elementIds != null;
 
-            if (uidoc == null)
-            {
-                BH.Engine.Base.Compute.RecordError("Revit UI is not available).");
-                return output;
-            }
-
-            if (!target.TryGetElementIds(out List<ElementId> elementIds))
-            {
-                BH.Engine.Base.Compute.RecordError("ElementIds is invalid or empty.");
-                return output;
-            }
-
-            try
-            {
-                if (show) 
-                    uidoc.ShowElements(elementIds);
-                uidoc.Selection.SetElementIds(elementIds);
-            }
-            catch (Exception ex)
-            {
-                BH.Engine.Base.Compute.RecordError($"Some elements cannot be selected or do not have views: {ex.Message}");
-            }
-
-            output.Item1 = elementIds.Cast<object>().ToList();
-            output.Item2 = true;
-            return output;
+            return result;
         }
 
         /***************************************************/

@@ -72,17 +72,6 @@ namespace BH.Revit.Adapter.Core
         /***************************************************/
         /****              Helper methods               ****/
         /***************************************************/
-
-        private bool TryGetElementId(List<IBHoMObject> bHoMObjects, out List<ElementId> ids)
-        {
-            var elementIds = bHoMObjects.Select(x => x.GetRevitIdentifiers()?.ElementId)
-                .Where(x => x.HasValue)
-                .Select(x => new ElementId(x.Value))
-                .ToList();
-            ids = elementIds;
-
-            return true;
-        }
     }
 }
 
