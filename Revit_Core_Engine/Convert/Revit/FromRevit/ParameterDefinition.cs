@@ -72,15 +72,6 @@ namespace BH.Revit.Engine.Core
 				categories = elementBinding.Categories.Cast<Category>().Select(c => c.Name).ToList();
 			}
 
-
-			if (parameter is SharedParameterElement sharedParameterElement)
-			{
-				var guid = sharedParameterElement.GuidValue.ToString();
-				paramDefinition.Shared = true;
-				paramDefinition.CustomData.Add("GUID", guid);
-
-			}
-
 			paramDefinition = new ParameterDefinition
 			{
 				Name = name,
@@ -89,6 +80,13 @@ namespace BH.Revit.Engine.Core
 				Instance = instance,
 				Categories = categories,
 			};
+
+			if (parameter is SharedParameterElement sharedParameterElement)
+			{
+				paramDefinition.Shared = true;
+				paramDefinition.CustomData.Add("GUID", sharedParameterElement.GuidValue.ToString());
+
+			}
 
 			paramDefinition.SetIdentifiers(parameter);
 			paramDefinition.CopyParameters(parameter, settings.MappingSettings);
