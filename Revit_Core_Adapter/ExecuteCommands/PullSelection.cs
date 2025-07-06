@@ -35,7 +35,7 @@ namespace BH.Revit.Adapter.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public Output<List<object>, bool> PullSelection(PullSlection command)
+        public Output<List<object>, bool> PullSelection(PullSelection command)
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 

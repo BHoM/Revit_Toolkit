@@ -57,7 +57,7 @@ namespace BH.Revit.Adapter.Core
 
         /***************************************************/
 
-        public Output<List<object>, bool> RunCommand(PullSlection command)
+        public Output<List<object>, bool> RunCommand(PullSelection command)
         {
             return PullSelection(command);
         }

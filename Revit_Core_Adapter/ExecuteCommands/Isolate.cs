@@ -163,7 +163,7 @@ namespace BH.Revit.Adapter.Core
 
             // Ensure the crop region is disabled
             Parameter cropViewDisabled = view.get_Parameter(BuiltInParameter.VIEWER_CROP_REGION_DISABLED);
-            if (CropViewDisabled.AsInteger() == 0)
+            if (cropViewDisabled.AsInteger() == 0)
             {
                 view.CropBoxActive = false;
             }

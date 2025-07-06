@@ -36,6 +36,7 @@ namespace BH.oM.Adapter.Commands
 
         [Description("Elements to be selected.")]
         public virtual List<object> Targets { get; set; }
+        public virtual bool ShowObjects { get; set; } = true;
 
         /***************************************************/
     }

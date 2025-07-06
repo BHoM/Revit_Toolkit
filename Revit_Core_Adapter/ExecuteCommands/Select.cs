@@ -37,7 +37,7 @@ namespace BH.Revit.Adapter.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public Output<List<object>, bool> Select(Select command, bool show = true)
+        public Output<List<object>, bool> Select(Select command)
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 
@@ -63,7 +63,7 @@ namespace BH.Revit.Adapter.Core
 
             try
             {
-                if (show) 
+                if (command.ShowObjects) 
                     uidoc.ShowElements(elementIds);
                 uidoc.Selection.SetElementIds(elementIds);
             }
