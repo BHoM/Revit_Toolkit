@@ -37,7 +37,7 @@ namespace BH.Revit.Adapter.Core
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 
-            object objects = command.ObjectsToPush;
+            object objects = command?.ObjectsToPush;
 
             if (objects == null)
             {
