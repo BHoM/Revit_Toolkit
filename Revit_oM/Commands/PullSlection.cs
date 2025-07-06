@@ -28,7 +28,7 @@ using System.ComponentModel;
 namespace BH.oM.Adapter.Commands
 {
     [Description("Pull action allows quick retrieval of selected elements from External Application.")]
-    public class PullSlection : IExecuteCommand
+    public class PullSelection : IExecuteCommand
     {
         /***************************************************/
         /****             Public Properties             ****/
