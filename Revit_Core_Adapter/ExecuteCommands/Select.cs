@@ -41,7 +41,7 @@ namespace BH.Revit.Adapter.Core
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 
-            if (command.Targets == null)
+            if (command?.Targets == null)
             {
                 BH.Engine.Base.Compute.RecordError("No selected objects found.");
                 return output;
