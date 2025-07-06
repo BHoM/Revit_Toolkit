@@ -157,7 +157,8 @@ namespace BH.Revit.Adapter.Core
 
             if (view is View3D v3d)
             {
-                if (v3d.CropBoxActive) v3d.CropBoxActive = false;
+                if (v3d.CropBoxActive)
+                    v3d.CropBoxActive = false;
             }
 
             // Ensure the crop region is disabled
