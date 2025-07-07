@@ -108,29 +108,36 @@ namespace BH.Revit.Adapter.Core
 
         private View GetTargetView(Document doc, View currentView, List<ElementId> elementIds)
         {
-            bool hasDetailItem = elementIds.Any(id =>
+            var viewSpecificElements = elementIds.Where(id => doc.GetElement(id)?.ViewSpecific == true).ToList();
+            if (viewSpecificElements.Count > 0)
             {
-                Element el = doc.GetElement(id);
-                return el?.Category?.Id.IntegerValue == (int)BuiltInCategory.OST_DetailComponents;
-            });
-
-            if (hasDetailItem)
-            {
-                Element detailElement = doc.GetElement(elementIds.First());
-                if (detailElement.ViewSpecific)
+                ElementId  vId = doc.GetElement(viewSpecificElements.First()).OwnerViewId;
+                if(viewSpecificElements.All(id => doc.GetElement(id).OwnerViewId == vId))
+                { 
+                    return doc.GetElement(vId) as Autodesk.Revit.DB.View; 
+                }
+                else 
                 {
-                    View boundView = doc.GetElement(detailElement.OwnerViewId) as View;
-                    if (boundView != null && !boundView.IsTemplate)
-                        return boundView;
+                    BH.Engine.Base.Compute.RecordError("Selected elements are not all in the same owner view.");
+                    return null;
                 }
             }
 
+            // If no view-specific elements, try to use the current view only it 's not a template schedule or drafting view
+            if (currentView != null && !(currentView is ViewSchedule) && !(currentView is ViewDrafting))
+            {
+                var visibleInCurrentView = new FilteredElementCollector(doc, currentView.Id).ToElementIds(); 
+                if (!elementIds.All(id=> doc.GetElement(id).IsHidden(currentView) && visibleInCurrentView.Contains(id)))
+                    return currentView;
+            }
+
+            // If no view-specific elements or current view is not suitable, find a 3D view
             return new FilteredElementCollector(doc)
                 .OfClass(typeof(View3D))
                 .Cast<View3D>()
                 .FirstOrDefault(v => !v.IsTemplate && !v.IsPerspective && v.ViewType == ViewType.ThreeD);
         }
-
+    
         /***************************************************/
 
         private void EnsureVisibility(Document doc, View view, List<ElementId> elementIds)
