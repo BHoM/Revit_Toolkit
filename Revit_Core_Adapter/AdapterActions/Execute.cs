@@ -37,7 +37,7 @@ namespace BH.Revit.Adapter.Core
         public override Output<List<object>, bool> Execute(IExecuteCommand command, ActionConfig actionConfig = null)
         {
             Output<List<object>, bool> result = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
-            RevitExecutionConfig config = (actionConfig as RevitExecutionConfig) ?? new RevitExecutionConfig() { SuppressFailureMessages = true};
+            RevitExecutionConfig config = (actionConfig as RevitExecutionConfig) ?? new RevitExecutionConfig();
 
             // Suppress warnings
             if (UIControlledApplication != null && config.SuppressFailureMessages)
