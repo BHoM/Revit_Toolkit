@@ -74,7 +74,7 @@ namespace BH.Revit.Adapter.Core
                 BH.Engine.Base.Compute.RecordError($"Some elements cannot be selected or do not have views: {ex.Message}");
             }
 
-            output.Item1 = elementIds.Cast<object>().ToList();
+            output.Item1 = elementIds.Select(x => x.IntegerValue).Cast<object>().ToList();
             output.Item2 = true;
             return output;
         }
