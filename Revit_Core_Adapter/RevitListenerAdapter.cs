@@ -44,9 +44,6 @@ namespace BH.Revit.Adapter.Core
 
         private Document m_Document;
 
-        private Dictionary<string, Func<Dictionary<string, object>, ActionConfig, Output<List<object>, bool>>> m_RevitCustomCommands;
-
-
         /***************************************************/
         /****            Public Constructors            ****/
         /***************************************************/

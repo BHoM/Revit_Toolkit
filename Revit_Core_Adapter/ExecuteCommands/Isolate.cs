@@ -55,44 +55,10 @@ namespace BH.Revit.Adapter.Core
             UIDocument uidoc = this.UIDocument;
             Document doc = this.Document;
 
-            if (uidoc == null)
-                return output;
-
-            #region Check accesibility
-            if (doc == null)
+            if (!Compute.Isolate(doc,uidoc, elementIds))
             {
-                BH.Engine.Base.Compute.RecordError("Revit Document is null (possibly there is no open documents in Revit).");
+                BH.Engine.Base.Compute.RecordError("Isolate command failed.");
                 return output;
-            }
-
-            if (doc.IsReadOnly)
-            {
-                BH.Engine.Base.Compute.RecordError("Revit Document is read only.");
-                return output;
-            }
-
-            if (doc.IsModifiable)
-            {
-                BH.Engine.Base.Compute.RecordError("Command can not run when another transaction is open in Revit.");
-                return output;
-            }
-            #endregion 
-
-            View targetView = GetTargetView(doc, uidoc.ActiveView, elementIds);
-
-            if (targetView == null)
-            {
-                BH.Engine.Base.Compute.RecordError("No suitable view found.");
-                return output;
-            }
-
-            using (Transaction transaction = new Transaction(doc, "BHoM temporary isolates objects"))
-            {
-                transaction.Start();
-                EnsureVisibility(doc, targetView, elementIds);
-                IsolateElements( targetView, elementIds);
-                ZoomToFit(uidoc, elementIds);
-                transaction.Commit();
             }
 
             uidoc.Selection.SetElementIds(elementIds);
@@ -100,97 +66,6 @@ namespace BH.Revit.Adapter.Core
             output.Item2 = true;
 
             return output;
-        }
-
-        /***************************************************/
-        /****             Private methods               ****/
-        /***************************************************/
-
-        private View GetTargetView(Document doc, View currentView, List<ElementId> elementIds)
-        {
-            var viewSpecificElements = elementIds.Where(id => doc.GetElement(id)?.ViewSpecific == true).ToList();
-            if (viewSpecificElements.Count > 0)
-            {
-                ElementId  vId = doc.GetElement(viewSpecificElements.First()).OwnerViewId;
-                if(viewSpecificElements.All(id => doc.GetElement(id).OwnerViewId == vId))
-                { 
-                    return doc.GetElement(vId) as Autodesk.Revit.DB.View; 
-                }
-                else 
-                {
-                    BH.Engine.Base.Compute.RecordError("Selected elements are not all in the same owner view.");
-                    return null;
-                }
-            }
-
-            // If no view-specific elements, try to use the current view only it 's not a template schedule or drafting view
-            if (currentView != null && !(currentView is ViewSchedule) && !(currentView is ViewDrafting))
-            {
-                var visibleInCurrentView = new FilteredElementCollector(doc, currentView.Id).ToElementIds(); 
-                if (!elementIds.All(id=> doc.GetElement(id).IsHidden(currentView) && visibleInCurrentView.Contains(id)))
-                    return currentView;
-            }
-
-            // If no view-specific elements or current view is not suitable, find a 3D view
-            return new FilteredElementCollector(doc)
-                .OfClass(typeof(View3D))
-                .Cast<View3D>()
-                .FirstOrDefault(v => !v.IsTemplate && !v.IsPerspective && v.ViewType == ViewType.ThreeD);
-        }
-    
-        /***************************************************/
-
-        private void EnsureVisibility(Document doc, View view, List<ElementId> elementIds)
-        {
-            foreach (ElementId id in elementIds)
-            {
-                Element el = doc.GetElement(id);
-                Category cat = el?.Category;
-
-                if (cat != null && cat.get_AllowsVisibilityControl(view) && view.GetCategoryHidden(cat.Id))
-                {
-                    view.SetCategoryHidden(cat.Id, false);
-                }
-
-                if (el.IsHidden(view))
-                {
-                    try
-                    {
-                        view.SetElementOverrides(id, new OverrideGraphicSettings());
-                    }
-                    catch { }
-                }
-            }
-
-            if (view is View3D v3d)
-            {
-                if (v3d.CropBoxActive)
-                    v3d.CropBoxActive = false;
-            }
-
-            // Ensure the crop region is disabled
-            Parameter cropViewDisabled = view.get_Parameter(BuiltInParameter.VIEWER_CROP_REGION_DISABLED);
-            if (cropViewDisabled.AsInteger() == 0)
-            {
-                view.CropBoxActive = false;
-            }
-        }
-
-        /***************************************************/
-
-        private void IsolateElements(View view, List<ElementId> elementIds)
-        {
-            view.IsolateElementsTemporary(elementIds);
-        }
-
-        /***************************************************/
-
-        private void ZoomToFit(UIDocument uidoc, List<ElementId> elementIds)
-        {
-            if (elementIds.Count > 0)
-            {
-                uidoc.ShowElements(elementIds);
-            }
         }
 
         /***************************************************/
