@@ -40,16 +40,16 @@ namespace BH.Revit.Engine.Core
         [Input("objects", "objects to extract ElementIds.")]
         [Input("ids", "variable to store returned ElementIds")]
         [Output("Boolean", "True if the operation succeed")]
-        public static bool TryGetElementIds(this List<object> objects, out List<ElementId> ids)
+        public static List<ElementId> TryGetElementIds(this List<object> objects)
         {
-            ids = new List<ElementId>();
+            var ids = new List<ElementId>();
             List<IBHoMObject> bHoMObjects = objects?.Where(x => x is IBHoMObject).Cast<IBHoMObject>().ToList();
             List<int> elementIds = objects?.Where(x => x is int).Cast<int>().ToList();
 
             ids.AddRange(bHoMObjects.ElementIds());
             ids.AddRange(elementIds.ElementIds());
 
-            return ids.Count > 0;
+            return ids;
         }
 
         /***************************************************/

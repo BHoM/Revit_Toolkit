@@ -47,7 +47,9 @@ namespace BH.Revit.Adapter.Core
                 return output;
             }
 
-            if (!command.Targets.TryGetElementIds(out List<ElementId> elementIds))
+            var elementIds = command.Targets.TryGetElementIds();
+
+            if (elementIds == null || elementIds.Count == 0)
             {
                 BH.Engine.Base.Compute.RecordError("ElementIds is invalid or empty.");
                 return output;

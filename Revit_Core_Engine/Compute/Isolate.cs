@@ -36,8 +36,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("")]
+        [Description("Isolates the specified elements in a suitable Revit view, ensuring their visibility and zooming to fit them. Handles view selection, visibility overrides, and transaction management. Returns true if successful, false otherwise.")]
         [Input("", "")]
+        [Input("Document", "The Revit document to operate on.")]
+        [Input("UIDocument", "The active UI document in Revit.")]
+        [Input("ElementIds", "The collection of element IDs to isolate.")]
+        [Output("Success", "True if the elements were successfully isolated, false otherwise.")]
         public static bool Isolate(this Document doc, UIDocument uidoc, IEnumerable<ElementId> elementIds)
         {
             #region Check accesibility
