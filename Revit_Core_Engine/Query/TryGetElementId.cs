@@ -57,9 +57,8 @@ namespace BH.Revit.Engine.Core
 
         private static List<ElementId> ElementIds(this List<IBHoMObject> bHoMObjects)
         {
-            return bHoMObjects.Select(x => x.GetRevitIdentifiers()?.ElementId)
-                .Where(x => x.HasValue)
-                .Select(x => new ElementId(x.Value))
+            return bHoMObjects.Select(x => x.ElementId())
+                .Where(x => x != null)
                 .ToList();
         }
 
