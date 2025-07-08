@@ -43,9 +43,8 @@ namespace BH.Revit.Engine.Core
         public static List<ElementId> TryGetElementIds(this List<object> objects)
         {
             var ids = new List<ElementId>();
-            List<IBHoMObject> bHoMObjects = objects?.Where(x => x is IBHoMObject).Cast<IBHoMObject>().ToList();
-            List<int> elementIds = objects?.Where(x => x is int).Cast<int>().ToList();
-
+            List<IBHoMObject> bHoMObjects = objects?.OfType<IBHoMObject>().ToList() ?? new List<IBHoMObject>();
+            List<int> elementIds = objects?.OfType<int>().ToList() ?? new List<int>();
             ids.AddRange(bHoMObjects.ElementIds());
             ids.AddRange(elementIds.ElementIds());
 
