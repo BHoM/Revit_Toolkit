@@ -34,7 +34,7 @@ namespace BH.oM.Adapter.Commands
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Elements to be isolated.")]
+        [Description("Elements to be isolated, specified as either IBHoMObjects or integers representing ElementIds.")]
         public virtual List<object> Targets { get; set; }
 
         /***************************************************/

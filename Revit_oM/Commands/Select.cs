@@ -34,8 +34,9 @@ namespace BH.oM.Adapter.Commands
         /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Elements to be selected.")]
+        [Description("Elements to be selected, specified as either IBHoMObjects or integers representing ElementIds.")]
         public virtual List<object> Targets { get; set; }
+        [Description("Set True to view objects on External Application UI")]
         public virtual bool ShowObjects { get; set; } = true;
 
         /***************************************************/
