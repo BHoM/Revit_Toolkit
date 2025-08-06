@@ -24,6 +24,7 @@ using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -52,18 +53,48 @@ namespace BH.Revit.Engine.Core
             Document linkDoc = linkInstance.GetLinkDocument();
             Solid viewSolid = view.TransformedViewSolid(linkInstance);
             ElementIntersectsSolidFilter solidFilter = new ElementIntersectsSolidFilter(viewSolid);
-            
-            IEnumerable<ElementId> elementIds; 
+            List<ElementId> spatialElementIds = SpatialElementsInSolid(linkDoc, viewSolid);
+
+            List<ElementId> elementIds; 
             if (elementFilters == null)
-                elementIds = new FilteredElementCollector(linkDoc).WherePasses(solidFilter).WhereElementIsNotElementType().ToElementIds();
+            {
+                elementIds = new FilteredElementCollector(linkDoc).WherePasses(solidFilter).WhereElementIsNotElementType().ToElementIds().ToList();
+                elementIds.AddRange(spatialElementIds);
+            }
             else
             {
                 LogicalOrFilter elementFilter = new LogicalOrFilter(elementFilters);
                 LogicalAndFilter elementSolidFilter = new LogicalAndFilter(elementFilter, solidFilter);
-                elementIds = new FilteredElementCollector(linkDoc).WherePasses(elementSolidFilter).WhereElementIsNotElementType().ToElementIds();
+                elementIds = new FilteredElementCollector(linkDoc).WherePasses(elementSolidFilter).WhereElementIsNotElementType().ToElementIds().ToList();
+
+                foreach (ElementId spatialElementId in spatialElementIds)
+                {
+                    if (elementSolidFilter.PassesFilter(linkDoc, spatialElementId))
+                        elementIds.Add(spatialElementId);
+                }
             }
 
             return elementIds;
+        }
+
+        /***************************************************/
+
+        private static List<ElementId> SpatialElementsInSolid(Document linkDoc, Solid viewSolid)
+        {
+            List<SpatialElement> spatialElements = new FilteredElementCollector(linkDoc)
+                .OfClass(typeof(SpatialElement))
+                .ToElements()
+                .Cast<SpatialElement>()
+                .ToList();
+
+            List<ElementId> spatialElementsInSolid = new List<ElementId>();
+            foreach (SpatialElement spatialElement in spatialElements)
+            {
+                if (spatialElement.LocationPoint().DoesIntersect(viewSolid))
+                    spatialElementsInSolid.Add(spatialElement.Id);
+            }
+
+            return spatialElementsInSolid;
         }
 
         /***************************************************/
