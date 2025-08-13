@@ -230,62 +230,8 @@ namespace BH.Revit.Engine.Core
         {
             settings = settings.DefaultIfNull();
 
-            BH.oM.Geometry.Line curve = null;
-
-            // Piles are typically vertical elements like columns, so we can reuse similar logic
-            if (familyInstance.IsSlantedColumn)
-                curve = (familyInstance.Location as LocationCurve).Curve.IFromRevit() as BH.oM.Geometry.Line;
-            else
-            {
-                Parameter baseLevelParam = familyInstance.get_Parameter(BuiltInParameter.FAMILY_BASE_LEVEL_PARAM);
-                if (baseLevelParam != null)
-                {
-                    Parameter topLevelParam = familyInstance.get_Parameter(BuiltInParameter.FAMILY_TOP_LEVEL_PARAM);
-                    Parameter baseOffsetParam = familyInstance.get_Parameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM);
-                    Parameter topOffsetParam = familyInstance.get_Parameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM);
-
-                    double baseLevel = (familyInstance.Document.GetElement(baseLevelParam.AsElementId()) as Level).ProjectElevation;
-                    double topLevel = (familyInstance.Document.GetElement(topLevelParam.AsElementId()) as Level).ProjectElevation;
-                    double baseOffset = baseOffsetParam.AsDouble();
-                    double topOffset = topOffsetParam.AsDouble();
-
-                    XYZ loc = (familyInstance.Location as LocationPoint).Point;
-                    XYZ baseNode = new XYZ(loc.X, loc.Y, baseLevel + baseOffset);
-                    XYZ topNode = new XYZ(loc.X, loc.Y, topLevel + topOffset);
-                    curve = new oM.Geometry.Line { Start = baseNode.PointFromRevit(), End = topNode.PointFromRevit() };
-                }
-            }
-
-            if (curve != null)
-            {
-                // Piles typically extend into the ground, so we may want to handle extensions differently
-                Output<double, double> extensions = familyInstance.ColumnExtensions(settings);
-                double startExtension = extensions.Item1;
-                double endExtension = extensions.Item2;
-
-                if (Math.Abs(startExtension) > settings.DistanceTolerance || Math.Abs(endExtension) > settings.DistanceTolerance)
-                {
-                    Vector direction = curve.Direction();
-                    curve = new oM.Geometry.Line { Start = curve.Start - direction * startExtension, End = curve.End + direction * endExtension };
-                }
-            }
-            else
-            {
-                // Try getting the location directly from solid representation
-                Options options = new Options();
-                Solid alignedBox = familyInstance.AlignedBoundingBox(options);
-                XYZ centroid = familyInstance.Centroid(options);
-                XYZ extension = familyInstance.HandOrientation.CrossProduct(familyInstance.FacingOrientation) * 1000;
-                Autodesk.Revit.DB.Line toIntersect = Autodesk.Revit.DB.Line.CreateBound(centroid - extension, centroid + extension);
-                SolidCurveIntersection intersection = alignedBox.IntersectWithCurve(toIntersect, new SolidCurveIntersectionOptions());
-                if (intersection?.SegmentCount == 1)
-                    curve = intersection.GetCurveSegment(0).IFromRevit() as BH.oM.Geometry.Line;
-            }
-
-            if (curve == null)
-                familyInstance.FramingCurveNotFoundWarning();
-
-            return curve;
+            // Piles are typically point-based elements, so we can reuse the simpler column location logic
+            return familyInstance.LocationCurveColumn(settings);
         }
 
         /***************************************************/
