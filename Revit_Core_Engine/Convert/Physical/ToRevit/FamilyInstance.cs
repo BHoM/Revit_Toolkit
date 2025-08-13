@@ -158,9 +158,22 @@ namespace BH.Revit.Engine.Core
             if (locationLine == null)
                 return null;
 
-            Level level = document.LevelBelow(locationLine, settings);
+            // Intelligent level detection: try level below pile base first, then fallback to level above with warning
+            Level level = document.LevelBelow(locationLine, settings, false); // Don't use closest fallback in LevelBelow
             if (level == null)
-                return null;
+            {
+                // Fallback to closest level above the pile base with warning
+                level = document.LevelAbove(locationLine, settings, true);
+                if (level != null)
+                {
+                    BH.Engine.Base.Compute.RecordWarning($"No level found below pile base point. Using level above '{level.Name}' for pile placement. This may affect pile positioning. Pile BHoM_Guid: {framingElement.BHoM_Guid}");
+                }
+                else
+                {
+                    BH.Engine.Base.Compute.RecordError($"No suitable levels found in the document for pile placement. At least one level is required. Pile BHoM_Guid: {framingElement.BHoM_Guid}");
+                    return null;
+                }
+            }
 
             // Extract base point from pile line geometry (use the lower Z point as base)
             BH.oM.Geometry.Point basePoint = locationLine.Start.Z < locationLine.End.Z ? locationLine.Start : locationLine.End;
