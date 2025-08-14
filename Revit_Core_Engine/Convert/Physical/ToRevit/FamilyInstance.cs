@@ -187,12 +187,10 @@ namespace BH.Revit.Engine.Core
             }
 
             FamilyPlacementType familyPlacementType = familySymbol.Family.FamilyPlacementType;
-            // Accept point-based placement types for piles instead of curve-based
-            if (familyPlacementType != FamilyPlacementType.OneLevelBased && 
-                familyPlacementType != FamilyPlacementType.OneLevelBasedHosted && 
-                familyPlacementType != FamilyPlacementType.TwoLevelsBased)
+            // Piles must use OneLevelBased placement type for proper structural foundation behavior
+            if (familyPlacementType != FamilyPlacementType.OneLevelBased)
             {
-                Compute.InvalidFamilyPlacementTypeError(framingElement, familySymbol);
+                BH.Engine.Base.Compute.RecordError($"Pile family must use OneLevelBased placement type. Current type: {familyPlacementType}. Please use an appropriate pile family. Pile BHoM_Guid: {framingElement.BHoM_Guid}");
                 return null;
             }
 
@@ -222,38 +220,42 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            // Set pile height constraint using the height from the original line geometry
-            double pileHeight = Math.Abs(locationLine.End.Z - locationLine.Start.Z);
-            
-            // Try to set the height using different possible parameters for pile families
-            bool heightSet = false;
-            
-            // Try setting height offset parameter
-            Parameter heightOffsetParam = familyInstance.get_Parameter(BuiltInParameter.INSTANCE_FREE_HOST_OFFSET_PARAM);
-            if (heightOffsetParam != null && !heightOffsetParam.IsReadOnly)
+            // Advanced parameter management strategy using BHoM utilities
+            // 1. Set family level parameter to the host level
+            bool levelSet = familyInstance.SetParameter(BuiltInParameter.FAMILY_LEVEL_PARAM, level.Id);
+            if (!levelSet)
             {
-                heightOffsetParam.Set(pileHeight);
-                heightSet = true;
+                BH.Engine.Base.Compute.RecordWarning($"Could not set family level parameter for pile. ElementId: {familyInstance.Id}");
             }
             
-            // Try setting top level offset if available
-            Parameter topOffsetParam = familyInstance.get_Parameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM);
-            if (!heightSet && topOffsetParam != null && !topOffsetParam.IsReadOnly)
+            // 2. Calculate pile depth and offset values (BHoM uses SI units - meters)
+            double pileLength = Math.Abs(locationLine.End.Z - locationLine.Start.Z); // SI units (meters)
+            double baseElevation = Math.Min(locationLine.Start.Z, locationLine.End.Z); // SI units (meters)
+            double levelElevation = level.Elevation.ToSI(SpecTypeId.Length); // Convert level elevation to SI
+            double offsetFromLevel = baseElevation - levelElevation; // SI units (meters)
+            
+            // 3. Set base level offset (height above level) - this controls where pile starts relative to level
+            bool offsetSet = familyInstance.SetParameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM, offsetFromLevel, true);
+            if (!offsetSet)
             {
-                topOffsetParam.Set(pileHeight);
-                heightSet = true;
+                // Fallback to FLOOR_HEIGHTABOVELEVEL_PARAM for foundation elements
+                offsetSet = familyInstance.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, offsetFromLevel, true);
             }
             
-            // Set base level offset to zero (pile starts at base level)
-            Parameter baseOffsetParam = familyInstance.get_Parameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM);
-            if (baseOffsetParam != null && !baseOffsetParam.IsReadOnly)
+            // 4. Set pile length/depth parameter using standardized parameter names
+            // Try common pile parameter names in order of preference
+            string[] pileDepthParams = { "_BHE_Pile Depth_", "_BHE_Pile Length_", "Pile Depth", "Pile Length", "Length" };
+            bool lengthSet = familyInstance.SetParameters(pileDepthParams, pileLength);
+            
+            // Report parameter setting results
+            if (!offsetSet)
             {
-                baseOffsetParam.Set(0.0);
+                BH.Engine.Base.Compute.RecordWarning($"Could not set pile base offset parameter. Pile may not be positioned correctly relative to level '{level.Name}'. ElementId: {familyInstance.Id}");
             }
             
-            if (!heightSet)
+            if (!lengthSet)
             {
-                BH.Engine.Base.Compute.RecordWarning(string.Format("Could not set pile height constraint. Pile may not display correctly. ElementId: {0}", familyInstance.Id));
+                BH.Engine.Base.Compute.RecordWarning($"Could not set pile length parameter. Consider using a pile family with standard parameter names: {string.Join(", ", pileDepthParams)}. ElementId: {familyInstance.Id}");
             }
 
             familyInstance.CopyParameters(framingElement, settings);
