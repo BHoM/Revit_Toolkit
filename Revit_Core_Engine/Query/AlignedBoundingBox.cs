@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -34,47 +34,18 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the human-readable label of a given Revit spec.")]
-        [Input("spec", "Spec to get the label for.")]
-        [Output("label", "Human-readable label of the input Revit spec.")]
-#if (REVIT2021 || REVIT2022)
-        public static string Label(this ParameterType spec)
+        [Description("Finds a bounding box of an element in its local coordinate system, which is:" +
+                     "\n- for FamilyInstance: coordinate system as defined in the object definition (result of GetTotalTransform method )" +
+                     "\n- for everything else: coordinate system based on normals of the major planar faces of the element")]
+        [Input("element", "Element to query for aligned bounding box.")]
+        [Input("options", "Options to apply when extracting solid representation of an element.")]
+        [Output("alignedBBox", "Bounding box of the input element in on its local coordinate system.")]
+        public static Solid AlignedBoundingBox(this Element element, Options options)
         {
-            return LabelUtils.GetLabelFor(spec);
-        }
-#endif
-        public static string Label(this ForgeTypeId spec)
-        {
-            if (spec != null)
-                return LabelUtils.GetLabelForSpec(spec);
-            else
-                return null;
-        }
-
-        /***************************************************/
-
-        [Description("Returns the human-readable label of a given Revit unit.")]
-        [Input("unit", "Unit to get the label for.")]
-        [Input("useAbbreviation", "If true, an abbreviated label will be returned, e.g. mm. Otherwise a full label will be returned, e.g. Millimeters.")]
-        [Output("label", "Human-readable label of the input Revit unit.")]
-        public static string Label(this ForgeTypeId unit, bool useAbbreviation)
-        {
-            if (unit == null || !UnitUtils.IsUnit(unit))
-                return null;
-
-            if (useAbbreviation)
-            {
-                if (unit == UnitTypeId.FeetFractionalInches)
-                    return "\' and \"";
-
-                if (unit == UnitTypeId.FractionalInches)
-                    return "\"";
-
-                List<ForgeTypeId> validSymbols = FormatOptions.GetValidSymbols(unit).Where(x => !string.IsNullOrWhiteSpace(x?.TypeId)).ToList();
-                return validSymbols.Count == 0 ? null : LabelUtils.GetLabelForSymbol(validSymbols.First());
-            }
-            else
-                return LabelUtils.GetLabelForUnit(unit);
+            Transform transform = element.LocalCoordinateSystem();
+            List<Solid> solids = element.Solids(options).Select(x => SolidUtils.CreateTransformed(x, transform.Inverse)).ToList();
+            BoundingBoxXYZ bounds = solids.Select(x => x.GetBoundingBox()).Bounds();
+            return SolidUtils.CreateTransformed(bounds.ToSolid(), transform);
         }
 
         /***************************************************/

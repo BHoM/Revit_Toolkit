@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -22,9 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -34,47 +32,20 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the human-readable label of a given Revit spec.")]
-        [Input("spec", "Spec to get the label for.")]
-        [Output("label", "Human-readable label of the input Revit spec.")]
-#if (REVIT2021 || REVIT2022)
-        public static string Label(this ParameterType spec)
+        [Description("Finds segments of a given CurveLoop.")]
+        [Input("loop", "CurveLoop to query for segments.")]
+        [Output("segments", "Segments of the input CurveLoop.")]
+        public static Curve[] Segments(this CurveLoop loop)
         {
-            return LabelUtils.GetLabelFor(spec);
-        }
-#endif
-        public static string Label(this ForgeTypeId spec)
-        {
-            if (spec != null)
-                return LabelUtils.GetLabelForSpec(spec);
-            else
-                return null;
-        }
-
-        /***************************************************/
-
-        [Description("Returns the human-readable label of a given Revit unit.")]
-        [Input("unit", "Unit to get the label for.")]
-        [Input("useAbbreviation", "If true, an abbreviated label will be returned, e.g. mm. Otherwise a full label will be returned, e.g. Millimeters.")]
-        [Output("label", "Human-readable label of the input Revit unit.")]
-        public static string Label(this ForgeTypeId unit, bool useAbbreviation)
-        {
-            if (unit == null || !UnitUtils.IsUnit(unit))
-                return null;
-
-            if (useAbbreviation)
+            Curve[] result = new Curve[loop.NumberOfCurves()];
+            int i = 0;
+            foreach (Curve c in loop)
             {
-                if (unit == UnitTypeId.FeetFractionalInches)
-                    return "\' and \"";
-
-                if (unit == UnitTypeId.FractionalInches)
-                    return "\"";
-
-                List<ForgeTypeId> validSymbols = FormatOptions.GetValidSymbols(unit).Where(x => !string.IsNullOrWhiteSpace(x?.TypeId)).ToList();
-                return validSymbols.Count == 0 ? null : LabelUtils.GetLabelForSymbol(validSymbols.First());
+                result[i] = c;
+                i++;
             }
-            else
-                return LabelUtils.GetLabelForUnit(unit);
+
+            return result;
         }
 
         /***************************************************/

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -22,9 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -34,47 +32,45 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the human-readable label of a given Revit spec.")]
-        [Input("spec", "Spec to get the label for.")]
-        [Output("label", "Human-readable label of the input Revit spec.")]
-#if (REVIT2021 || REVIT2022)
-        public static string Label(this ParameterType spec)
+        [Description("Returns the 3D location point of a given Revit element. The method determines the most appropriate point based on the element type, such as the spatial element calculation point, the element's location point, the midpoint of its location curve, or the center of its bounding box.")]
+        [Input("element", "The Revit element from which to extract the location point.")]
+        [Input("useRoomCalculationPoint", "If true and the element is a FamilyInstance with a spatial element calculation point, use that point as the location.")]
+        [Output("locationPoint", "The 3D point representing the location of the input Revit element")]
+        public static XYZ LocationPoint(this Element element, bool useRoomCalculationPoint = false)
         {
-            return LabelUtils.GetLabelFor(spec);
-        }
-#endif
-        public static string Label(this ForgeTypeId spec)
-        {
-            if (spec != null)
-                return LabelUtils.GetLabelForSpec(spec);
-            else
-                return null;
-        }
-
-        /***************************************************/
-
-        [Description("Returns the human-readable label of a given Revit unit.")]
-        [Input("unit", "Unit to get the label for.")]
-        [Input("useAbbreviation", "If true, an abbreviated label will be returned, e.g. mm. Otherwise a full label will be returned, e.g. Millimeters.")]
-        [Output("label", "Human-readable label of the input Revit unit.")]
-        public static string Label(this ForgeTypeId unit, bool useAbbreviation)
-        {
-            if (unit == null || !UnitUtils.IsUnit(unit))
+            if (element == null)
                 return null;
 
-            if (useAbbreviation)
+            XYZ locationPoint = null;
+
+            // Handle FamilyInstance with Room Calculation Point
+            if (element is FamilyInstance fi)
             {
-                if (unit == UnitTypeId.FeetFractionalInches)
-                    return "\' and \"";
-
-                if (unit == UnitTypeId.FractionalInches)
-                    return "\"";
-
-                List<ForgeTypeId> validSymbols = FormatOptions.GetValidSymbols(unit).Where(x => !string.IsNullOrWhiteSpace(x?.TypeId)).ToList();
-                return validSymbols.Count == 0 ? null : LabelUtils.GetLabelForSymbol(validSymbols.First());
+                if (useRoomCalculationPoint && fi.HasSpatialElementCalculationPoint)
+                    locationPoint = fi.GetSpatialElementCalculationPoint();
             }
-            else
-                return LabelUtils.GetLabelForUnit(unit);
+
+            // Handle LocationPoint
+            if (locationPoint == null && element.Location is LocationPoint lp)
+            {
+                locationPoint = lp?.Point;
+            }
+            // Handle LocationCurve
+            else if (locationPoint == null && element.Location is LocationCurve lc)
+            {
+                Curve curve = lc?.Curve;
+                locationPoint = curve?.Evaluate(0.5, true); // Midpoint of the curve
+            }
+
+            // Fallback to bounding box center
+            if (locationPoint == null)
+            {
+                BoundingBoxXYZ bbox = element.PhysicalBounds();
+                if (bbox != null)
+                    locationPoint = (bbox.Max + bbox.Min) / 2;
+            }
+
+            return locationPoint;
         }
 
         /***************************************************/

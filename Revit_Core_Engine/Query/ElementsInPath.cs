@@ -124,21 +124,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static XYZ LocationPoint(this Element element)
-        {
-            Location location = element.Location;
-
-            if (location is LocationPoint locationPoint)
-                return locationPoint.Point;
-            else if (location is LocationCurve locationCurve)
-                return locationCurve.Curve.Evaluate(0.5, true);
-
-            return null;
-        }
-
-
-        /***************************************************/
-
         private static List<Domain> CommonDomains(this Element element1, Element element2)
         {
             List<Domain> el1Domains = element1.Connectors()?.Select(x => x.Domain).ToList();

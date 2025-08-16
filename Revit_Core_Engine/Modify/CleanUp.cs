@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -28,53 +28,36 @@ using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Query
+    public static partial class Modify
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the human-readable label of a given Revit spec.")]
-        [Input("spec", "Spec to get the label for.")]
-        [Output("label", "Human-readable label of the input Revit spec.")]
-#if (REVIT2021 || REVIT2022)
-        public static string Label(this ParameterType spec)
+        [Description("Cleans up given solids, which includes:" +
+                     "\n- removal of the ones with extremely small volume" +
+                     "\n- Boolean union of the remaining ones" +
+                     "\n- splitting disjoint volumes")]
+        [Input("solids", "Solids to clean up.")]
+        [Output("clean", "Cleaned up solids.")]
+        public static List<Solid> CleanUp(this List<Solid> solids)
         {
-            return LabelUtils.GetLabelFor(spec);
-        }
-#endif
-        public static string Label(this ForgeTypeId spec)
-        {
-            if (spec != null)
-                return LabelUtils.GetLabelForSpec(spec);
+            solids = solids.Where(x => x.Volume > 1e-6).ToList();
+
+            if (solids.Count == 0)
+                return new List<Solid>();
+            if (solids.Count == 1)
+                return SolidUtils.SplitVolumes(solids[0]).ToList();
             else
-                return null;
-        }
-
-        /***************************************************/
-
-        [Description("Returns the human-readable label of a given Revit unit.")]
-        [Input("unit", "Unit to get the label for.")]
-        [Input("useAbbreviation", "If true, an abbreviated label will be returned, e.g. mm. Otherwise a full label will be returned, e.g. Millimeters.")]
-        [Output("label", "Human-readable label of the input Revit unit.")]
-        public static string Label(this ForgeTypeId unit, bool useAbbreviation)
-        {
-            if (unit == null || !UnitUtils.IsUnit(unit))
-                return null;
-
-            if (useAbbreviation)
             {
-                if (unit == UnitTypeId.FeetFractionalInches)
-                    return "\' and \"";
+                Solid result = solids[0];
+                foreach (Solid solid in solids.Skip(1))
+                {
+                    result = BooleanOperationsUtils.ExecuteBooleanOperation(result, solid, BooleanOperationsType.Union);
+                }
 
-                if (unit == UnitTypeId.FractionalInches)
-                    return "\"";
-
-                List<ForgeTypeId> validSymbols = FormatOptions.GetValidSymbols(unit).Where(x => !string.IsNullOrWhiteSpace(x?.TypeId)).ToList();
-                return validSymbols.Count == 0 ? null : LabelUtils.GetLabelForSymbol(validSymbols.First());
+                return SolidUtils.SplitVolumes(result).ToList();
             }
-            else
-                return LabelUtils.GetLabelForUnit(unit);
         }
 
         /***************************************************/

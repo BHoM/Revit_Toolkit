@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -20,14 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Parameters;
-using BH.oM.Base;
+using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
@@ -35,51 +35,23 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-
-        [Description("Retrieves parameters that are attached to a BHoM object. If a parameter with given name exists in both collections of pulled parameters and the ones to push, the latter is returned.")]
-        [Input("bHoMObject", "BHoMObject to which the parameters will be attached.")]
-        [Output("revitParameters")]
-        public static List<RevitParameter> GetRevitParameters(this IBHoMObject bHoMObject)
+        [Description("Finds all intersections between a solid and plane.")]
+        [Input("solid", "Solid to compute intersections.")]
+        [Input("plane", "Plane to compute intersections.")]
+        [Output("intersections", "All intersections between the input solid and plane.")]
+        public static IEnumerable<PlanarFace> PlaneIntersections(this Solid solid, Plane plane)
         {
-            if (bHoMObject == null)
-                return null;
-
-            RevitPulledParameters pullFragment = bHoMObject.Fragments?.FirstOrDefault(x => x is RevitPulledParameters) as RevitPulledParameters;
-            RevitParametersToPush pushFragment = bHoMObject.Fragments?.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush;
-
-            List<RevitParameter> result = new List<RevitParameter>();
-            if (pullFragment?.Parameters != null)
-                result.AddRange(pullFragment.Parameters);
-
-            if (pushFragment?.Parameters != null)
+            Solid cut = BooleanOperationsUtils.CutWithHalfSpace(solid, plane);
+            if (cut != null)
             {
-                bool mixed = false;
-                foreach (RevitParameter param in pushFragment.Parameters)
+                foreach (PlanarFace pf in cut.Faces.OfType<PlanarFace>())
                 {
-                    int index = result.FindIndex(x => x.Name == param.Name);
-                    if (index == -1)
-                        result.Add(param);
-                    else
-                    {
-                        mixed = true;
-                        result.RemoveAt(index);
-                        result.Add(param);
-                    }
+                    if (1 - Math.Abs(plane.Normal.DotProduct(pf.FaceNormal)) <= 1e-6 && plane.Distance(pf.Origin) <= 1e-6)
+                        yield return pf;
                 }
-
-                if (mixed)
-                    BH.Engine.Base.Compute.RecordNote("Some of the parameters were retrieved from collection of pulled ones, some from the ones meant to be pushed.");
             }
-
-            return result;
         }
 
         /***************************************************/
     }
 }
-
-
-
-
-
-

@@ -24,9 +24,9 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Spatial.ShapeProfiles;
-using BH.oM.MEP.System.SectionProperties;
 using BH.oM.Base.Attributes;
+using BH.oM.MEP.System.SectionProperties;
+using BH.oM.Spatial.ShapeProfiles;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -41,10 +41,17 @@ namespace BH.Revit.Engine.Core
         [Description("Query a Revit pipe to get a BHoM pipe section property.")]
         [Input("pipe", "Revit pipe to be queried for information required for a BHoM section property.")]
         [Input("settings", "Revit adapter settings.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("sectionProperty", "BHoM pipe section property extracted from a Revit pipe.")]
-        public static BH.oM.MEP.System.SectionProperties.PipeSectionProperty PipeSectionProperty(this Autodesk.Revit.DB.Plumbing.Pipe pipe, RevitSettings settings = null)
+        public static PipeSectionProperty PipeSectionProperty(this Autodesk.Revit.DB.Plumbing.Pipe pipe, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
+
+            // Reuse from refObjects if it has been converted before
+            string id = $"{pipe.Id} section property";
+            PipeSectionProperty property = refObjects.GetValue<PipeSectionProperty>(id);
+            if (property != null)
+                return property;
 
             IProfile profile = pipe.Profile(settings);
 
@@ -52,22 +59,29 @@ namespace BH.Revit.Engine.Core
             if (liningThickness == double.NaN)
                 liningThickness = 0;
 
-
             double insulationThickness = pipe.LookupParameterDouble(BuiltInParameter.RBS_REFERENCE_INSULATION_THICKNESS); // Extract the lining thk from Duct element
             if (insulationThickness == double.NaN)
                 insulationThickness = 0;
 
             SectionProfile sectionProfile = BH.Engine.MEP.Create.SectionProfile((TubeProfile)profile, liningThickness, insulationThickness);
 
-            PipeSectionProperty result = BH.Engine.MEP.Create.PipeSectionProperty(sectionProfile);
+            oM.MEP.System.MaterialFragments.PipeMaterial pipeMaterialFragment = pipe.PipeSegment.PipeMaterialFromRevit(settings, refObjects);
+            BH.oM.Physical.Materials.Material pipeMaterial = new oM.Physical.Materials.Material
+            {
+                Name = pipe.LookupParameterString(BuiltInParameter.RBS_PIPE_MATERIAL_PARAM)
+            };
 
-            return result;
+            if (pipeMaterialFragment != null)
+                pipeMaterial.Properties.Add(pipeMaterialFragment);
+
+            property = BH.Engine.MEP.Create.PipeSectionProperty(sectionProfile);
+            property.Name = pipe.Name;
+            property.PipeMaterial = pipeMaterial;
+
+            refObjects.AddOrReplace(id, property);
+            return property;
         }
 
         /***************************************************/
     }
 }
-
-
-
-

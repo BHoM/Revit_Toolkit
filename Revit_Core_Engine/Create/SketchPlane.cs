@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -21,60 +21,35 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.oM.Adapters.Revit;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Query
+    public static partial class Create
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the human-readable label of a given Revit spec.")]
-        [Input("spec", "Spec to get the label for.")]
-        [Output("label", "Human-readable label of the input Revit spec.")]
-#if (REVIT2021 || REVIT2022)
-        public static string Label(this ParameterType spec)
+        [Description("Creates SketchPlane based on the input plane. If a sketchplane in this plane already exists, it is returned without creating a new object.")]
+        [Input("document", "Revit document, in which the new SketchPlane will be created.")]
+        [Input("plane", "Plane, in which SketchPlane will be created.")]
+        [Input("tolerance", "Tolerance used when checking whether a plane with same geometry already exists.")]
+        [Output("sketchPlane", "SketchPlane created based on the input plane.")]
+        public static SketchPlane SketchPlane(Document document, Plane plane, double tolerance = Tolerance.Angle)
         {
-            return LabelUtils.GetLabelFor(spec);
-        }
-#endif
-        public static string Label(this ForgeTypeId spec)
-        {
-            if (spec != null)
-                return LabelUtils.GetLabelForSpec(spec);
-            else
-                return null;
-        }
-
-        /***************************************************/
-
-        [Description("Returns the human-readable label of a given Revit unit.")]
-        [Input("unit", "Unit to get the label for.")]
-        [Input("useAbbreviation", "If true, an abbreviated label will be returned, e.g. mm. Otherwise a full label will be returned, e.g. Millimeters.")]
-        [Output("label", "Human-readable label of the input Revit unit.")]
-        public static string Label(this ForgeTypeId unit, bool useAbbreviation)
-        {
-            if (unit == null || !UnitUtils.IsUnit(unit))
-                return null;
-
-            if (useAbbreviation)
+            SketchPlane existing = new FilteredElementCollector(document).OfClass(typeof(SketchPlane)).OfType<SketchPlane>().FirstOrDefault(x => 1 - Math.Abs(x.GetPlane().Normal.DotProduct(plane.Normal)) <= tolerance && x.GetPlane().Distance(plane.Origin) <= tolerance);
+            if (existing != null)
             {
-                if (unit == UnitTypeId.FeetFractionalInches)
-                    return "\' and \"";
-
-                if (unit == UnitTypeId.FractionalInches)
-                    return "\"";
-
-                List<ForgeTypeId> validSymbols = FormatOptions.GetValidSymbols(unit).Where(x => !string.IsNullOrWhiteSpace(x?.TypeId)).ToList();
-                return validSymbols.Count == 0 ? null : LabelUtils.GetLabelForSymbol(validSymbols.First());
+                BH.Engine.Base.Compute.RecordNote("Sketch plane with matching geometry already exists in the model, it has been reused.");
+                return existing;
             }
-            else
-                return LabelUtils.GetLabelForUnit(unit);
+
+            return Autodesk.Revit.DB.SketchPlane.Create(document, plane);
         }
 
         /***************************************************/

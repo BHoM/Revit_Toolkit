@@ -21,60 +21,38 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Geometry;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Query
+    public static partial class Create
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the human-readable label of a given Revit spec.")]
-        [Input("spec", "Spec to get the label for.")]
-        [Output("label", "Human-readable label of the input Revit spec.")]
-#if (REVIT2021 || REVIT2022)
-        public static string Label(this ParameterType spec)
+        [Description("Creates ModelCurve based on a given Curve.")]
+        [Input("document", "Revit document, in which the new ModelCurve will be created.")]
+        [Input("curve", "Curve, based on which ModelCurve will be created.")]
+        [Output("modelCurve", "ModelCurve created based on the input curve.")]
+        public static ModelCurve ModelCurve(Document document, Curve curve)
         {
-            return LabelUtils.GetLabelFor(spec);
-        }
-#endif
-        public static string Label(this ForgeTypeId spec)
-        {
-            if (spec != null)
-                return LabelUtils.GetLabelForSpec(spec);
-            else
-                return null;
-        }
-
-        /***************************************************/
-
-        [Description("Returns the human-readable label of a given Revit unit.")]
-        [Input("unit", "Unit to get the label for.")]
-        [Input("useAbbreviation", "If true, an abbreviated label will be returned, e.g. mm. Otherwise a full label will be returned, e.g. Millimeters.")]
-        [Output("label", "Human-readable label of the input Revit unit.")]
-        public static string Label(this ForgeTypeId unit, bool useAbbreviation)
-        {
-            if (unit == null || !UnitUtils.IsUnit(unit))
-                return null;
-
-            if (useAbbreviation)
+            oM.Geometry.ICurve bhomCurve = curve.IFromRevit();
+            Plane revitPlane;
+            BH.oM.Geometry.Plane plane = bhomCurve.IFitPlane();
+            if (plane == null)
             {
-                if (unit == UnitTypeId.FeetFractionalInches)
-                    return "\' and \"";
-
-                if (unit == UnitTypeId.FractionalInches)
-                    return "\"";
-
-                List<ForgeTypeId> validSymbols = FormatOptions.GetValidSymbols(unit).Where(x => !string.IsNullOrWhiteSpace(x?.TypeId)).ToList();
-                return validSymbols.Count == 0 ? null : LabelUtils.GetLabelForSymbol(validSymbols.First());
+                XYZ point = curve.GetEndPoint(0);
+                XYZ vector = (curve.GetEndPoint(1) - point).Normalize();
+                revitPlane = Create.ArbitraryPlane(point, vector);
             }
             else
-                return LabelUtils.GetLabelForUnit(unit);
+                revitPlane = plane.ToRevit();
+
+            SketchPlane sketchPlane = Create.SketchPlane(document, revitPlane);
+            return document.Create.NewModelCurve(curve, sketchPlane);
         }
 
         /***************************************************/
