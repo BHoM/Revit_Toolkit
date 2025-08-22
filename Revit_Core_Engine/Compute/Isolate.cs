@@ -76,17 +76,18 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
+            uidoc.ActiveView = targetView;
+
             using (Transaction transaction = new Transaction(doc, "BHoM temporary isolates objects"))
             {
                 transaction.Start();
                 EnsureVisibility(doc, targetView, elementIds.ToList());
                 IsolateElements(targetView, elementIds.ToList());
-                ZoomToFit(uidoc, elementIds.ToList());
                 transaction.Commit();
             }
-
+            ZoomToFit(uidoc, elementIds.ToList());
             return true;
-        }
+        } 
 
         /***************************************************/
         /****             Private methods               ****/
@@ -128,6 +129,7 @@ namespace BH.Revit.Engine.Core
 
         private static void EnsureVisibility(Document doc, View view, List<ElementId> elementIds)
         {
+            // Ensure the element are not hidden in the view by category or element visibility only
             foreach (ElementId id in elementIds)
             {
                 Element el = doc.GetElement(id);
@@ -140,9 +142,10 @@ namespace BH.Revit.Engine.Core
 
                 if (el.IsHidden(view))
                 {
+                    ICollection<ElementId> idsToUnhide = [id];
                     try
                     {
-                        view.SetElementOverrides(id, new OverrideGraphicSettings());
+                        view.UnhideElements(idsToUnhide);
                     }
                     catch { }
                 }
