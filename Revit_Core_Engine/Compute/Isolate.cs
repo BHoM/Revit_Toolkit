@@ -180,10 +180,12 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            if (view is View3D v3d && v3d.CropBoxActive) v3d.CropBoxActive = false;
+            if (view is View3D v3d && v3d.CropBoxActive) 
+                v3d.CropBoxActive = false;
 
             // Ensure the crop region is disabled
-            if (view.CropBoxActive) view.CropBoxActive = false;
+            if (view.CropBoxActive) 
+                view.CropBoxActive = false;
         }
         /***************************************************/
 
