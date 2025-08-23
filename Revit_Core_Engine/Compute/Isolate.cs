@@ -25,6 +25,7 @@ using Autodesk.Revit.UI;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 
@@ -36,7 +37,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Isolates the specified elements in a suitable Revit view, ensuring their visibility and zooming to fit them. Handles view selection, visibility overrides, and transaction management. Returns true if successful, false otherwise.")]
+        [Description("Isolates the specified elements in a suitable Revit view, ensuring their visibility. Returns true if successful, false otherwise.")]
         [Input("Document", "The Revit document to operate on.")]
         [Input("UIDocument", "The active UI document in Revit.")]
         [Input("ElementIds", "The collection of element IDs to isolate.")]
@@ -51,13 +52,13 @@ namespace BH.Revit.Engine.Core
             }
             if (doc == null)
             {
-                BH.Engine.Base.Compute.RecordError("Revit Document is null (possibly there is no open documents in Revit).");
+                TaskDialog.Show("BHoM", "Revit Document is null (possibly there is no open documents in Revit).");
                 return false;
             }
 
             if (doc.IsReadOnly)
             {
-                BH.Engine.Base.Compute.RecordError("Revit Document is read only.");
+                TaskDialog.Show("BHoM", "Revit Document is read only.");
                 return false;
             }
 
@@ -72,7 +73,7 @@ namespace BH.Revit.Engine.Core
 
             if (targetView == null)
             {
-                BH.Engine.Base.Compute.RecordError("No suitable view found.");
+                TaskDialog.Show("BHoM", "No suitable view found.");
                 return false;
             }
 
@@ -82,10 +83,10 @@ namespace BH.Revit.Engine.Core
             {
                 transaction.Start();
                 EnsureVisibility(doc, targetView, elementIds.ToList());
-                IsolateElements(targetView, elementIds.ToList());
+                targetView.IsolateElementsTemporary(elementIds.ToList());
                 transaction.Commit();
             }
-            ZoomToFit(uidoc, elementIds.ToList());
+
             return true;
         } 
 
@@ -95,34 +96,62 @@ namespace BH.Revit.Engine.Core
 
         private static View GetTargetView(Document doc, View currentView, List<ElementId> elementIds)
         {
-            var viewSpecificElements = elementIds.Where(id => doc.GetElement(id)?.ViewSpecific == true).ToList();
-            if (viewSpecificElements.Count > 0)
+            // Check invalid element IDs
+            var invalidedIds = elementIds.Where(id => doc.GetElement(id) == null).ToList();
+            if (invalidedIds.Count > 0)
             {
-                ElementId vId = doc.GetElement(viewSpecificElements.First()).OwnerViewId;
-                if (viewSpecificElements.All(id => doc.GetElement(id).OwnerViewId == vId))
-                {
-                    return doc.GetElement(vId) as Autodesk.Revit.DB.View;
-                }
-                else
-                {
-                    BH.Engine.Base.Compute.RecordError("Selected elements are not all in the same owner view.");
-                    return null;
-                }
+                TaskDialog.Show("BHoM",$"Some element IDs are invalid: {string.Join(", ", invalidedIds.Select(id => id.IntegerValue))}");
+                return null;
             }
 
-            // If no view-specific elements, try to use the current view only it 's not a schedule or drafting view
-            if (currentView != null && !(currentView is ViewSchedule) && !(currentView is ViewDrafting))
+            // Check if selected viewspecific elements are at same view, then check host elements
+            var viewSpecific = elementIds.Where(id => doc.GetElement(id)?.ViewSpecific == true).ToList();
+            var nonViewSpecificSet = elementIds.Except(viewSpecific).Select(id => id.IntegerValue).ToHashSet();
+
+            if (viewSpecific.Count > 0)
+            {
+                var firstVs = doc.GetElement(viewSpecific.First());
+                var vId = firstVs.OwnerViewId;
+
+                bool sameOwner = viewSpecific.All(id => doc.GetElement(id).OwnerViewId == vId);
+                if (!sameOwner)
+                {
+                    TaskDialog.Show("BHoM", "Selected view-specific elements do not share the same owner view.");
+                    return null;
+                }
+                 
+                // Warn if hosts of view-specific items are not included in selection
+                var hostIds = viewSpecific.GetHostElementIds(doc).Select(x => x.IntegerValue).ToList();
+                if (hostIds.Count > 0)
+                {
+                    var missingHosts = hostIds.Where(h => !nonViewSpecificSet.Contains(h)).Distinct().ToList();
+                    if (missingHosts.Count > 0)
+                    {
+                        TaskDialog.Show("BHoM",
+                            $"Some host elements are not selected: {string.Join(", ", missingHosts)}. " +
+                            "Their dependent annotations may not display as expected.");
+                    }
+                }
+
+                return doc.GetElement(vId) as View;
+            }
+
+            // Use current view if suitable and all elements are visible there
+            if (currentView != null && currentView is not ViewSchedule && currentView is not ViewDrafting && currentView is not ViewSheet)
             {
                 var visibleInCurrentView = new FilteredElementCollector(doc, currentView.Id).ToElementIds();
-                if (!elementIds.All(id => doc.GetElement(id).IsHidden(currentView) && visibleInCurrentView.Contains(id)))
+                bool allContainedInView = elementIds.All(id =>
+                {
+                    var e = doc.GetElement(id);
+                    return e != null && visibleInCurrentView.Contains(id);
+                });
+
+                if (allContainedInView)
                     return currentView;
             }
 
             // If no view-specific elements or current view is not suitable, find a 3D view
-            return new FilteredElementCollector(doc)
-                .OfClass(typeof(View3D))
-                .Cast<View3D>()
-                .FirstOrDefault(v => !v.IsTemplate && !v.IsPerspective && v.ViewType == ViewType.ThreeD);
+            return GetOrCreate3D(doc);
         }
 
         /***************************************************/
@@ -151,38 +180,70 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            if (view is View3D v3d)
-            {
-                if (v3d.CropBoxActive)
-                    v3d.CropBoxActive = false;
-            }
+            if (view is View3D v3d && v3d.CropBoxActive) v3d.CropBoxActive = false;
 
             // Ensure the crop region is disabled
-            Parameter cropViewDisabled = view.get_Parameter(BuiltInParameter.VIEWER_CROP_REGION_DISABLED);
-            if (cropViewDisabled.AsInteger() == 0)
-            {
-                view.CropBoxActive = false;
-            }
+            if (view.CropBoxActive) view.CropBoxActive = false;
         }
-
         /***************************************************/
 
-        private static void IsolateElements(View view, List<ElementId> elementIds)
+        private static View3D GetOrCreate3D(Document doc)
         {
-            view.IsolateElementsTemporary(elementIds);
+            var v = new FilteredElementCollector(doc)
+                .OfClass(typeof(View3D))
+                .Cast<View3D>()
+                .FirstOrDefault(x => !x.IsTemplate && !x.IsPerspective && x.ViewType == ViewType.ThreeD);
+
+            if (v != null) return v;
+
+            var vftId = new FilteredElementCollector(doc)
+                .OfClass(typeof(ViewFamilyType))
+                .Cast<ViewFamilyType>()
+                .FirstOrDefault(t => t.ViewFamily == ViewFamily.ThreeDimensional)?.Id;
+
+            return vftId != null ? View3D.CreateIsometric(doc, vftId) : null;
         }
 
         /***************************************************/
 
-        private static void ZoomToFit(UIDocument uidoc, List<ElementId> elementIds)
+        private static ICollection<ElementId> GetHostElementIds(this IEnumerable<ElementId> viewSpecificElementIds, Document doc)
         {
-            if (elementIds.Count > 0)
+            List<ElementId> hostIds = new();
+
+            foreach (var id in viewSpecificElementIds)
             {
-                uidoc.ShowElements(elementIds);
+                Element el = doc.GetElement(id);
+                if (el is IndependentTag tag)
+                {
+                    hostIds.AddRange(tag.GetTaggedLocalElementIds().ToList());//Check for local host elements only
+                }
+
+                if (el is FamilyInstance fi && fi.Host != null)
+                {
+                    hostIds.Add(fi.Host.Id);
+                }
+
+                if (el is Dimension dim && dim.References.Size > 0)
+                {
+                    Reference r = dim.References.get_Item(0);
+                    if (r != null)
+                    {
+                        hostIds.Add(r.ElementId);
+                    }  
+                }
+
+                if (el is SpotDimension spot && spot.References.Size > 0)
+                {
+                    Reference r = spot.References.get_Item(0);
+                    if (r != null)
+                    {
+                        hostIds.Add(r.ElementId);
+                    }
+                }
             }
+            return hostIds;
         }
 
         /***************************************************/
-
     }
 }
