@@ -42,9 +42,9 @@ namespace BH.Revit.Engine.Core
 
 		[Description("Converts a ParameterElement to BH.oM.Adapters.Revit.Parameters.ParameterDefinition.")]
 		[Input("parameter", "Revit Parameter to be converted.")]
-		[Input("parameterLinks", "A collection of names of RevitParameters and sets of their correspondent Revit parameter names to be used on name mapping.")]
-		[Input("onlyLinked", "If true, there needs to be a valid, relevant parameter link in parameterLinks in order for convert to succeed.")]
-		[Output("parameterDefinition", "BH.oM.Adapters.Revit.Parameters.ParameterDefinition resulting from converting the input Revit Parameter.")]
+        [Input("settings", "Revit adapter settings.")]
+        [Input("refObjects", "A collection of objects processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("parameterDefinition", "BH.oM.Adapters.Revit.Parameters.ParameterDefinition resulting from converting the input Revit Parameter.")]
 		public static ParameterDefinition ParameterElementFromRevit(this ParameterElement parameter, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
 		{
 			settings = settings.DefaultIfNull();
@@ -84,8 +84,7 @@ namespace BH.Revit.Engine.Core
 			if (parameter is SharedParameterElement sharedParameterElement)
 			{
 				paramDefinition.Shared = true;
-				paramDefinition.CustomData.Add("GUID", sharedParameterElement.GuidValue.ToString());
-
+				paramDefinition.Guid = sharedParameterElement.GuidValue.ToString();
 			}
 
 			paramDefinition.SetIdentifiers(parameter);

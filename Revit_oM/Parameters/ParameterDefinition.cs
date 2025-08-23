@@ -52,6 +52,9 @@ namespace BH.oM.Adapters.Revit.Parameters
         [Description("If true, the Revit parameter represented by this object is a shared parameter, otherwise it is a project parameter.")]
         public virtual bool Shared { get; set; } = false;
 
+        [Description("unique identifier of the Revit parameter for a shared parameter")]
+        public virtual string Guid { get; set; } = null;
+
         /***************************************************/
     }
 }
