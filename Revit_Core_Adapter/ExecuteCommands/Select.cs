@@ -67,12 +67,13 @@ namespace BH.Revit.Adapter.Core
             {
                 if (command.ShowObjects) 
                     uidoc.ShowElements(elementIds);
-                uidoc.Selection.SetElementIds(elementIds);
+                
             }
             catch (Exception ex)
             {
-                BH.Engine.Base.Compute.RecordError($"Some elements cannot be selected or do not have views: {ex.Message}");
+                TaskDialog.Show("BHoM", $"Some elements cannot be selected or do not have views: {ex.Message}");
             }
+            uidoc.Selection.SetElementIds(elementIds);
 
             output.Item1 = elementIds.Select(x => x.IntegerValue).Cast<object>().ToList();
             output.Item2 = true;
