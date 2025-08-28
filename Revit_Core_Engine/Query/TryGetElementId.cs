@@ -48,6 +48,9 @@ namespace BH.Revit.Engine.Core
             ids.AddRange(bHoMObjects.ElementIds());
             ids.AddRange(elementIds.ElementIds());
 
+            if (ids.Count != objects.Count)
+                BH.Engine.Base.Compute.RecordWarning("ElementIds could not be extracted from some of the provided objects.");
+            
             return ids;
         }
 
