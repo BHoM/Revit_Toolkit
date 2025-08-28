@@ -46,7 +46,7 @@ namespace BH.Revit.Adapter.Core
             }
             try
             {
-                Push(objects as IEnumerable<object>);
+                output.Item1 = Push(objects as IEnumerable<object>);
                 output.Item2 = true;
             }
             catch (Exception e)
