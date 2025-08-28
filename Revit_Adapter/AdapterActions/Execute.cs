@@ -82,18 +82,18 @@ namespace BH.Adapter.Revit
             //Raise returned events
             RaiseEvents();
 
-            //Check if the return package contains error message
-            if (returnObjs.Count == 1 && returnObjs[0] is string)
+            if (returnObjs.Count == 1)
             {
-                Engine.Base.Compute.RecordError(returnObjs[0] as string);
-                return output;
+                if (returnObjs[0] is string Output<List<object>, bool> result)
+					return result;
+                else if (returnObjs[0] is string errorMessage)
+				{
+					Engine.Base.Compute.RecordError(errorMessage);
+					return output;
+				}
             }
 
-            if (returnObjs.Count == 1 && returnObjs[0] is Output<List<object>, bool> result)
-            {                
-                return result;
-            }
-
+			Engine.Base.Compute.RecordError("Execution failed due to an internal error.");
             return output;
         }
 
