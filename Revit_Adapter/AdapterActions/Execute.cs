@@ -84,7 +84,7 @@ namespace BH.Adapter.Revit
 
             if (returnObjs.Count == 1)
             {
-                if (returnObjs[0] is string Output<List<object>, bool> result)
+                if (returnObjs[0] is Output<List<object>, bool> result)
 					return result;
                 else if (returnObjs[0] is string errorMessage)
 				{

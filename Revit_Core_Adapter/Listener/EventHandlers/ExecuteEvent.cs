@@ -61,6 +61,7 @@ namespace BH.Revit.Adapter.Core
                     
                     //Clear the previous data
                     listener.LatestConfig = null;
+                    listener.LatestCommand = null;
 
                     //Return the number of deleted elements
                     listener.ReturnData(new List<object> { result });
