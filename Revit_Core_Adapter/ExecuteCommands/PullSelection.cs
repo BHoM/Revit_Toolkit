@@ -42,7 +42,7 @@ namespace BH.Revit.Adapter.Core
             UIDocument uidoc = this.UIDocument;
             if (uidoc == null)
             {
-                TaskDialog.Show("BHoM","No connected document found.");
+                output.Item1 = new List<object> { "No connected document found." };
                 return output;
             }                
 
