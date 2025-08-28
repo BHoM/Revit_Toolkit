@@ -46,7 +46,7 @@ namespace BH.Revit.Adapter.Core
                 return output;
             }
 
-            var elementIds = command.Targets.TryGetElementIds();
+            var elementIds = command.Targets.ElementIds();
 
             if (elementIds == null || elementIds.Count == 0)
             {
