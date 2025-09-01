@@ -25,8 +25,8 @@ using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Physical.Elements;
 using BH.oM.Base.Attributes;
+using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -154,30 +154,19 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            BH.oM.Geometry.Line locationLine = framingElement.PileLine();
+            BH.oM.Geometry.Line locationLine = framingElement.Location as BH.oM.Geometry.Line;
             if (locationLine == null)
                 return null;
 
-            // Intelligent level detection: try level below pile base first, then fallback to level above with warning
-            Level level = document.LevelBelow(locationLine, settings, false); // Don't use closest fallback in LevelBelow
-            if (level == null)
+            if (1 - Math.Abs(locationLine.Direction().DotProduct(BH.oM.Geometry.Vector.ZAxis)) > settings.AngleTolerance)
             {
-                // Fallback to closest level above the pile base with warning
-                level = document.LevelAbove(locationLine, settings, true);
-                if (level != null)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"No level found below pile base point. Using level above '{level.Name}' for pile placement. This may affect pile positioning. Pile BHoM_Guid: {framingElement.BHoM_Guid}");
-                }
-                else
-                {
-                    BH.Engine.Base.Compute.RecordError($"No suitable levels found in the document for pile placement. At least one level is required. Pile BHoM_Guid: {framingElement.BHoM_Guid}");
-                    return null;
-                }
+                BH.Engine.Base.Compute.RecordError($"Creation of nonvertical piles is currently not supported. Pile BHoM_Guid: {framingElement.BHoM_Guid}");
+                return null;
             }
 
-            // Extract base point from pile line geometry (use the lower Z point as base)
-            BH.oM.Geometry.Point basePoint = locationLine.Start.Z < locationLine.End.Z ? locationLine.Start : locationLine.End;
-            XYZ pileBasePoint = basePoint.ToRevit();
+            Level level = document.LevelBelow(locationLine, settings, true);
+            if (level == null)
+                return null;
 
             FamilySymbol familySymbol = framingElement.ElementType(document, settings);
             if (familySymbol == null)
@@ -187,12 +176,17 @@ namespace BH.Revit.Engine.Core
             }
 
             FamilyPlacementType familyPlacementType = familySymbol.Family.FamilyPlacementType;
+
             // Piles must use OneLevelBased placement type for proper structural foundation behavior
             if (familyPlacementType != FamilyPlacementType.OneLevelBased)
             {
                 BH.Engine.Base.Compute.RecordError($"Pile family must use OneLevelBased placement type. Current type: {familyPlacementType}. Please use an appropriate pile family. Pile BHoM_Guid: {framingElement.BHoM_Guid}");
                 return null;
             }
+
+            // Extract base point from pile line geometry (use the lower Z point as base)
+            BH.oM.Geometry.Point basePoint = locationLine.Start.Z < locationLine.End.Z ? locationLine.Start : locationLine.End;
+            XYZ pileBasePoint = basePoint.ToRevit();
 
             // Use point-based creation for piles as they are typically placed by point with height constraints
             familyInstance = document.Create.NewFamilyInstance(pileBasePoint, familySymbol, level, StructuralType.Footing);
@@ -208,7 +202,7 @@ namespace BH.Revit.Engine.Core
                 //TODO: if the material does not get assigned an error should be thrown?
                 if (pileProperty.Material != null)
                 {
-                    Autodesk.Revit.DB.Material material = document.GetElement(new ElementId(BH.Engine.Adapters.Revit.Query.ElementId(pileProperty.Material))) as Autodesk.Revit.DB.Material;
+                    Material material = document.GetElement(new ElementId(BH.Engine.Adapters.Revit.Query.ElementId(pileProperty.Material))) as Material;
                     if (material != null)
                     {
                         Parameter param = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
@@ -219,37 +213,6 @@ namespace BH.Revit.Engine.Core
                     }
                 }
             }
-
-            // Set pile height constraint using the height from the original line geometry
-            double pileHeight = Math.Abs(locationLine.End.Z - locationLine.Start.Z).ToSI(SpecTypeId.Length);
-
-            // Try to set the height using different possible parameters for pile families
-            bool heightSet = false;
-
-            // Try setting height offset parameter
-            Parameter heightOffsetParam = familyInstance.get_Parameter(BuiltInParameter.INSTANCE_FREE_HOST_OFFSET_PARAM);
-            if (heightOffsetParam != null && !heightOffsetParam.IsReadOnly)
-            {
-                heightOffsetParam.Set(pileHeight);
-                heightSet = true;
-            }
-
-            // Try setting top level offset if available
-            Parameter topOffsetParam = familyInstance.get_Parameter(BuiltInParameter.FAMILY_TOP_LEVEL_OFFSET_PARAM);
-            if (!heightSet && topOffsetParam != null && !topOffsetParam.IsReadOnly)
-            {
-                topOffsetParam.Set(pileHeight);
-                heightSet = true;
-            }
-
-            // Set base level offset to zero (pile starts at base level)
-            Parameter baseOffsetParam = familyInstance.get_Parameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM);
-            if (baseOffsetParam != null && !baseOffsetParam.IsReadOnly)
-                baseOffsetParam.Set(0.0);
-
-
-            if (!heightSet)
-                BH.Engine.Base.Compute.RecordWarning(string.Format("Could not set pile height constraint. Pile may not display correctly. ElementId: {0}", familyInstance.Id));
 
             familyInstance.CopyParameters(framingElement, settings);
             familyInstance.SetLocation(framingElement, settings);

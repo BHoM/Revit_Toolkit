@@ -25,11 +25,11 @@ using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Base.Attributes;
 using BH.oM.Environment.Elements;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
 using BH.oM.Physical.FramingProperties;
-using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -257,7 +257,7 @@ namespace BH.Revit.Engine.Core
 
             bool updated = element.SetLocation(framingElement.Location, settings);
             element.Document.Regenerate();
-            
+
             double rotationDifference = element.OrientationAngleFraming(settings) - rotation;
             if (Math.Abs(rotationDifference) > settings.AngleTolerance)
             {
@@ -268,6 +268,85 @@ namespace BH.Revit.Engine.Core
 
             ICurve transformedCurve = framingElement.AdjustedLocationCurveFraming((FamilyInstance)element, settings);
             updated |= element.SetLocation(transformedCurve, settings);
+
+            return updated;
+        }
+
+        /***************************************************/
+
+        [Description("Sets the location of a given Revit FamilyInstance based on a given BHoM Pile.")]
+        [Input("element", "Revit FamilyInstance to be modified.")]
+        [Input("framingElement", "BHoM Pile acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit FamilyInstance has been successfully set.")]
+        public static bool SetLocation(this FamilyInstance element, Pile pile, RevitSettings settings)
+        {
+            BH.oM.Geometry.Line locationLine = pile.Location as BH.oM.Geometry.Line;
+            if (locationLine == null)
+                return false;
+
+            if (1 - Math.Abs(locationLine.Direction().DotProduct(Vector.ZAxis)) > settings.AngleTolerance)
+            {
+                BH.Engine.Base.Compute.RecordWarning($"Nonvertical pile location is currently not supported. Pile ElementId: {element.Id.IntegerValue}");
+                return false;
+            }
+
+            bool updated = true;
+            oM.Geometry.Point newBasePoint = locationLine.End;
+            oM.Geometry.Point oldBasePoint = (element.Location as LocationPoint)?.Point?.PointFromRevit();
+            Vector transl = newBasePoint - oldBasePoint;
+            transl.Z = 0;
+            if (transl.Length() > settings.DistanceTolerance)
+            {
+                XYZ newLocation = new BH.oM.Geometry.Point { X = newBasePoint.X, Y = newBasePoint.Y, Z = oldBasePoint.Z }.ToRevit();
+
+                try
+                {
+                    (element.Location as LocationPoint).Point = newLocation;
+                }
+                catch (Exception ex)
+                {
+                    BH.Engine.Base.Compute.RecordWarning($"XY location could not be updated because element location was blocked. Please check if the element is not pinned etc. Pile ElementId: {element.Id.IntegerValue}");
+                    updated = false;
+                }
+            }
+
+            Level level = element.Document.GetElement(element.LevelId) as Level;
+            if (level == null)
+            {
+                BH.Engine.Base.Compute.RecordWarning($"Cannot update location of a pile with valid reference level. Pile ElementId: {element.Id.IntegerValue}");
+                return false;
+            }
+
+            // Set pile height constraint using the height from the original line geometry
+            double pileTop = locationLine.Start.Z > locationLine.End.Z ? locationLine.Start.Z : locationLine.End.Z;
+            double pileBottom = locationLine.Start.Z < locationLine.End.Z ? locationLine.Start.Z : locationLine.End.Z;
+            double pileDepth = pileTop - pileBottom;
+            double levelElevation = level.ProjectElevation.ToSI(SpecTypeId.Length);
+            double topOffset = pileTop - levelElevation;
+
+            // Try to set the height using different possible parameters for pile families
+            bool verticalDimensionSet = true;
+
+            // Try setting height offset parameter
+            Parameter topOffsetParam = element.get_Parameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM);
+            if (topOffsetParam != null && !topOffsetParam.IsReadOnly)
+                verticalDimensionSet &= topOffsetParam.Set(topOffset.FromSI(SpecTypeId.Length));
+            else
+                verticalDimensionSet = false;
+
+            // Try setting depth parameter
+            Parameter depthParam = element.LookupParameter("Pile Depth");
+            if (depthParam != null && !depthParam.IsReadOnly)
+                verticalDimensionSet &= depthParam.Set(pileDepth.FromSI(SpecTypeId.Length));
+            else
+                verticalDimensionSet = false;
+
+            if (!verticalDimensionSet)
+            {
+                BH.Engine.Base.Compute.RecordWarning($"Could not set vertical pile dimension. Pile may not display correctly. ElementId: {element.Id}");
+                return updated = false;
+            }
 
             return updated;
         }
@@ -468,7 +547,7 @@ namespace BH.Revit.Engine.Core
                             }
 
                             Autodesk.Revit.DB.Face face = hostElement.GetGeometryObjectFromReference(reference) as Autodesk.Revit.DB.Face;
-                        
+
                             XYZ toProject = newLocation;
                             Transform instanceTransform = null;
                             if (hostElement is FamilyInstance && !((FamilyInstance)hostElement).HasModifiedGeometry())

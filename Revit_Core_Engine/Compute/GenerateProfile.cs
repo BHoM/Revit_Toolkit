@@ -21,17 +21,20 @@
  */
 
 using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
 using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base.Attributes;
 using BH.Engine.Geometry;
 using BH.Engine.Spatial;
+using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base.Attributes;
+using BH.oM.Physical.Elements;
+using BH.oM.Physical.FramingProperties;
+using BH.oM.Spatial.ShapeProfiles;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Autodesk.Revit.UI;
 
 namespace BH.Revit.Engine.Core
 {
@@ -47,9 +50,9 @@ namespace BH.Revit.Engine.Core
         [Input("document", "Revit document, in which the family type will be created.")]
         [Input("settings", "Settings to be used when generating the family type.")]
         [Output("symbol", "Created Revit family type that represents the profile of the input BHoM framing element.")]
-        public static FamilySymbol GenerateProfile(this BH.oM.Physical.Elements.IFramingElement element, Document document, RevitSettings settings = null)
+        public static FamilySymbol GenerateProfile(this IFramingElement element, Document document, RevitSettings settings = null)
         {
-            BH.oM.Physical.FramingProperties.ConstantFramingProperty property = element?.Property as BH.oM.Physical.FramingProperties.ConstantFramingProperty;
+            ConstantFramingProperty property = element?.Property as ConstantFramingProperty;
             if (property?.Profile == null)
             {
                 BH.Engine.Base.Compute.RecordError($"The BHoM framing element is null or does not have a valid profile. BHoM_Guid: {element.BHoM_Guid}");
@@ -80,14 +83,14 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                bool isColumn = element is BH.oM.Physical.Elements.Column;
                 bool freeform = false;
-                family = document.LoadTemplateProfileFamily(property.Profile, isColumn);
+
+                family = document.LoadTemplateProfileFamily(element);
                 if (family != null)
                     family.Name = familyName;
                 else
                 {
-                    family = GenerateFreeformFamily(document, property, isColumn, settings);
+                    family = GenerateFreeformFamily(document, element, settings);
                     if (family == null)
                         return null;
 
@@ -108,8 +111,9 @@ namespace BH.Revit.Engine.Core
 
                 result.Activate();
                 result.Name = element.Property.Name;
+
                 if (!freeform)
-                    property.Profile.ICopyDimensions(result, settings);
+                    element.ICopyProfileDimensions(result, settings);
 
                 return result;
             }
@@ -120,9 +124,9 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
-        private static Family LoadTemplateProfileFamily(this Document document, BH.oM.Spatial.ShapeProfiles.IProfile profile, bool isColumn)
+        private static Family LoadTemplateProfileFamily(this Document document, IFramingElement element)
         {
-            string templateFamilyName = profile.TemplateProfileFamilyName(isColumn);
+            string templateFamilyName = element.TemplateProfileFamilyName();
             if (string.IsNullOrWhiteSpace(templateFamilyName))
                 return null;
 
@@ -133,8 +137,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static Family GenerateFreeformFamily(this Document document, BH.oM.Physical.FramingProperties.ConstantFramingProperty property, bool isColumn, RevitSettings settings = null)
+        private static Family GenerateFreeformFamily(this Document document, IFramingElement element, RevitSettings settings = null)
         {
+            ConstantFramingProperty property = element?.Property as ConstantFramingProperty;
+
             List<BH.oM.Geometry.ICurve> edges = property?.Profile?.Edges?.ToList();
             if (edges == null || edges.Count == 0)
             {
@@ -157,8 +163,9 @@ namespace BH.Revit.Engine.Core
 
             Family result = null;
             UIDocument uidoc = new UIDocument(document);
-            Document familyDocument = uidoc.Application.Application.OpenDocumentFile($"{m_FamilyDirectory}\\{ProfileFamilyNamePrefix(isColumn)}FreeformProfile.rfa");
+            Document familyDocument = uidoc.Application.Application.OpenDocumentFile($"{m_FamilyDirectory}\\{element.IProfileFamilyNamePrefix()}FreeformProfile.rfa");
 
+            bool isVertical = element.IsFamilyVertical();
             try
             {
                 Extrusion extrusion = new FilteredElementCollector(familyDocument).OfClass(typeof(Extrusion)).FirstElement() as Extrusion;
@@ -172,7 +179,7 @@ namespace BH.Revit.Engine.Core
                     newProfile.Append(loop.ToRevitCurveArray());
                 }
 
-                string constraintViewName = isColumn ? "Front" : "Ref. Level";
+                string constraintViewName = isVertical ? "Front" : "Ref. Level";
                 View constraintView = new FilteredElementCollector(familyDocument).OfClass(typeof(View)).FirstOrDefault(x => x.Name == constraintViewName) as View;
                 if (constraintView == null)
                     return null;
@@ -180,7 +187,7 @@ namespace BH.Revit.Engine.Core
                 Reference startRef, endRef;
                 double length;
                 XYZ dir;
-                if (isColumn)
+                if (isVertical)
                 {
                     Level bottom = new FilteredElementCollector(familyDocument).OfClass(typeof(Level)).FirstOrDefault(x => x.Name == "Lower Ref Level") as Level;
                     Level top = new FilteredElementCollector(familyDocument).OfClass(typeof(Level)).FirstOrDefault(x => x.Name == "Upper Ref Level") as Level;
@@ -273,13 +280,13 @@ namespace BH.Revit.Engine.Core
                 family.SetParameter(BuiltInParameter.FAMILY_STRUCT_MATERIAL_TYPE, (int)Autodesk.Revit.DB.Structure.StructuralMaterialType.Other);
                 return false;
             }
-            else if (structuralProperties.Select(x => x.GetType().FullName).Distinct().Count() > 1) 
+            else if (structuralProperties.Select(x => x.GetType().FullName).Distinct().Count() > 1)
             {
                 BH.Engine.Base.Compute.RecordWarning($"Material for model behaviour of family {family.Name} could not be set because the source BHoM section property contains more than one relevant material information. ElementId: {family.Id}");
                 family.SetParameter(BuiltInParameter.FAMILY_STRUCT_MATERIAL_TYPE, (int)Autodesk.Revit.DB.Structure.StructuralMaterialType.Other);
                 return false;
             }
-            
+
             Type materialType = structuralProperties[0].GetType();
             if (materialType == typeof(BH.oM.Structure.MaterialFragments.Steel))
                 return family.SetParameter(BuiltInParameter.FAMILY_STRUCT_MATERIAL_TYPE, (int)Autodesk.Revit.DB.Structure.StructuralMaterialType.Steel);
@@ -296,14 +303,50 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static void ICopyDimensions(this BH.oM.Spatial.ShapeProfiles.IProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        private static void ICopyProfileDimensions(this IFramingElement element, FamilySymbol targetSymbol, RevitSettings settings = null)
+        {
+
+            CopyProfileDimensions(element as dynamic, targetSymbol, settings);
+        }
+
+        /***************************************************/
+
+        private static void CopyProfileDimensions(this Pile element, FamilySymbol targetSymbol, RevitSettings settings = null)
+        {
+            IProfile sourceProfile = (element?.Property as ConstantFramingProperty)?.Profile;
+            if (sourceProfile == null)
+            {
+                BH.Engine.Base.Compute.RecordError($"Could not copy profile dimensions because the BHoM framing element is null or does not have a valid profile. BHoM_Guid: {element.BHoM_Guid}");
+                return;
+            }
+
+            CopyPileDimensions(sourceProfile as dynamic, targetSymbol, settings);
+        }
+
+        /***************************************************/
+
+        private static void CopyProfileDimensions(this IFramingElement element, FamilySymbol targetSymbol, RevitSettings settings = null)
+        {
+            IProfile sourceProfile = (element?.Property as ConstantFramingProperty)?.Profile;
+            if (sourceProfile == null)
+            {
+                BH.Engine.Base.Compute.RecordError($"Could not copy profile dimensions because the BHoM framing element is null or does not have a valid profile. BHoM_Guid: {element.BHoM_Guid}");
+                return;
+            }
+
+            CopyDimensions(sourceProfile as dynamic, targetSymbol, settings);
+        }
+
+        /***************************************************/
+
+        private static void ICopyDimensions(this IProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
             CopyDimensions(sourceProfile as dynamic, targetSymbol, settings);
         }
 
         /***************************************************/
 
-        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.ISectionProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        private static void CopyDimensions(this ISectionProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.Width);
@@ -317,7 +360,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.AngleProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        private static void CopyDimensions(this AngleProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.Width);
@@ -337,7 +380,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.BoxProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        private static void CopyDimensions(this BoxProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.Width);
@@ -348,7 +391,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.ChannelProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        private static void CopyDimensions(this ChannelProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.FlangeWidth);
@@ -366,7 +409,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.FabricatedISectionProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        private static void CopyDimensions(this FabricatedISectionProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_IWELDED_TOPFLANGEWIDTH, sourceProfile.TopFlangeWidth);
@@ -381,14 +424,14 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.CircleProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        private static void CopyDimensions(this CircleProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_DIAMETER, sourceProfile.Diameter);
         }
 
         /***************************************************/
 
-        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.RectangleProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        private static void CopyDimensions(this RectangleProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.Width);
@@ -399,7 +442,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.TaperFlangeChannelProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        private static void CopyDimensions(this TaperFlangeChannelProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.FlangeWidth);
@@ -418,7 +461,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.TaperFlangeISectionProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        private static void CopyDimensions(this TaperFlangeISectionProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.Width);
@@ -431,7 +474,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.TSectionProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        private static void CopyDimensions(this TSectionProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.Width);
@@ -449,7 +492,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.TubeProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        private static void CopyDimensions(this TubeProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_DIAMETER, sourceProfile.Diameter);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_PIPESTANDARD_WALLNOMINALTHICKNESS, sourceProfile.Thickness);
@@ -457,7 +500,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.FabricatedBoxProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        private static void CopyDimensions(this FabricatedBoxProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.Width);
@@ -479,7 +522,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static void CopyDimensions(this BH.oM.Spatial.ShapeProfiles.GeneralisedFabricatedBoxProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        private static void CopyDimensions(this GeneralisedFabricatedBoxProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_HEIGHT, sourceProfile.Height);
             targetSymbol.SetParameter(BuiltInParameter.STRUCTURAL_SECTION_COMMON_WIDTH, sourceProfile.Width);
@@ -498,10 +541,17 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static string ProfileFamilyName(this BH.oM.Physical.Elements.IFramingElement element)
+        private static void CopyPileDimensions(this CircleProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
+        {
+            targetSymbol.SetParameter("Diameter", sourceProfile.Diameter);
+        }
+
+        /***************************************************/
+
+        private static string ProfileFamilyName(this IFramingElement element)
         {
             string propertyName = element?.Property?.Name;
-            string profileName = (element?.Property as BH.oM.Physical.FramingProperties.ConstantFramingProperty)?.Profile?.Name;
+            string profileName = (element?.Property as ConstantFramingProperty)?.Profile?.Name;
             if (string.IsNullOrWhiteSpace(propertyName) && string.IsNullOrWhiteSpace(profileName))
                 return null;
 
@@ -510,27 +560,76 @@ namespace BH.Revit.Engine.Core
 
             string name = !string.IsNullOrWhiteSpace(propertyName) ? propertyName : profileName;
 
-            string prefix = ((BH.oM.Physical.FramingProperties.ConstantFramingProperty)element.Property).Profile.TemplateProfileFamilyName(element is BH.oM.Physical.Elements.Column);
+            string prefix = element.TemplateProfileFamilyName();
             Regex pattern = new Regex(@"\d([\d\.\/\-xX ])*\d");
             return $"{prefix}_{pattern.Replace(name, "").Replace("  ", " ").Trim()}";
         }
 
         /***************************************************/
 
-        private static string TemplateProfileFamilyName(this BH.oM.Spatial.ShapeProfiles.IProfile profile, bool isColumn)
+        private static string TemplateProfileFamilyName(this IFramingElement element)
         {
-            Type profileType = profile?.GetType();
+            Type profileType = (element?.Property as ConstantFramingProperty)?.Profile?.GetType();
             if (!m_FamilyFileNames.ContainsKey(profileType))
                 return null;
 
-            return ProfileFamilyNamePrefix(isColumn) + m_FamilyFileNames[profileType];
+            return element.IProfileFamilyNamePrefix() + m_FamilyFileNames[profileType];
         }
 
         /***************************************************/
 
-        private static string ProfileFamilyNamePrefix(bool isColumn)
+        private static string IProfileFamilyNamePrefix(this IFramingElement element)
         {
-            return isColumn ? "StructuralColumns_" : "StructuralFraming_";
+            return ProfileFamilyNamePrefix(element as dynamic);
+        }
+
+        /***************************************************/
+
+        private static string ProfileFamilyNamePrefix(this Column element)
+        {
+            return "StructuralColumns_";
+        }
+
+        /***************************************************/
+
+        private static string ProfileFamilyNamePrefix(this Pile element)
+        {
+            return "StructuralFoundations_";
+        }
+
+        /***************************************************/
+
+        private static string ProfileFamilyNamePrefix(this IFramingElement element)
+        {
+            return "StructuralFraming_";
+        }
+
+        /***************************************************/
+
+        private static bool IIsFamilyVertical(this IFramingElement element)
+        {
+            return IsFamilyVertical(element as dynamic);
+        }
+
+        /***************************************************/
+
+        private static bool IsFamilyVertical(this Column element)
+        {
+            return true;
+        }
+
+        /***************************************************/
+
+        private static bool IsFamilyVertical(this Pile element)
+        {
+            return true;
+        }
+
+        /***************************************************/
+
+        private static bool IsFamilyVertical(this IFramingElement element)
+        {
+            return false;
         }
 
 
@@ -553,19 +652,19 @@ namespace BH.Revit.Engine.Core
 
         private static readonly Dictionary<Type, string> m_FamilyFileNames = new Dictionary<Type, string>
         {
-            { typeof(BH.oM.Spatial.ShapeProfiles.ISectionProfile), "IProfile" },
-            { typeof(BH.oM.Spatial.ShapeProfiles.AngleProfile), "AngleProfile" },
-            { typeof(BH.oM.Spatial.ShapeProfiles.BoxProfile), "BoxProfile" },
-            { typeof(BH.oM.Spatial.ShapeProfiles.ChannelProfile), "ChannelProfile" },
-            { typeof(BH.oM.Spatial.ShapeProfiles.CircleProfile), "CircleProfile" },
-            { typeof(BH.oM.Spatial.ShapeProfiles.FabricatedISectionProfile), "FabricatedIProfile" },
-            { typeof(BH.oM.Spatial.ShapeProfiles.RectangleProfile), "RectangleProfile" },
-            { typeof(BH.oM.Spatial.ShapeProfiles.TaperFlangeChannelProfile), "TaperFlangeChannelProfile" },
-            { typeof(BH.oM.Spatial.ShapeProfiles.TaperFlangeISectionProfile), "TaperFlangeISectionProfile" },
-            { typeof(BH.oM.Spatial.ShapeProfiles.TSectionProfile), "TProfile" },
-            { typeof(BH.oM.Spatial.ShapeProfiles.TubeProfile), "TubeProfile" },
-            { typeof(BH.oM.Spatial.ShapeProfiles.FabricatedBoxProfile), "FabricatedBoxProfile" },
-            { typeof(BH.oM.Spatial.ShapeProfiles.GeneralisedFabricatedBoxProfile), "FabricatedBoxProfile" },
+            { typeof(ISectionProfile), "IProfile" },
+            { typeof(AngleProfile), "AngleProfile" },
+            { typeof(BoxProfile), "BoxProfile" },
+            { typeof(ChannelProfile), "ChannelProfile" },
+            { typeof(CircleProfile), "CircleProfile" },
+            { typeof(FabricatedISectionProfile), "FabricatedIProfile" },
+            { typeof(RectangleProfile), "RectangleProfile" },
+            { typeof(TaperFlangeChannelProfile), "TaperFlangeChannelProfile" },
+            { typeof(TaperFlangeISectionProfile), "TaperFlangeISectionProfile" },
+            { typeof(TSectionProfile), "TProfile" },
+            { typeof(TubeProfile), "TubeProfile" },
+            { typeof(FabricatedBoxProfile), "FabricatedBoxProfile" },
+            { typeof(GeneralisedFabricatedBoxProfile), "FabricatedBoxProfile" },
         };
 
         /***************************************************/
