@@ -110,7 +110,7 @@ namespace BH.Revit.Engine.Core
                 }
 
                 result.Activate();
-                result.Name = element.Property.Name;
+                result.Name = element.ProfileTypeName();
 
                 if (!freeform)
                     element.ICopyProfileDimensions(result, settings);
@@ -559,10 +559,30 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Base.Compute.RecordWarning("The BHoM object has different section property and profile names - section property name has been used to create Revit profile family.");
 
             string name = !string.IsNullOrWhiteSpace(propertyName) ? propertyName : profileName;
+            if (name.Contains(':'))
+                return name.Split(':')[0].Trim();
+            else
+            {
+                string prefix = element.TemplateProfileFamilyName();
+                Regex pattern = new Regex(@"\d([\d\.\/\-xX ])*\d");
+                return $"{prefix}_{pattern.Replace(name, "").Replace("  ", " ").Trim()}";
+            }
+        }
 
-            string prefix = element.TemplateProfileFamilyName();
-            Regex pattern = new Regex(@"\d([\d\.\/\-xX ])*\d");
-            return $"{prefix}_{pattern.Replace(name, "").Replace("  ", " ").Trim()}";
+        /***************************************************/
+
+        private static string ProfileTypeName(this IFramingElement element)
+        {
+            string propertyName = element?.Property?.Name;
+            string profileName = (element?.Property as ConstantFramingProperty)?.Profile?.Name;
+            if (string.IsNullOrWhiteSpace(propertyName) && string.IsNullOrWhiteSpace(profileName))
+                return null;
+
+            string name = !string.IsNullOrWhiteSpace(propertyName) ? propertyName : profileName;
+            if (name.Contains(':'))
+                return name.Split(':')[1].Trim();
+            else
+                return name;
         }
 
         /***************************************************/
