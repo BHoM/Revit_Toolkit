@@ -217,7 +217,9 @@ namespace BH.Revit.Engine.Core
                     if (!System.IO.Directory.Exists(m_TempFolder))
                         System.IO.Directory.CreateDirectory(m_TempFolder);
 
-                    familyDocument.SaveAs(tempLocation);
+                    SaveAsOptions saveOptions = new SaveAsOptions();
+                    saveOptions.OverwriteExistingFile = true;
+                    familyDocument.SaveAs(tempLocation, saveOptions);
                 }
                 catch (Exception ex)
                 {
