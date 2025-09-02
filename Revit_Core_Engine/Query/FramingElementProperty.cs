@@ -24,10 +24,9 @@ using Autodesk.Revit.DB;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Physical.FramingProperties;
 using BH.oM.Base.Attributes;
+using BH.oM.Physical.FramingProperties;
 using BH.oM.Spatial.ShapeProfiles;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -49,7 +48,7 @@ namespace BH.Revit.Engine.Core
         {
             if (familyInstance == null || familyInstance.Symbol == null)
                 return null;
-            
+
             ConstantFramingProperty framingProperty = refObjects.GetValue<ConstantFramingProperty>(familyInstance.Id);
             if (framingProperty != null)
                 return framingProperty;
@@ -83,7 +82,7 @@ namespace BH.Revit.Engine.Core
 
             // Get rotation
             double rotation = familyInstance.OrientationAngle(settings);
-            
+
             framingProperty = BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, rotation, familyInstance.Symbol.FamilyTypeFullName());
 
             //Set identifiers, parameters & custom data
@@ -106,7 +105,7 @@ namespace BH.Revit.Engine.Core
         {
             if (familyInstance == null || familyInstance.Symbol == null)
                 return null;
-            
+
             ConstantFramingProperty framingProperty = refObjects.GetValue<ConstantFramingProperty>(familyInstance.Id);
             if (framingProperty != null)
                 return framingProperty;
@@ -114,29 +113,7 @@ namespace BH.Revit.Engine.Core
             // Convert the material to BHoM
             BH.oM.Physical.Materials.Material material = familyInstance.FramingMaterial(settings, refObjects);
 
-            // For piles, try multiple approaches to extract profile information
-            IProfile profile = null;
-            
-            // First try the standard profile extraction method
-            profile = familyInstance.Symbol.ProfileFromRevit(settings, refObjects);
-            
-            // If standard profile extraction fails, try alternative methods for pile families
-            if (profile == null)
-            {
-                profile = familyInstance.ExtractPileProfile(settings);
-            }
-            
-            // If still no profile, create a generic circular profile based on common pile parameters
-            if (profile == null)
-            {
-                profile = familyInstance.CreateDefaultPileProfile();
-                if (profile == null)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"Could not extract profile information from pile family. Using default circular profile. ElementId: {familyInstance.Id}");
-                    // Create a default 300mm diameter circular pile as fallback
-                    profile = BH.Engine.Spatial.Create.CircleProfile(0.15); // 150mm radius = 300mm diameter
-                }
-            }
+            IProfile profile = familyInstance.Symbol.ProfileFromRevit(settings, refObjects);
 
             if (familyInstance.Mirrored && profile != null)
             {
@@ -157,9 +134,10 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
+            //TODO: most likely can have a dedicated method here
             // Get rotation (piles are typically not rotated, but include for completeness)
             double rotation = familyInstance.OrientationAngle(settings);
-            
+
             framingProperty = BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, rotation, familyInstance.Symbol.FamilyTypeFullName());
 
             //Set identifiers, parameters & custom data

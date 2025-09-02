@@ -115,7 +115,7 @@ namespace BH.Revit.Engine.Core
             }
 
             if (profile == null)
-                profile = familySymbol.FreeFormProfileFromRevit(settings);
+                profile = familySymbol.ProfileFromSolid(settings);
 
             if (profile == null)
                 return null;
@@ -201,7 +201,7 @@ namespace BH.Revit.Engine.Core
             GeometryInstance instance = representativeMullion.get_Geometry(options).FirstOrDefault(x => x is GeometryInstance) as GeometryInstance;
             MullionType instanceSymbol = instance.Symbol() as MullionType;
             if (instanceSymbol != null)
-                profile = instanceSymbol.FreeFormProfileFromRevit(settings);
+                profile = instanceSymbol.ProfileFromSolid(settings);
 
             if (profile == null)
                 return null;
@@ -691,12 +691,12 @@ namespace BH.Revit.Engine.Core
         [Description("Converts a Revit FamilySymbol to BH.oM.Spatial.ShapeProfiles.FreeFormProfile.")]
         [Input("familySymbol", "Revit FamilySymbol to be converted.")]
         [Output("profile", "BH.oM.Spatial.ShapeProfiles.FreeFormProfile resulting from converting the input Revit FamilySymbol.")]
-        private static FreeFormProfile FreeFormProfileFromRevit(this FamilySymbol familySymbol, RevitSettings settings)
+        private static IProfile ProfileFromSolid(this FamilySymbol familySymbol, RevitSettings settings)
         {
             XYZ direction;
             if (familySymbol.Family.FamilyPlacementType == FamilyPlacementType.CurveDrivenStructural)
                 direction = XYZ.BasisX;
-            else if (familySymbol.Family.FamilyPlacementType == FamilyPlacementType.TwoLevelsBased || familySymbol is MullionType)
+            else if (familySymbol.Family.FamilyPlacementType == FamilyPlacementType.OneLevelBased || familySymbol.Family.FamilyPlacementType == FamilyPlacementType.TwoLevelsBased || familySymbol is MullionType)
                 direction = XYZ.BasisZ;
             else
             {
@@ -818,6 +818,21 @@ namespace BH.Revit.Engine.Core
                     double angle = -Math.PI * 0.5;
                     profileCurves = profileCurves.Select(x => x.IRotate(oM.Geometry.Point.Origin, Vector.YAxis, angle)).ToList();
                     profileCurves = profileCurves.Select(x => x.IRotate(oM.Geometry.Point.Origin, Vector.ZAxis, angle)).ToList();
+                }
+            }
+
+            if (profileCurves.Count == 1 && profileCurves[0] is BH.oM.Geometry.Circle circle)
+                return BHS.Create.CircleProfile(circle.Radius * 2);
+
+            if (profileCurves.Count > 1 && profileCurves.All(x => x is BH.oM.Geometry.Arc))
+            {
+                List<BH.oM.Geometry.Arc> arcs = profileCurves.Cast<BH.oM.Geometry.Arc>().ToList();
+                double radius = arcs[0].Radius;
+                if (arcs.All(x => System.Math.Abs(x.Radius - radius) < settings.DistanceTolerance))
+                {
+                    List<PolyCurve> joined = BH.Engine.Geometry.Compute.IJoin(profileCurves, settings.DistanceTolerance);
+                    if (joined.Count == 1 && Math.Abs(joined[0].Area() - Math.PI * Math.Pow(arcs.Select(x => x.Radius).Average(), 2)) <= settings.DistanceTolerance)
+                        return BHS.Create.CircleProfile(radius * 2);
                 }
             }
 
