@@ -23,14 +23,14 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Base;
+using BH.oM.Base.Attributes;
+using BH.oM.Facade.Elements;
 using BH.oM.Physical.Elements;
 using BH.oM.Structure.Elements;
-using BH.oM.Facade.Elements;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using BH.oM.Base.Attributes;
 
 namespace BH.Revit.Engine.Core
 {
@@ -48,7 +48,7 @@ namespace BH.Revit.Engine.Core
         {
             if (family?.PropertiesList == null)
                 return null;
-            
+
             return new HashSet<BuiltInCategory>(family.PropertiesList.Select(x => x.BuiltInCategory(caseSensitive)));
         }
 
@@ -83,7 +83,7 @@ namespace BH.Revit.Engine.Core
                         result.Add(category);
                 }
             }
-            
+
             return result;
         }
 
@@ -110,6 +110,12 @@ namespace BH.Revit.Engine.Core
                     Autodesk.Revit.DB.BuiltInCategory.OST_Girder,
                     Autodesk.Revit.DB.BuiltInCategory.OST_StructuralStiffener,
                     Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFramingOther
+                }
+            },
+            {
+                typeof (BH.oM.Physical.Elements.Pile), new BuiltInCategory[]
+                {
+                    Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFoundation
                 }
             },
             {
