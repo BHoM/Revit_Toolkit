@@ -90,6 +90,18 @@ namespace BH.Revit.Engine.Core
                     break;
                 case Discipline.Physical:
                 case Discipline.Architecture:
+                    if (category == Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFoundation)
+                    {
+                        BoundingBoxXYZ bbox = familyInstance.get_BoundingBox(null);
+                        double width = Math.Max(bbox.Max.X - bbox.Min.X, bbox.Max.Y - bbox.Min.Y);
+                        double height = bbox.Max.Z - bbox.Min.Z;
+                        if (height < width)
+                            return typeof(BH.oM.Physical.Elements.PadFoundation);
+                        else if (familyInstance.GetSubComponentIds().Count != 0)
+                            return typeof(BH.oM.Physical.Elements.PileFoundation);
+                        else
+                            return typeof(BH.oM.Physical.Elements.Pile);
+                    }
                     if (typeof(BH.oM.Physical.Elements.Window).BuiltInCategories().Contains(category))
                         return typeof(BH.oM.Physical.Elements.Window);
                     else if (typeof(BH.oM.Physical.Elements.Door).BuiltInCategories().Contains(category))
@@ -97,9 +109,6 @@ namespace BH.Revit.Engine.Core
                     else if (typeof(BH.oM.Physical.Elements.Column).BuiltInCategories().Contains(category)
                             || familyInstance.StructuralType == Autodesk.Revit.DB.Structure.StructuralType.Column)
                         return typeof(BH.oM.Physical.Elements.Column);
-                    else if (typeof(BH.oM.Physical.Elements.Pile).BuiltInCategories().Contains(category)
-                            || familyInstance.StructuralType == Autodesk.Revit.DB.Structure.StructuralType.Footing)
-                        return typeof(BH.oM.Physical.Elements.Pile);
                     else if (typeof(BH.oM.Physical.Elements.Bracing).BuiltInCategories().Contains(category)
                             || familyInstance.StructuralUsage == StructuralInstanceUsage.Brace
                             || familyInstance.StructuralUsage == StructuralInstanceUsage.HorizontalBracing
