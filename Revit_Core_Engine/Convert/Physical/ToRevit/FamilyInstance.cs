@@ -72,7 +72,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            BH.oM.Geometry.Line locationLine = framingElement.ColumnLine();
+            BH.oM.Geometry.Line locationLine = framingElement.VerticalElementLocation(settings);
             if (locationLine == null)
                 return null;
 
@@ -154,7 +154,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            BH.oM.Geometry.Line locationLine = framingElement.Location as BH.oM.Geometry.Line;
+            BH.oM.Geometry.Line locationLine = framingElement.VerticalElementLocation(settings);
             if (locationLine == null)
                 return null;
 

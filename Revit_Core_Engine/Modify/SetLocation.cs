@@ -148,7 +148,7 @@ namespace BH.Revit.Engine.Core
             if (!(typeof(Column).BuiltInCategories().Contains((BuiltInCategory)element.Category.Id.IntegerValue)))
                 return false;
 
-            oM.Geometry.Line columnLine = column.ColumnLine();
+            oM.Geometry.Line columnLine = column.VerticalElementLocation(settings);
             if (columnLine == null)
             {
                 BH.Engine.Base.Compute.RecordError(String.Format("Location has not been updated. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, column.BHoM_Guid));
@@ -203,28 +203,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            double rotation = 0;
-            ConstantFramingProperty framingProperty = column.Property as ConstantFramingProperty;
-            if (framingProperty == null)
-                BH.Engine.Base.Compute.RecordWarning(String.Format("BHoM object's property is not a ConstantFramingProperty, therefore its orientation angle could not be retrieved. BHoM_Guid: {0}", column.BHoM_Guid));
-            else
-                rotation = ((ConstantFramingProperty)column.Property).OrientationAngle;
-
-            double rotationDifference = element.OrientationAngleColumn(settings) - rotation;
-            if (Math.Abs(rotationDifference) > settings.AngleTolerance)
-            {
-                double rotationParamValue = element.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
-                if (double.IsNaN(rotationParamValue))
-                {
-                    ElementTransformUtils.RotateElement(element.Document, element.Id, columnLine.ToRevit(), -rotationDifference.NormalizeAngleDomain());
-                    updated = true;
-                }
-                else
-                {
-                    double newRotation = (rotationParamValue + rotationDifference).NormalizeAngleDomain();
-                    updated |= element.SetParameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, newRotation);
-                }
-            }
+            updated |= element.UpdateRotationOfVerticalElement(column, settings);
 
             return updated;
         }
@@ -356,6 +335,8 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Base.Compute.RecordWarning($"Could not set vertical pile dimension. Pile may not display correctly. ElementId: {element.Id}");
                 return updated = false;
             }
+
+            updated |= element.UpdateRotationOfVerticalElement(pile, settings);
 
             return updated;
         }
@@ -622,6 +603,37 @@ namespace BH.Revit.Engine.Core
             }
 
             return success;
+        }
+
+        /***************************************************/
+
+        private static bool UpdateRotationOfVerticalElement(this FamilyInstance element, IFramingElement bhomElement, RevitSettings settings)
+        {
+            bool updated = false;
+            double rotation = 0;
+            ConstantFramingProperty framingProperty = bhomElement.Property as ConstantFramingProperty;
+            if (framingProperty == null)
+                BH.Engine.Base.Compute.RecordWarning(String.Format("BHoM object's property is not a ConstantFramingProperty, therefore its orientation angle could not be retrieved. BHoM_Guid: {0}", bhomElement.BHoM_Guid));
+            else
+                rotation = ((ConstantFramingProperty)bhomElement.Property).OrientationAngle;
+
+            double rotationDifference = element.OrientationAngle(settings) - rotation;
+            if (Math.Abs(rotationDifference) > settings.AngleTolerance)
+            {
+                double rotationParamValue = element.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
+                if (double.IsNaN(rotationParamValue))
+                {
+                    ElementTransformUtils.RotateElement(element.Document, element.Id, bhomElement.VerticalElementLocation(settings).ToRevit(), -rotationDifference.NormalizeAngleDomain());
+                    updated = true;
+                }
+                else
+                {
+                    double newRotation = (rotationParamValue + rotationDifference).NormalizeAngleDomain();
+                    updated |= element.SetParameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, newRotation);
+                }
+            }
+
+            return updated;
         }
 
 

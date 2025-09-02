@@ -134,8 +134,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            //TODO: most likely can have a dedicated method here
-            // Get rotation (piles are typically not rotated, but include for completeness)
+            // Get rotation
             double rotation = familyInstance.OrientationAngle(settings);
 
             framingProperty = BH.Engine.Physical.Create.ConstantFramingProperty(profile, material, rotation, familyInstance.Symbol.FamilyTypeFullName());
@@ -152,8 +151,3 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
-
-
-
-

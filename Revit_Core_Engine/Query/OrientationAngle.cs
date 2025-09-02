@@ -25,7 +25,6 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
-using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
@@ -55,6 +54,8 @@ namespace BH.Revit.Engine.Core
             BuiltInCategory category = (BuiltInCategory)familyInstance.Category.Id.IntegerValue;
             if (typeof(Column).BuiltInCategories().Contains(category))
                 rotation = familyInstance.OrientationAngleColumn(settings);
+            else if (typeof(Pile).BuiltInCategories().Contains(category))
+                rotation = familyInstance.OrientationAnglePile(settings);
             else if (familyInstance is Mullion || typeof(IFramingElement).BuiltInCategories().Contains(category))
                 rotation = familyInstance.OrientationAngleFraming(settings);
 
@@ -101,7 +102,7 @@ namespace BH.Revit.Engine.Core
             else
             {
                 rotation = XYZ.BasisZ.AngleOnPlaneTo(transform.BasisY, transform.BasisZ);
-                
+
                 bool positiveDir;
                 double xDifference = endConnectors[1].Origin.X - endConnectors[0].Origin.X;
                 if (Math.Abs(xDifference) < 1e-6)
@@ -142,6 +143,17 @@ namespace BH.Revit.Engine.Core
             }
 
             return rotation.NormalizeAngleDomain();
+        }
+
+        /***************************************************/
+
+        [Description("Extracts a BHoM-representative pile orientation angle from a given Revit family instance.")]
+        [Input("familyInstance", "Revit family instance to extract the orientation angle from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("angle", "BHoM-representative pile orientation angle extracted from the input Revit family instance.")]
+        public static double OrientationAnglePile(this FamilyInstance familyInstance, RevitSettings settings)
+        {
+            return (familyInstance.Location as LocationPoint).Rotation.NormalizeAngleDomain();
         }
 
         /***************************************************/

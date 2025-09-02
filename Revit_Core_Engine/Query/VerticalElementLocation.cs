@@ -21,6 +21,7 @@
  */
 
 using BH.Engine.Geometry;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
@@ -35,42 +36,39 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts the location line of a BHoM Column object in preparation to push to Revit. Includes validity checks and flipping reversed nodes.")]
-        [Input("column", "A BHoM Column object to extract the line from.")]
-        [Output("line", "Preprocessed location line of the BHoM Column object to be used on push to Revit.")]
-        public static Line ColumnLine(this Column column)
+        [Description("Extracts the location line of a BHoM Pile or Column object in preparation to push to Revit. Includes validity checks and flipping reversed nodes.")]
+        [Input("element", "A BHoM Pile or Column object to extract the line from.")]
+        [Output("line", "Preprocessed location line of the BHoM Pile or Column object to be used on push to Revit.")]
+        public static Line VerticalElementLocation(this IFramingElement element, RevitSettings settings)
         {
-            if (column == null)
+            if (element == null)
             {
-                BH.Engine.Base.Compute.RecordError(string.Format("Cannot read location line because column is null. BHoM_Guid: {0}", column.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError($"Cannot read location line because column is null. BHoM_Guid: {element.BHoM_Guid}");
                 return null;
             }
 
-            Line columnLine = column.Location as BH.oM.Geometry.Line;
-            if (columnLine == null)
+            Line location = element.Location as Line;
+            if (location == null)
             {
-                BH.Engine.Base.Compute.RecordError(string.Format("Invalid column line. Only linear columns are allowed in Revit. BHoM_Guid: {0}", column.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError($"Invalid location line. Only linear piles and columns are allowed in Revit. BHoM_Guid: {element.BHoM_Guid}");
                 return null;
             }
 
-            if (Math.Abs(columnLine.Start.Z - columnLine.End.Z) <= BH.oM.Geometry.Tolerance.Distance)
+            if (Math.Abs(location.Start.Z - location.End.Z) <= settings.DistanceTolerance)
             {
-                BH.Engine.Base.Compute.RecordError(string.Format("Column line's start and end points have the same elevation. BHoM_Guid: {0}", column.BHoM_Guid));
+                BH.Engine.Base.Compute.RecordError($"Location line's start and end points have the same elevation. BHoM_Guid: {element.BHoM_Guid}");
                 return null;
             }
-            
-            if (columnLine.Start.Z > columnLine.End.Z)
+
+            if (location.Start.Z > location.End.Z)
             {
-                BH.Engine.Base.Compute.RecordNote(string.Format("The input column line's bottom was above its top. This line has been flipped to allow pushing to Revit. BHoM_Guid: {0}", column.BHoM_Guid));
-                columnLine = columnLine.Flip();
+                BH.Engine.Base.Compute.RecordNote($"The input location line's bottom was above its top. This line has been flipped to allow pushing to Revit. BHoM_Guid: {element.BHoM_Guid}");
+                location = location.Flip();
             }
-            
-            return columnLine;
+
+            return location;
         }
 
         /***************************************************/
     }
 }
-
-
-
