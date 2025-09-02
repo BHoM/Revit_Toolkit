@@ -256,5 +256,6 @@
 		<None Include="Files\Families\StructuralFraming_TProfile.rfa" />
 		<None Include="Files\Families\StructuralFraming_TubeProfile.rfa" />
 		<None Include="Files\Families\StructuralFoundations_CircleProfile.rfa" />
+		<None Include="Files\Families\StructuralFoundations_FreeformProfile.rfa" />
 	</ItemGroup>
 </Project>

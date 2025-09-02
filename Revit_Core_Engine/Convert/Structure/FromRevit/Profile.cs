@@ -821,7 +821,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            if (profileCurves.Count == 1 && profileCurves[0] is BH.oM.Geometry.Circle circle)
+            if (profileCurves.Count == 1 && profileCurves[0] is Circle circle)
                 return BHS.Create.CircleProfile(circle.Radius * 2);
 
             if (profileCurves.Count > 1 && profileCurves.All(x => x is BH.oM.Geometry.Arc))

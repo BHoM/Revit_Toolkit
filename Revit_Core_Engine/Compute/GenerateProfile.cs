@@ -33,6 +33,7 @@ using BH.oM.Spatial.ShapeProfiles;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -94,7 +95,7 @@ namespace BH.Revit.Engine.Core
                     if (family == null)
                         return null;
 
-                    if (!(property.Profile is BH.oM.Spatial.ShapeProfiles.FreeFormProfile))
+                    if (!(property.Profile is FreeFormProfile))
                         BH.Engine.Base.Compute.RecordWarning($"Generation of profiles with shape {property.Profile.GetType().Name} is currently not fully supported - a freeform, dimensionless profile with a dedicated family has been created.");
 
                     freeform = true;
@@ -130,8 +131,12 @@ namespace BH.Revit.Engine.Core
             if (string.IsNullOrWhiteSpace(templateFamilyName))
                 return null;
 
+            string path = $"{m_FamilyDirectory}\\{templateFamilyName}.rfa";
+            if (!System.IO.File.Exists(path))
+                return null;
+
             Family family;
-            document.LoadFamily($"{m_FamilyDirectory}\\{templateFamilyName}.rfa", out family);
+            document.LoadFamily(path, out family);
             return family;
         }
 
@@ -165,7 +170,6 @@ namespace BH.Revit.Engine.Core
             UIDocument uidoc = new UIDocument(document);
             Document familyDocument = uidoc.Application.Application.OpenDocumentFile($"{m_FamilyDirectory}\\{element.IProfileFamilyNamePrefix()}FreeformProfile.rfa");
 
-            bool isVertical = element.IsFamilyVertical();
             try
             {
                 Extrusion extrusion = new FilteredElementCollector(familyDocument).OfClass(typeof(Extrusion)).FirstElement() as Extrusion;
@@ -179,38 +183,14 @@ namespace BH.Revit.Engine.Core
                     newProfile.Append(loop.ToRevitCurveArray());
                 }
 
-                string constraintViewName = isVertical ? "Front" : "Ref. Level";
-                View constraintView = new FilteredElementCollector(familyDocument).OfClass(typeof(View)).FirstOrDefault(x => x.Name == constraintViewName) as View;
-                if (constraintView == null)
+                (Reference, Reference, double, XYZ, View) constraints = element.IExtrusionConstraints(familyDocument);
+                Reference startRef = constraints.Item1;
+                Reference endRef = constraints.Item2;
+                double length = constraints.Item3;
+                XYZ dir = constraints.Item4;
+                View constraintView = constraints.Item5;
+                if (startRef == null || endRef == null || double.IsNaN(length) || dir == null || constraintView == null)
                     return null;
-
-                Reference startRef, endRef;
-                double length;
-                XYZ dir;
-                if (isVertical)
-                {
-                    Level bottom = new FilteredElementCollector(familyDocument).OfClass(typeof(Level)).FirstOrDefault(x => x.Name == "Lower Ref Level") as Level;
-                    Level top = new FilteredElementCollector(familyDocument).OfClass(typeof(Level)).FirstOrDefault(x => x.Name == "Upper Ref Level") as Level;
-                    if (bottom == null || top == null)
-                        return null;
-
-                    startRef = bottom.GetPlaneReference();
-                    endRef = top.GetPlaneReference();
-                    length = top.ProjectElevation - bottom.ProjectElevation;
-                    dir = XYZ.BasisZ;
-                }
-                else
-                {
-                    ReferencePlane left = new FilteredElementCollector(familyDocument).OfClass(typeof(ReferencePlane)).FirstOrDefault(x => x.Name == "Member Left") as ReferencePlane;
-                    ReferencePlane right = new FilteredElementCollector(familyDocument).OfClass(typeof(ReferencePlane)).FirstOrDefault(x => x.Name == "Member Right") as ReferencePlane;
-                    if (left == null || right == null)
-                        return null;
-
-                    endRef = left.GetReference();
-                    startRef = right.GetReference();
-                    length = left.GetPlane().Origin.X - right.GetPlane().Origin.X;
-                    dir = -XYZ.BasisX;
-                }
 
                 using (Transaction t = new Transaction(familyDocument, "Update Extrusion"))
                 {
@@ -231,7 +211,7 @@ namespace BH.Revit.Engine.Core
                     t.Commit();
                 }
 
-                string tempLocation = $"{m_TempFolder}\\{property.Name}.rfa";
+                string tempLocation = SanitizePath($"{m_TempFolder}\\{element.ProfileFamilyName()}.rfa");
                 try
                 {
                     if (!System.IO.Directory.Exists(m_TempFolder))
@@ -626,30 +606,88 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static bool IIsFamilyVertical(this IFramingElement element)
+        private static (Reference, Reference, double, XYZ, View) IExtrusionConstraints(this IFramingElement element, Document familyDocument)
         {
-            return IsFamilyVertical(element as dynamic);
+            return ExtrusionConstraints(element as dynamic, familyDocument);
         }
 
         /***************************************************/
 
-        private static bool IsFamilyVertical(this Column element)
+        private static (Reference, Reference, double, XYZ, View) ExtrusionConstraints(this Column element, Document familyDocument)
         {
-            return true;
+            View constraintView = new FilteredElementCollector(familyDocument).OfClass(typeof(View)).FirstOrDefault(x => x.Name == "Front") as View;
+            if (constraintView == null)
+                return (null, null, double.NaN, null, null);
+
+            Level bottom = new FilteredElementCollector(familyDocument).OfClass(typeof(Level)).FirstOrDefault(x => x.Name == "Lower Ref Level") as Level;
+            Level top = new FilteredElementCollector(familyDocument).OfClass(typeof(Level)).FirstOrDefault(x => x.Name == "Upper Ref Level") as Level;
+            if (bottom == null || top == null)
+                return (null, null, double.NaN, null, null);
+
+            Reference startRef = bottom.GetPlaneReference();
+            Reference endRef = top.GetPlaneReference();
+            double length = top.ProjectElevation - bottom.ProjectElevation;
+            XYZ dir = XYZ.BasisZ;
+
+            return (startRef, endRef, length, dir, constraintView);
         }
 
         /***************************************************/
 
-        private static bool IsFamilyVertical(this Pile element)
+        private static (Reference, Reference, double, XYZ, View) ExtrusionConstraints(this Pile element, Document familyDocument)
         {
-            return true;
+            View constraintView = new FilteredElementCollector(familyDocument).OfClass(typeof(View)).FirstOrDefault(x => x.Name == "Front") as View;
+            if (constraintView == null)
+                return (null, null, double.NaN, null, null);
+
+            ReferencePlane bottom = new FilteredElementCollector(familyDocument).OfClass(typeof(ReferencePlane)).FirstOrDefault(x => x.Name == "Bottom Constraint") as ReferencePlane;
+            ReferencePlane top = new FilteredElementCollector(familyDocument).OfClass(typeof(ReferencePlane)).FirstOrDefault(x => x.Name == "Top Constraint") as ReferencePlane;
+            if (bottom == null || top == null)
+                return (null, null, double.NaN, null, null);
+
+            Reference startRef = bottom.GetReference();
+            Reference endRef = top.GetReference();
+            double length = top.GetPlane().Origin.Z - bottom.GetPlane().Origin.Z;
+            XYZ dir = XYZ.BasisZ;
+
+            return (startRef, endRef, length, dir, constraintView);
         }
 
         /***************************************************/
 
-        private static bool IsFamilyVertical(this IFramingElement element)
+        private static (Reference, Reference, double, XYZ, View) ExtrusionConstraints(this IFramingElement element, Document familyDocument)
         {
-            return false;
+            View constraintView = new FilteredElementCollector(familyDocument).OfClass(typeof(View)).FirstOrDefault(x => x.Name == "Ref. Level") as View;
+            if (constraintView == null)
+                return (null, null, double.NaN, null, null);
+
+            ReferencePlane left = new FilteredElementCollector(familyDocument).OfClass(typeof(ReferencePlane)).FirstOrDefault(x => x.Name == "Member Left") as ReferencePlane;
+            ReferencePlane right = new FilteredElementCollector(familyDocument).OfClass(typeof(ReferencePlane)).FirstOrDefault(x => x.Name == "Member Right") as ReferencePlane;
+            if (left == null || right == null)
+                return (null, null, double.NaN, null, null);
+
+            Reference endRef = left.GetReference();
+            Reference startRef = right.GetReference();
+            double length = left.GetPlane().Origin.X - right.GetPlane().Origin.X;
+            XYZ dir = -XYZ.BasisX;
+
+            return (startRef, endRef, length, dir, constraintView);
+        }
+
+        /***************************************************/
+
+        private static string SanitizePath(string inputPath)
+        {
+            char[] invalidPathChars = Path.GetInvalidPathChars();
+            char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
+            char[] allInvalidChars = invalidPathChars.Concat(invalidFileNameChars).Where(x => x != '\\' && x != ':').Distinct().ToArray();
+
+            foreach (char c in allInvalidChars)
+            {
+                inputPath = inputPath.Replace(c.ToString(), "");
+            }
+
+            return inputPath;
         }
 
 
