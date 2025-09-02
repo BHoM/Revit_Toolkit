@@ -337,6 +337,15 @@ namespace BH.Revit.Engine.Core
 
             // Try setting depth parameter
             Parameter depthParam = element.LookupParameter("Pile Depth");
+            if (depthParam == null)
+            {
+                depthParam = element.Parameters.Cast<Parameter>().FirstOrDefault(x => x.StorageType == StorageType.Double && x.Definition.Name.Contains("Depth"));
+                if (depthParam == null)
+                    BH.Engine.Base.Compute.RecordWarning($"Could not find a suitable parameter to set pile depth on the element.");
+                else
+                    BH.Engine.Base.Compute.RecordWarning($"Parameter 'Pile Depth' could not be found on the element, therefore an attempt to set vertical constraint via '{depthParam.Definition.Name}' is made.");
+            }
+
             if (depthParam != null && !depthParam.IsReadOnly)
                 verticalDimensionSet &= depthParam.Set(pileDepth.FromSI(SpecTypeId.Length));
             else
