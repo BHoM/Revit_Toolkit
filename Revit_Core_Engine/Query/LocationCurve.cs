@@ -24,15 +24,14 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using BH.oM.Base.Attributes;
-using BH.oM.Base;
-using System.Data.Common;
 
 namespace BH.Revit.Engine.Core
 {
@@ -62,7 +61,7 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-        
+
         [Description("Queries a FamilyInstance to find its start and end points, intended usage for framings.")]
         [Input("familyInstance", "Revit FamilyInstance to be queried.")]
         [Input("settings", "Optional, the RevitSettings to be used.")]
@@ -182,13 +181,13 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-        
+
         [Description("Queries an MEPCurve to find its start and end points, creating multiple lines segments if it contains points in between.")]
         [Input("mepCurve", "Revit MEPCurve to be queried.")]
         [Input("settings", "Optional, the RevitSettings to be used.")]
         [Output("locationCurveMEP", "BHoM lines list queried from the MEPCurve.")]
         public static List<BH.oM.Geometry.Line> LocationCurveMEP(this MEPCurve mepCurve, RevitSettings settings = null)
-        {            
+        {
             //sometimes an mepcurve will be connected without fittings
             //causing connections to occur in the middle of the locationcurve
             //hence the best approach is to also query the connections that are not end, to split curve there
@@ -197,7 +196,7 @@ namespace BH.Revit.Engine.Core
             ConnectorManager connectorManager = mepCurve.ConnectorManager;
             ConnectorSet connectorSet = connectorManager.Connectors;
             List<Connector> connectors = connectorSet.Cast<Connector>().ToList();
-            
+
             List<BH.oM.Geometry.Point> endPoints = connectors.Where(x => x.ConnectorType == ConnectorType.End).Select(x => x.Origin.PointFromRevit()).ToList();
             List<BH.oM.Geometry.Point> midPoints = connectors.Where(x => x.ConnectorType != ConnectorType.End).Select(x => x.Origin.PointFromRevit()).ToList();
 
@@ -230,8 +229,20 @@ namespace BH.Revit.Engine.Core
         {
             settings = settings.DefaultIfNull();
 
-            // Piles are typically point-based elements, so we can reuse the simpler column location logic
-            return familyInstance.LocationCurveColumn(settings);
+            // Find vertical centerline of the pile's bounding box
+            BoundingBoxXYZ bbox = familyInstance.get_BoundingBox(null);
+            XYZ center = (bbox.Min + bbox.Max) / 2;
+            oM.Geometry.Point top = new XYZ(center.X, center.Y, bbox.Max.Z).PointFromRevit();
+            oM.Geometry.Point bottom = new XYZ(center.X, center.Y, bbox.Min.Z).PointFromRevit();
+
+            // Try to adjust for embedment
+            double embedment = familyInstance.LookupParameterDouble("Pile Embedment");
+            if (!double.IsNaN(embedment))
+                top.Z -= embedment;
+            else
+                BH.Engine.Base.Compute.RecordWarning($"Parameter 'Pile Embedment' could not be found on the pile, therefore embedment may not be taken into account correctly. ElementId: {familyInstance.Id.IntegerValue}");
+
+            return new BH.oM.Geometry.Line { Start = bottom, End = top };
         }
 
         /***************************************************/
