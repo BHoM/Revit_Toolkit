@@ -60,7 +60,10 @@ namespace BH.Revit.Engine.Core
                 parameterElement = SharedParameterElement.Lookup(document, ((ExternalDefinition)definition).GUID);
             else if (definition is InternalDefinition)
                 parameterElement = document.GetElement(((InternalDefinition)definition).Id) as ParameterElement;
-            
+
+            if (!string.IsNullOrEmpty(parameterDefinition.Guid))
+                BH.Engine.Base.Compute.RecordWarning("Parameter Guid cannot be set on Push, the input value has been ignored.");
+
             refObjects.AddOrReplace(parameterDefinition, parameterElement);
             return parameterElement;
         }
