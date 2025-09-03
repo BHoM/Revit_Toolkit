@@ -43,7 +43,6 @@ namespace BH.Revit.Engine.Core
             return LabelUtils.GetLabelFor(spec);
         }
 #endif
-        [PreviousVersion("8.2", "BH.Revit.Engine.UI.Query.Label(Autodesk.Revit.DB.ForgeTypeId)")]
         public static string Label(this ForgeTypeId spec)
         {
             if (spec != null)
@@ -54,7 +53,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [PreviousVersion("8.2", "BH.Revit.Engine.UI.Query.Label(Autodesk.Revit.DB.ForgeTypeId, System.Boolean)")]
         [Description("Returns the human-readable label of a given Revit unit.")]
         [Input("unit", "Unit to get the label for.")]
         [Input("useAbbreviation", "If true, an abbreviated label will be returned, e.g. mm. Otherwise a full label will be returned, e.g. Millimeters.")]

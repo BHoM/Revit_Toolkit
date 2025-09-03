@@ -41,9 +41,9 @@ namespace BH.Revit.Engine.Core
                 return false;
 
 #if REVIT2021
-            return parameter.Definition.ParameterGroup == BuiltInParameterGroup.PG_GRAPHICS;
+            return parameter.Definition.ParameterGroup == BuiltInParameterGroup.PG_GRAPHICS && parameter.HasValue && parameter.AsValueString() == null;
 #else
-            return parameter.Definition.GetGroupTypeId() == Autodesk.Revit.DB.GroupTypeId.Graphics;
+            return parameter.Definition.GetGroupTypeId() == Autodesk.Revit.DB.GroupTypeId.Graphics && parameter.HasValue && parameter.AsValueString() == null;
 #endif
         }
 

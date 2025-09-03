@@ -38,7 +38,6 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [PreviousVersion("8.2", "BH.Revit.Engine.Core.Query.PipeSectionProperty(Autodesk.Revit.DB.Plumbing.Pipe, BH.oM.Adapters.Revit.Settings.RevitSettings)")]
         [Description("Query a Revit pipe to get a BHoM pipe section property.")]
         [Input("pipe", "Revit pipe to be queried for information required for a BHoM section property.")]
         [Input("settings", "Revit adapter settings.")]
