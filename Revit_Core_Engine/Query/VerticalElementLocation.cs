@@ -38,6 +38,7 @@ namespace BH.Revit.Engine.Core
 
         [Description("Extracts the location line of a BHoM Pile or Column object in preparation to push to Revit. Includes validity checks and flipping reversed nodes.")]
         [Input("element", "A BHoM Pile or Column object to extract the line from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
         [Output("line", "Preprocessed location line of the BHoM Pile or Column object to be used on push to Revit.")]
         public static Line VerticalElementLocation(this IFramingElement element, RevitSettings settings)
         {

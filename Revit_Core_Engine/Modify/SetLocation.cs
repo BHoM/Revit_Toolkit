@@ -255,7 +255,7 @@ namespace BH.Revit.Engine.Core
 
         [Description("Sets the location of a given Revit FamilyInstance based on a given BHoM Pile.")]
         [Input("element", "Revit FamilyInstance to be modified.")]
-        [Input("framingElement", "BHoM Pile acting as a source of information about the new location.")]
+        [Input("pile", "BHoM Pile acting as a source of information about the new location.")]
         [Input("settings", "Revit adapter settings to be used while performing the operation.")]
         [Output("success", "True if location of the input Revit FamilyInstance has been successfully set.")]
         public static bool SetLocation(this FamilyInstance element, Pile pile, RevitSettings settings)
