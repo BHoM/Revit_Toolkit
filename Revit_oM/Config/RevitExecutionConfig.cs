@@ -20,34 +20,22 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
 using BH.oM.Adapter;
-using BH.oM.Data.Requests;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
-namespace BH.Revit.Adapter.Core
+namespace BH.oM.Adapters.Revit
 {
-    public partial class RevitListenerAdapter
+    [Description("Configuration used for adapter interaction with Revit on Execution action.")]
+    public class RevitExecutionConfig : ActionConfig
     {
         /***************************************************/
-        /****      Revit side of Revit_Adapter Pull     ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
-        public override IEnumerable<object> Pull(IRequest request, PullType pullType = PullType.AdapterDefault, ActionConfig actionConfig = null)
-        {
-            // Check the document
-            UIDocument uiDocument = this.UIDocument;
-            Document document = this.Document;
-            if (document == null)
-            {
-                BH.Engine.Base.Compute.RecordError("BHoM objects could not be removed because Revit Document is null (possibly there is no open documents in Revit).");
-                return new List<object>();
-            }
-
-            // Read the objects based on the request
-            return Read(request, actionConfig);
-        }
+        [Description("If true, Revit warnings and failure message popups will be suppressed (not shown to the user). Whilst this option may speed the execution process up in case of multiple warnings, it may lead to important issues.")]
+        public virtual bool SuppressFailureMessages { get; set; } = true;
 
         /***************************************************/
     }

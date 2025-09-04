@@ -20,40 +20,59 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using BH.oM.Adapter;
-using BH.oM.Data.Requests;
+using BH.oM.Adapters.Revit.Commands;
+using BH.oM.Base;
+using BH.Revit.Engine.Core;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.Revit.Adapter.Core
 {
     public partial class RevitListenerAdapter
     {
         /***************************************************/
-        /****      Revit side of Revit_Adapter Pull     ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public override IEnumerable<object> Pull(IRequest request, PullType pullType = PullType.AdapterDefault, ActionConfig actionConfig = null)
+        public Output<List<object>, bool> Select(Select command)
         {
-            // Check the document
-            UIDocument uiDocument = this.UIDocument;
-            Document document = this.Document;
-            if (document == null)
+            Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
+
+            var elementIds = command?.Targets?.ElementIds();
+
+            if (elementIds == null)
             {
-                BH.Engine.Base.Compute.RecordError("BHoM objects could not be removed because Revit Document is null (possibly there is no open documents in Revit).");
-                return new List<object>();
+                BH.Engine.Base.Compute.RecordError("Provided collection of elements to select is invalid.");
+                return output;
             }
 
-            // Read the objects based on the request
-            return Read(request, actionConfig);
+            UIDocument uidoc = this.UIDocument;
+
+            if (uidoc == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Revit UI is not available).");
+                return output;
+            }
+
+            if (command.ShowObjects)
+            {
+                try
+                {
+                    uidoc.ShowElements(elementIds);
+                }
+                catch 
+                {
+                }
+            }
+
+            uidoc.Selection.SetElementIds(elementIds);
+
+            output.Item1 = elementIds.Select(x => x.IntegerValue).Cast<object>().ToList();
+            output.Item2 = true;
+            return output;
         }
 
         /***************************************************/
     }
 }
-
-
-
-
-

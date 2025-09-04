@@ -20,10 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
 using BH.oM.Adapter;
-using BH.oM.Data.Requests;
+using BH.oM.Adapters.Revit.Commands;
+using BH.oM.Base;
 using System.Collections.Generic;
 
 namespace BH.Revit.Adapter.Core
@@ -31,22 +30,50 @@ namespace BH.Revit.Adapter.Core
     public partial class RevitListenerAdapter
     {
         /***************************************************/
-        /****      Revit side of Revit_Adapter Pull     ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public override IEnumerable<object> Pull(IRequest request, PullType pullType = PullType.AdapterDefault, ActionConfig actionConfig = null)
+        public Output<List<object>, bool> IRunCommand(IExecuteCommand command)
         {
-            // Check the document
-            UIDocument uiDocument = this.UIDocument;
-            Document document = this.Document;
-            if (document == null)
-            {
-                BH.Engine.Base.Compute.RecordError("BHoM objects could not be removed because Revit Document is null (possibly there is no open documents in Revit).");
-                return new List<object>();
-            }
+            return RunCommand(command as dynamic);
+        }
 
-            // Read the objects based on the request
-            return Read(request, actionConfig);
+        /***************************************************/
+
+        public Output<List<object>, bool> RunCommand(Select command)
+        {
+            return Select(command);
+        }
+
+        /***************************************************/
+
+        public Output<List<object>, bool> RunCommand(Isolate command)
+        {
+            return Isolate(command);
+        }
+
+        /***************************************************/
+
+        public Output<List<object>, bool> RunCommand(PullSelection command)
+        {
+            return PullSelection(command);
+        }
+
+        /***************************************************/
+
+        public Output<List<object>, bool> RunCommand(DirectPush command)
+        {
+            return DirectPush(command);
+        }
+
+        /***************************************************/
+        /****               Private methods             ****/
+        /***************************************************/
+
+        private Output<List<object>, bool> RunCommand(IExecuteCommand command)
+        {
+            BH.Engine.Base.Compute.RecordError($"Command {nameof(command)} is not supported");
+            return new Output<List<object>, bool>();
         }
 
         /***************************************************/

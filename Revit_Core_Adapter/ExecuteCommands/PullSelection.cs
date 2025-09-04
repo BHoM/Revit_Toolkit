@@ -22,38 +22,40 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using BH.oM.Adapter;
-using BH.oM.Data.Requests;
+using BH.oM.Adapters.Revit.Commands;
+using BH.oM.Base;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.Revit.Adapter.Core
 {
     public partial class RevitListenerAdapter
     {
         /***************************************************/
-        /****      Revit side of Revit_Adapter Pull     ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public override IEnumerable<object> Pull(IRequest request, PullType pullType = PullType.AdapterDefault, ActionConfig actionConfig = null)
+        public Output<List<object>, bool> PullSelection(PullSelection command)
         {
-            // Check the document
-            UIDocument uiDocument = this.UIDocument;
-            Document document = this.Document;
-            if (document == null)
-            {
-                BH.Engine.Base.Compute.RecordError("BHoM objects could not be removed because Revit Document is null (possibly there is no open documents in Revit).");
-                return new List<object>();
-            }
+            Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 
-            // Read the objects based on the request
-            return Read(request, actionConfig);
+            UIDocument uidoc = this.UIDocument;
+            if (uidoc == null)
+            {
+                BH.Engine.Base.Compute.RecordError("No connected document found.");
+                return output;
+            }                
+
+            output.Item1 = new List<object>();
+            output.Item2 = true;
+            
+            ICollection<ElementId> selectedIds = uidoc.Selection.GetElementIds();
+            if (selectedIds.Count != 0)
+                output.Item1.AddRange(Read(this.Document, Transform.Identity, selectedIds.ToList()).Cast<object>());
+
+            return output;
         }
 
         /***************************************************/
     }
 }
-
-
-
-
-

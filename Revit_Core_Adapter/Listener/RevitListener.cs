@@ -53,6 +53,8 @@ namespace BH.Revit.Adapter.Core
 
         public PushType LatestPushType { get; set; }
 
+        public IExecuteCommand LatestCommand { get; set; }
+
         public ActionConfig LatestConfig { get; set; } = null;
 
         public string LatestTag { get; set; }
@@ -177,7 +179,7 @@ namespace BH.Revit.Adapter.Core
             //Define static instance of the listener
             Listener = this;
 
-            //Define push and pull events
+            //Define all types of event
             PushEvent pushEvent = new PushEvent();
             m_PushEvent = ExternalEvent.Create(pushEvent);
 
@@ -186,6 +188,9 @@ namespace BH.Revit.Adapter.Core
 
             RemoveEvent removeEvent = new RemoveEvent();
             m_RemoveEvent = ExternalEvent.Create(removeEvent);
+
+            ExecuteEvent executeEvent = new ExecuteEvent();
+            m_ExecuteEvent = ExternalEvent.Create(executeEvent);
 
             //empty list for package holding
             LatestPackage = new List<IObject>();
@@ -275,6 +280,19 @@ namespace BH.Revit.Adapter.Core
                             AdapterSettings = package.Data[3] as RevitSettings;
                             break;
                         }
+
+                    case PackageType.Execute:
+                        {
+                            //Set the event to raise
+                            eve = m_ExecuteEvent;
+
+                            //Clear the previous package list
+                            LatestCommand = package.Data[1] as IExecuteCommand;
+                            LatestConfig = package.Data[2] as ActionConfig;
+                            AdapterSettings = package.Data[3] as RevitSettings;
+                            break;
+                        }
+
                     case PackageType.UpdateTags:
                         {
                             //Set the event to raise
@@ -329,6 +347,7 @@ namespace BH.Revit.Adapter.Core
                     packageSize = 5;
                     break;
                 case PackageType.Remove:
+                case PackageType.Execute:
                     packageSize = 4;
                     break;
             }
@@ -492,6 +511,7 @@ namespace BH.Revit.Adapter.Core
         private ExternalEvent m_PullEvent;
         private ExternalEvent m_RemoveEvent;
         private ExternalEvent m_UpdateTagsEvent;
+        private ExternalEvent m_ExecuteEvent;
         private Dictionary<Document, RevitListenerAdapter> m_Adapters = new Dictionary<Document, RevitListenerAdapter>();
         private PushButton m_ActivateButton;
         private PushButton m_UpdatePortsButton;

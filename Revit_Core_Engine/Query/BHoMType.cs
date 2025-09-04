@@ -703,9 +703,23 @@ namespace BH.Revit.Engine.Core
                     return typeof(BH.oM.Adapters.Revit.Elements.DraftingInstance);
             }
 
-            return null;
         }
 
+        /***************************************************/
+
+        [Description("Finds a suitable BHoM type to convert the given Revit ParameterElement to, based on the requested engineering discipline and adapter settings.")]
+        [Input("parameterElement", "Revit ParameterElement to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit ParameterElement to.")]
+        public static Type BHoMType(this ParameterElement parameterElement, Discipline discipline, RevitSettings settings = null)
+        {
+            switch (discipline)
+            {
+                default:
+                    return typeof(BH.oM.Adapters.Revit.Parameters.ParameterDefinition);
+            }
+        }
 
         /***************************************************/
         /****             Fallback Methods              ****/

@@ -20,10 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using BH.oM.Adapter;
-using BH.oM.Data.Requests;
+using BH.oM.Adapters.Revit;
+using BH.oM.Base;
 using System.Collections.Generic;
 
 namespace BH.Revit.Adapter.Core
@@ -31,25 +31,29 @@ namespace BH.Revit.Adapter.Core
     public partial class RevitListenerAdapter
     {
         /***************************************************/
-        /****      Revit side of Revit_Adapter Pull     ****/
+        /****    Revit side of Revit_Adapter Execute    ****/
         /***************************************************/
 
-        public override IEnumerable<object> Pull(IRequest request, PullType pullType = PullType.AdapterDefault, ActionConfig actionConfig = null)
+        public override Output<List<object>, bool> Execute(IExecuteCommand command, ActionConfig actionConfig = null)
         {
-            // Check the document
-            UIDocument uiDocument = this.UIDocument;
-            Document document = this.Document;
-            if (document == null)
-            {
-                BH.Engine.Base.Compute.RecordError("BHoM objects could not be removed because Revit Document is null (possibly there is no open documents in Revit).");
-                return new List<object>();
-            }
+            Output<List<object>, bool> result = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
+            RevitExecutionConfig config = (actionConfig as RevitExecutionConfig) ?? new RevitExecutionConfig();
 
-            // Read the objects based on the request
-            return Read(request, actionConfig);
+            // Suppress warnings
+            if (UIControlledApplication != null && config.SuppressFailureMessages)
+                UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
+
+            result = IRunCommand(command);
+
+            // Switch of warning suppression
+            if (UIControlledApplication != null && config.SuppressFailureMessages)
+                UIControlledApplication.ControlledApplication.FailuresProcessing -= ControlledApplication_FailuresProcessing;
+
+            return result;
         }
 
         /***************************************************/
+
     }
 }
 
