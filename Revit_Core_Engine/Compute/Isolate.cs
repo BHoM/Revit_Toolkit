@@ -127,8 +127,7 @@ namespace BH.Revit.Engine.Core
                     var missingHosts = hostIds.Where(h => !nonViewSpecificSet.Contains(h)).Distinct().ToList();
                     if (missingHosts.Count > 0)
                     {
-                        TaskDialog.Show("BHoM",
-                            $"Some host elements are not selected: {string.Join(", ", missingHosts)}. " +
+                        BH.Engine.Base.Compute.RecordWarning($"Some host elements are not selected: {string.Join(", ", missingHosts)}. " +
                             "Their dependent annotations may not display as expected.");
                     }
                 }
