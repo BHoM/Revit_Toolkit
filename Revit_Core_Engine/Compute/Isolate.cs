@@ -73,7 +73,7 @@ namespace BH.Revit.Engine.Core
 
             if (targetView == null)
             {
-                TaskDialog.Show("BHoM", "No suitable view found.");
+                BH.Engine.Base.Compute.RecordWarning("Could not isolate the elements because no suitable view was found.");
                 return false;
             }
 
