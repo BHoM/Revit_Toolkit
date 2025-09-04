@@ -25,7 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.oM.Adapter.Commands
+namespace BH.oM.Adapters.Revit.Commands
 {
     [Description("Push action allows quick transfer of selected objects on current UI to External Application.")]
     public class DirectPush : IExecuteCommand
