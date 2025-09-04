@@ -36,7 +36,8 @@ namespace BH.oM.Adapters.Revit.Commands
 
         [Description("Elements to be selected, specified as either IBHoMObjects or integers representing ElementIds.")]
         public virtual List<object> Targets { get; set; }
-        [Description("Set True to view objects on External Application UI")]
+
+        [Description("Set True to focus view on selected objects in the External Application UI as a part of this action.")]
         public virtual bool ShowObjects { get; set; } = true;
 
         /***************************************************/
