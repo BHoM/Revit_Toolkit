@@ -58,7 +58,7 @@ namespace BH.Revit.Engine.Core
 
             if (doc.IsReadOnly)
             {
-                TaskDialog.Show("BHoM", "Revit Document is read only.");
+                BH.Engine.Base.Compute.RecordWarning("Could not isolate the elements because Revit Document is read only.");
                 return false;
             }
 
