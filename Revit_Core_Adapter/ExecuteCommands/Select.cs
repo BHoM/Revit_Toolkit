@@ -41,17 +41,11 @@ namespace BH.Revit.Adapter.Core
         {
             Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 
-            if (command?.Targets == null)
-            {
-                BH.Engine.Base.Compute.RecordError("No selected objects found.");
-                return output;
-            }
+            var elementIds = command?.Targets?.ElementIds();
 
-            var elementIds = command.Targets.ElementIds();
-
-            if (elementIds == null || elementIds.Count == 0)
+            if (elementIds == null)
             {
-                BH.Engine.Base.Compute.RecordError("ElementIds is invalid or empty.");
+                BH.Engine.Base.Compute.RecordError("Provided collection of elements to select is invalid.");
                 return output;
             }
 
