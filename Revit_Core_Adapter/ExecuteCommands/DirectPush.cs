@@ -20,10 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-using BH.oM.Adapter;
-using BH.oM.Data.Requests;
+using BH.oM.Adapters.Revit.Commands;
+using BH.oM.Base;
+using System;
 using System.Collections.Generic;
 
 namespace BH.Revit.Adapter.Core
@@ -31,29 +30,34 @@ namespace BH.Revit.Adapter.Core
     public partial class RevitListenerAdapter
     {
         /***************************************************/
-        /****      Revit side of Revit_Adapter Pull     ****/
+        /****              Public methods               ****/
         /***************************************************/
 
-        public override IEnumerable<object> Pull(IRequest request, PullType pullType = PullType.AdapterDefault, ActionConfig actionConfig = null)
+        public Output<List<object>, bool> DirectPush(DirectPush command)
         {
-            // Check the document
-            UIDocument uiDocument = this.UIDocument;
-            Document document = this.Document;
-            if (document == null)
-            {
-                BH.Engine.Base.Compute.RecordError("BHoM objects could not be removed because Revit Document is null (possibly there is no open documents in Revit).");
-                return new List<object>();
-            }
+            Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 
-            // Read the objects based on the request
-            return Read(request, actionConfig);
+            object objects = command?.ObjectsToPush;
+
+            if (objects == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Input object list is null.");
+                return output;
+            }
+            try
+            {
+                output.Item1 = Push(objects as IEnumerable<object>);
+                output.Item2 = true;
+            }
+            catch (Exception e)
+            {
+                BH.Engine.Base.Compute.RecordError($"Failed to push objects: {e.Message}");
+            }
+            
+            return output;
         }
 
         /***************************************************/
+
     }
 }
-
-
-
-
-
