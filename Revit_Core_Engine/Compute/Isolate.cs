@@ -116,7 +116,7 @@ namespace BH.Revit.Engine.Core
                 bool sameOwner = viewSpecific.All(id => doc.GetElement(id).OwnerViewId == vId);
                 if (!sameOwner)
                 {
-                    TaskDialog.Show("BHoM", "Selected view-specific elements do not share the same owner view.");
+                    BH.Engine.Base.Compute.RecordWarning("Could not isolate the elements because selected view-specific elements do not share the same owner view.");
                     return null;
                 }
                  
