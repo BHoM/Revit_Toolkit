@@ -22,10 +22,8 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 
@@ -44,7 +42,7 @@ namespace BH.Revit.Engine.Core
         [Output("Success", "True if the elements were successfully isolated, false otherwise.")]
         public static bool Isolate(this UIDocument uidoc, IEnumerable<ElementId> elementIds)
         {
-            var doc = uidoc?.Document;
+            Document doc = uidoc?.Document;
             #region Check accesibility
             if (uidoc == null)
             {
@@ -89,7 +87,7 @@ namespace BH.Revit.Engine.Core
             }
 
             return true;
-        } 
+        }
 
         /***************************************************/
         /****             Private methods               ****/
@@ -98,18 +96,18 @@ namespace BH.Revit.Engine.Core
         private static View GetTargetView(Document doc, View currentView, List<ElementId> elementIds)
         {
             // Check invalid element IDs
-            var invalidedIds = elementIds.Where(id => doc.GetElement(id) == null).ToList();
+            List<ElementId> invalidedIds = elementIds.Where(id => doc.GetElement(id) == null).ToList();
             if (invalidedIds.Count > 0)
                 BH.Engine.Base.Compute.RecordWarning($"Elements under some element IDs do not exist in the current document: {string.Join(", ", invalidedIds.Select(id => id.IntegerValue))}");
 
             // Check if selected viewspecific elements are at same view, then check host elements
-            var viewSpecific = elementIds.Where(id => doc.GetElement(id)?.ViewSpecific == true).ToList();
-            var nonViewSpecificSet = elementIds.Except(viewSpecific).Select(id => id.IntegerValue).ToHashSet();
+            List<ElementId> viewSpecific = elementIds.Where(id => doc.GetElement(id)?.ViewSpecific == true).ToList();
+            HashSet<int> nonViewSpecificSet = elementIds.Except(viewSpecific).Select(id => id.IntegerValue).ToHashSet();
 
             if (viewSpecific.Count > 0)
             {
-                var firstVs = doc.GetElement(viewSpecific.First());
-                var vId = firstVs.OwnerViewId;
+                Element firstVs = doc.GetElement(viewSpecific.First());
+                ElementId vId = firstVs.OwnerViewId;
 
                 bool sameOwner = viewSpecific.All(id => doc.GetElement(id).OwnerViewId == vId);
                 if (!sameOwner)
@@ -117,12 +115,12 @@ namespace BH.Revit.Engine.Core
                     BH.Engine.Base.Compute.RecordWarning("Could not isolate the elements because selected view-specific elements do not share the same owner view.");
                     return null;
                 }
-                 
+
                 // Warn if hosts of view-specific items are not included in selection
-                var hostIds = viewSpecific.GetHostElementIds(doc).Select(x => x.IntegerValue).ToList();
+                List<int> hostIds = viewSpecific.GetHostElementIds(doc).Select(x => x.IntegerValue).ToList();
                 if (hostIds.Count > 0)
                 {
-                    var missingHosts = hostIds.Where(h => !nonViewSpecificSet.Contains(h)).Distinct().ToList();
+                    List<int> missingHosts = hostIds.Where(h => !nonViewSpecificSet.Contains(h)).Distinct().ToList();
                     if (missingHosts.Count > 0)
                     {
                         BH.Engine.Base.Compute.RecordWarning($"Some host elements are not selected: {string.Join(", ", missingHosts)}. " +
@@ -134,12 +132,12 @@ namespace BH.Revit.Engine.Core
             }
 
             // Use current view if suitable and all elements are visible there
-            if (currentView != null && currentView is not ViewSchedule && currentView is not ViewDrafting && currentView is not ViewSheet)
+            if (currentView != null && !(currentView is ViewSchedule) && !(currentView is ViewDrafting) && !(currentView is ViewSheet))
             {
-                var visibleInCurrentView = new FilteredElementCollector(doc, currentView.Id).ToElementIds();
+                ICollection<ElementId> visibleInCurrentView = new FilteredElementCollector(doc, currentView.Id).ToElementIds();
                 bool allContainedInView = elementIds.All(id =>
                 {
-                    var e = doc.GetElement(id);
+                    Element e = doc.GetElement(id);
                     return e != null && visibleInCurrentView.Contains(id);
                 });
 
@@ -177,25 +175,25 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            if (view is View3D v3d && v3d.CropBoxActive) 
+            if (view is View3D v3d && v3d.CropBoxActive)
                 v3d.CropBoxActive = false;
 
             // Ensure the crop region is disabled
-            if (view.CropBoxActive) 
+            if (view.CropBoxActive)
                 view.CropBoxActive = false;
         }
         /***************************************************/
 
         private static View3D GetOrCreate3D(Document doc)
         {
-            var v = new FilteredElementCollector(doc)
+            View3D v = new FilteredElementCollector(doc)
                 .OfClass(typeof(View3D))
                 .Cast<View3D>()
                 .FirstOrDefault(x => !x.IsTemplate && !x.IsPerspective && x.ViewType == ViewType.ThreeD);
 
             if (v != null) return v;
 
-            var vftId = new FilteredElementCollector(doc)
+            ElementId vftId = new FilteredElementCollector(doc)
                 .OfClass(typeof(ViewFamilyType))
                 .Cast<ViewFamilyType>()
                 .FirstOrDefault(t => t.ViewFamily == ViewFamily.ThreeDimensional)?.Id;
@@ -207,9 +205,9 @@ namespace BH.Revit.Engine.Core
 
         private static ICollection<ElementId> GetHostElementIds(this IEnumerable<ElementId> viewSpecificElementIds, Document doc)
         {
-            List<ElementId> hostIds = new();
+            List<ElementId> hostIds = new List<ElementId>();
 
-            foreach (var id in viewSpecificElementIds)
+            foreach (ElementId id in viewSpecificElementIds)
             {
                 Element el = doc.GetElement(id);
                 if (el is IndependentTag tag)
@@ -232,7 +230,7 @@ namespace BH.Revit.Engine.Core
                     if (r != null)
                     {
                         hostIds.Add(r.ElementId);
-                    }  
+                    }
                 }
 
                 if (el is SpotDimension spot && spot.References.Size > 0)
