@@ -68,7 +68,8 @@ namespace BH.Revit.Adapter.Core
                 }
                 catch (Exception e)
                 {
-                    RevitListener.Listener.ReturnData(new List<string> { "Failed to execute. Exception from the adapter: " + e.Message });
+                    BH.Engine.Base.Compute.RecordError("Failed to execute. Exception from the adapter: " + e.Message);
+                    RevitListener.Listener.ReturnData(new List<object> { new Output<List<object>, bool>() { Item1 = null, Item2 = false } });
                 }
             }
         }
