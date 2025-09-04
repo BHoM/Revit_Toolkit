@@ -25,7 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.oM.Adapter.Commands
+namespace BH.oM.Adapters.Revit.Commands
 {
     [Description("Select action allows direct interaction with External Application.")]
     public class Select : IExecuteCommand
