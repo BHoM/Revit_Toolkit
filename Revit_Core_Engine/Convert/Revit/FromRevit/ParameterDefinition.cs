@@ -59,7 +59,7 @@ namespace BH.Revit.Engine.Core
 
             string parameterType = def.GetDataType().TypeId;
 
-            ForgeTypeId groupTypeId = def.GroupTypeId();
+            var groupTypeId = def.GroupTypeId();
 
 #if REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
             string parameterGroup = LabelUtils.GetLabelFor(groupTypeId);
