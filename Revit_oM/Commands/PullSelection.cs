@@ -25,7 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.oM.Adapter.Commands
+namespace BH.oM.Adapters.Revit.Commands
 {
     [Description("Pull action allows quick retrieval of selected elements from External Application.")]
     public class PullSelection : IExecuteCommand
