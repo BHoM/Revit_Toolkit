@@ -99,10 +99,7 @@ namespace BH.Revit.Engine.Core
             // Check invalid element IDs
             var invalidedIds = elementIds.Where(id => doc.GetElement(id) == null).ToList();
             if (invalidedIds.Count > 0)
-            {
-                TaskDialog.Show("BHoM",$"Some element IDs are invalid: {string.Join(", ", invalidedIds.Select(id => id.IntegerValue))}");
-                return null;
-            }
+                BH.Engine.Base.Compute.RecordWarning($"Elements under some element IDs do not exist in the current document: {string.Join(", ", invalidedIds.Select(id => id.IntegerValue))}");
 
             // Check if selected viewspecific elements are at same view, then check host elements
             var viewSpecific = elementIds.Where(id => doc.GetElement(id)?.ViewSpecific == true).ToList();
