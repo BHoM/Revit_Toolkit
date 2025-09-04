@@ -52,7 +52,7 @@ namespace BH.Revit.Engine.Core
             }
             if (doc == null)
             {
-                TaskDialog.Show("BHoM", "Revit Document is null (possibly there is no open documents in Revit).");
+                BH.Engine.Base.Compute.RecordWarning("Could not isolate the elements because Revit Document is null (possibly there is no open documents in Revit).");
                 return false;
             }
 
