@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
         [Input("UIDocument", "The active UI document in Revit.")]
         [Input("ElementIds", "The collection of element IDs to isolate.")]
         [Output("Success", "True if the elements were successfully isolated, false otherwise.")]
-        public static bool Isolate(this Document doc, UIDocument uidoc, IEnumerable<ElementId> elementIds)
+        public static bool Isolate(this UIDocument uidoc, IEnumerable<ElementId> elementIds)
         {
             #region Check accesibility
             if (uidoc == null)
