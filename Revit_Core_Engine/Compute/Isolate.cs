@@ -44,6 +44,7 @@ namespace BH.Revit.Engine.Core
         [Output("Success", "True if the elements were successfully isolated, false otherwise.")]
         public static bool Isolate(this UIDocument uidoc, IEnumerable<ElementId> elementIds)
         {
+            var doc = uidoc?.Document;
             #region Check accesibility
             if (uidoc == null)
             {
@@ -167,7 +168,7 @@ namespace BH.Revit.Engine.Core
 
                 if (el.IsHidden(view))
                 {
-                    ICollection<ElementId> idsToUnhide = [id];
+                    ICollection<ElementId> idsToUnhide = new List<ElementId> { id };
                     try
                     {
                         view.UnhideElements(idsToUnhide);

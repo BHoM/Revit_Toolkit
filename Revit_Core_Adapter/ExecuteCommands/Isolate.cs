@@ -20,9 +20,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using BH.oM.Adapter.Commands;
+using BH.oM.Adapters.Revit.Commands;
 using BH.oM.Base;
 using BH.Revit.Engine.Core;
 using System.Collections.Generic;
@@ -49,9 +48,8 @@ namespace BH.Revit.Adapter.Core
             }
 
             UIDocument uidoc = this.UIDocument;
-            Document doc = this.Document;
 
-            if (!Compute.Isolate(doc,uidoc, elementIds))
+            if (!Compute.Isolate(uidoc, elementIds))
             {
                 BH.Engine.Base.Compute.RecordError("Isolate command failed.");
                 return output;
