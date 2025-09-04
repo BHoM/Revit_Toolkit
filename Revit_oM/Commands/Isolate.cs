@@ -25,7 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.oM.Adapter.Commands
+namespace BH.oM.Adapters.Revit.Commands
 {
     [Description("Isolate action allows quick isolation of chosen Elements in External Application.")]
     public class Isolate : IExecuteCommand
