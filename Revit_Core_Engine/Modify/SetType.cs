@@ -25,8 +25,8 @@ using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Physical.Elements;
 using BH.oM.Base.Attributes;
+using BH.oM.Physical.Elements;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -105,7 +105,7 @@ namespace BH.Revit.Engine.Core
 
             return false;
         }
-        
+
         /***************************************************/
 
         [Description("Updates the type of the Revit Element based on the given BHoM object.")]
@@ -161,7 +161,7 @@ namespace BH.Revit.Engine.Core
         [Output("success", "True if the type of the Element has been successfully updated.")]
         private static bool TrySetTypeFromString(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
-            if (element.Category.Id.IntegerValue < 0)
+            if (element?.Category != null && element.Category.Id.IntegerValue < 0)
             {
                 RevitParameter param = (bHoMObject.Fragments?.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush)?.Parameters?.FirstOrDefault(x => x.Name == "Type");
                 if (param?.Value is string)
