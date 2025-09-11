@@ -60,3 +60,7 @@ bld/
 .vs/
 .idea/
 **/launchSettings.json
+
+# Cursor AI Files #
+###################
+.cursor/
