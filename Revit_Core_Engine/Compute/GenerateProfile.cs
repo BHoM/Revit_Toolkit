@@ -211,11 +211,12 @@ namespace BH.Revit.Engine.Core
                     t.Commit();
                 }
 
-                string tempLocation = SanitizePath($"{m_TempFolder}\\{element.ProfileFamilyName()}.rfa");
+                string tempFolder = Path.GetTempPath();
+                string tempLocation = SanitizePath($"{tempFolder}\\{element.ProfileFamilyName()}.rfa");
                 try
                 {
-                    if (!System.IO.Directory.Exists(m_TempFolder))
-                        System.IO.Directory.CreateDirectory(m_TempFolder);
+                    if (!Directory.Exists(tempFolder))
+                        Directory.CreateDirectory(tempFolder);
 
                     SaveAsOptions saveOptions = new SaveAsOptions();
                     saveOptions.OverwriteExistingFile = true;
@@ -223,7 +224,7 @@ namespace BH.Revit.Engine.Core
                 }
                 catch (Exception ex)
                 {
-                    BH.Engine.Base.Compute.RecordError($"Creation of a freeform Revit profile geometry failed because the family could not be temporarily saved in {m_TempFolder}. Please make sure the folder exists and you have access to it, then try to empty it in case the issue persists.");
+                    BH.Engine.Base.Compute.RecordError($"Creation of a freeform Revit profile geometry failed because the family could not be temporarily saved in {tempFolder}. Please make sure the folder exists and you have access to it, then try to empty it in case the issue persists.");
                     familyDocument.Close(false);
                     return null;
                 }
@@ -232,7 +233,7 @@ namespace BH.Revit.Engine.Core
 
                 try
                 {
-                    System.IO.File.Delete(tempLocation);
+                    File.Delete(tempLocation);
                 }
                 catch (Exception ex)
                 {
@@ -708,7 +709,6 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         private static readonly string m_FamilyDirectory = @"C:\ProgramData\BHoM\Resources\Revit\Families";
-        private static readonly string m_TempFolder = @"C:\temp";
 
         private static readonly Dictionary<Type, string> m_FamilyFileNames = new Dictionary<Type, string>
         {
