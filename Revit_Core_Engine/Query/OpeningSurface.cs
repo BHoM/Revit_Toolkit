@@ -184,7 +184,9 @@ namespace BH.Revit.Engine.Core
                         // Find additional faces that are connected to the edge face and aligned with host direction
                         foreach (Autodesk.Revit.DB.Face hostFace in hostFaces)
                         {
-                            XYZ hostFaceNormal = (hostFace as PlanarFace).FaceNormal;                            
+                            XYZ hostFaceNormal = (hostFace as PlanarFace)?.FaceNormal;
+                            if (hostFaceNormal == null)
+                                continue;
                             if (edgeFace.Proximity(hostFace,center).Item3 == 0 && (hostFaceNormal.IsAlmostEqualTo(hostDirection) || hostFaceNormal.Negate().IsAlmostEqualTo(hostDirection)))
                                 edgeFaces.Add(hostFace);
                         }
