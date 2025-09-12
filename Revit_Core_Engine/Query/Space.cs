@@ -62,8 +62,17 @@ namespace BH.Revit.Engine.Core
                     .OfType<Space>()
                     .ToList();
             }
+            else
+            {
+                m_LinkTransforms = spaces.GroupBy(s => s.Document)
+                    .Where(g => g.Key.IsLinked)
+                    .ToDictionary(g => g.Key, g => g.Key.LinkInstance().GetTotalTransform());
+            }
 
             XYZ locationPoint = element.LocationPoint(useRoomCalculationPoint);
+            if (locationPoint == null)
+                return null;
+
             Transform elementTransform = element.Document.IsLinked ? element.Document.LinkInstance().GetTotalTransform() : Transform.Identity;
             if (!elementTransform.IsIdentity)
                 locationPoint = elementTransform.OfPoint(locationPoint);
@@ -84,13 +93,19 @@ namespace BH.Revit.Engine.Core
 
         private static bool IsInSpace(this XYZ locationPoint, Space space)
         {
-            Transform spaceTransform = space.Document.IsLinked ? space.Document.LinkInstance().GetTotalTransform() : Transform.Identity;
+            Transform spaceTransform = space.Document.IsLinked ? m_LinkTransforms[space.Document] : Transform.Identity;
 
             if (!spaceTransform.IsIdentity)
                 locationPoint = spaceTransform.Inverse.OfPoint(locationPoint);
 
             return space.IsPointInSpace(locationPoint);
         }
+
+        /***************************************************/
+        /****              Private field                ****/
+        /***************************************************/
+
+        private static Dictionary<Document, Transform> m_LinkTransforms = new Dictionary<Document, Transform>();
 
         /***************************************************/
     }
