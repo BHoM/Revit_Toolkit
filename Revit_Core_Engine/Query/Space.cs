@@ -70,6 +70,9 @@ namespace BH.Revit.Engine.Core
             }
 
             XYZ locationPoint = element.LocationPoint(useRoomCalculationPoint);
+            if (locationPoint == null)
+                return null;
+
             Transform elementTransform = element.Document.IsLinked ? element.Document.LinkInstance().GetTotalTransform() : Transform.Identity;
             if (!elementTransform.IsIdentity)
                 locationPoint = elementTransform.OfPoint(locationPoint);
