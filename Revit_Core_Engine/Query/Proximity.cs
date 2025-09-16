@@ -201,12 +201,18 @@ namespace BH.Revit.Engine.Core
             return new Output<XYZ, XYZ, double> { Item1 = closestPoints.XYZPointOnFirstCurve, Item2 = closestPoints.XYZPointOnSecondCurve, Item3 = closestPoints.Distance };
         }
 
-
-        /***************************************************/
-        /****              Private methods              ****/
         /***************************************************/
 
-        private static Output<XYZ, XYZ, double> Proximity(this Face face1, Face face2, XYZ start, double tolerance)
+        [Description("Calculates a pair of closest points on two faces as well as the distance between them using an iterative approach." +
+                     "\nThis is a backend method, working with the Revit object model and in Revit (imperial) units.")]
+        [Input("face1", "First face in the pair.")]
+        [Input("face2", "Second face in the pair.")]
+        [Input("start", "Starting point for the iterative proximity calculation.")]
+        [Input("tolerance", "Distance at which the solution is considered convergent. By default set to 1e-3 ft as a practical value.")]
+        [MultiOutput(0, "point1", "Point on first face that is closest to the second face.")]
+        [MultiOutput(1, "point2", "Point on second face that is closest to the first face.")]
+        [MultiOutput(2, "distance", "Distance between the found points.")]
+        public static Output<XYZ, XYZ, double> Proximity(this Face face1, Face face2, XYZ start, double tolerance = 1e-3)
         {
             double difference;
             XYZ current = start;
@@ -242,6 +248,8 @@ namespace BH.Revit.Engine.Core
             return new Output<XYZ, XYZ, double> { Item1 = point1, Item2 = point2, Item3 = distance };
         }
 
+        /***************************************************/
+        /****              Private methods              ****/
         /***************************************************/
 
         private static (double, XYZ) Proximity(this Face face, XYZ point, double tolerance)
