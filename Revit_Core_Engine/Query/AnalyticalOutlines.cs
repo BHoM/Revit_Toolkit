@@ -25,8 +25,8 @@ using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Geometry;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -65,8 +65,8 @@ namespace BH.Revit.Engine.Core
             }
 
             settings = settings.DefaultIfNull();
-            result = BH.Engine.Geometry.Compute.IJoin(result, settings.DistanceTolerance).ConvertAll(c => c as ICurve);
-            
+            result = BH.Engine.Geometry.Compute.IJoin(result, BH.oM.Adapters.Revit.Tolerance.ShortCurve).ConvertAll(c => c as ICurve);
+
 #else
             Document doc = hostObject.Document;
             AnalyticalToPhysicalAssociationManager manager = AnalyticalToPhysicalAssociationManager.GetAnalyticalToPhysicalAssociationManager(doc);
@@ -95,7 +95,7 @@ namespace BH.Revit.Engine.Core
                 result.Add(convertedLoop);
             }
 #endif
-            if (result.Any(x => !x.IIsClosed(settings.DistanceTolerance)))
+            if (result.Any(x => !x.IIsClosed(BH.oM.Adapters.Revit.Tolerance.ShortCurve)))
             {
                 hostObject.NonClosedOutlineWarning();
                 return null;

@@ -25,15 +25,15 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
-using BH.oM.Geometry;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
 using BH.oM.Structure.SurfaceProperties;
+using BH.Revit.Engine.Core.Objects;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using BHS = BH.Engine.Structure;
-using BH.Revit.Engine.Core.Objects;
 
 namespace BH.Revit.Engine.Core
 {
@@ -94,7 +94,7 @@ namespace BH.Revit.Engine.Core
             List<oM.Structure.Elements.Panel> result = refObjects.GetValues<oM.Structure.Elements.Panel>(hostObject.Id);
             if (result != null && result.Count > 0)
                 return result;
-            
+
             HostObjAttributes hostObjAttributes = hostObject.Document.GetElement(hostObject.GetTypeId()) as HostObjAttributes;
             string materialGrade = hostObject.MaterialGrade(settings);
             ISurfaceProperty property2D = hostObjAttributes?.SurfacePropertyFromRevit(materialGrade, settings, refObjects);
@@ -112,7 +112,7 @@ namespace BH.Revit.Engine.Core
             if (outlines != null && outlines.Count != 0)
             {
                 hostObject.AnalyticalPullWarning();
-                result = BHS.Create.Panel(outlines, property2D, null, hostObject.Name);
+                result = BHS.Create.Panel(outlines, property2D, null, hostObject.Name, BH.oM.Adapters.Revit.Tolerance.ShortCurve);
             }
             else
             {
@@ -140,15 +140,18 @@ namespace BH.Revit.Engine.Core
                         if (surfaces[planarSurface] != null)
                             internalBoundaries.AddRange(surfaces[planarSurface].Select(x => x.ExternalBoundary.ITranslate(translation)));
 
-                        result.Add(BHS.Create.Panel(planarSurface.ExternalBoundary.ITranslate(translation), internalBoundaries, property2D, null, hostObject.Name));
+                        result.Add(BHS.Create.Panel(planarSurface.ExternalBoundary.ITranslate(translation), internalBoundaries, property2D, null, hostObject.Name, BH.oM.Adapters.Revit.Tolerance.ShortCurve));
                     }
+
+                    if (result.Count != 0 && result.Count < surfaces.Count)
+                        BH.Engine.Base.Compute.RecordWarning($"Conversion of Revit panel's location to BHoM failed for some subparts. Manual investigation recommended. Revit ElementId : {hostObject.Id}");
                 }
             }
 
             if (result.Count == 0)
             {
                 result.Add(new oM.Structure.Elements.Panel { Name = hostObject.Name, Property = property2D });
-                BH.Engine.Base.Compute.RecordError(String.Format("Conversion of Revit panel's location to BHoM failed. A panel without location is returned. Revit ElementId : {0}", hostObject.Id));
+                BH.Engine.Base.Compute.RecordWarning($"Conversion of Revit panel's location to BHoM failed. A panel without location is returned. Revit ElementId : {hostObject.Id}");
             }
 
             //Set identifiers, parameters & custom data
@@ -158,7 +161,7 @@ namespace BH.Revit.Engine.Core
                 panel.CopyParameters(hostObject, settings.MappingSettings);
                 panel.SetProperties(hostObject, settings.MappingSettings);
             }
-            
+
             refObjects.AddOrReplace(hostObject.Id, result);
             return result;
         }
