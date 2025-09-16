@@ -23,14 +23,14 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Geometry;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using BH.oM.Adapters.Revit.Enums;
 
 namespace BH.Revit.Engine.Core
 {
@@ -50,7 +50,7 @@ namespace BH.Revit.Engine.Core
         {
             settings = settings.DefaultIfNull();
 
-            var result = new Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>>();
+            Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>> result = new Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>>();
             List<Document> inputDocs = hostObjects.Select(x => x.Document).ToList();
             List<ElementId> inputIds = hostObjects.Select(x => x.Id).ToList();
 
@@ -81,10 +81,10 @@ namespace BH.Revit.Engine.Core
             }
 
             // Extract location surfaces for all panels at once
-            foreach (var group in solids.GroupBy(x => x.Document)) 
+            foreach (IGrouping<Document, HostObject> group in solids.GroupBy(x => x.Document))
             {
-                var surfs = group.Key.PanelSurfaces_HostDocument(group.Select(x => (x.Id, x.InsertsToIgnore(discipline) as IEnumerable<ElementId>)).ToList(), settings);
-                foreach (var kvp in surfs)
+                Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>> surfs = group.Key.PanelSurfaces_HostDocument(group.Select(x => (x.Id, x.InsertsToIgnore(discipline) as IEnumerable<ElementId>)).ToList(), settings);
+                foreach (KeyValuePair<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>> kvp in surfs)
                 {
                     result.Add(kvp.Key, kvp.Value);
                 }
@@ -128,11 +128,11 @@ namespace BH.Revit.Engine.Core
 
         private static Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>> PanelSurfaces_HostDocument(this Document doc, List<(ElementId, IEnumerable<ElementId>)> hostsWithInsertsToIgnore, RevitSettings settings = null)
         {
-            var result = new Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>>();
+            Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>> result = new Dictionary<ElementId, Dictionary<PlanarSurface, List<PlanarSurface>>>();
 
             // query panel surfaces from each of the panels and rule out the ones that do not have any
-            var planes = new Dictionary<ElementId, List<Autodesk.Revit.DB.Plane>>();
-            var toProcess = new List<(ElementId, IEnumerable<ElementId>)>();
+            Dictionary<ElementId, List<Autodesk.Revit.DB.Plane>> planes = new Dictionary<ElementId, List<Autodesk.Revit.DB.Plane>>();
+            List<(ElementId, IEnumerable<ElementId>)> toProcess = new List<(ElementId, IEnumerable<ElementId>)>();
             foreach ((ElementId, IEnumerable<ElementId>) tuple in hostsWithInsertsToIgnore)
             {
                 ElementId id = tuple.Item1;
@@ -186,7 +186,7 @@ namespace BH.Revit.Engine.Core
 
                 if (insertsToDelete.Count != 0)
                     doc.Delete(insertsToDelete);
-                
+
                 // 1st regenerate
                 doc.Regenerate();
 
@@ -291,25 +291,18 @@ namespace BH.Revit.Engine.Core
                         {
                             foreach (Solid s in fullSolids)
                             {
-                                List<CurveLoop> loops = new List<CurveLoop>();
+                                List<PlanarSurface> toAdd = new List<PlanarSurface>();
                                 foreach (Autodesk.Revit.DB.Face f in s.Faces)
                                 {
                                     PlanarFace pf = f as PlanarFace;
                                     if (pf == null)
                                         continue;
 
-                                    if (Math.Abs(1 - pf.FaceNormal.DotProduct(plane.Normal)) <= settings.DistanceTolerance && Math.Abs((pf.Origin - plane.Origin).DotProduct(plane.Normal)) <= settings.AngleTolerance)
-                                        loops.AddRange(pf.GetEdgesAsCurveLoops());
+                                    if (Math.Abs(1 - pf.FaceNormal.DotProduct(plane.Normal)) <= BH.oM.Adapters.Revit.Tolerance.Angle && Math.Abs((pf.Origin - plane.Origin).DotProduct(plane.Normal)) <= BH.oM.Adapters.Revit.Tolerance.ShortCurve)
+                                        toAdd.Add(pf.FromRevit());
                                 }
 
-                                CurveLoop outline = loops.FirstOrDefault(x => x.IsCounterclockwise(plane.Normal));
-                                PlanarSurface surface = new PlanarSurface(outline.FromRevit(), new List<ICurve>());
-                                List<PlanarSurface> openings = new List<PlanarSurface>();
-                                foreach (CurveLoop loop in loops.Where(x => x != outline))
-                                {
-                                    openings.Add(new PlanarSurface(loop.FromRevit(), new List<ICurve>()));
-                                }
-
+                                List<(PlanarSurface, BH.oM.Geometry.Point)> extraOpenings = new List<(PlanarSurface, oM.Geometry.Point)>();
                                 if (insertsDeleted[id])
                                 {
                                     List<Solid> openingVolumes = new List<Solid>();
@@ -326,18 +319,56 @@ namespace BH.Revit.Engine.Core
                                             if (pf == null)
                                                 continue;
 
-                                            if (Math.Abs(1 - pf.FaceNormal.DotProduct(plane.Normal)) <= settings.DistanceTolerance && Math.Abs((pf.Origin - plane.Origin).DotProduct(plane.Normal)) <= settings.AngleTolerance)
+                                            if (Math.Abs(1 - pf.FaceNormal.DotProduct(plane.Normal)) <= BH.oM.Adapters.Revit.Tolerance.Angle && Math.Abs((pf.Origin - plane.Origin).DotProduct(plane.Normal)) <= BH.oM.Adapters.Revit.Tolerance.ShortCurve)
                                             {
                                                 foreach (CurveLoop cl in pf.GetEdgesAsCurveLoops())
                                                 {
-                                                    openings.Add(new PlanarSurface(cl.FromRevit(), new List<ICurve>()));
+                                                    extraOpenings.Add((new PlanarSurface(cl.FromRevit(), new List<ICurve>()), pf.Centroid().PointFromRevit()));
                                                 }
                                             }
                                         }
                                     }
                                 }
 
-                                subResult.Add(surface, openings);
+                                foreach (PlanarSurface ps in toAdd)
+                                {
+                                    PlanarSurface outlineSurface = new PlanarSurface(ps.ExternalBoundary, new List<ICurve>());
+                                    List<PlanarSurface> openingSurfaces = ps.InternalBoundaries.Select(x => new PlanarSurface(x, new List<ICurve>())).ToList();
+
+                                    //TODO: this could be removed once IsContaining(NurbsCurve, Point) gets implemented
+                                    ICurve outline = outlineSurface.ExternalBoundary;
+                                    if (extraOpenings.Count != 0 && outline.ISubParts().Any(x => x is NurbsCurve))
+                                    {
+                                        List<ICurve> segments = new List<ICurve>();
+                                        foreach (ICurve segment in outline.ISubParts())
+                                        {
+                                            if (segment is NurbsCurve nurbs)
+                                            {
+                                                List<BH.oM.Geometry.Point> controlPoints = new List<oM.Geometry.Point>();
+                                                for (int i = 0; i <= 100; i++)
+                                                {
+                                                    controlPoints.Add(nurbs.PointAtParameter((double)i / 100));
+                                                }
+                                                segments.Add(new Polyline { ControlPoints = controlPoints });
+                                            }
+                                            else
+                                                segments.Add(segment);
+                                        }
+
+                                        outline = new PolyCurve { Curves = segments };
+                                    }
+
+                                    for (int i = extraOpenings.Count - 1; i >= 0; i--)
+                                    {
+                                        if (outline.IIsContaining(new List<BH.oM.Geometry.Point> { extraOpenings[i].Item2 }, false, BH.oM.Adapters.Revit.Tolerance.ShortCurve))
+                                        {
+                                            openingSurfaces.Add(extraOpenings[i].Item1);
+                                            extraOpenings.RemoveAt(i);
+                                        }
+                                    }
+
+                                    subResult.Add(outlineSurface, openingSurfaces);
+                                }
                             }
                         }
 
@@ -391,7 +422,7 @@ namespace BH.Revit.Engine.Core
                             if (!crv.IsEdge(edgeFaces, settings))
                                 edges.Add(crv.IFromRevit());
                         }
-                        
+
                         for (int i = edges.Count - 1; i > 0; i--)
                         {
                             BH.oM.Geometry.Point pt1 = edges[i - 1].IEndPoint();
@@ -412,7 +443,7 @@ namespace BH.Revit.Engine.Core
                     }
                     else
                     {
-                        foreach(Edge e in ea)
+                        foreach (Edge e in ea)
                         {
                             loop.Curves.Add(e.AsCurveFollowingFace(pf).IFromRevit());
                         }
