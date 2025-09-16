@@ -193,11 +193,7 @@ namespace BH.Revit.Engine.Core
                                     continue;
 
                                 BoundingBoxUV hostFaceBbox = hostFace.GetBoundingBox();
-                                double faceTop = 0;
-                                if (hostFace.Evaluate(hostFaceBbox.Min).Z < hostFace.Evaluate(hostFaceBbox.Max).Z)
-                                    faceTop = hostFace.Evaluate(hostFaceBbox.Max).Z;
-                                else
-                                    faceTop = hostFace.Evaluate(hostFaceBbox.Min).Z;
+                                double faceTop = Math.Max(hostFace.Evaluate(hostFaceBbox.Min).Z, hostFace.Evaluate(hostFaceBbox.Max).Z);
 
                                 if (Math.Abs(faceTop - center.Z) <= settings.DistanceTolerance && 1 - Math.Abs(hostFaceNormal.DotProduct(hostDirection)) <= settings.AngleTolerance && edgeFace.Proximity(hostFace, center).Item3 == 0)
                                     edgeFaces.Add(hostFace);
