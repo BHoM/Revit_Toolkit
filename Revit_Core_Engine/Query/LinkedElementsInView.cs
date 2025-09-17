@@ -34,7 +34,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Return elements from the revit link instance located in the view scope (including hidden elements)")]
+        [Description("Return elements from the revit link instance located in the view scope (including hidden elements).")]
         [Input("view", "View to get visible elements from. The view needs to belong to the host document.")]
         [Input("linkInstance", "Revit link instance to get the elements from.")]
         [Input("elementFilters", "Additional filters for the element collector. If null, no additional filters will be applied.")]
@@ -55,7 +55,7 @@ namespace BH.Revit.Engine.Core
             ElementIntersectsSolidFilter solidFilter = new ElementIntersectsSolidFilter(viewSolid);
             List<ElementId> spatialElementIds = SpatialElementsInSolid(linkDoc, viewSolid);
 
-            List<ElementId> elementIds; 
+            List<ElementId> elementIds;
             if (elementFilters == null)
             {
                 elementIds = new FilteredElementCollector(linkDoc).WherePasses(solidFilter).WhereElementIsNotElementType().ToElementIds().ToList();
@@ -78,6 +78,8 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
 
         private static List<ElementId> SpatialElementsInSolid(Document linkDoc, Solid viewSolid)
         {
@@ -97,8 +99,6 @@ namespace BH.Revit.Engine.Core
             return spatialElementsInSolid;
         }
 
-        /***************************************************/
-        /****              Private methods              ****/
         /***************************************************/
 
         [Description("Return view solid transformed by inverse link instnace transform.")]
