@@ -21,10 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -36,13 +34,13 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        [Description("Try to extract ElementIds from a collection of objects")]
-        [Input("objects", "objects to extract ElementIds.")]
-        [Input("ids", "variable to store returned ElementIds")]
-        [Output("Boolean", "True if the operation succeed")]
+
+        [Description("Extracts ElementIds from a collection of objects.")]
+        [Input("objects", "Objects containing ElementIds to extract. Either integers or BHoMObjects with RevitIdentifiers fragment containing reference to a Revit element.")]
+        [Output("elementIds", "Collection of ElementIds extracted from the input objects.")]
         public static List<ElementId> ElementIds(this List<object> objects)
         {
-            var ids = new List<ElementId>();
+            List<ElementId> ids = new List<ElementId>();
             List<IBHoMObject> bHoMObjects = objects?.OfType<IBHoMObject>().ToList() ?? new List<IBHoMObject>();
             List<int> elementIds = objects?.OfType<int>().ToList() ?? new List<int>();
             ids.AddRange(bHoMObjects.ElementIds());
@@ -50,7 +48,7 @@ namespace BH.Revit.Engine.Core
 
             if (ids.Count != objects.Count)
                 BH.Engine.Base.Compute.RecordWarning("ElementIds could not be extracted from some of the provided objects.");
-            
+
             return ids;
         }
 
@@ -67,9 +65,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static List<ElementId> ElementIds(this List<int> ElementId)
+        private static List<ElementId> ElementIds(this List<int> elementId)
         {
-            return ElementId.Select(x => new ElementId(x)).ToList();
+            return elementId.Select(x => new ElementId(x)).ToList();
         }
 
         /***************************************************/

@@ -36,10 +36,9 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Isolates the specified elements in a suitable Revit view, ensuring their visibility. Returns true if successful, false otherwise.")]
-        [Input("Document", "The Revit document to operate on.")]
-        [Input("UIDocument", "The active UI document in Revit.")]
-        [Input("ElementIds", "The collection of element IDs to isolate.")]
-        [Output("Success", "True if the elements were successfully isolated, false otherwise.")]
+        [Input("uidoc", "UI document in Revit to modify.")]
+        [Input("elementIds", "The collection of element IDs to isolate.")]
+        [Output("success", "True if the elements were successfully isolated, false otherwise.")]
         public static bool Isolate(this UIDocument uidoc, IEnumerable<ElementId> elementIds)
         {
             Document doc = uidoc?.Document;
