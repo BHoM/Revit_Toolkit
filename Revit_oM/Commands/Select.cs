@@ -20,34 +20,32 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using BH.oM.Base.Attributes;
+using BH.oM.Adapter;
+using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace BH.Revit.Engine.Core
+namespace BH.oM.Adapters.Revit.Commands
 {
-    public static partial class Query
+    [Description("Select action allows direct interaction with External Application.")]
+    public class Select : IExecuteCommand
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****             Public Properties             ****/
         /***************************************************/
 
-        [Description("Returns document-specific Revit spec representing a given unit type.")]
-        [Input("spec", "Revit spec queried for unit representing it.")]
-        [Input("doc", "Revit document that contains the information about units used per each unit type (e.g. sqm for area).")]
-        [Output("unit", "Revit unit representing the input spec.")]
-        public static ForgeTypeId UnitFromSpec(this ForgeTypeId spec, Document doc)
-        {
-#if (REVIT2021)
-            if (spec != null)
-#else
-            if (spec != null && UnitUtils.IsMeasurableSpec(spec))
-#endif
-                return doc.GetUnits().GetFormatOptions(spec).GetUnitTypeId();
-            else
-                return null;
-        }
-    }
+        [Description("Elements to be selected, specified as either IBHoMObjects or integers representing ElementIds.")]
+        public virtual List<object> Targets { get; set; }
 
-    /***************************************************/
+        [Description("Set True to focus view on selected objects in the External Application UI as a part of this action.")]
+        public virtual bool ShowObjects { get; set; } = true;
+
+        /***************************************************/
+    }
 }
+
+
+
+
+
+
+

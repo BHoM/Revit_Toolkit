@@ -90,6 +90,20 @@ namespace BH.Revit.Engine.Core
                     break;
                 case Discipline.Physical:
                 case Discipline.Architecture:
+                    if (category == Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFoundation)
+                    {
+                        BoundingBoxXYZ bbox = familyInstance.get_BoundingBox(null);
+                        double width = Math.Max(bbox.Max.X - bbox.Min.X, bbox.Max.Y - bbox.Min.Y);
+                        double height = bbox.Max.Z - bbox.Min.Z;
+                        if (height < width)
+                            //return typeof(BH.oM.Physical.Elements.PadFoundation);
+                            return null; // Temporarily disabled until PadFoundation is properly implemented in the Revit adapter.
+                        else if (familyInstance.GetSubComponentIds().Count != 0)
+                            //return typeof(BH.oM.Physical.Elements.PileFoundation);
+                            return null; // Temporarily disabled until PileFoundation is properly implemented in the Revit adapter.
+                        else
+                            return typeof(BH.oM.Physical.Elements.Pile);
+                    }
                     if (typeof(BH.oM.Physical.Elements.Window).BuiltInCategories().Contains(category))
                         return typeof(BH.oM.Physical.Elements.Window);
                     else if (typeof(BH.oM.Physical.Elements.Door).BuiltInCategories().Contains(category))
@@ -691,9 +705,23 @@ namespace BH.Revit.Engine.Core
                     return typeof(BH.oM.Adapters.Revit.Elements.DraftingInstance);
             }
 
-            return null;
         }
 
+        /***************************************************/
+
+        [Description("Finds a suitable BHoM type to convert the given Revit ParameterElement to, based on the requested engineering discipline and adapter settings.")]
+        [Input("parameterElement", "Revit ParameterElement to find a correspondent BHoM type.")]
+        [Input("discipline", "Engineering discipline based on the BHoM discipline classification.")]
+        [Input("settings", "Revit adapter settings to be used while performing the search for the correspondent type.")]
+        [Output("bHoMType", "A suitable BHoM type to convert the given Revit ParameterElement to.")]
+        public static Type BHoMType(this ParameterElement parameterElement, Discipline discipline, RevitSettings settings = null)
+        {
+            switch (discipline)
+            {
+                default:
+                    return typeof(BH.oM.Adapters.Revit.Parameters.ParameterDefinition);
+            }
+        }
 
         /***************************************************/
         /****             Fallback Methods              ****/

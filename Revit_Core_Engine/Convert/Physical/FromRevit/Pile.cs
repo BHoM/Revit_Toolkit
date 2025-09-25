@@ -22,10 +22,11 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
+using BH.oM.Physical.Elements;
+using BH.oM.Physical.FramingProperties;
 using BH.oM.Base.Attributes;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -37,42 +38,32 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [Description("Converts BH.oM.Adapters.Revit.Parameters.ParameterDefinition to a Revit ParameterElement.")]
-        [Input("parameterDefinition", "BH.oM.Adapters.Revit.Parameters.ParameterDefinition to be converted.")]
-        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Description("Converts a Revit FamilyInstance to BH.oM.Physical.Elements.Pile.")]
+        [Input("familyInstance", "Revit FamilyInstance to be converted.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("parameterElement", "Revit ParameterElement resulting from converting the input BH.oM.Adapters.Revit.Parameters.ParameterDefinition.")]
-        public static ParameterElement ToRevitParameterElement(this ParameterDefinition parameterDefinition, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        [Output("pile", "BH.oM.Physical.Elements.Pile resulting from converting the input Revit FamilyInstance.")]
+        public static Pile PileFromRevit(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
-            if (parameterDefinition == null)
-                return null;
-
-            ParameterElement parameterElement = refObjects.GetValue<ParameterElement>(document, parameterDefinition.BHoM_Guid);
-            if (parameterElement != null)
-                return parameterElement;
-
             settings = settings.DefaultIfNull();
 
-            Definition definition = Create.Parameter(document, parameterDefinition.Name, parameterDefinition.ParameterType, parameterDefinition.ParameterGroup, parameterDefinition.Instance, parameterDefinition.Categories, parameterDefinition.Shared, parameterDefinition.Discipline);
+            Pile pile = refObjects.GetValue<Pile>(familyInstance.Id);
+            if (pile != null)
+                return pile;
 
-            if (definition is ExternalDefinition)
-                parameterElement = SharedParameterElement.Lookup(document, ((ExternalDefinition)definition).GUID);
-            else if (definition is InternalDefinition)
-                parameterElement = document.GetElement(((InternalDefinition)definition).Id) as ParameterElement;
+            oM.Geometry.ICurve locationCurve = familyInstance.LocationCurvePile(settings);
+            IFramingElementProperty property = familyInstance.PileFramingElementProperty(settings, refObjects);
+            pile = BH.Engine.Physical.Create.Pile(locationCurve, property, familyInstance.FamilyTypeFullName());
 
-            if (!string.IsNullOrEmpty(parameterDefinition.Guid))
-                BH.Engine.Base.Compute.RecordWarning("Parameter Guid cannot be set on Push, the input value has been ignored.");
+            //Set identifiers, parameters & custom data
+            pile.SetIdentifiers(familyInstance);
+            pile.CopyParameters(familyInstance, settings.MappingSettings);
+            pile.SetProperties(familyInstance, settings.MappingSettings);
 
-            refObjects.AddOrReplace(parameterDefinition, parameterElement);
-            return parameterElement;
+            refObjects.AddOrReplace(familyInstance.Id, pile);
+            return pile;
         }
 
         /***************************************************/
     }
-}
-
-
-
-
-
+} 

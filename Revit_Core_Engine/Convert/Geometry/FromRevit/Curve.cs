@@ -23,6 +23,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 using BH.Engine.Geometry;
+using BH.oM.Adapters.Revit;
 using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
@@ -64,7 +65,7 @@ namespace BH.Revit.Engine.Core
             }
 
             BH.oM.Geometry.CoordinateSystem.Cartesian cs = BH.Engine.Geometry.Create.CartesianCoordinateSystem(curve.Center.PointFromRevit(), curve.XDirection.VectorFromRevit(), curve.YDirection.VectorFromRevit());
-            
+
             double startAngle = curve.XDirection.AngleOnPlaneTo(curve.GetEndPoint(0) - curve.Center, curve.Normal);
             double endAngle = curve.XDirection.AngleOnPlaneTo(curve.GetEndPoint(1) - curve.Center, curve.Normal);
             if (startAngle > endAngle)
@@ -119,12 +120,24 @@ namespace BH.Revit.Engine.Core
         [Description("Converts a Revit HermiteSpline to BH.oM.Geometry.NurbsCurve.")]
         [Input("curve", "Revit HermiteSpline to be converted.")]
         [Output("curve", "BH.oM.Geometry.NurbsCurve resulting from converting the input Revit HermiteSpline.")]
-        public static oM.Geometry.NurbsCurve FromRevit(this HermiteSpline curve)
+        public static oM.Geometry.ICurve FromRevit(this HermiteSpline curve)
         {
             if (curve == null)
                 return null;
-            
-            return NurbSpline.Create(curve).FromRevit();
+
+            NurbSpline nurbs = NurbSpline.Create(curve);
+            if (Math.Abs(nurbs.Length - curve.Length) <= Tolerance.ShortCurve)
+                return nurbs.FromRevit();
+
+            IntersectionResult ir0 = nurbs.Project(curve.GetEndPoint(0));
+            IntersectionResult ir1 = nurbs.Project(curve.GetEndPoint(1));
+            if (ir0 == null || ir1 == null || ir0.Distance > Tolerance.Vertex || ir1.Distance > Tolerance.Vertex)
+            {
+                BH.Engine.Base.Compute.RecordWarning("HermiteSpline could not be accurately converted to BHoM, converting to a tessellated polyline.");
+                return new BH.oM.Geometry.Polyline { ControlPoints = curve.Tessellate().Select(x => x.PointFromRevit()).ToList() };
+            }
+
+            return nurbs.FromRevit().Trim(ir0.Parameter, ir1.Parameter, false);
         }
 
         /***************************************************/

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -20,12 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Geometry;
+using Autodesk.Revit.DB;
+using BH.oM.Base;
 using BH.oM.Base.Attributes;
-using BH.oM.Geometry;
-using BH.oM.Physical.Elements;
-using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -35,42 +35,41 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Extracts the location line of a BHoM Column object in preparation to push to Revit. Includes validity checks and flipping reversed nodes.")]
-        [Input("column", "A BHoM Column object to extract the line from.")]
-        [Output("line", "Preprocessed location line of the BHoM Column object to be used on push to Revit.")]
-        public static Line ColumnLine(this Column column)
+        [Description("Extracts ElementIds from a collection of objects.")]
+        [Input("objects", "Objects containing ElementIds to extract. Either integers or BHoMObjects with RevitIdentifiers fragment containing reference to a Revit element.")]
+        [Output("elementIds", "Collection of ElementIds extracted from the input objects.")]
+        public static List<ElementId> ElementIds(this List<object> objects)
         {
-            if (column == null)
-            {
-                BH.Engine.Base.Compute.RecordError(string.Format("Cannot read location line because column is null. BHoM_Guid: {0}", column.BHoM_Guid));
-                return null;
-            }
+            List<ElementId> ids = new List<ElementId>();
+            List<IBHoMObject> bHoMObjects = objects?.OfType<IBHoMObject>().ToList() ?? new List<IBHoMObject>();
+            List<int> elementIds = objects?.OfType<int>().ToList() ?? new List<int>();
+            ids.AddRange(bHoMObjects.ElementIds());
+            ids.AddRange(elementIds.ElementIds());
 
-            Line columnLine = column.Location as BH.oM.Geometry.Line;
-            if (columnLine == null)
-            {
-                BH.Engine.Base.Compute.RecordError(string.Format("Invalid column line. Only linear columns are allowed in Revit. BHoM_Guid: {0}", column.BHoM_Guid));
-                return null;
-            }
+            if (ids.Count != objects.Count)
+                BH.Engine.Base.Compute.RecordWarning("ElementIds could not be extracted from some of the provided objects.");
 
-            if (Math.Abs(columnLine.Start.Z - columnLine.End.Z) <= BH.oM.Geometry.Tolerance.Distance)
-            {
-                BH.Engine.Base.Compute.RecordError(string.Format("Column line's start and end points have the same elevation. BHoM_Guid: {0}", column.BHoM_Guid));
-                return null;
-            }
-            
-            if (columnLine.Start.Z > columnLine.End.Z)
-            {
-                BH.Engine.Base.Compute.RecordNote(string.Format("The input column line's bottom was above its top. This line has been flipped to allow pushing to Revit. BHoM_Guid: {0}", column.BHoM_Guid));
-                columnLine = columnLine.Flip();
-            }
-            
-            return columnLine;
+            return ids;
+        }
+
+        /***************************************************/
+        /****               Private methods             ****/
+        /***************************************************/
+
+        private static List<ElementId> ElementIds(this List<IBHoMObject> bHoMObjects)
+        {
+            return bHoMObjects.Select(x => x.ElementId())
+                .Where(x => x != null)
+                .ToList();
+        }
+
+        /***************************************************/
+
+        private static List<ElementId> ElementIds(this List<int> elementId)
+        {
+            return elementId.Select(x => new ElementId(x)).ToList();
         }
 
         /***************************************************/
     }
 }
-
-
-

@@ -20,34 +20,44 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using BH.oM.Base.Attributes;
-using System.ComponentModel;
+using Autodesk.Revit.UI;
+using BH.oM.Adapter;
+using BH.oM.Adapters.Revit;
+using BH.oM.Base;
+using System.Collections.Generic;
 
-namespace BH.Revit.Engine.Core
+namespace BH.Revit.Adapter.Core
 {
-    public static partial class Query
+    public partial class RevitListenerAdapter
     {
         /***************************************************/
-        /****              Public methods               ****/
+        /****    Revit side of Revit_Adapter Execute    ****/
         /***************************************************/
 
-        [Description("Returns document-specific Revit spec representing a given unit type.")]
-        [Input("spec", "Revit spec queried for unit representing it.")]
-        [Input("doc", "Revit document that contains the information about units used per each unit type (e.g. sqm for area).")]
-        [Output("unit", "Revit unit representing the input spec.")]
-        public static ForgeTypeId UnitFromSpec(this ForgeTypeId spec, Document doc)
+        public override Output<List<object>, bool> Execute(IExecuteCommand command, ActionConfig actionConfig = null)
         {
-#if (REVIT2021)
-            if (spec != null)
-#else
-            if (spec != null && UnitUtils.IsMeasurableSpec(spec))
-#endif
-                return doc.GetUnits().GetFormatOptions(spec).GetUnitTypeId();
-            else
-                return null;
-        }
-    }
+            Output<List<object>, bool> result = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
+            RevitExecutionConfig config = (actionConfig as RevitExecutionConfig) ?? new RevitExecutionConfig();
 
-    /***************************************************/
+            // Suppress warnings
+            if (UIControlledApplication != null && config.SuppressFailureMessages)
+                UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
+
+            result = IRunCommand(command);
+
+            // Switch of warning suppression
+            if (UIControlledApplication != null && config.SuppressFailureMessages)
+                UIControlledApplication.ControlledApplication.FailuresProcessing -= ControlledApplication_FailuresProcessing;
+
+            return result;
+        }
+
+        /***************************************************/
+
+    }
 }
+
+
+
+
+

@@ -25,8 +25,8 @@ using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Physical.Elements;
 using BH.oM.Base.Attributes;
+using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -72,7 +72,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            BH.oM.Geometry.Line locationLine = framingElement.ColumnLine();
+            BH.oM.Geometry.Line locationLine = framingElement.VerticalElementLocation(settings);
             if (locationLine == null)
                 return null;
 
@@ -130,7 +130,7 @@ namespace BH.Revit.Engine.Core
 
             familyInstance.CopyParameters(framingElement, settings);
             familyInstance.SetLocation(framingElement, settings);
-            
+
             refObjects.AddOrReplace(framingElement, familyInstance);
             return familyInstance;
         }
@@ -145,8 +145,80 @@ namespace BH.Revit.Engine.Core
         [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.Pile.")]
         public static FamilyInstance ToRevitFamilyInstance(this Pile framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
         {
-            BH.Engine.Base.Compute.RecordError(string.Format("Push of pile foundations is not supported in current version of BHoM. BHoM element Guid: {0}", framingElement.BHoM_Guid));
-            return null;
+            if (framingElement == null || document == null)
+                return null;
+
+            FamilyInstance familyInstance = refObjects.GetValue<FamilyInstance>(document, framingElement.BHoM_Guid);
+            if (familyInstance != null)
+                return familyInstance;
+
+            settings = settings.DefaultIfNull();
+
+            BH.oM.Geometry.Line locationLine = framingElement.VerticalElementLocation(settings);
+            if (locationLine == null)
+                return null;
+
+            if (1 - Math.Abs(locationLine.Direction().DotProduct(BH.oM.Geometry.Vector.ZAxis)) > settings.AngleTolerance)
+            {
+                BH.Engine.Base.Compute.RecordError($"Creation of nonvertical piles is currently not supported. Pile BHoM_Guid: {framingElement.BHoM_Guid}");
+                return null;
+            }
+
+            Level level = document.LevelBelow(locationLine, settings, true);
+            if (level == null)
+                return null;
+
+            FamilySymbol familySymbol = framingElement.ElementType(document, settings);
+            if (familySymbol == null)
+            {
+                Compute.ElementTypeNotFoundWarning(framingElement);
+                return null;
+            }
+
+            FamilyPlacementType familyPlacementType = familySymbol.Family.FamilyPlacementType;
+
+            // Piles must use OneLevelBased placement type for proper structural foundation behavior
+            if (familyPlacementType != FamilyPlacementType.OneLevelBased)
+            {
+                BH.Engine.Base.Compute.RecordError($"Pile family must use OneLevelBased placement type. Current type: {familyPlacementType}. Please use an appropriate pile family. Pile BHoM_Guid: {framingElement.BHoM_Guid}");
+                return null;
+            }
+
+            // Extract base point from pile line geometry (use the lower Z point as base)
+            BH.oM.Geometry.Point basePoint = locationLine.Start.Z < locationLine.End.Z ? locationLine.Start : locationLine.End;
+            XYZ pileBasePoint = basePoint.ToRevit();
+
+            // Use point-based creation for piles as they are typically placed by point with height constraints
+            familyInstance = document.Create.NewFamilyInstance(pileBasePoint, familySymbol, level, StructuralType.Footing);
+            document.Regenerate();
+
+            familyInstance.CheckIfNullPush(framingElement);
+            if (familyInstance == null)
+                return null;
+
+            oM.Physical.FramingProperties.ConstantFramingProperty pileProperty = framingElement.Property as oM.Physical.FramingProperties.ConstantFramingProperty;
+            if (pileProperty != null)
+            {
+                //TODO: if the material does not get assigned an error should be thrown?
+                if (pileProperty.Material != null)
+                {
+                    Material material = document.GetElement(new ElementId(BH.Engine.Adapters.Revit.Query.ElementId(pileProperty.Material))) as Material;
+                    if (material != null)
+                    {
+                        Parameter param = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
+                        if (param != null && param.HasValue && !param.IsReadOnly)
+                            familyInstance.StructuralMaterialId = material.Id;
+                        else
+                            BH.Engine.Base.Compute.RecordWarning(string.Format("The BHoM material has been correctly converted, but the property could not be assigned to the Revit element. ElementId: {0}", familyInstance.Id));
+                    }
+                }
+            }
+
+            familyInstance.CopyParameters(framingElement, settings);
+            familyInstance.SetLocation(framingElement, settings);
+
+            refObjects.AddOrReplace(framingElement, familyInstance);
+            return familyInstance;
         }
 
         /***************************************************/
@@ -274,7 +346,7 @@ namespace BH.Revit.Engine.Core
             refObjects.AddOrReplace(framingElement, familyInstance);
             return familyInstance;
         }
-        
+
         /***************************************************/
     }
 }

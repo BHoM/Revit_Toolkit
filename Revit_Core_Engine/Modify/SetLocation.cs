@@ -25,11 +25,11 @@ using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Base.Attributes;
 using BH.oM.Environment.Elements;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
 using BH.oM.Physical.FramingProperties;
-using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -148,7 +148,7 @@ namespace BH.Revit.Engine.Core
             if (!(typeof(Column).BuiltInCategories().Contains((BuiltInCategory)element.Category.Id.IntegerValue)))
                 return false;
 
-            oM.Geometry.Line columnLine = column.ColumnLine();
+            oM.Geometry.Line columnLine = column.VerticalElementLocation(settings);
             if (columnLine == null)
             {
                 BH.Engine.Base.Compute.RecordError(String.Format("Location has not been updated. Revit ElementId: {0} BHoM_Guid: {1}", element.Id, column.BHoM_Guid));
@@ -203,28 +203,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            double rotation = 0;
-            ConstantFramingProperty framingProperty = column.Property as ConstantFramingProperty;
-            if (framingProperty == null)
-                BH.Engine.Base.Compute.RecordWarning(String.Format("BHoM object's property is not a ConstantFramingProperty, therefore its orientation angle could not be retrieved. BHoM_Guid: {0}", column.BHoM_Guid));
-            else
-                rotation = ((ConstantFramingProperty)column.Property).OrientationAngle;
-
-            double rotationDifference = element.OrientationAngleColumn(settings) - rotation;
-            if (Math.Abs(rotationDifference) > settings.AngleTolerance)
-            {
-                double rotationParamValue = element.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
-                if (double.IsNaN(rotationParamValue))
-                {
-                    ElementTransformUtils.RotateElement(element.Document, element.Id, columnLine.ToRevit(), -rotationDifference.NormalizeAngleDomain());
-                    updated = true;
-                }
-                else
-                {
-                    double newRotation = (rotationParamValue + rotationDifference).NormalizeAngleDomain();
-                    updated |= element.SetParameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, newRotation);
-                }
-            }
+            updated |= element.UpdateRotationOfVerticalElement(column, settings);
 
             return updated;
         }
@@ -257,7 +236,7 @@ namespace BH.Revit.Engine.Core
 
             bool updated = element.SetLocation(framingElement.Location, settings);
             element.Document.Regenerate();
-            
+
             double rotationDifference = element.OrientationAngleFraming(settings) - rotation;
             if (Math.Abs(rotationDifference) > settings.AngleTolerance)
             {
@@ -268,6 +247,96 @@ namespace BH.Revit.Engine.Core
 
             ICurve transformedCurve = framingElement.AdjustedLocationCurveFraming((FamilyInstance)element, settings);
             updated |= element.SetLocation(transformedCurve, settings);
+
+            return updated;
+        }
+
+        /***************************************************/
+
+        [Description("Sets the location of a given Revit FamilyInstance based on a given BHoM Pile.")]
+        [Input("element", "Revit FamilyInstance to be modified.")]
+        [Input("pile", "BHoM Pile acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit FamilyInstance has been successfully set.")]
+        public static bool SetLocation(this FamilyInstance element, Pile pile, RevitSettings settings)
+        {
+            BH.oM.Geometry.Line locationLine = pile.Location as BH.oM.Geometry.Line;
+            if (locationLine == null)
+                return false;
+
+            if (1 - Math.Abs(locationLine.Direction().DotProduct(Vector.ZAxis)) > settings.AngleTolerance)
+            {
+                BH.Engine.Base.Compute.RecordWarning($"Nonvertical pile location is currently not supported. Pile ElementId: {element.Id.IntegerValue}");
+                return false;
+            }
+
+            bool updated = true;
+            oM.Geometry.Point newBasePoint = locationLine.End;
+            oM.Geometry.Point oldBasePoint = (element.Location as LocationPoint)?.Point?.PointFromRevit();
+            Vector transl = newBasePoint - oldBasePoint;
+            transl.Z = 0;
+            if (transl.Length() > settings.DistanceTolerance)
+            {
+                XYZ newLocation = new BH.oM.Geometry.Point { X = newBasePoint.X, Y = newBasePoint.Y, Z = oldBasePoint.Z }.ToRevit();
+
+                try
+                {
+                    (element.Location as LocationPoint).Point = newLocation;
+                }
+                catch (Exception ex)
+                {
+                    BH.Engine.Base.Compute.RecordWarning($"XY location could not be updated because element location was blocked. Please check if the element is not pinned etc. Pile ElementId: {element.Id.IntegerValue}");
+                    updated = false;
+                }
+            }
+
+            Level level = element.Document.GetElement(element.LevelId) as Level;
+            if (level == null)
+            {
+                BH.Engine.Base.Compute.RecordWarning($"Cannot update location of a pile with valid reference level. Pile ElementId: {element.Id.IntegerValue}");
+                return false;
+            }
+
+            // Set pile height constraint using the height from the original line geometry
+            double pileTop = locationLine.Start.Z > locationLine.End.Z ? locationLine.Start.Z : locationLine.End.Z;
+            double pileBottom = locationLine.Start.Z < locationLine.End.Z ? locationLine.Start.Z : locationLine.End.Z;
+            double pileDepth = pileTop - pileBottom;
+            double levelElevation = level.ProjectElevation.ToSI(SpecTypeId.Length);
+            double topOffset = pileTop - levelElevation;
+
+            // Try to set the height using different possible parameters for pile families
+            bool verticalDimensionSet = true;
+
+            // Try setting height offset parameter
+            Parameter topOffsetParam = element.get_Parameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM);
+            if (topOffsetParam != null && !topOffsetParam.IsReadOnly)
+                verticalDimensionSet &= topOffsetParam.Set(topOffset.FromSI(SpecTypeId.Length));
+            else
+                verticalDimensionSet = false;
+
+            // Try setting depth parameter
+            Parameter depthParam = element.LookupParameter("Pile Depth");
+            if (depthParam == null)
+            {
+                depthParam = element.Parameters.Cast<Parameter>().FirstOrDefault(x => x.StorageType == StorageType.Double && x.Definition.Name.Contains("Depth"));
+                if (depthParam == null)
+                    BH.Engine.Base.Compute.RecordWarning($"Could not find a suitable parameter to set pile depth on the element.");
+                else
+                    BH.Engine.Base.Compute.RecordWarning($"Parameter 'Pile Depth' could not be found on the element, therefore an attempt to set vertical constraint via '{depthParam.Definition.Name}' is made.");
+            }
+
+            if (depthParam != null && !depthParam.IsReadOnly)
+                verticalDimensionSet &= depthParam.Set(pileDepth.FromSI(SpecTypeId.Length));
+            else
+                verticalDimensionSet = false;
+
+            if (!verticalDimensionSet)
+            {
+                BH.Engine.Base.Compute.RecordWarning($"Could not set vertical pile dimension. Pile may not display correctly. ElementId: {element.Id}");
+                return updated = false;
+            }
+
+            updated |= element.UpdateRotationOfVerticalElement(pile, settings);
 
             return updated;
         }
@@ -468,7 +537,7 @@ namespace BH.Revit.Engine.Core
                             }
 
                             Autodesk.Revit.DB.Face face = hostElement.GetGeometryObjectFromReference(reference) as Autodesk.Revit.DB.Face;
-                        
+
                             XYZ toProject = newLocation;
                             Transform instanceTransform = null;
                             if (hostElement is FamilyInstance && !((FamilyInstance)hostElement).HasModifiedGeometry())
@@ -534,6 +603,37 @@ namespace BH.Revit.Engine.Core
             }
 
             return success;
+        }
+
+        /***************************************************/
+
+        private static bool UpdateRotationOfVerticalElement(this FamilyInstance element, IFramingElement bhomElement, RevitSettings settings)
+        {
+            bool updated = false;
+            double rotation = 0;
+            ConstantFramingProperty framingProperty = bhomElement.Property as ConstantFramingProperty;
+            if (framingProperty == null)
+                BH.Engine.Base.Compute.RecordWarning(String.Format("BHoM object's property is not a ConstantFramingProperty, therefore its orientation angle could not be retrieved. BHoM_Guid: {0}", bhomElement.BHoM_Guid));
+            else
+                rotation = ((ConstantFramingProperty)bhomElement.Property).OrientationAngle;
+
+            double rotationDifference = element.OrientationAngle(settings) - rotation;
+            if (Math.Abs(rotationDifference) > settings.AngleTolerance)
+            {
+                double rotationParamValue = element.LookupParameterDouble(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE);
+                if (double.IsNaN(rotationParamValue))
+                {
+                    ElementTransformUtils.RotateElement(element.Document, element.Id, bhomElement.VerticalElementLocation(settings).ToRevit(), -rotationDifference.NormalizeAngleDomain());
+                    updated = true;
+                }
+                else
+                {
+                    double newRotation = (rotationParamValue + rotationDifference).NormalizeAngleDomain();
+                    updated |= element.SetParameter(BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE, newRotation);
+                }
+            }
+
+            return updated;
         }
 
 

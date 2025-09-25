@@ -20,34 +20,59 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using BH.oM.Base.Attributes;
-using System.ComponentModel;
+using Autodesk.Revit.UI;
+using BH.oM.Adapters.Revit.Commands;
+using BH.oM.Base;
+using BH.Revit.Engine.Core;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace BH.Revit.Engine.Core
+namespace BH.Revit.Adapter.Core
 {
-    public static partial class Query
+    public partial class RevitListenerAdapter
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns document-specific Revit spec representing a given unit type.")]
-        [Input("spec", "Revit spec queried for unit representing it.")]
-        [Input("doc", "Revit document that contains the information about units used per each unit type (e.g. sqm for area).")]
-        [Output("unit", "Revit unit representing the input spec.")]
-        public static ForgeTypeId UnitFromSpec(this ForgeTypeId spec, Document doc)
+        public Output<List<object>, bool> Select(Select command)
         {
-#if (REVIT2021)
-            if (spec != null)
-#else
-            if (spec != null && UnitUtils.IsMeasurableSpec(spec))
-#endif
-                return doc.GetUnits().GetFormatOptions(spec).GetUnitTypeId();
-            else
-                return null;
-        }
-    }
+            Output<List<object>, bool> output = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
 
-    /***************************************************/
+            var elementIds = command?.Targets?.ElementIds();
+
+            if (elementIds == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Provided collection of elements to select is invalid.");
+                return output;
+            }
+
+            UIDocument uidoc = this.UIDocument;
+
+            if (uidoc == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Revit UI is not available).");
+                return output;
+            }
+
+            if (command.ShowObjects)
+            {
+                try
+                {
+                    uidoc.ShowElements(elementIds);
+                }
+                catch 
+                {
+                }
+            }
+
+            uidoc.Selection.SetElementIds(elementIds);
+
+            output.Item1 = elementIds.Select(x => x.IntegerValue).Cast<object>().ToList();
+            output.Item2 = true;
+            return output;
+        }
+
+        /***************************************************/
+    }
 }

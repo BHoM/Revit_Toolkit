@@ -20,63 +20,67 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using BH.oM.Base.Attributes;
+using BH.oM.Adapter;
+using BH.oM.Adapters.Revit.Commands;
+using BH.oM.Base;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 
-namespace BH.Revit.Engine.Core
+namespace BH.Revit.Adapter.Core
 {
-    public static partial class Query
+    public partial class RevitListenerAdapter
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the human-readable label of a given Revit spec.")]
-        [Input("spec", "Spec to get the label for.")]
-        [Output("label", "Human-readable label of the input Revit spec.")]
-#if (REVIT2021 || REVIT2022)
-        public static string Label(this ParameterType spec)
+        public Output<List<object>, bool> IRunCommand(IExecuteCommand command)
         {
-            return LabelUtils.GetLabelFor(spec);
-        }
-#endif
-        public static string Label(this ForgeTypeId spec)
-        {
-            if (spec != null)
-                return LabelUtils.GetLabelForSpec(spec);
-            else
-                return null;
+            return RunCommand(command as dynamic);
         }
 
         /***************************************************/
 
-        [Description("Returns the human-readable label of a given Revit unit.")]
-        [Input("unit", "Unit to get the label for.")]
-        [Input("useAbbreviation", "If true, an abbreviated label will be returned, e.g. mm. Otherwise a full label will be returned, e.g. Millimeters.")]
-        [Output("label", "Human-readable label of the input Revit unit.")]
-        public static string Label(this ForgeTypeId unit, bool useAbbreviation)
+        public Output<List<object>, bool> RunCommand(Select command)
         {
-            if (unit == null || !UnitUtils.IsUnit(unit))
-                return null;
+            return Select(command);
+        }
 
-            if (useAbbreviation)
-            {
-                if (unit == UnitTypeId.FeetFractionalInches)
-                    return "\' and \"";
+        /***************************************************/
 
-                if (unit == UnitTypeId.FractionalInches)
-                    return "\"";
+        public Output<List<object>, bool> RunCommand(Isolate command)
+        {
+            return Isolate(command);
+        }
 
-                List<ForgeTypeId> validSymbols = FormatOptions.GetValidSymbols(unit).Where(x => !string.IsNullOrWhiteSpace(x?.TypeId)).ToList();
-                return validSymbols.Count == 0 ? null : LabelUtils.GetLabelForSymbol(validSymbols.First());
-            }
-            else
-                return LabelUtils.GetLabelForUnit(unit);
+        /***************************************************/
+
+        public Output<List<object>, bool> RunCommand(PullSelection command)
+        {
+            return PullSelection(command);
+        }
+
+        /***************************************************/
+
+        public Output<List<object>, bool> RunCommand(DirectPush command)
+        {
+            return DirectPush(command);
+        }
+
+        /***************************************************/
+        /****               Private methods             ****/
+        /***************************************************/
+
+        private Output<List<object>, bool> RunCommand(IExecuteCommand command)
+        {
+            BH.Engine.Base.Compute.RecordError($"Command {nameof(command)} is not supported");
+            return new Output<List<object>, bool>();
         }
 
         /***************************************************/
     }
 }
+
+
+
+
+

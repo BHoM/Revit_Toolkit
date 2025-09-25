@@ -26,7 +26,6 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
-using BH.oM.Lighting.Elements;
 using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
@@ -66,7 +65,7 @@ namespace BH.Revit.Engine.Core
             HashSet<BuiltInCategory> categories = framingElement.BuiltInCategories();
 
             // Adding StructuralFraming to be included for braces and others (non-columns) - most of families belong to this category.
-            if (!(framingElement is BH.oM.Physical.Elements.Column))
+            if (!(framingElement is Column || framingElement is Pile))
                 categories.Add(Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFraming);
 
             FamilySymbol result = framingElement.ElementTypeInclProperty(framingElement.Property, document, categories, settings) as FamilySymbol;

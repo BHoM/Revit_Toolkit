@@ -20,11 +20,13 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
+using BH.Engine.Geometry;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
+using BH.oM.Geometry;
+using BH.oM.Physical.Elements;
+using System;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -34,47 +36,39 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns the human-readable label of a given Revit spec.")]
-        [Input("spec", "Spec to get the label for.")]
-        [Output("label", "Human-readable label of the input Revit spec.")]
-#if (REVIT2021 || REVIT2022)
-        public static string Label(this ParameterType spec)
+        [PreviousVersion("8.3", "BH.Revit.Engine.Core.Query.ColumnLine(BH.oM.Physical.Elements.Column)")]
+        [Description("Extracts the location line of a BHoM Pile or Column object in preparation to push to Revit. Includes validity checks and flipping reversed nodes.")]
+        [Input("element", "A BHoM Pile or Column object to extract the line from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("line", "Preprocessed location line of the BHoM Pile or Column object to be used on push to Revit.")]
+        public static Line VerticalElementLocation(this IFramingElement element, RevitSettings settings)
         {
-            return LabelUtils.GetLabelFor(spec);
-        }
-#endif
-        public static string Label(this ForgeTypeId spec)
-        {
-            if (spec != null)
-                return LabelUtils.GetLabelForSpec(spec);
-            else
-                return null;
-        }
-
-        /***************************************************/
-
-        [Description("Returns the human-readable label of a given Revit unit.")]
-        [Input("unit", "Unit to get the label for.")]
-        [Input("useAbbreviation", "If true, an abbreviated label will be returned, e.g. mm. Otherwise a full label will be returned, e.g. Millimeters.")]
-        [Output("label", "Human-readable label of the input Revit unit.")]
-        public static string Label(this ForgeTypeId unit, bool useAbbreviation)
-        {
-            if (unit == null || !UnitUtils.IsUnit(unit))
-                return null;
-
-            if (useAbbreviation)
+            if (element == null)
             {
-                if (unit == UnitTypeId.FeetFractionalInches)
-                    return "\' and \"";
-
-                if (unit == UnitTypeId.FractionalInches)
-                    return "\"";
-
-                List<ForgeTypeId> validSymbols = FormatOptions.GetValidSymbols(unit).Where(x => !string.IsNullOrWhiteSpace(x?.TypeId)).ToList();
-                return validSymbols.Count == 0 ? null : LabelUtils.GetLabelForSymbol(validSymbols.First());
+                BH.Engine.Base.Compute.RecordError($"Cannot read location line because column is null. BHoM_Guid: {element.BHoM_Guid}");
+                return null;
             }
-            else
-                return LabelUtils.GetLabelForUnit(unit);
+
+            Line location = element.Location as Line;
+            if (location == null)
+            {
+                BH.Engine.Base.Compute.RecordError($"Invalid location line. Only linear piles and columns are allowed in Revit. BHoM_Guid: {element.BHoM_Guid}");
+                return null;
+            }
+
+            if (Math.Abs(location.Start.Z - location.End.Z) <= settings.DistanceTolerance)
+            {
+                BH.Engine.Base.Compute.RecordError($"Location line's start and end points have the same elevation. BHoM_Guid: {element.BHoM_Guid}");
+                return null;
+            }
+
+            if (location.Start.Z > location.End.Z)
+            {
+                BH.Engine.Base.Compute.RecordNote($"The input location line's bottom was above its top. This line has been flipped to allow pushing to Revit. BHoM_Guid: {element.BHoM_Guid}");
+                location = location.Flip();
+            }
+
+            return location;
         }
 
         /***************************************************/

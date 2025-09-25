@@ -24,6 +24,7 @@ using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -33,7 +34,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Return elements from the revit link instance located in the view scope (including hidden elements)")]
+        [Description("Return elements from the revit link instance located in the view scope (including hidden elements).")]
         [Input("view", "View to get visible elements from. The view needs to belong to the host document.")]
         [Input("linkInstance", "Revit link instance to get the elements from.")]
         [Input("elementFilters", "Additional filters for the element collector. If null, no additional filters will be applied.")]
@@ -52,15 +53,25 @@ namespace BH.Revit.Engine.Core
             Document linkDoc = linkInstance.GetLinkDocument();
             Solid viewSolid = view.TransformedViewSolid(linkInstance);
             ElementIntersectsSolidFilter solidFilter = new ElementIntersectsSolidFilter(viewSolid);
-            
-            IEnumerable<ElementId> elementIds; 
+            List<ElementId> spatialElementIds = SpatialElementsInSolid(linkDoc, viewSolid);
+
+            List<ElementId> elementIds;
             if (elementFilters == null)
-                elementIds = new FilteredElementCollector(linkDoc).WherePasses(solidFilter).WhereElementIsNotElementType().ToElementIds();
+            {
+                elementIds = new FilteredElementCollector(linkDoc).WherePasses(solidFilter).WhereElementIsNotElementType().ToElementIds().ToList();
+                elementIds.AddRange(spatialElementIds);
+            }
             else
             {
                 LogicalOrFilter elementFilter = new LogicalOrFilter(elementFilters);
                 LogicalAndFilter elementSolidFilter = new LogicalAndFilter(elementFilter, solidFilter);
-                elementIds = new FilteredElementCollector(linkDoc).WherePasses(elementSolidFilter).WhereElementIsNotElementType().ToElementIds();
+                elementIds = new FilteredElementCollector(linkDoc).WherePasses(elementSolidFilter).WhereElementIsNotElementType().ToElementIds().ToList();
+
+                foreach (ElementId spatialElementId in spatialElementIds)
+                {
+                    if (elementSolidFilter.PassesFilter(linkDoc, spatialElementId))
+                        elementIds.Add(spatialElementId);
+                }
             }
 
             return elementIds;
@@ -68,6 +79,26 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
         /****              Private methods              ****/
+        /***************************************************/
+
+        private static List<ElementId> SpatialElementsInSolid(Document linkDoc, Solid viewSolid)
+        {
+            List<SpatialElement> spatialElements = new FilteredElementCollector(linkDoc)
+                .OfClass(typeof(SpatialElement))
+                .ToElements()
+                .Cast<SpatialElement>()
+                .ToList();
+
+            List<ElementId> spatialElementsInSolid = new List<ElementId>();
+            foreach (SpatialElement spatialElement in spatialElements)
+            {
+                if (spatialElement.LocationPoint().DoesIntersect(viewSolid))
+                    spatialElementsInSolid.Add(spatialElement.Id);
+            }
+
+            return spatialElementsInSolid;
+        }
+
         /***************************************************/
 
         [Description("Return view solid transformed by inverse link instnace transform.")]
