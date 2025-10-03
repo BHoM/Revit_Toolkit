@@ -36,7 +36,6 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("8.3", "BH.Revit.Engine.Core.Query.ColumnLine(BH.oM.Physical.Elements.Column)")]
         [Description("Extracts the location line of a BHoM Pile or Column object in preparation to push to Revit. Includes validity checks and flipping reversed nodes.")]
         [Input("element", "A BHoM Pile or Column object to extract the line from.")]
         [Input("settings", "Revit adapter settings to be used while performing the operation.")]
