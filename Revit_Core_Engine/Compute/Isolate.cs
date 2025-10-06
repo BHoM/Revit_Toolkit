@@ -185,19 +185,27 @@ namespace BH.Revit.Engine.Core
 
         private static View3D GetOrCreate3D(Document doc)
         {
-            View3D v = new FilteredElementCollector(doc)
-                .OfClass(typeof(View3D))
-                .Cast<View3D>()
-                .FirstOrDefault(x => !x.IsTemplate && !x.IsPerspective && x.ViewType == ViewType.ThreeD);
-
-            if (v != null) return v;
+            View3D view = doc.Default3DView();
+            if (view != null)
+                return view;
 
             ElementId vftId = new FilteredElementCollector(doc)
                 .OfClass(typeof(ViewFamilyType))
                 .Cast<ViewFamilyType>()
                 .FirstOrDefault(t => t.ViewFamily == ViewFamily.ThreeDimensional)?.Id;
 
-            return vftId != null ? View3D.CreateIsometric(doc, vftId) : null;
+            if (vftId != null)
+            {
+                using (Transaction transaction = new Transaction(doc, "Create Isolated Elements View"))
+                {
+                    transaction.Start();
+                    view = View3D.CreateIsometric(doc, vftId);
+                    view.Name = "Isolated Elements";
+                    transaction.Commit();
+                }
+            }
+
+            return view;
         }
 
         /***************************************************/

@@ -318,7 +318,7 @@ namespace BH.Revit.Engine.Core
             Parameter depthParam = element.LookupParameter("Pile Depth");
             if (depthParam == null)
             {
-                depthParam = element.Parameters.Cast<Parameter>().FirstOrDefault(x => x.StorageType == StorageType.Double && x.Definition.Name.Contains("Depth"));
+                depthParam = element.Parameters.Cast<Parameter>().FirstOrDefault(x => x.StorageType == StorageType.Double && !x.IsReadOnly && x.Definition.Name.Contains("Depth"));
                 if (depthParam == null)
                     BH.Engine.Base.Compute.RecordWarning($"Could not find a suitable parameter to set pile depth on the element.");
                 else
