@@ -855,7 +855,7 @@ namespace BH.Revit.Engine.Core
         /****              Private helpers              ****/
         /***************************************************/
 
-#if REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
+#if REVIT2022 || REVIT2023 || REVIT2024
         private static readonly BuiltInParameterGroup[] dimensionGroups = { GroupTypeId.StructuralSectionGeometry, GroupTypeId.Geometry };
 #else
         private static readonly ForgeTypeId[] dimensionGroups = { GroupTypeId.StructuralSectionGeometry, GroupTypeId.Geometry };

@@ -58,10 +58,10 @@ namespace BH.Revit.Engine.Core
             List<Bar> bars = refObjects.GetValues<Bar>(familyInstance.Id);
             if (bars != null)
                 return bars;
-            
+
             // Get bar curve
             List<oM.Geometry.ICurve> locationCurves = null;
-#if (REVIT2021 || REVIT2022)
+#if REVIT2022
             AnalyticalModelStick analyticalModel = familyInstance.GetAnalyticalModel() as AnalyticalModelStick;
             if (analyticalModel != null)
             {
@@ -91,7 +91,7 @@ namespace BH.Revit.Engine.Core
             Material revitMaterial = familyInstance.Document.GetElement(structuralMaterialId) as Material;
             if (revitMaterial == null)
                 revitMaterial = familyInstance.Category.Material;
-            
+
             // Get material grade
             string materialGrade = familyInstance.MaterialGrade(settings);
 
@@ -137,7 +137,7 @@ namespace BH.Revit.Engine.Core
 
                 property.Name = profileName;
             }
-            
+
             // Create linear bars
             bars = new List<Bar>();
             if (locationCurves != null && locationCurves.Count != 0)

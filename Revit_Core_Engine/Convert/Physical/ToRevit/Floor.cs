@@ -24,8 +24,8 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Geometry;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -78,16 +78,9 @@ namespace BH.Revit.Engine.Core
             BH.oM.Geometry.Plane slabPlane = planarSurface.FitPlane();
             if (1 - Math.Abs(Vector.ZAxis.DotProduct(slabPlane.Normal)) <= settings.AngleTolerance)
             {
-#if REVIT2021
-                if (floorType.Category.Id.IntegerValue == (int)BuiltInCategory.OST_StructuralFoundation)
-                    revitFloor = document.Create.NewFoundationSlab(curve.ToRevitCurveArray(), floorType, level, true, XYZ.BasisZ);
-                else
-                    revitFloor = document.Create.NewFloor(curve.ToRevitCurveArray(), floorType, level, true);
-#else
                 revitFloor = Floor.Create(document, new List<CurveLoop> { curve.ToRevitCurveLoop() }, floorType.Id, level.Id);
                 revitFloor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, slabPlane.Origin.Z.FromSI(SpecTypeId.Length) - level.ProjectElevation, false);
                 document.Regenerate();
-#endif
             }
             else
             {
@@ -103,12 +96,8 @@ namespace BH.Revit.Engine.Core
                 XYZ start = ln.ClosestPoint(curve.IStartPoint(), true).ToRevit();
                 Autodesk.Revit.DB.Line line = Autodesk.Revit.DB.Line.CreateBound(start, start + dir);
 
-#if REVIT2021
-                revitFloor = document.Create.NewSlab(curve.ToRevitCurveArray(), level, line, -tan, true);
-#else
                 revitFloor = Floor.Create(document, new List<CurveLoop> { curve.ToRevitCurveLoop() }, floorType.Id, level.Id, true, line, -tan);
                 revitFloor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, ln.Start.Z.FromSI(SpecTypeId.Length) - level.ProjectElevation, false);
-#endif
                 revitFloor.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, floorType.Id);
             }
 

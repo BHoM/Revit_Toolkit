@@ -218,13 +218,7 @@ namespace BH.Revit.Engine.Core
             {
                 Element el = doc.GetElement(id);
                 if (el is IndependentTag tag)
-                {
-#if (REVIT2021)
-                    hostIds.Add(tag.GetTaggedLocalElement().Id);//Check for local host elements only
-#else
                     hostIds.AddRange(tag.GetTaggedLocalElementIds().ToList());//Check for local host elements only
-#endif
-                }
 
                 if (el is FamilyInstance fi && fi.Host != null)
                 {

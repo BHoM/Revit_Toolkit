@@ -60,12 +60,10 @@ namespace BH.Revit.Engine.Core
                         return "Int";
                 case StorageType.String:
                     {
-#if !REVIT2021
                         if (spec.NameEquals(SpecTypeId.String.MultilineText))
                             return "Multiline Text";
                         else if (spec.NameEquals(SpecTypeId.String.Url))
                             return "Url";
-#endif
 
                         return "Text";
                     }
