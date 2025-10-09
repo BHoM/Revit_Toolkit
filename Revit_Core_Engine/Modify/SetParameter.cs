@@ -258,12 +258,14 @@ namespace BH.Revit.Engine.Core
                         ElementId elementID = null;
 
                         if (value is int)
-                            elementID = new ElementId((int)value);
+                            elementID = Create.ElementId((int)value);
+                        else if (value is long)
+                            elementID = Create.ElementId((long)value);
                         else if (value is string)
                         {
                             int num;
                             if (int.TryParse((string)value, out num))
-                                elementID = new ElementId(num);
+                                elementID = Create.ElementId(num);
                         }
                         else if (value is IBHoMObject)
                         {
@@ -273,7 +275,7 @@ namespace BH.Revit.Engine.Core
                         {
                             int num;
                             if (int.TryParse(value.ToString(), out num))
-                                elementID = new ElementId(num);
+                                elementID = Create.ElementId(num);
                         }
 
                         if (elementID != null)

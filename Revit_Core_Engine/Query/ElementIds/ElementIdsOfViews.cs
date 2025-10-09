@@ -95,7 +95,7 @@ namespace BH.Revit.Engine.Core
         [Output("elementIds", "Collection of filtered ElementIds.")]
         public static IEnumerable<ElementId> ElementIdsOfViews(this Document document, long templateId, IEnumerable<ElementId> ids = null)
         {
-            View viewTemplate = document.GetElement(new ElementId(templateId)) as View;
+            View viewTemplate = document.GetElement(Create.ElementId(templateId)) as View;
             if (viewTemplate == null || !viewTemplate.IsTemplate)
             {
                 BH.Engine.Base.Compute.RecordError(String.Format("Couldn't find a View Template under ElementId {0}", templateId));

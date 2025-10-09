@@ -76,7 +76,7 @@ namespace BH.Revit.Engine.Core
                     }
                 }
 
-                host = hostDoc.GetElement(new ElementId(hostFragment.HostId));
+                host = hostDoc.GetElement(Create.ElementId(hostFragment.HostId));
             }
             else if (geometrySearchIfNotFound)
                 host = bHoMObject.IFindHost(document, settings);

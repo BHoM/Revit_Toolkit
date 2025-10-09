@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
         {
             List<ElementId> ids = new List<ElementId>();
             List<IBHoMObject> bHoMObjects = objects?.OfType<IBHoMObject>().ToList() ?? new List<IBHoMObject>();
-            List<int> elementIds = objects?.OfType<int>().ToList() ?? new List<int>();
+            List<long> elementIds = objects?.OfType<long>().ToList() ?? new List<long>();
             ids.AddRange(bHoMObjects.ElementIds());
             ids.AddRange(elementIds.ElementIds());
 
@@ -65,9 +65,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static List<ElementId> ElementIds(this List<int> elementId)
+        private static List<ElementId> ElementIds(this List<long> elementId)
         {
-            return elementId.Select(x => new ElementId(x)).ToList();
+            return elementId.Select(x => Create.ElementId(x)).ToList();
         }
 
         /***************************************************/

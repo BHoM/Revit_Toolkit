@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
             if (id == -1)
                 return null;
             else
-                return new ElementId(id);
+                return Create.ElementId(id);
         }
 
         /***************************************************/
@@ -65,11 +65,11 @@ namespace BH.Revit.Engine.Core
 
             string elementID = originatingElementDescription.Substring(startIndex + 1, endIndex - startIndex - 1);
 
-            int id;
-            if (!int.TryParse(elementID, out id))
+            long id;
+            if (!long.TryParse(elementID, out id))
                 return null;
 
-            return new ElementId(id);
+            return Create.ElementId(id);
         }
 
         /***************************************************/

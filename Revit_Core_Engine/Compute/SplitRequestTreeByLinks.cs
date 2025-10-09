@@ -77,7 +77,7 @@ namespace BH.Revit.Engine.Core
             List<IRequest> linkRequests = request.AllRequestsOfType(typeof(FilterByLink));
             if (linkRequests.Count == 0)
             {
-                requestsByLinks.AddRequestByLink(request, new ElementId(-1));
+                requestsByLinks.AddRequestByLink(request, Create.ElementId(-1));
                 return true;
             }
             else if (linkRequests.Count == 1)

@@ -24,8 +24,8 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Physical.Reinforcement;
 using BH.oM.Base.Attributes;
+using BH.oM.Physical.Reinforcement;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -98,7 +98,7 @@ namespace BH.Revit.Engine.Core
             //getting host
             Element host = null;
             if (bar.CustomData.ContainsKey("HostId"))
-                host = document.GetElement(new ElementId((int)bar.CustomData["HostId"]));
+                host = document.GetElement(Create.ElementId((long)bar.CustomData["HostId"]));
             else
             {
                 BH.Engine.Base.Compute.RecordError("One or more rebars does not contain information about the host.");

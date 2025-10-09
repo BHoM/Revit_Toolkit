@@ -124,7 +124,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             if (refObjects.ContainsKey(key))
-                return refObjects[key].Select(x => document.GetElement(new ElementId(x))).Cast<T>().ToList();
+                return refObjects[key].Select(x => document.GetElement(Create.ElementId(x))).Cast<T>().ToList();
             else
                 return null;
         }
@@ -142,7 +142,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             if (refObjects.ContainsKey(key) && refObjects[key].Count == 1)
-                return document.GetElement(new ElementId(refObjects[key][0])) as T;
+                return document.GetElement(Create.ElementId(refObjects[key][0])) as T;
             else
                 return null;
         }

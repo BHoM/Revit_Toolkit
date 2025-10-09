@@ -48,7 +48,7 @@ namespace BH.Revit.Engine.Core
             if (ids != null && ids.Count() == 0)
                 return new List<ElementId>();
 
-            ElementType elementType = document.GetElement(new ElementId(elementTypeId)) as ElementType;
+            ElementType elementType = document.GetElement(Create.ElementId(elementTypeId)) as ElementType;
             if (elementType == null)
             {
                 BH.Engine.Base.Compute.RecordError(String.Format("Active Revit model does not contain a family type under ElementId {0}.", elementTypeId));

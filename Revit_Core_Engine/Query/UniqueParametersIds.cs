@@ -102,7 +102,7 @@ namespace BH.Revit.Engine.Core
             foreach (KeyValuePair<ElementId, List<Element>> elementsByCatPair in elementsByCategory)
             {
                 List<Element> elementsOfCat = elementsByCatPair.Value;
-                IEnumerable<Element> elementTypes = elementsOfCat.UniqueTypeIds().Select(x => doc.GetElement(new ElementId(x)));
+                IEnumerable<Element> elementTypes = elementsOfCat.UniqueTypeIds().Select(x => doc.GetElement(Create.ElementId(x)));
                 parameterIds.UnionWith(elementTypes.UniqueParametersIds());
             }
 
