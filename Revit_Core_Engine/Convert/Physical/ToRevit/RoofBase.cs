@@ -24,8 +24,8 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Geometry;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -75,7 +75,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             double elevation = level.Elevation.ToSI(SpecTypeId.Length);
-            
+
             oM.Geometry.Plane plane = BH.Engine.Geometry.Create.Plane(BH.Engine.Geometry.Create.Point(0, 0, elevation), BH.Engine.Geometry.Create.Vector(0, 0, 1));
 
             ICurve curve = planarSurface.ExternalBoundary.IProject(plane);
@@ -83,7 +83,7 @@ namespace BH.Revit.Engine.Core
 
             ModelCurveArray modelCurveArray = new ModelCurveArray();
             roofBase = document.Create.NewFootPrintRoof(curveArray, level, roofType, out modelCurveArray);
-            
+
             if (roofBase != null)
             {
                 Parameter parameter = roofBase.get_Parameter(BuiltInParameter.ROOF_UPTO_LEVEL_PARAM);
@@ -94,7 +94,11 @@ namespace BH.Revit.Engine.Core
 
                 if (controlPoints != null && controlPoints.Count > 2)
                 {
+#if REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
                     SlabShapeEditor slabShapeEditor = roofBase.SlabShapeEditor;
+#else
+                    SlabShapeEditor slabShapeEditor = roofBase.GetSlabShapeEditor();
+#endif
                     slabShapeEditor.ResetSlabShape();
 
                     foreach (oM.Geometry.Point point in controlPoints)
@@ -102,9 +106,12 @@ namespace BH.Revit.Engine.Core
                         if (Math.Abs(point.Z - plane.Origin.Z) > settings.DistanceTolerance)
                         {
                             XYZ xyz = point.ToRevit();
+#if REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
                             slabShapeEditor.DrawPoint(xyz);
+#else
+                            slabShapeEditor.AddPoint(xyz);
+#endif
                         }
-                            
                     }
                 }
             }
