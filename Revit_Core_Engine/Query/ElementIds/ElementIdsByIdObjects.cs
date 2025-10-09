@@ -50,8 +50,10 @@ namespace BH.Revit.Engine.Core
             {
                 foreach (object obj in idObjects)
                 {
-                    if (obj is long)
+                    if (obj is int)
                         elementIds.Add((int)obj);
+                    if (obj is long)
+                        elementIds.Add((long)obj);
                     else if (obj is string)
                     {
                         string stringId = (string)obj;
