@@ -71,7 +71,7 @@ namespace BH.Revit.Engine.Core
             Document doc = hostObject.Document;
             AnalyticalToPhysicalAssociationManager manager = AnalyticalToPhysicalAssociationManager.GetAnalyticalToPhysicalAssociationManager(doc);
 
-#if (REVIT2023)
+#if REVIT2023
             List<AnalyticalPanel> analyticalModels = new List<AnalyticalPanel>();
             if (doc.GetElement(manager.GetAssociatedElementId(hostObject.Id)) is AnalyticalPanel analyticalPanel)
                 analyticalModels.Add(analyticalPanel);

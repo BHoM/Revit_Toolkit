@@ -59,7 +59,7 @@ namespace BH.Revit.Engine.Core
                 if (result != null)
                     return result;
 
-#if REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
+#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
                 ICurve curve = energyAnalysisOpening.GetPolyloop().FromRevit();
 #else
                 ICurve curve = energyAnalysisOpening.GetPolyloops().FirstOrDefault()?.FromRevit();
@@ -92,7 +92,7 @@ namespace BH.Revit.Engine.Core
 
                 ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
 
-#if REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
+#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
                 ICurve curve = energyAnalysisOpening.GetPolyloop().FromRevit();
 #else
                 ICurve curve = energyAnalysisOpening.GetPolyloops().FirstOrDefault()?.FromRevit();

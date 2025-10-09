@@ -94,7 +94,7 @@ namespace BH.Revit.Engine.Core
 
                 if (controlPoints != null && controlPoints.Count > 2)
                 {
-#if REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
+#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
                     SlabShapeEditor slabShapeEditor = roofBase.SlabShapeEditor;
 #else
                     SlabShapeEditor slabShapeEditor = roofBase.GetSlabShapeEditor();
@@ -106,7 +106,7 @@ namespace BH.Revit.Engine.Core
                         if (Math.Abs(point.Z - plane.Origin.Z) > settings.DistanceTolerance)
                         {
                             XYZ xyz = point.ToRevit();
-#if REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
+#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
                             slabShapeEditor.DrawPoint(xyz);
 #else
                             slabShapeEditor.AddPoint(xyz);

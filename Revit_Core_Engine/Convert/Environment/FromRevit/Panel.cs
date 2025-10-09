@@ -426,7 +426,7 @@ namespace BH.Revit.Engine.Core
             //Get the geometry Curve
             ICurve curve = null;
             if (energyAnalysisSurface != null)
-#if REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
+#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
                 curve = energyAnalysisSurface.GetPolyloop().FromRevit();
 #else
                 curve = energyAnalysisSurface.GetPolyloops().FirstOrDefault()?.FromRevit();
