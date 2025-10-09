@@ -12,14 +12,5 @@ namespace BH.Revit.Engine.Core
             return id.Value;
 #endif
         }
-
-        public static long Value(this WorksetId id)
-        {
-#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
-            return id.IntegerValue;
-#else
-            return id.Value;
-#endif
-        }
     }
 }

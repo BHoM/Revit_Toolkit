@@ -199,7 +199,7 @@ namespace BH.Revit.Engine.Core
                 if (workset != null)
                 {
                     // Set the parameter to a workset with the specified name if it exists
-                    return parameter.Set(workset.Id.Value());
+                    return parameter.Set(workset.Id.IntegerValue);
                 }
                 else
                 {
