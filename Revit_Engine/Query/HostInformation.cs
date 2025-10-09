@@ -21,8 +21,6 @@
  */
 
 using BH.Engine.Base;
-using BH.oM.Adapters.Revit.Elements;
-using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.Revit;
@@ -40,7 +38,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("bHoMObject", "BHoMObject to be queried.")]
         [MultiOutput(0, "hostId", "Integer representation of ElementId of Revit element that hosts the element correspondent to given BHoMObject. - 1 if the Revit element is not a hosted element.")]
         [MultiOutput(1, "linkDocument", "Name of the link document, if the host Revit element is linked.")]
-        public static Output<int, string> HostInformation(this IBHoMObject bHoMObject)
+        public static Output<long, string> HostInformation(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)
             {
@@ -48,7 +46,7 @@ namespace BH.Engine.Adapters.Revit
                 return null;
             }
 
-            int hostId = -1;
+            long hostId = -1;
             string hostLink = "";
 
             RevitHostFragment hostFragment = bHoMObject.FindFragment<RevitHostFragment>();
@@ -58,7 +56,7 @@ namespace BH.Engine.Adapters.Revit
                 hostLink = hostFragment.LinkDocument;
             }
 
-            return new Output<int, string> { Item1 = hostId, Item2 = hostLink };
+            return new Output<long, string> { Item1 = hostId, Item2 = hostLink };
         }
 
         /***************************************************/

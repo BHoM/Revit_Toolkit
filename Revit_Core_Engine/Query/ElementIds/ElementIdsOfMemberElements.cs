@@ -56,7 +56,7 @@ namespace BH.Revit.Engine.Core
         [Input("parentId", "Integer value of ElementId of the Revit element to be queried for its member elements.")]
         [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
-        public static IEnumerable<ElementId> ElementIdsOfMemberElements(this Document document, int parentId, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsOfMemberElements(this Document document, long parentId, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;
@@ -92,7 +92,7 @@ namespace BH.Revit.Engine.Core
             foreach (ElementId elementId in memberIds)
             {
                 Element e = group.Document.GetElement(elementId);
-                if (e.Category != null && e.Category.Id.IntegerValue != (int)Autodesk.Revit.DB.BuiltInCategory.OST_WeakDims && e.Category.Id.IntegerValue != (int)Autodesk.Revit.DB.BuiltInCategory.OST_SketchLines && !e.IsAnalytical())
+                if (e.Category != null && e.Category.Id.Value() != (int)Autodesk.Revit.DB.BuiltInCategory.OST_WeakDims && e.Category.Id.Value() != (int)Autodesk.Revit.DB.BuiltInCategory.OST_SketchLines && !e.IsAnalytical())
                     elementIds.Add(e.Id);
 
                 if (e is Group)

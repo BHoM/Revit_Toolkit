@@ -105,7 +105,7 @@ namespace BH.Revit.Adapter.Core
             {
                 Document doc;
                 Transform transform = Transform.Identity;
-                if (requestByLink.Key.IntegerValue == -1)
+                if (requestByLink.Key.Value() == -1)
                     doc = this.Document;
                 else
                 {

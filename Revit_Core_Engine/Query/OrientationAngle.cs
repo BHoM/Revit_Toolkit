@@ -51,7 +51,7 @@ namespace BH.Revit.Engine.Core
             if (familyInstance is Mullion)
                 return familyInstance.OrientationAngleMullion(settings);
 
-            BuiltInCategory category = (BuiltInCategory)familyInstance.Category.Id.IntegerValue;
+            BuiltInCategory category = (BuiltInCategory)familyInstance.Category.Id.Value();
             if (typeof(Column).BuiltInCategories().Contains(category))
                 rotation = familyInstance.OrientationAngleColumn(settings);
             else if (typeof(Pile).BuiltInCategories().Contains(category))
@@ -75,7 +75,7 @@ namespace BH.Revit.Engine.Core
             Curve curve = (mepCurve.Location as LocationCurve)?.Curve;
             if (curve == null)
             {
-                BH.Engine.Base.Compute.RecordError($"Cannot query orientation of a MEP element without a valid location curve. ElementId: {mepCurve.Id.IntegerValue}");
+                BH.Engine.Base.Compute.RecordError($"Cannot query orientation of a MEP element without a valid location curve. ElementId: {mepCurve.Id.Value()}");
                 return double.NaN;
             }
 
@@ -84,7 +84,7 @@ namespace BH.Revit.Engine.Core
             List<Connector> endConnectors = mepCurve.ConnectorsOfType(ConnectorType.End);
             if (endConnectors.Count != 2)
             {
-                BH.Engine.Base.Compute.RecordError($"Cannot query orientation of a MEP element without two end connectors. ElementId: {mepCurve.Id.IntegerValue}");
+                BH.Engine.Base.Compute.RecordError($"Cannot query orientation of a MEP element without two end connectors. ElementId: {mepCurve.Id.Value()}");
                 return double.NaN;
             }
 

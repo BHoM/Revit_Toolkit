@@ -36,7 +36,7 @@ namespace BH.oM.Adapters.Revit.Parameters
         public virtual object PersistentId { get; } = "";
 
         [Description("ElementId of the Revit element correspondent to the BHoM object that carries this fragment.")]
-        public virtual int ElementId { get; } = -1;
+        public virtual long ElementId { get; } = -1;
 
         [Description("Category of the Revit element correspondent to the BHoM object that carries this fragment.")]
         public virtual string CategoryName { get; } = "";
@@ -48,16 +48,16 @@ namespace BH.oM.Adapters.Revit.Parameters
         public virtual string FamilyTypeName { get; } = "";
 
         [Description("ElementId of family type of the Revit element correspondent to the BHoM object that carries this fragment.")]
-        public virtual int FamilyTypeId { get; } = -1;
+        public virtual long FamilyTypeId { get; } = -1;
 
         [Description("Name of the parent workset of the Revit element correspondent to the BHoM object that carries this fragment. Empty if the Revit model is not shared.")]
         public virtual string Workset { get; } = "";
 
         [Description("ElementId of view that owns the Revit element correspondent to the BHoM object that carries this fragment. -1 if the Revit element is not view-dependent.")]
-        public virtual int OwnerViewId { get; } = -1;
+        public virtual long OwnerViewId { get; } = -1;
 
         [Description("ElementId of the parent element of the Revit element correspondent to the BHoM object that carries this fragment. -1 if the Revit element is not a nested element.")]
-        public virtual int ParentElementId { get; } = -1;
+        public virtual long ParentElementId { get; } = -1;
 
         [Description("Name of the link document containing the Revit element correspondent to the BHoM object that carries this fragment. Empty if the Revit element is not a link element.")]
         public virtual string LinkDocument { get; } = "";
@@ -67,7 +67,7 @@ namespace BH.oM.Adapters.Revit.Parameters
         /****            Public Constructors            ****/
         /***************************************************/
 
-        public RevitIdentifiers(string persistentId = "", int elementId = -1, string categoryName = "", string familyName = "", string familyTypeName = "", int familyTypeId = -1, string workset = "", int ownerViewId = -1, int parentElementId = -1, string linkDocument = "")
+        public RevitIdentifiers(string persistentId = "", long elementId = -1, string categoryName = "", string familyName = "", string familyTypeName = "", long familyTypeId = -1, string workset = "", long ownerViewId = -1, long parentElementId = -1, string linkDocument = "")
         {
             PersistentId = persistentId;
             ElementId = elementId;

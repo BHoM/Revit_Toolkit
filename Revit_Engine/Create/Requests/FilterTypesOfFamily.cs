@@ -61,7 +61,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("request", "Created request.")]
         public static FilterTypesOfFamily FilterTypesOfFamily(IBHoMObject family)
         {
-            int elementId = family.ElementId();
+            long elementId = family.ElementId();
             if (elementId == -1)
             {
                 BH.Engine.Base.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", family.BHoM_Guid));

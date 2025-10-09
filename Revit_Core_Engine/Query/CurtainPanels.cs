@@ -72,7 +72,7 @@ namespace BH.Revit.Engine.Core
 
                 foreach (PolyCurve pc in cells[i].CurveLoops.FromRevit())
                 {
-                    if (panel.Category.Id.IntegerValue == (int)Autodesk.Revit.DB.BuiltInCategory.OST_Doors)
+                    if (panel.Category.Id.Value() == (int)Autodesk.Revit.DB.BuiltInCategory.OST_Doors)
                         result.Add(panel.DoorFromRevit(BH.Engine.Geometry.Create.PlanarSurface(pc), settings, refObjects));
                     else
                         result.Add(panel.WindowFromRevit(BH.Engine.Geometry.Create.PlanarSurface(pc), settings, refObjects));

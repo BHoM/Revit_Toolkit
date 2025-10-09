@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("wall", "Revit Wall resulting from converting the input BH.oM.Physical.Elements.Wall.")]
-        public static Wall ToRevitWall(this oM.Physical.Elements.Wall wall, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Wall ToRevitWall(this oM.Physical.Elements.Wall wall, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (wall == null || wall.Location == null || document == null)
                 return null;

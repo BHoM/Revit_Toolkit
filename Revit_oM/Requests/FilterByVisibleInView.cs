@@ -33,7 +33,7 @@ namespace BH.oM.Adapters.Revit.Requests
         /***************************************************/
 
         [Description("ElementId of Revit view to be checked for element visibility.")]
-        public virtual int ViewId { get; set; } = -1;
+        public virtual long ViewId { get; set; } = -1;
 
         /***************************************************/
     }

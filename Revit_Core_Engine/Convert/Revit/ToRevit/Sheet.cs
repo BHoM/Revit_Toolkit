@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("viewSheet", "Revit ViewSheet resulting from converting the input BH.oM.Adapters.Revit.Elements.Sheet.")]
-        public static ViewSheet ToRevitSheet(this Sheet sheet, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static ViewSheet ToRevitSheet(this Sheet sheet, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (sheet == null)
                 return null;

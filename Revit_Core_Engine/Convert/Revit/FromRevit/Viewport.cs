@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
         {
             settings = settings.DefaultIfNull();
 
-            oM.Adapters.Revit.Elements.Viewport viewPort = refObjects.GetValue<oM.Adapters.Revit.Elements.Viewport>(revitViewPort.Id.IntegerValue);
+            oM.Adapters.Revit.Elements.Viewport viewPort = refObjects.GetValue<oM.Adapters.Revit.Elements.Viewport>(revitViewPort.Id.Value());
             if (viewPort != null)
                 return viewPort;
 

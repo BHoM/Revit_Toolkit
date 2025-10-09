@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.IFramingElement.")]
-        public static FamilyInstance IToRevitFamilyInstance(this IFramingElement framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static FamilyInstance IToRevitFamilyInstance(this IFramingElement framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return ToRevitFamilyInstance(framingElement as dynamic, document, settings, refObjects);
         }
@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.Column.")]
-        public static FamilyInstance ToRevitFamilyInstance(this Column framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static FamilyInstance ToRevitFamilyInstance(this Column framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (framingElement == null || document == null)
                 return null;
@@ -143,7 +143,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.Pile.")]
-        public static FamilyInstance ToRevitFamilyInstance(this Pile framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static FamilyInstance ToRevitFamilyInstance(this Pile framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (framingElement == null || document == null)
                 return null;
@@ -229,7 +229,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.IFramingElement.")]
-        public static FamilyInstance ToRevitFamilyInstance(this IFramingElement framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static FamilyInstance ToRevitFamilyInstance(this IFramingElement framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (framingElement == null || document == null)
                 return null;

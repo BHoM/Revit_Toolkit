@@ -85,7 +85,7 @@ namespace BH.Revit.Engine.Core
 
             // Get bar material
             ElementId structuralMaterialId = familyInstance.StructuralMaterialId;
-            if (structuralMaterialId.IntegerValue < 0)
+            if (structuralMaterialId.Value() < 0)
                 structuralMaterialId = familyInstance.Symbol.LookupParameterElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
 
             Material revitMaterial = familyInstance.Document.GetElement(structuralMaterialId) as Material;
@@ -131,7 +131,7 @@ namespace BH.Revit.Engine.Core
                 property = property.ShallowClone();
 
                 if (!materialFound)
-                    BH.Engine.Base.Compute.RecordNote($"A matching section was found in the library. No valid material was defined in Revit, so the default material for this section was used. Revit ElementId: {familyInstance.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordNote($"A matching section was found in the library. No valid material was defined in Revit, so the default material for this section was used. Revit ElementId: {familyInstance.Id.Value()}");
                 else
                     property.Material = materialFragment;
 

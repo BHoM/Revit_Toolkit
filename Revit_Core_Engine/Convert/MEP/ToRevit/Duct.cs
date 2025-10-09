@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("duct", "Revit Duct resulting from converting the input BH.oM.MEP.System.Duct.")]
-        public static Duct ToRevitDuct(this oM.MEP.System.Duct duct, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Duct ToRevitDuct(this oM.MEP.System.Duct duct, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (document == null)
                 return null;

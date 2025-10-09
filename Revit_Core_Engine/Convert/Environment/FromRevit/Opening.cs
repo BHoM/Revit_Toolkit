@@ -64,7 +64,7 @@ namespace BH.Revit.Engine.Core
                     Edges = curve.ToEdges(),
                 };
 
-                OriginContextFragment originContext = new OriginContextFragment() { ElementID = energyAnalysisOpening.Id.IntegerValue.ToString(), TypeName = energyAnalysisOpening.OpeningName };
+                OriginContextFragment originContext = new OriginContextFragment() { ElementID = energyAnalysisOpening.Id.Value().ToString(), TypeName = energyAnalysisOpening.OpeningName };
                 originContext.SetProperties(energyAnalysisOpening, settings.MappingSettings);
                 result.AddFragment(originContext);
 
@@ -81,7 +81,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                oM.Environment.Elements.Opening result = refObjects.GetValue<oM.Environment.Elements.Opening>(energyAnalysisOpening.Id.IntegerValue);
+                oM.Environment.Elements.Opening result = refObjects.GetValue<oM.Environment.Elements.Opening>(energyAnalysisOpening.Id.Value());
                 if (result != null)
                     return result;
 
@@ -94,7 +94,7 @@ namespace BH.Revit.Engine.Core
                     Name = element.FamilyTypeFullName(),
                 };
 
-                OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.IntegerValue.ToString(), TypeName = element.FamilyTypeFullName() };
+                OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.Value().ToString(), TypeName = element.FamilyTypeFullName() };
                 originContext.SetProperties(element, settings.MappingSettings);
                 originContext.SetProperties(elementType, settings.MappingSettings);
                 result.AddFragment(originContext);

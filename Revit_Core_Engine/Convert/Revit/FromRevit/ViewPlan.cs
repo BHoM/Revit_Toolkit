@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
         {
             settings = settings.DefaultIfNull();
 
-            oM.Adapters.Revit.Elements.ViewPlan viewPlan = refObjects.GetValue<oM.Adapters.Revit.Elements.ViewPlan>(revitViewPlan.Id.IntegerValue);
+            oM.Adapters.Revit.Elements.ViewPlan viewPlan = refObjects.GetValue<oM.Adapters.Revit.Elements.ViewPlan>(revitViewPlan.Id.Value());
             if (viewPlan != null)
                 return viewPlan;
 

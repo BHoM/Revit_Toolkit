@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("assemblyInstance", "Revit AssemblyInstance resulting from converting the input BH.oM.Adapters.Revit.Elements.Assembly.")]
-        public static AssemblyInstance ToRevitAssembly(this oM.Adapters.Revit.Elements.Assembly assembly, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static AssemblyInstance ToRevitAssembly(this oM.Adapters.Revit.Elements.Assembly assembly, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (assembly?.MemberElements == null)
                 return null;

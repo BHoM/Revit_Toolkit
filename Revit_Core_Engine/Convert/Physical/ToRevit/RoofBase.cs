@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("roofBase", "Revit RoofBase resulting from converting the input BH.oM.Physical.Elements.Roof.")]
-        public static RoofBase ToRevitRoofBase(this oM.Physical.Elements.Roof roof, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static RoofBase ToRevitRoofBase(this oM.Physical.Elements.Roof roof, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (roof == null || roof.Location == null || document == null)
                 return null;
@@ -132,7 +132,7 @@ namespace BH.Revit.Engine.Core
 
             // Update the offset in case the level had been overwritten.
             double offset = 0;
-            if (roofBase.LevelId.IntegerValue != level.Id.IntegerValue)
+            if (roofBase.LevelId.Value() != level.Id.Value())
             {
                 Level newLevel = document.GetElement(roofBase.LevelId) as Level;
                 offset += (level.ProjectElevation - newLevel.ProjectElevation).ToSI(SpecTypeId.Length);

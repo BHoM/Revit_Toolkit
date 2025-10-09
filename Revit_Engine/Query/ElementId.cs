@@ -36,7 +36,7 @@ namespace BH.Engine.Adapters.Revit
         [Description("Returns integer representation of ElementId of Revit element correspondent to given BHoMObject. This value is stored in RevitIdentifiers fragment.")]
         [Input("bHoMObject", "BHoMObject to be queried.")]
         [Output("elementId")]
-        public static int ElementId(this IBHoMObject bHoMObject)
+        public static long ElementId(this IBHoMObject bHoMObject)
         {
             if (bHoMObject == null)
                 return -1;

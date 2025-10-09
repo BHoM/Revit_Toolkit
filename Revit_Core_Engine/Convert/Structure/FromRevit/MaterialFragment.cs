@@ -92,7 +92,7 @@ namespace BH.Revit.Engine.Core
                     materialFragment = new Timber();
                     break;
                 default:
-                    BH.Engine.Base.Compute.RecordWarning(String.Format("Revit material of structural type {0} is currently not supported, the material was converted to a generic isotropic BHoM material. Revit ElementId: {1}", structuralMaterialType, material.Id.IntegerValue));
+                    BH.Engine.Base.Compute.RecordWarning(String.Format("Revit material of structural type {0} is currently not supported, the material was converted to a generic isotropic BHoM material. Revit ElementId: {1}", structuralMaterialType, material.Id.Value()));
                     materialFragment = new GenericIsotropicMaterial();
                     break;
             }

@@ -70,7 +70,7 @@ namespace BH.Revit.Engine.Core
             {
                 param = element.Document.GetElement(element.GetTypeId())?.LookupParameter(valueSource.ParameterName);
                 if (param != null)
-                    BH.Engine.Base.Compute.RecordNote($"Parameter {valueSource.ParameterName} was not found in the instance of element {element.Id.IntegerValue}, but was found in the type.");
+                    BH.Engine.Base.Compute.RecordNote($"Parameter {valueSource.ParameterName} was not found in the instance of element {element.Id.Value()}, but was found in the type.");
             }
 
             if (param == null)

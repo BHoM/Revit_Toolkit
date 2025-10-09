@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("grid", "Revit Grid or MultiSegmentGrid resulting from converting the input BH.oM.Spatial.SettingOut.Grid.")]
-        public static Element ToRevitGrid(this oM.Spatial.SettingOut.Grid grid, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevitGrid(this oM.Spatial.SettingOut.Grid grid, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             Element revitGrid = refObjects.GetValue<Grid>(document, grid.BHoM_Guid);
             if (revitGrid != null)

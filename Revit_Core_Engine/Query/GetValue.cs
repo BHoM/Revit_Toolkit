@@ -58,7 +58,7 @@ namespace BH.Revit.Engine.Core
         [Input("refObjects", "Collection of BHoM objects to be queried for values.")]
         [Input("key", "Key to find the correspondent objects for.")]
         [Output("values", "Already processed BHoM objects correspondent to the input key.")]
-        public static List<T> GetValues<T>(this Dictionary<string, List<IBHoMObject>> refObjects, int key) where T : IBHoMObject
+        public static List<T> GetValues<T>(this Dictionary<string, List<IBHoMObject>> refObjects, long key) where T : IBHoMObject
         {
             return refObjects.GetValues<T>(key.ToString());
         }
@@ -95,7 +95,7 @@ namespace BH.Revit.Engine.Core
         [Input("refObjects", "Collection of BHoM objects to be queried for values.")]
         [Input("key", "Key to find the correspondent objects for.")]
         [Output("value", "Already processed BHoM object correspondent to the input key.")]
-        public static T GetValue<T>(this Dictionary<string, List<IBHoMObject>> refObjects, int key) where T : IBHoMObject
+        public static T GetValue<T>(this Dictionary<string, List<IBHoMObject>> refObjects, long key) where T : IBHoMObject
         {
             return refObjects.GetValue<T>(key.ToString());
         }
@@ -118,7 +118,7 @@ namespace BH.Revit.Engine.Core
         [Input("document", "Revit document hosting the already processed Revit elements.")]
         [Input("key", "Key to find the correspondent elements for.")]
         [Output("values", "Already processed Revit elements correspondent to the input key.")]
-        public static List<T> GetValues<T>(this Dictionary<Guid, List<int>> refObjects, Document document, Guid key) where T : Element
+        public static List<T> GetValues<T>(this Dictionary<Guid, List<long>> refObjects, Document document, Guid key) where T : Element
         {
             if (refObjects == null || document == null)
                 return null;
@@ -136,7 +136,7 @@ namespace BH.Revit.Engine.Core
         [Input("document", "Revit document hosting the already processed Revit elements.")]
         [Input("key", "Key to find the correspondent element for.")]
         [Output("value", "Already processed Revit element correspondent to the input key.")]
-        public static T GetValue<T>(this Dictionary<Guid, List<int>> refObjects, Document document, Guid key) where T : Element
+        public static T GetValue<T>(this Dictionary<Guid, List<long>> refObjects, Document document, Guid key) where T : Element
         {
             if (refObjects == null || document == null)
                 return null;

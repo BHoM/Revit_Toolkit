@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("space", "Revit Space resulting from converting the input BH.oM.Environment.Elements.Space.")]
-        public static Autodesk.Revit.DB.Mechanical.Space ToRevitSpace(this Space space, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Autodesk.Revit.DB.Mechanical.Space ToRevitSpace(this Space space, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (space == null)
                 return null;

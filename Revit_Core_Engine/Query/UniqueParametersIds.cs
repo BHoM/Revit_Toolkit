@@ -21,7 +21,6 @@
  */
 
 using Autodesk.Revit.DB;
-using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -39,10 +38,10 @@ namespace BH.Revit.Engine.Core
         [Input("document", "Document where elements belong.")]
         [Input("category", "Category of the elements.")]
         [Output("parameterIds", "Unique parameter ids of elements that belong to the input document and category.")]
-        public static HashSet<int> UniqueInstanceParametersIds(this Document document, BuiltInCategory category)
+        public static HashSet<long> UniqueInstanceParametersIds(this Document document, BuiltInCategory category)
         {
             IEnumerable<Element> elements = new FilteredElementCollector(document).OfCategory(category).WhereElementIsNotElementType();
-            
+
             return UniqueInstanceParametersIds(elements);
         }
 
@@ -53,7 +52,7 @@ namespace BH.Revit.Engine.Core
         [Input("category", "Category of the elements.")]
         [Input("includeNotInstantinated", "True to include all element types of category from the model, false for only instanited.")]
         [Output("parameterIds", "Unique parameter ids of types that belong to the input document and category.")]
-        public static HashSet<int> UniqueTypeParametersIds(this Document document, BuiltInCategory category, bool includeNotInstantinated = false)
+        public static HashSet<long> UniqueTypeParametersIds(this Document document, BuiltInCategory category, bool includeNotInstantinated = false)
         {
             if (includeNotInstantinated)
                 return UniqueInstanceParametersIds(new FilteredElementCollector(document).OfCategory(category).WhereElementIsElementType());
@@ -66,9 +65,9 @@ namespace BH.Revit.Engine.Core
         [Description("Returns unique instance parameter ids for the collection of the elements.")]
         [Input("elementsFromOneDocument", "Elements from the same document to get the unique parameter ids from.")]
         [Output("parameterIds", "Unique ids of instance parameters for the input collection of the elements.")]
-        public static HashSet<int> UniqueInstanceParametersIds(this IEnumerable<Element> elementsFromOneDocument)
+        public static HashSet<long> UniqueInstanceParametersIds(this IEnumerable<Element> elementsFromOneDocument)
         {
-            HashSet<int> parameterIds = new HashSet<int>();
+            HashSet<long> parameterIds = new HashSet<long>();
 
             if (elementsFromOneDocument == null || !elementsFromOneDocument.Any())
                 return parameterIds;
@@ -76,7 +75,7 @@ namespace BH.Revit.Engine.Core
             Document doc = elementsFromOneDocument.FirstOrDefault().Document;
             Dictionary<ElementId, List<Element>> elementsByCategory = elementsFromOneDocument.GroupBy(x => x.Category.Id).ToDictionary(x => x.Key, x => x.ToList());
 
-            foreach (var elementsByCatPair in elementsByCategory)
+            foreach (KeyValuePair<ElementId, List<Element>> elementsByCatPair in elementsByCategory)
             {
                 List<Element> elementsOfCat = elementsByCatPair.Value;
                 parameterIds.UnionWith(elementsOfCat.UniqueParametersIds());
@@ -90,9 +89,9 @@ namespace BH.Revit.Engine.Core
         [Description("Returns unique type parameter ids for the collection of the elements.")]
         [Input("elementsFromOneDocument", "Elements from the same document to get the unique type parameter ids from.")]
         [Output("parameterIds", "Unique ids of type parameters for the input collection of elements.")]
-        public static HashSet<int> UniqueTypeParametersIds(this IEnumerable<Element> elementsFromOneDocument)
+        public static HashSet<long> UniqueTypeParametersIds(this IEnumerable<Element> elementsFromOneDocument)
         {
-            HashSet<int> parameterIds = new HashSet<int>();
+            HashSet<long> parameterIds = new HashSet<long>();
 
             if (elementsFromOneDocument == null || !elementsFromOneDocument.Any())
                 return parameterIds;
@@ -100,7 +99,7 @@ namespace BH.Revit.Engine.Core
             Document doc = elementsFromOneDocument.FirstOrDefault().Document;
             Dictionary<ElementId, List<Element>> elementsByCategory = elementsFromOneDocument.GroupBy(x => x.Category.Id).ToDictionary(x => x.Key, x => x.ToList());
 
-            foreach (var elementsByCatPair in elementsByCategory)
+            foreach (KeyValuePair<ElementId, List<Element>> elementsByCatPair in elementsByCategory)
             {
                 List<Element> elementsOfCat = elementsByCatPair.Value;
                 IEnumerable<Element> elementTypes = elementsOfCat.UniqueTypeIds().Select(x => doc.GetElement(new ElementId(x)));
@@ -117,9 +116,9 @@ namespace BH.Revit.Engine.Core
         [Description("Returns unique parameter ids for the collection of the elements.")]
         [Input("elementsFromOneDocument", "Elements to get the unique parameter ids from.")]
         [Output("ids", "Unique ids for the collection of the elements.")]
-        private static HashSet<int> UniqueParametersIds(this IEnumerable<Element> elementsFromOneDocument)
+        private static HashSet<long> UniqueParametersIds(this IEnumerable<Element> elementsFromOneDocument)
         {
-            HashSet<int> ids = new HashSet<int>();
+            HashSet<long> ids = new HashSet<long>();
             HashSet<string> visitedFamilies = new HashSet<string>();
 
             foreach (Element element in elementsFromOneDocument)
@@ -136,7 +135,7 @@ namespace BH.Revit.Engine.Core
 
                 foreach (Parameter parameter in element.ParametersMap)
                 {
-                    ids.Add(parameter.Id.IntegerValue);
+                    ids.Add(parameter.Id.Value());
                 }
             }
 

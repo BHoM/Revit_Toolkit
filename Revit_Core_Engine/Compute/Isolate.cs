@@ -97,11 +97,11 @@ namespace BH.Revit.Engine.Core
             // Check invalid element IDs
             List<ElementId> invalidedIds = elementIds.Where(id => doc.GetElement(id) == null).ToList();
             if (invalidedIds.Count > 0)
-                BH.Engine.Base.Compute.RecordWarning($"Elements under some element IDs do not exist in the current document: {string.Join(", ", invalidedIds.Select(id => id.IntegerValue))}");
+                BH.Engine.Base.Compute.RecordWarning($"Elements under some element IDs do not exist in the current document: {string.Join(", ", invalidedIds.Select(id => id.Value()))}");
 
             // Check if selected viewspecific elements are at same view, then check host elements
             List<ElementId> viewSpecific = elementIds.Where(id => doc.GetElement(id)?.ViewSpecific == true).ToList();
-            HashSet<int> nonViewSpecificSet = elementIds.Except(viewSpecific).Select(id => id.IntegerValue).ToHashSet();
+            HashSet<long> nonViewSpecificSet = elementIds.Except(viewSpecific).Select(id => id.Value()).ToHashSet();
 
             if (viewSpecific.Count > 0)
             {
@@ -116,10 +116,10 @@ namespace BH.Revit.Engine.Core
                 }
 
                 // Warn if hosts of view-specific items are not included in selection
-                List<int> hostIds = viewSpecific.GetHostElementIds(doc).Select(x => x.IntegerValue).ToList();
+                List<long> hostIds = viewSpecific.GetHostElementIds(doc).Select(x => x.Value()).ToList();
                 if (hostIds.Count > 0)
                 {
-                    List<int> missingHosts = hostIds.Where(h => !nonViewSpecificSet.Contains(h)).Distinct().ToList();
+                    List<long> missingHosts = hostIds.Where(h => !nonViewSpecificSet.Contains(h)).Distinct().ToList();
                     if (missingHosts.Count > 0)
                     {
                         BH.Engine.Base.Compute.RecordWarning($"Some host elements are not selected: {string.Join(", ", missingHosts)}. " +

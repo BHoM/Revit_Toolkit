@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("rebar", "Revit Rebar resulting from converting the input BH.oM.Physical.Reinforcement.IReinforcingBar.")]
-        public static Rebar IToRevitRebar(this IReinforcingBar reinforcement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Rebar IToRevitRebar(this IReinforcingBar reinforcement, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return ToRevitRebar(reinforcement as dynamic, document, settings, refObjects);
         }
@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("rebar", "Revit Rebar resulting from converting the input BH.oM.Physical.Reinforcement.PrimaryReinforcingBar.")]
-        public static Rebar ToRevitRebar(this PrimaryReinforcingBar bar, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Rebar ToRevitRebar(this PrimaryReinforcingBar bar, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return ToRevitRebar((IReinforcingBar)bar, document, settings, refObjects);
         }
@@ -74,7 +74,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("rebar", "Revit Rebar resulting from converting the input BH.oM.Physical.Reinforcement.Stirrup.")]
-        public static Rebar ToRevitRebar(this Stirrup stirrup, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Rebar ToRevitRebar(this Stirrup stirrup, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return ToRevitRebar((IReinforcingBar)stirrup, document, settings, refObjects);
         }
@@ -84,7 +84,7 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
-        private static Rebar ToRevitRebar(this IReinforcingBar bar, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        private static Rebar ToRevitRebar(this IReinforcingBar bar, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (bar == null || document == null)
                 return null;

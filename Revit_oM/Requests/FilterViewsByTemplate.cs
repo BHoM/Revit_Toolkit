@@ -33,7 +33,7 @@ namespace BH.oM.Adapters.Revit.Requests
         /***************************************************/
 
         [Description("ElementId of the Revit view template.")]
-        public virtual int TemplateId { get; set; } = -1;
+        public virtual long TemplateId { get; set; } = -1;
 
         /***************************************************/
     }

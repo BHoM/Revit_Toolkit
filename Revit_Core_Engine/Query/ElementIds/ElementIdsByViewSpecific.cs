@@ -40,7 +40,7 @@ namespace BH.Revit.Engine.Core
         [Input("viewId", "ElementId of the Revit view to which the filtered elements belong.")]
         [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
-        public static IEnumerable<ElementId> ElementIdsByViewSpecific(this Document document, int viewId, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsByViewSpecific(this Document document, long viewId, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;

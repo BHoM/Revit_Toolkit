@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("level", "Revit Level resulting from converting the input BH.oM.Spatial.SettingOut.Level.")]
-        public static Level ToRevitLevel(this oM.Spatial.SettingOut.Level level, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Level ToRevitLevel(this oM.Spatial.SettingOut.Level level, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             Level revitLevel = refObjects.GetValue<Level>(document, level.BHoM_Guid);
             if (revitLevel != null)

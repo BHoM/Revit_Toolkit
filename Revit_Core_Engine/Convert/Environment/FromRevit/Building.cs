@@ -93,7 +93,7 @@ namespace BH.Revit.Engine.Core
             building = new Building { Elevation = elevation, Location = location };
 
             //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment() { ElementID = projectInfo.Id.IntegerValue.ToString(), Description = projectInfo.OrganizationDescription, TypeName = projectInfo.Name };
+            OriginContextFragment originContext = new OriginContextFragment() { ElementID = projectInfo.Id.Value().ToString(), Description = projectInfo.OrganizationDescription, TypeName = projectInfo.Name };
             building.AddFragment(originContext);
 
             BuildingAnalyticalFragment buildingAnalytical = new BuildingAnalyticalFragment() { GMTOffset = timeZone, NorthAngle = projectAngle };

@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
             string message = String.Format("Revit element conversion to BHoM failed for discipline {0}. The element has been converted into a generic BHoM instance.", discipline);
 
             if (element != null)
-                message += string.Format(" Element Type: {0}, Element Id: {1}, Element Name: {2}", element.GetType(), element.Id.IntegerValue, element.Name);
+                message += string.Format(" Element Type: {0}, Element Id: {1}, Element Name: {2}", element.GetType(), element.Id.Value(), element.Name);
 
             BH.Engine.Base.Compute.RecordWarning(message);
         }
@@ -60,7 +60,7 @@ namespace BH.Revit.Engine.Core
 
         internal static void NotConvertedWarning(this FamilySymbol symbol)
         {
-            BH.Engine.Base.Compute.RecordWarning("Framing profile " + symbol.Name + " could not be converted. ElementId: " + symbol.Id.IntegerValue.ToString());
+            BH.Engine.Base.Compute.RecordWarning("Framing profile " + symbol.Name + " could not be converted. ElementId: " + symbol.Id.Value().ToString());
         }
 
         /***************************************************/
@@ -119,7 +119,7 @@ namespace BH.Revit.Engine.Core
                 string warning = string.Format("The BHoM object if missing following properties: {0}. BHoM_Guid: {1}.", string.Join(", ", nullPropertyNames), obj.BHoM_Guid);
 
                 ElementId revitID = obj.ElementId();
-                if (revitID != null) warning += string.Format(" Revit ElementId: {0}.", revitID.IntegerValue);
+                if (revitID != null) warning += string.Format(" Revit ElementId: {0}.", revitID.Value());
                 BH.Engine.Base.Compute.RecordWarning(warning);
             }
         }
@@ -128,7 +128,7 @@ namespace BH.Revit.Engine.Core
 
         internal static void UnknownMaterialWarning(this FamilyInstance familyInstance)
         {
-            BH.Engine.Base.Compute.RecordWarning(string.Format("Revit symbol has been converted to a steel profile with an unknown material. Element Id: {0}, Element Name: {1}", familyInstance.Id.IntegerValue, familyInstance.Name));
+            BH.Engine.Base.Compute.RecordWarning(string.Format("Revit symbol has been converted to a steel profile with an unknown material. Element Id: {0}, Element Name: {1}", familyInstance.Id.Value(), familyInstance.Name));
         }
 
         /***************************************************/
@@ -156,7 +156,7 @@ namespace BH.Revit.Engine.Core
 
         internal static void CompositePanelWarning(this HostObjAttributes hostObjAttributes)
         {
-            BH.Engine.Base.Compute.RecordWarning(string.Format("Composite panels are currently not supported in BHoM. A zero thickness panel is created. Element type Id: {0}", hostObjAttributes.Id.IntegerValue));
+            BH.Engine.Base.Compute.RecordWarning(string.Format("Composite panels are currently not supported in BHoM. A zero thickness panel is created. Element type Id: {0}", hostObjAttributes.Id.Value()));
         }
 
         /***************************************************/
@@ -170,7 +170,7 @@ namespace BH.Revit.Engine.Core
 
         internal static void ConvertProfileFailedWarning(this FamilySymbol familySymbol)
         {
-            BH.Engine.Base.Compute.RecordWarning(string.Format("Revit family symbol conversion to BHoM profile failed, zero profile is returned. Family symbol Id: {0}", familySymbol.Id.IntegerValue));
+            BH.Engine.Base.Compute.RecordWarning(string.Format("Revit family symbol conversion to BHoM profile failed, zero profile is returned. Family symbol Id: {0}", familySymbol.Id.Value()));
         }
 
         /***************************************************/
@@ -180,7 +180,7 @@ namespace BH.Revit.Engine.Core
             string message = "Nonlinear bars are currently not supported in BHoM, the object is returned with empty geometry.";
 
             if (bar != null)
-                message = string.Format("{0} Element Id: {1}", message, bar.Id.IntegerValue);
+                message = string.Format("{0} Element Id: {1}", message, bar.Id.Value());
 
             BH.Engine.Base.Compute.RecordWarning(message);
         }
@@ -192,7 +192,7 @@ namespace BH.Revit.Engine.Core
             string message = "Driving curve of a Revit framing element could not be retrieved.";
 
             if (framing != null)
-                message = string.Format("{0} ElementId: {1}", message, framing.Id.IntegerValue);
+                message = string.Format("{0} ElementId: {1}", message, framing.Id.Value());
 
             BH.Engine.Base.Compute.RecordWarning(message);
         }
@@ -216,7 +216,7 @@ namespace BH.Revit.Engine.Core
             string message = "The panel outline contains a curve that is currently not supported in BHoM, the object is returned with empty geometry.";
 
             if (hostObject != null)
-                message = string.Format("{0} Element Id: {1}", message, hostObject.Id.IntegerValue);
+                message = string.Format("{0} Element Id: {1}", message, hostObject.Id.Value());
 
             BH.Engine.Base.Compute.RecordWarning(message);
         }
@@ -228,7 +228,7 @@ namespace BH.Revit.Engine.Core
             string message = "The panel outline is not closed, the object is returned with empty geometry.";
 
             if (hostObject != null)
-                message = string.Format("{0} Element Id: {1}", message, hostObject.Id.IntegerValue);
+                message = string.Format("{0} Element Id: {1}", message, hostObject.Id.Value());
 
             BH.Engine.Base.Compute.RecordWarning(message);
         }
@@ -240,7 +240,7 @@ namespace BH.Revit.Engine.Core
             string message = "Revit element could not be queried.";
 
             if (element != null)
-                message = string.Format("{0} Element Id: {1}", message, element.Id.IntegerValue);
+                message = string.Format("{0} Element Id: {1}", message, element.Id.Value());
 
             BH.Engine.Base.Compute.RecordWarning(message);
         }
@@ -288,7 +288,7 @@ namespace BH.Revit.Engine.Core
             string message = "Matching BHoM ElementType could not be found.";
 
             if (material != null)
-                message = string.Format("{0} Material Element Id: {1}", message, material.Id.IntegerValue);
+                message = string.Format("{0} Material Element Id: {1}", message, material.Id.Value());
 
             BH.Engine.Base.Compute.RecordWarning(message);
         }
@@ -300,7 +300,7 @@ namespace BH.Revit.Engine.Core
             string message = "Matching BHoM ElementType could not be found.";
 
             if (familyInstance != null)
-                message = string.Format("{0} Element Id: {1}", message, familyInstance.Id.IntegerValue);
+                message = string.Format("{0} Element Id: {1}", message, familyInstance.Id.Value());
 
             BH.Engine.Base.Compute.RecordWarning(message);
         }
@@ -312,7 +312,7 @@ namespace BH.Revit.Engine.Core
             string message = "Material could not be correctly converted. Some BHoM Material data may not be valid.";
 
             if (element != null)
-                message = string.Format("{0} Element Id: {1}", message, element.Id.IntegerValue);
+                message = string.Format("{0} Element Id: {1}", message, element.Id.Value());
 
             BH.Engine.Base.Compute.RecordWarning(message);
         }
@@ -386,7 +386,7 @@ namespace BH.Revit.Engine.Core
 
         internal static void AnalyticalPullWarning(this Element element)
         {
-            BH.Engine.Base.Compute.RecordWarning(string.Format("Location of element's analytical model has been pulled. Element Id: {0}", element.Id.IntegerValue));
+            BH.Engine.Base.Compute.RecordWarning(string.Format("Location of element's analytical model has been pulled. Element Id: {0}", element.Id.Value()));
         }
 
         /***************************************************/
@@ -431,7 +431,7 @@ namespace BH.Revit.Engine.Core
         {
             string message = "Handling of offset/justification is currently not supported for nonlinear framing. Revit justification and offset has been ignored.";
             if (familyInstance != null)
-                message += string.Format(" Revit ElementId: {0}", familyInstance.Id.IntegerValue);
+                message += string.Format(" Revit ElementId: {0}", familyInstance.Id.Value());
 
             BH.Engine.Base.Compute.RecordWarning(message);
         }
@@ -442,7 +442,7 @@ namespace BH.Revit.Engine.Core
         {
             string message = "Profile of the framing element could not be retrieved. Revit justification and offset has been ignored.";
             if (familyInstance != null)
-                message += string.Format(" Revit ElementId: {0}", familyInstance.Id.IntegerValue);
+                message += string.Format(" Revit ElementId: {0}", familyInstance.Id.Value());
 
             BH.Engine.Base.Compute.RecordWarning(message);
         }
@@ -452,21 +452,21 @@ namespace BH.Revit.Engine.Core
         internal static void ProjectedOnXYWarning(this FamilyInstance familyInstance)
         {
             FamilyPlacementType fpt = ((FamilySymbol)familyInstance.Document.GetElement(familyInstance.GetTypeId())).Family.FamilyPlacementType;
-            BH.Engine.Base.Compute.RecordWarning($"Family with placement type {fpt} needs to be placed vertically, therefore transform out of XY plane has been ignored. ElementId: {familyInstance?.Id.IntegerValue}");
+            BH.Engine.Base.Compute.RecordWarning($"Family with placement type {fpt} needs to be placed vertically, therefore transform out of XY plane has been ignored. ElementId: {familyInstance?.Id.Value()}");
         }
 
         /***************************************************/
 
         internal static void NotPerpendicularOrientationWarning(this FamilyInstance familyInstance)
         {
-            BH.Engine.Base.Compute.RecordWarning($"Family instance needs to lie in the plane perpendicular to the MEPCurve direction, therefore transform out of this plane has been ignored. ElementId: {familyInstance?.Id.IntegerValue}");
+            BH.Engine.Base.Compute.RecordWarning($"Family instance needs to lie in the plane perpendicular to the MEPCurve direction, therefore transform out of this plane has been ignored. ElementId: {familyInstance?.Id.Value()}");
         }
 
         /***************************************************/
 
         internal static void ProjectedOnViewPlaneWarning(this FamilyInstance familyInstance)
         {
-            BH.Engine.Base.Compute.RecordWarning($"Drafting family needs to have orientation perpendicular to the view plane, therefore transform out of view plane has been ignored. BHoM Guid: ElementId: {familyInstance?.Id.IntegerValue}");
+            BH.Engine.Base.Compute.RecordWarning($"Drafting family needs to have orientation perpendicular to the view plane, therefore transform out of view plane has been ignored. BHoM Guid: ElementId: {familyInstance?.Id.Value()}");
         }
 
         /***************************************************/
@@ -474,35 +474,35 @@ namespace BH.Revit.Engine.Core
         internal static void HostIgnoredWarning(this FamilyInstance familyInstance)
         {
             FamilyPlacementType fpt = ((FamilySymbol)familyInstance.Document.GetElement(familyInstance.GetTypeId())).Family.FamilyPlacementType;
-            BH.Engine.Base.Compute.RecordWarning($"Family with placement type {fpt} does not need a host element, therefore the input host has been ignored. ElementId: {familyInstance?.Id.IntegerValue}");
+            BH.Engine.Base.Compute.RecordWarning($"Family with placement type {fpt} does not need a host element, therefore the input host has been ignored. ElementId: {familyInstance?.Id.Value()}");
         }
 
         /***************************************************/
 
         internal static void CurveBasedNonHostedWarning(this FamilyInstance familyInstance)
         {
-            BH.Engine.Base.Compute.RecordWarning($"A curve-based non-structural element has been created without a host. There is a high chance it got created in a wrong location due to Revit limitations, therefore it is recommended to inspect the element. ElementId: {familyInstance.Id.IntegerValue}");
+            BH.Engine.Base.Compute.RecordWarning($"A curve-based non-structural element has been created without a host. There is a high chance it got created in a wrong location due to Revit limitations, therefore it is recommended to inspect the element. ElementId: {familyInstance.Id.Value()}");
         }
 
         /***************************************************/
 
         internal static void TwoLevelBasedByPointWarning(this FamilyInstance familyInstance)
         {
-            BH.Engine.Base.Compute.RecordWarning($"A point-based, two level based element has been created. There is a high chance it got created in a wrong location due to Revit limitations, therefore it is recommended to inspect the element. ElementId: {familyInstance.Id.IntegerValue}");
+            BH.Engine.Base.Compute.RecordWarning($"A point-based, two level based element has been created. There is a high chance it got created in a wrong location due to Revit limitations, therefore it is recommended to inspect the element. ElementId: {familyInstance.Id.Value()}");
         }
 
         /***************************************************/
 
         internal static void CurveBasedHostedWarning(this FamilyInstance familyInstance)
         {
-            BH.Engine.Base.Compute.RecordWarning($"A curve-based non-structural element has been created with a host. That functionality had not been tested, therefore it is recommended to inspect the element. ElementId: {familyInstance.Id.IntegerValue}");
+            BH.Engine.Base.Compute.RecordWarning($"A curve-based non-structural element has been created with a host. That functionality had not been tested, therefore it is recommended to inspect the element. ElementId: {familyInstance.Id.Value()}");
         }
 
         /***************************************************/
 
         internal static void ReferencePlaneCreatedWarning(this FamilyInstance familyInstance)
         {
-            BH.Engine.Base.Compute.RecordWarning($"A dedicated reference plane has been created in order to place the family instance in the correct location. ElementId: {familyInstance.Id.IntegerValue}");
+            BH.Engine.Base.Compute.RecordWarning($"A dedicated reference plane has been created in order to place the family instance in the correct location. ElementId: {familyInstance.Id.Value()}");
         }
 
         /***************************************************/

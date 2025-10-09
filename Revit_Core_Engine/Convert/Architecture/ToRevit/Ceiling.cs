@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("ceiling", "Revit Ceiling resulting from converting the input BH.oM.Architecture.Elements.Ceiling.")]
-        public static Ceiling ToRevitCeiling(this oM.Architecture.Elements.Ceiling ceiling, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Ceiling ToRevitCeiling(this oM.Architecture.Elements.Ceiling ceiling, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             BH.Engine.Base.Compute.RecordError("Revit API does not allow creation of Ceiling: This is a known limitation, currently, Revit API doesn't support the new ceiling creation.");
             return null;

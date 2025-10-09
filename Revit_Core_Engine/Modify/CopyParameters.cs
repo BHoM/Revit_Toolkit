@@ -170,8 +170,8 @@ namespace BH.Revit.Engine.Core
 
             foreach (Parameter paramFrom in fromParams)
             {
-                Parameter paramTo = toParams.FirstOrDefault(x => x.Id.IntegerValue == paramFrom.Id.IntegerValue);
-                if (paramTo == null || paramTo.IsReadOnly || (toSkip != null && toSkip.Any(x => (int)x == paramTo.Id.IntegerValue)))
+                Parameter paramTo = toParams.FirstOrDefault(x => x.Id.Value() == paramFrom.Id.Value());
+                if (paramTo == null || paramTo.IsReadOnly || (toSkip != null && toSkip.Any(x => (int)x == paramTo.Id.Value())))
                     continue;
 
                 switch (paramFrom.StorageType)

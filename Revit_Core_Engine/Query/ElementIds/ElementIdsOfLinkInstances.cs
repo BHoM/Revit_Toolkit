@@ -98,7 +98,7 @@ namespace BH.Revit.Engine.Core
                     fromPath = allInstances.Where(x => (document.GetElement(x.GetTypeId()) as RevitLinkType)?.Name?.ToLower() == casedLinkName).ToList();
             }
 
-            fromPath = fromPath.Where(x => result.All(y => y.IntegerValue != x.Id.IntegerValue)).ToList();
+            fromPath = fromPath.Where(x => result.All(y => y.Value() != x.Id.Value())).ToList();
             result.AddRange(fromPath.Select(x => x.Id));
 
             if (suffix && fromPath.Count != 0)

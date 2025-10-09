@@ -69,7 +69,7 @@ namespace BH.Revit.Engine.Core
             };
 
             //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment() { ElementID = familyInstance.Id.IntegerValue.ToString(), TypeName = familyInstance.FamilyTypeFullName() };
+            OriginContextFragment originContext = new OriginContextFragment() { ElementID = familyInstance.Id.Value().ToString(), TypeName = familyInstance.FamilyTypeFullName() };
             originContext.SetProperties(familyInstance.Symbol, settings.MappingSettings);
             originContext.SetProperties(familyInstance, settings.MappingSettings);
             panel.Fragments.Add(originContext);
@@ -143,7 +143,7 @@ namespace BH.Revit.Engine.Core
                 };
 
                 //Set ExtendedProperties
-                OriginContextFragment originContext = new OriginContextFragment() { ElementID = ceiling.Id.IntegerValue.ToString(), TypeName = ceiling.FamilyTypeFullName() };
+                OriginContextFragment originContext = new OriginContextFragment() { ElementID = ceiling.Id.Value().ToString(), TypeName = ceiling.FamilyTypeFullName() };
                 originContext.SetProperties(ceilingType, settings.MappingSettings);
                 originContext.SetProperties(ceiling, settings.MappingSettings);
                 panel.AddFragment(originContext);
@@ -217,7 +217,7 @@ namespace BH.Revit.Engine.Core
                 };
 
                 //Set ExtendedProperties
-                OriginContextFragment originContext = new OriginContextFragment() { ElementID = floor.Id.IntegerValue.ToString(), TypeName = floor.FamilyTypeFullName() };
+                OriginContextFragment originContext = new OriginContextFragment() { ElementID = floor.Id.Value().ToString(), TypeName = floor.FamilyTypeFullName() };
                 originContext.SetProperties(floorType, settings.MappingSettings);
                 originContext.SetProperties(floor, settings.MappingSettings);
                 panel.AddFragment(originContext);
@@ -291,7 +291,7 @@ namespace BH.Revit.Engine.Core
                 };
 
                 //Set ExtendedProperties
-                OriginContextFragment originContext = new OriginContextFragment() { ElementID = roofBase.Id.IntegerValue.ToString(), TypeName = roofBase.FamilyTypeFullName() };
+                OriginContextFragment originContext = new OriginContextFragment() { ElementID = roofBase.Id.Value().ToString(), TypeName = roofBase.FamilyTypeFullName() };
                 originContext.SetProperties(roofBase.RoofType, settings.MappingSettings);
                 originContext.SetProperties(roofBase, settings.MappingSettings);
                 panel.AddFragment(originContext);
@@ -368,7 +368,7 @@ namespace BH.Revit.Engine.Core
                 };
 
                 //Set ExtendedProperties
-                OriginContextFragment originContext = new OriginContextFragment() { ElementID = wall.Id.IntegerValue.ToString(), TypeName = wall.FamilyTypeFullName() };
+                OriginContextFragment originContext = new OriginContextFragment() { ElementID = wall.Id.Value().ToString(), TypeName = wall.FamilyTypeFullName() };
                 originContext.SetProperties(wall.WallType, settings.MappingSettings);
                 originContext.SetProperties(wall, settings.MappingSettings);
                 panel.AddFragment(originContext);
@@ -441,7 +441,7 @@ namespace BH.Revit.Engine.Core
             };
 
             //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.IntegerValue.ToString(), TypeName = element.FamilyTypeFullName() };
+            OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.Value().ToString(), TypeName = element.FamilyTypeFullName() };
             originContext.SetProperties(element, settings.MappingSettings);
             originContext.SetProperties(elementType, settings.MappingSettings);
             panel.AddFragment(originContext);

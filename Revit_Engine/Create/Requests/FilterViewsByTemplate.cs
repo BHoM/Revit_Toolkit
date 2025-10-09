@@ -39,7 +39,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("request", "Created request.")]
         public static FilterViewsByTemplate FilterViewsByTemplate(IBHoMObject viewTemplate)
         {
-            int elementId = viewTemplate.ElementId();
+            long elementId = viewTemplate.ElementId();
             if (elementId == -1)
             {
                 BH.Engine.Base.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", viewTemplate.BHoM_Guid));

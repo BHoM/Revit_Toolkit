@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("family", "Revit Family resulting from converting the input BH.oM.Adapters.Revit.Elements.Family.")]
-        public static Family ToRevitFamily(this oM.Adapters.Revit.Elements.Family family, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Family ToRevitFamily(this oM.Adapters.Revit.Elements.Family family, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             Family revitFamily = refObjects.GetValue<Family>(document, family.BHoM_Guid);
             if (revitFamily != null)

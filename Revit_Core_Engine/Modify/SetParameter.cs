@@ -188,7 +188,7 @@ namespace BH.Revit.Engine.Core
 
             // Workset parameters
             // Filter for worksets
-            if (parameter.Id.IntegerValue == (int)BuiltInParameter.ELEM_PARTITION_PARAM)
+            if (parameter.Id.Value() == (int)BuiltInParameter.ELEM_PARTITION_PARAM)
             {
                 // Find an existing workset with a specified name if it exists
                 string worksetName = value as string;
@@ -199,7 +199,7 @@ namespace BH.Revit.Engine.Core
                 if (workset != null)
                 {
                     // Set the parameter to a workset with the specified name if it exists
-                    return parameter.Set(workset.Id.IntegerValue);
+                    return parameter.Set(workset.Id.Value());
                 }
                 else
                 {
@@ -245,7 +245,7 @@ namespace BH.Revit.Engine.Core
 
                             if (!double.IsNaN(dbl))
                             {
-                                if (parameter.Id.IntegerValue == (int)BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE)
+                                if (parameter.Id.Value() == (int)BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE)
                                     dbl = dbl.NormalizeAngleDomain();
 
                                 return parameter.Set(dbl);

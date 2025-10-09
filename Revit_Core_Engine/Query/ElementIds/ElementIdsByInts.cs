@@ -25,7 +25,6 @@ using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -40,7 +39,7 @@ namespace BH.Revit.Engine.Core
         [Input("elementIds", "Collection of integers representing Revit ElementIds.")]
         [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
-        public static IEnumerable<ElementId> ElementIdsByInts(this Document document, IEnumerable<int> elementIds, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsByInts(this Document document, IEnumerable<long> elementIds, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;
@@ -48,8 +47,8 @@ namespace BH.Revit.Engine.Core
             HashSet<ElementId> result = new HashSet<ElementId>();
             if (elementIds != null)
             {
-                HashSet<int> corruptIds = new HashSet<int>();
-                foreach (int id in elementIds)
+                HashSet<long> corruptIds = new HashSet<long>();
+                foreach (long id in elementIds)
                 {
                     ElementId elementId = new ElementId(id);
                     if (document.GetElement(elementId) != null)

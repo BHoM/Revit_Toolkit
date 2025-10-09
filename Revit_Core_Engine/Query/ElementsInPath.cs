@@ -65,7 +65,7 @@ namespace BH.Revit.Engine.Core
 
         private static List<ElementId> ElementPath(this Element element, Element endingElement, List<ElementId> visitedElementIds)
         {
-            if (element.Id.IntegerValue == endingElement.Id.IntegerValue)
+            if (element.Id.Value() == endingElement.Id.Value())
                 return visitedElementIds;
 
             if (!visitedElementIds.Any())
@@ -73,7 +73,7 @@ namespace BH.Revit.Engine.Core
 
             List<Element> connectedElements = element.ConnectedNetworkElements();
             List<Element> nextElements = connectedElements.
-                Where(x => !visitedElementIds.Select(y => y.IntegerValue).Contains(x.Id.IntegerValue)).
+                Where(x => !visitedElementIds.Select(y => y.Value()).Contains(x.Id.Value())).
                 OrderBy(x => x.LocationPoint().DistanceTo(endingElement.LocationPoint())).ToList();
 
             if (nextElements.Count == 0)

@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("familySymbol", "Revit FamilySymbol resulting from converting the input BH.oM.Physical.FramingProperties.IFramingElementProperty.")]
-        public static FamilySymbol ToRevitElementType(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static FamilySymbol ToRevitElementType(this oM.Physical.FramingProperties.IFramingElementProperty framingElementProperty, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (framingElementProperty == null || document == null)
                 return null;
@@ -74,7 +74,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("hostObjAttributes", "Revit HostObjAttributes resulting from converting the input BH.oM.Physical.Constructions.IConstruction.")]
-        public static HostObjAttributes ToRevitElementType(this oM.Physical.Constructions.IConstruction construction, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static HostObjAttributes ToRevitElementType(this oM.Physical.Constructions.IConstruction construction, Document document, IEnumerable<BuiltInCategory> categories = null, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (construction == null || document == null)
                 return null;

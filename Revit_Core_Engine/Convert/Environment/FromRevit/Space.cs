@@ -111,7 +111,7 @@ namespace BH.Revit.Engine.Core
                 space.Location = ((LocationPoint)spatialElement.Location).FromRevit();
 
             //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment() { ElementID = spatialElement.Id.IntegerValue.ToString(), TypeName = Query.Name(spatialElement) };
+            OriginContextFragment originContext = new OriginContextFragment() { ElementID = spatialElement.Id.Value().ToString(), TypeName = Query.Name(spatialElement) };
             originContext.SetProperties(spatialElement, settings.MappingSettings);
             space.AddFragment(originContext);
 
@@ -151,7 +151,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            Space space = refObjects.GetValue<Space>(energyAnalysisSpace.Id.IntegerValue);
+            Space space = refObjects.GetValue<Space>(energyAnalysisSpace.Id.Value());
             if (space != null)
                 return space;
 
@@ -174,7 +174,7 @@ namespace BH.Revit.Engine.Core
                 space.Location = (spatialElement.Location as LocationPoint).FromRevit();
 
             //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment() { ElementID = spatialElement.Id.IntegerValue.ToString(), TypeName = Query.Name(spatialElement) };
+            OriginContextFragment originContext = new OriginContextFragment() { ElementID = spatialElement.Id.Value().ToString(), TypeName = Query.Name(spatialElement) };
             originContext.SetProperties(energyAnalysisSpace, settings.MappingSettings);
             originContext.SetProperties(spatialElement, settings.MappingSettings);
             space.AddFragment(originContext);

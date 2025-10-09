@@ -66,7 +66,7 @@ namespace BH.Revit.Engine.Core
                 if (edgeLoops != null && edgeLoops.Count != 0)
                 {
                     if (edgeLoops.Count != 1)
-                        BH.Engine.Base.Compute.RecordWarning($"Opening has more than one closed outline. Revit ElementId: {familyInstance.Id.IntegerValue}");
+                        BH.Engine.Base.Compute.RecordWarning($"Opening has more than one closed outline. Revit ElementId: {familyInstance.Id.Value()}");
 
                     List<FrameEdge> mullions = host.CurtainWallMullions(settings, refObjects);
                     foreach (var curve in edgeLoops.SelectMany(x => x.SubParts()))
@@ -75,13 +75,13 @@ namespace BH.Revit.Engine.Core
                         FrameEdge mullion = mullions.FirstOrDefault(x => x.Curve != null && mid.IDistance(x.Curve) <= settings.DistanceTolerance);
                         
                         if (mullion == null)
-                            BH.Engine.Base.Compute.RecordWarning($"Mullion information is missing for some edges of a curtain Opening. Revit ElementId: {{familyInstance.Id.IntegerValue}}\"");
+                            BH.Engine.Base.Compute.RecordWarning($"Mullion information is missing for some edges of a curtain Opening. Revit ElementId: {{familyInstance.Id.Value()}}\"");
                      
                         edges.Add(new FrameEdge { Curve = curve, FrameEdgeProperty = mullion?.FrameEdgeProperty });
                     }
                 }
                 else
-                    BH.Engine.Base.Compute.RecordWarning($"Edge curves of the opening could not be retrieved from the model (possibly it has zero area). An opening object without frame edges has been returned. Revit ElementId: {familyInstance.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordWarning($"Edge curves of the opening could not be retrieved from the model (possibly it has zero area). An opening object without frame edges has been returned. Revit ElementId: {familyInstance.Id.Value()}");
             }
             else
             {
@@ -90,10 +90,10 @@ namespace BH.Revit.Engine.Core
                 {
                     List<ICurve> extCrvs = openingSurface.IExternalEdges().SelectMany(x => x.ISubParts()).ToList();
                     edges.AddRange(extCrvs.Select(x => new FrameEdge { Curve = x, FrameEdgeProperty = null }));
-                    BH.Engine.Base.Compute.RecordWarning($"Frame edge properties of the opening could not be retrieved from the model. Revit ElementId: {familyInstance.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordWarning($"Frame edge properties of the opening could not be retrieved from the model. Revit ElementId: {familyInstance.Id.Value()}");
                 }
                 else
-                    BH.Engine.Base.Compute.RecordWarning($"Edge curves of the opening could not be retrieved from the model (possibly it has zero area or complex geometry). An opening object without frame edges has been returned. Revit ElementId: {familyInstance.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordWarning($"Edge curves of the opening could not be retrieved from the model (possibly it has zero area or complex geometry). An opening object without frame edges has been returned. Revit ElementId: {familyInstance.Id.Value()}");
             }
 
             oM.Physical.Constructions.Construction construction = familyInstance.FacadePanelConstruction(settings, refObjects);

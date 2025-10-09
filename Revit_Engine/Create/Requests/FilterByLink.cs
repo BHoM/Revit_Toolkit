@@ -23,7 +23,6 @@
 using BH.oM.Adapters.Revit.Requests;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
-using System;
 using System.ComponentModel;
 
 namespace BH.Engine.Adapters.Revit
@@ -39,7 +38,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("request", "Created request.")]
         public static FilterByLink FilterByLink(IBHoMObject linkInstance)
         {
-            int elementId = linkInstance.ElementId();
+            long elementId = linkInstance.ElementId();
             if (elementId == -1)
             {
                 BH.Engine.Base.Compute.RecordError($"Valid ElementId has not been found. BHoM Guid: {linkInstance.BHoM_Guid}");

@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             OriginContextFragment originContext = new OriginContextFragment();
-            originContext.ElementID = hostObject.Id.IntegerValue.ToString();
+            originContext.ElementID = hostObject.Id.Value().ToString();
             originContext.TypeName = hostObject.FamilyTypeFullName();
             originContext.SetProperties(hostObject, settings.MappingSettings);
             originContext.SetProperties(hostObject.Document.GetElement(hostObject.GetTypeId()) as ElementType, settings.MappingSettings);

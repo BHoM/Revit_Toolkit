@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("viewport", "Revit Viewport resulting from converting the input BH.oM.Adapters.Revit.Elements.Viewport.")]
-        public static Viewport ToRevitViewport(this oM.Adapters.Revit.Elements.Viewport viewport, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Viewport ToRevitViewport(this oM.Adapters.Revit.Elements.Viewport viewport, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (viewport == null || viewport.Location == null)
                 return null;

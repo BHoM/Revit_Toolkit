@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("grid", "Revit Grid or MultiSegmentGrid resulting from converting the input BH.oM.Spatial.SettingOut.Grid.")]
-        public static Element ToRevit(this oM.Spatial.SettingOut.Grid grid, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this oM.Spatial.SettingOut.Grid grid, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return grid.ToRevitGrid(document, settings, refObjects);
         }
@@ -59,7 +59,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("level", "Revit Level resulting from converting the input BH.oM.Spatial.SettingOut.Level.")]
-        public static Element ToRevit(this oM.Spatial.SettingOut.Level level, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this oM.Spatial.SettingOut.Level level, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return level.ToRevitLevel(document, settings, refObjects);
         }
@@ -72,7 +72,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("wall", "Revit Wall resulting from converting the input BH.oM.Physical.Elements.Wall.")]
-        public static Element ToRevit(this oM.Physical.Elements.Wall wall, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this oM.Physical.Elements.Wall wall, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return wall.ToRevitWall(document, settings, refObjects);
         }
@@ -85,7 +85,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("floor", "Revit Floor resulting from converting the input BH.oM.Physical.Elements.Floor.")]
-        public static Element ToRevit(this oM.Physical.Elements.Floor floor, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this oM.Physical.Elements.Floor floor, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return floor.ToRevitFloor(document, settings, refObjects);
         }
@@ -98,7 +98,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("roofBase", "Revit RoofBase resulting from converting the input BH.oM.Physical.Elements.Roof.")]
-        public static Element ToRevit(this oM.Physical.Elements.Roof roof, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this oM.Physical.Elements.Roof roof, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return roof.ToRevitRoofBase(document, settings, refObjects);
         }
@@ -111,7 +111,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("element", "Revit Element resulting from converting the input BH.oM.Adapters.Revit.Elements.ModelInstance.")]
-        public static Element ToRevit(this ModelInstance modelInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this ModelInstance modelInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             switch (modelInstance.BuiltInCategory())
             {
@@ -130,7 +130,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("element", "Revit Element resulting from converting the input BH.oM.Adapters.Revit.Elements.DraftingInstance.")]
-        public static Element ToRevit(this DraftingInstance draftingInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this DraftingInstance draftingInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             switch (draftingInstance.BuiltInCategory())
             {
@@ -149,7 +149,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("material", "Revit Material resulting from converting the input BH.oM.Physical.Materials.Material.")]
-        public static Element ToRevit(this BH.oM.Physical.Materials.Material material, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this BH.oM.Physical.Materials.Material material, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return material.ToRevitMaterial(document, settings, refObjects);
         }
@@ -162,7 +162,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("viewPlan", "Revit ViewPlan resulting from converting the input BH.oM.Adapters.Revit.Elements.ViewPlan.")]
-        public static Element ToRevit(this oM.Adapters.Revit.Elements.ViewPlan viewPlan, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this oM.Adapters.Revit.Elements.ViewPlan viewPlan, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return viewPlan.ToRevitViewPlan(document, settings, refObjects);
         }
@@ -175,7 +175,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("viewport", "Revit Viewport resulting from converting the input BH.oM.Adapters.Revit.Elements.Viewport.")]
-        public static Element ToRevit(this oM.Adapters.Revit.Elements.Viewport viewport, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this oM.Adapters.Revit.Elements.Viewport viewport, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return viewport.ToRevitViewport(document, settings, refObjects);
         }
@@ -188,7 +188,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("viewSheet", "Revit ViewSheet resulting from converting the input BH.oM.Adapters.Revit.Elements.Sheet.")]
-        public static Element ToRevit(this Sheet sheet, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this Sheet sheet, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return sheet.ToRevitSheet(document, settings, refObjects);
         }
@@ -201,7 +201,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("space", "Revit Space resulting from converting the input BH.oM.Environment.Elements.Space.")]
-        public static Element ToRevit(this BH.oM.Environment.Elements.Space space, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this BH.oM.Environment.Elements.Space space, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return space.ToRevitSpace(document, settings, refObjects);
         }
@@ -214,7 +214,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.IFramingElement.")]
-        public static Element ToRevit(this BH.oM.Physical.Elements.IFramingElement framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this BH.oM.Physical.Elements.IFramingElement framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return framingElement.IToRevitFamilyInstance(document, settings, refObjects);
         }
@@ -227,7 +227,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("family", "Revit Family resulting from converting the input BH.oM.Adapters.Revit.Elements.Family.")]
-        public static Element ToRevit(this oM.Adapters.Revit.Elements.Family family, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this oM.Adapters.Revit.Elements.Family family, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return family.ToRevitFamily(document, settings, refObjects);
         }
@@ -240,7 +240,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("elementType", "Revit ElementType resulting from converting the input BH.oM.Adapters.Revit.Properties.InstanceProperties.")]
-        public static Element ToRevit(this oM.Adapters.Revit.Properties.InstanceProperties instanceProperties, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this oM.Adapters.Revit.Properties.InstanceProperties instanceProperties, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return instanceProperties.ToRevitElementType(document, settings, refObjects);
         }
@@ -253,7 +253,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("duct", "Revit Duct resulting from converting the input BH.oM.MEP.System.Duct.")]
-        public static Element ToRevit(this BH.oM.MEP.System.Duct duct, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this BH.oM.MEP.System.Duct duct, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return duct.ToRevitDuct(document, settings, refObjects);
         }
@@ -266,7 +266,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("pipe", "Revit Pipe resulting from converting the input BH.oM.MEP.System.Pipe.")]
-        public static Element ToRevit(this BH.oM.MEP.System.Pipe pipe, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this BH.oM.MEP.System.Pipe pipe, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return pipe.ToRevitPipe(document, settings, refObjects);
         }
@@ -279,7 +279,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("pipeSegment", "Revit PipeSegment resulting from converting the input BH.oM.MEP.System.MaterialFragments.PipeMaterial.")]
-        public static Element ToRevit(this BH.oM.MEP.System.MaterialFragments.PipeMaterial pipeMaterial, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this BH.oM.MEP.System.MaterialFragments.PipeMaterial pipeMaterial, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return pipeMaterial.ToRevitPipeSegement(document, settings, refObjects);
         }
@@ -292,7 +292,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("cableTray", "Revit CableTray resulting from converting the input BH.oM.MEP.System.CableTray.")]
-        public static Element ToRevit(this BH.oM.MEP.System.CableTray cableTray, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this BH.oM.MEP.System.CableTray cableTray, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return cableTray.ToRevitCableTray(document, settings, refObjects);
         }
@@ -305,7 +305,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("rebar", "Revit Rebar resulting from converting the input BH.oM.Physical.Reinforcement.IReinforcingBar.")]
-        public static Element ToRevit(this BH.oM.Physical.Reinforcement.IReinforcingBar reinforcement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this BH.oM.Physical.Reinforcement.IReinforcingBar reinforcement, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return reinforcement.IToRevitRebar(document, settings, refObjects);
         }
@@ -318,7 +318,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("elementType", "Revit ElementType resulting from converting the input BH.oM.Adapters.Revit.ClonedType.")]
-        public static Element ToRevit(this ClonedType clonedType, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this ClonedType clonedType, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return clonedType.ToRevitElementType(document, settings, refObjects);
         }
@@ -331,7 +331,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("parameterElement", "Revit ParameterElement resulting from converting the input BH.oM.Adapters.Revit.Parameters.ParameterDefinition.")]
-        public static Element ToRevit(this ParameterDefinition parameterDefinition, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this ParameterDefinition parameterDefinition, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return parameterDefinition.ToRevitParameterElement(document, settings, refObjects);
         }
@@ -344,7 +344,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("familyInstance", "Revit FamilyInstance resulting from converting the input BH.oM.Architecture.BuildersWork.Opening.")]
-        public static Element ToRevit(this BH.oM.Architecture.BuildersWork.Opening opening, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this BH.oM.Architecture.BuildersWork.Opening opening, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return opening.ToRevitFamilyInstance(document, settings, refObjects);
         }
@@ -357,7 +357,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("assemblyInstance", "Revit AssemblyInstance resulting from converting the input BH.oM.Adapters.Revit.Elements.Assembly.")]
-        public static Element ToRevit(this Assembly assembly, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this Assembly assembly, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return assembly.ToRevitAssembly(document, settings, refObjects);
         }
@@ -370,7 +370,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("lightingFixture", "Revit LightingFixture element resulting from the BH.oM.Lighting.Elements.Luminaire.")]
-        public static Element ToRevit(this BH.oM.Lighting.Elements.Luminaire luminaire, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this BH.oM.Lighting.Elements.Luminaire luminaire, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return luminaire.ToRevitFamilyInstance(document, settings, refObjects);
         }
@@ -386,7 +386,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("element", "Always null because of converting BH.oM.Structure.Elements.Bar being not supported.")]
-        public static Element ToRevit(this oM.Structure.Elements.Bar bar, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this oM.Structure.Elements.Bar bar, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             bar.ConvertBeforePushError(typeof(oM.Physical.Elements.IFramingElement));
             return null;
@@ -400,7 +400,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("element", "Always null because of converting BH.oM.Structure.Elements.Panel being not supported.")]
-        public static Element ToRevit(this oM.Structure.Elements.Panel panel, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this oM.Structure.Elements.Panel panel, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             panel.ConvertBeforePushError(typeof(oM.Physical.Elements.ISurface));
             return null;
@@ -414,7 +414,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("element", "Always null because of converting BH.oM.Environment.Elements.Panel being not supported.")]
-        public static Element ToRevit(this oM.Environment.Elements.Panel panel, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevit(this oM.Environment.Elements.Panel panel, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             panel.ConvertBeforePushError(typeof(oM.Physical.Elements.ISurface));
             return null;
@@ -425,7 +425,7 @@ namespace BH.Revit.Engine.Core
         /****             Fallback Methods              ****/
         /***************************************************/
 
-        private static Element ToRevit(this IBHoMObject obj, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        private static Element ToRevit(this IBHoMObject obj, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return null;
         }
@@ -441,7 +441,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("element", "Revit Element resulting from converting the input BHoM object.")]
-        public static Element IToRevit(this IBHoMObject obj, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element IToRevit(this IBHoMObject obj, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (obj == null)
             {
