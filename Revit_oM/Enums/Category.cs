@@ -21,8 +21,8 @@
  */
 
 using BH.oM.Base.Attributes;
-using System.ComponentModel;
 using BH.oM.Revit.Attributes;
+using System.ComponentModel;
 
 namespace BH.oM.Revit.Enums
 {
@@ -1435,5 +1435,3 @@ namespace BH.oM.Revit.Enums
         OST_ZoneTags = -2008115,
     }
 }
-
-
