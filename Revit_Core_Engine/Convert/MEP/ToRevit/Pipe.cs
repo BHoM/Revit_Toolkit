@@ -43,6 +43,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitPipe(BH.oM.MEP.System.Pipe, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.MEP.System.Pipe to a Revit Pipe.")]
         [Input("pipe", "BH.oM.MEP.System.Pipe to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]

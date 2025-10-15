@@ -37,6 +37,7 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitMaterial(BH.oM.Physical.Materials.Material, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Physical.Materials.Material to a Revit Material.")]
         [Input("material", "BH.oM.Physical.Materials.Material to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]

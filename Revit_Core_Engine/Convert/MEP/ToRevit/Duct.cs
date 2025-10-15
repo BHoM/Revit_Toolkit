@@ -24,8 +24,8 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Mechanical;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.MEP.System.SectionProperties;
 using BH.oM.Base.Attributes;
+using BH.oM.MEP.System.SectionProperties;
 using BH.oM.Spatial.ShapeProfiles;
 using System;
 using System.Collections.Generic;
@@ -40,6 +40,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitDuct(BH.oM.MEP.System.Duct, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.MEP.System.Duct to a Revit Duct.")]
         [Input("duct", "BH.oM.MEP.System.Duct to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
@@ -87,7 +88,7 @@ namespace BH.Revit.Engine.Core
 
             MechanicalSystemType mst = new FilteredElementCollector(document).OfClass(typeof(MechanicalSystemType)).OfType<MechanicalSystemType>().FirstOrDefault();
 
-            if(mst == null)
+            if (mst == null)
             {
                 BH.Engine.Base.Compute.RecordError("No valid MechanicalSystemType can be found in the Revit model. Creating a revit Duct requires a MechanicalSystemType.");
                 return null;

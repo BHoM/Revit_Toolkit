@@ -36,6 +36,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitFamilyInstance(BH.oM.Architecture.BuildersWork.Opening, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Architecture.BuildersWork.Opening to a Revit FamilyInstance.")]
         [Input("opening", "BH.oM.Architecture.BuildersWork.Opening to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]

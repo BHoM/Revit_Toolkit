@@ -38,6 +38,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitFloor(BH.oM.Physical.Elements.Floor, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Physical.Elements.Floor to a Revit Floor.")]
         [Input("floor", "BH.oM.Physical.Elements.Floor to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]

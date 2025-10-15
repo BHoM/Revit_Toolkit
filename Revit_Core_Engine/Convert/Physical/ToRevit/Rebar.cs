@@ -39,6 +39,7 @@ namespace BH.Revit.Engine.Core
         /****            Interface methods              ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.IToRevitRebar(BH.oM.Physical.Reinforcement.IReinforcingBar, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Physical.Reinforcement.IReinforcingBar to a Revit Rebar.")]
         [Input("reinforcement", "BH.oM.Physical.Reinforcement.IReinforcingBar to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
@@ -55,6 +56,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitRebar(BH.oM.Physical.Reinforcement.PrimaryReinforcingBar, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Physical.Reinforcement.PrimaryReinforcingBar to a Revit Rebar.")]
         [Input("bar", "BH.oM.Physical.Reinforcement.PrimaryReinforcingBar to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
@@ -68,6 +70,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitRebar(BH.oM.Physical.Reinforcement.Stirrup, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Physical.Reinforcement.Stirrup to a Revit Rebar.")]
         [Input("stirrup", "BH.oM.Physical.Reinforcement.Stirrup to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]

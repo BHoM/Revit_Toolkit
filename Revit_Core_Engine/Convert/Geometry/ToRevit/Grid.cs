@@ -37,6 +37,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitGrid(BH.oM.Spatial.SettingOut.Grid, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Spatial.SettingOut.Grid to a Revit Grid or MultiSegmentGrid.")]
         [Input("grid", "BH.oM.Spatial.SettingOut.Grid to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
@@ -66,7 +67,7 @@ namespace BH.Revit.Engine.Core
 
                 if (curve is Line)
                     revitGrid = Grid.Create(document, (Line)curve);
-                else  if (curve is Arc)
+                else if (curve is Arc)
                     revitGrid = Grid.Create(document, (Arc)curve);
                 else
                 {
@@ -88,7 +89,7 @@ namespace BH.Revit.Engine.Core
                         return null;
                     }
                 }
-                
+
                 Plane plane;
                 try
                 {

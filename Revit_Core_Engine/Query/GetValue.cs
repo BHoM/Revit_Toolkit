@@ -54,6 +54,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Query.GetValues(System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>, System.Int32)")]
         [Description("Queries the collection of BHoM objects already processed in the current adapter action for the ones correspondent to a given key.")]
         [Input("refObjects", "Collection of BHoM objects to be queried for values.")]
         [Input("key", "Key to find the correspondent objects for.")]
@@ -91,6 +92,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Query.GetValue(System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>, System.Int32)")]
         [Description("Queries the collection of BHoM objects already processed in the current adapter action for the one correspondent to a given key.")]
         [Input("refObjects", "Collection of BHoM objects to be queried for values.")]
         [Input("key", "Key to find the correspondent objects for.")]
@@ -113,6 +115,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Query.GetValues(System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>, Autodesk.Revit.DB.Document, System.Guid)")]
         [Description("Queries the collection of Revit Elements already processed in the current adapter action for the ones correspondent to a given key.")]
         [Input("refObjects", "Collection of Revit elements to be queried for values.")]
         [Input("document", "Revit document hosting the already processed Revit elements.")]
@@ -131,6 +134,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Query.GetValue(System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>, Autodesk.Revit.DB.Document, System.Guid)")]
         [Description("Queries the collection of Revit Elements already processed in the current adapter action for the one correspondent to a given key.")]
         [Input("refObjects", "Collection of Revit elements to be queried for values.")]
         [Input("document", "Revit document hosting the already processed Revit elements.")]

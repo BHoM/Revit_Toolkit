@@ -35,6 +35,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitCeiling(BH.oM.Architecture.Elements.Ceiling, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Architecture.Elements.Ceiling to a Revit Ceiling.")]
         [Input("ceiling", "BH.oM.Architecture.Elements.Ceiling to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]

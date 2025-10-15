@@ -23,8 +23,8 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.MEP.System.SectionProperties;
 using BH.oM.Base.Attributes;
+using BH.oM.MEP.System.SectionProperties;
 using BH.oM.Spatial.ShapeProfiles;
 using System;
 using System.Collections.Generic;
@@ -38,6 +38,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitCableTray(BH.oM.MEP.System.CableTray, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.MEP.System.CableTray to a Revit CableTray.")]
         [Input("cableTray", "BH.oM.MEP.System.CableTray to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]

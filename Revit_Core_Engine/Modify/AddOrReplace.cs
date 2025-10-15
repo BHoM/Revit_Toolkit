@@ -94,6 +94,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Modify.AddOrReplace(System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>, System.Guid, System.Collections.Generic.IEnumerable<System.Int32>)")]
         [Description("Adds or replaces the collection of integers correspondent to Revit ElementIds stored under the given key in the refObjects dictionary.")]
         [Input("refObjects", "Dictionary of objects already processed in the current adapter action, to be updated.")]
         [Input("key", "Key of the refObjects dictionary to be updated.")]
@@ -112,6 +113,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Modify.AddOrReplace(System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>, System.Guid, System.Int32)")]
         [Description("Adds or replaces the collection of integers correspondent to Revit ElementIds stored under the given key in the refObjects dictionary.")]
         [Input("refObjects", "Dictionary of objects already processed in the current adapter action, to be updated.")]
         [Input("key", "Key of the refObjects dictionary to be updated.")]
@@ -130,6 +132,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Modify.AddOrReplace(System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>, BH.oM.Base.IBHoMObject, System.Collections.Generic.IEnumerable<Autodesk.Revit.DB.Element>)")]
         [Description("Adds or replaces the collection of integers correspondent to Revit ElementIds stored under the refObjects dictionary key correspondent to the given BHoM object.")]
         [Input("refObjects", "Dictionary of objects already processed in the current adapter action, to be updated.")]
         [Input("obj", "BHoM object correspondent to the refObjects dictionary key to be updated.")]
@@ -144,6 +147,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Modify.AddOrReplace(System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>, BH.oM.Base.IBHoMObject, Autodesk.Revit.DB.Element)")]
         [Description("Adds or replaces the collection of integers correspondent to Revit ElementIds stored under the refObjects dictionary key correspondent to the given BHoM object.")]
         [Input("refObjects", "Dictionary of objects already processed in the current adapter action, to be updated.")]
         [Input("obj", "BHoM object correspondent to the refObjects dictionary key to be updated.")]
