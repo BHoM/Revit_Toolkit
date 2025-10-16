@@ -40,7 +40,7 @@ namespace BH.Revit.Engine.Core
         {
             long id = BH.Engine.Adapters.Revit.Query.ElementId(bHoMObject);
             if (id == -1)
-                return null;
+                return Autodesk.Revit.DB.ElementId.InvalidElementId;
             else
                 return Create.ElementId(id);
         }
