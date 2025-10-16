@@ -75,7 +75,7 @@ namespace BH.Revit.Engine.Core
                     return null;
                 }
 
-                DirectShape directShape = DirectShape.CreateElement(document, Create.ElementId((int)builtInCategory));
+                DirectShape directShape = DirectShape.CreateElement(document, new ElementId(builtInCategory));
                 directShape.AppendShape(new List<GeometryObject> { brep });
                 element = directShape;
             }

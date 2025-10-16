@@ -111,7 +111,7 @@ namespace BH.Revit.Engine.Core
                 //TODO: if the material does not get assigned an error should be thrown?
                 if (barProperty.Material != null)
                 {
-                    Autodesk.Revit.DB.Material material = document.GetElement(Create.ElementId(BH.Engine.Adapters.Revit.Query.ElementId(barProperty.Material))) as Autodesk.Revit.DB.Material;
+                    Material material = document.GetElement(barProperty.Material.ElementId()) as Material;
                     if (material != null)
                     {
                         Parameter param = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
@@ -205,7 +205,7 @@ namespace BH.Revit.Engine.Core
                 //TODO: if the material does not get assigned an error should be thrown?
                 if (pileProperty.Material != null)
                 {
-                    Material material = document.GetElement(Create.ElementId(BH.Engine.Adapters.Revit.Query.ElementId(pileProperty.Material))) as Material;
+                    Material material = document.GetElement(pileProperty.Material.ElementId()) as Material;
                     if (material != null)
                     {
                         Parameter param = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
@@ -317,7 +317,7 @@ namespace BH.Revit.Engine.Core
                 //TODO: if the material does not get assigned an error should be thrown?
                 if (barProperty.Material != null)
                 {
-                    Material material = document.GetElement(Create.ElementId(BH.Engine.Adapters.Revit.Query.ElementId(barProperty.Material))) as Material;
+                    Material material = document.GetElement(barProperty.Material.ElementId()) as Material;
                     if (material != null)
                     {
                         Parameter param = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);

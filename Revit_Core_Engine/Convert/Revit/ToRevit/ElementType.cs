@@ -81,7 +81,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            Element source = document.GetElement(Create.ElementId(clonedType.SourceTypeId));
+            Element source = document.GetElement(clonedType.SourceTypeId.ToElementId());
             if (source == null)
             {
                 BH.Engine.Base.Compute.RecordError($"The element with ElementId {clonedType.SourceTypeId} does not exist in the active Revit document.");

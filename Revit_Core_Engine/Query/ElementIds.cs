@@ -67,7 +67,7 @@ namespace BH.Revit.Engine.Core
 
         private static List<ElementId> ElementIds(this List<long> elementId)
         {
-            return elementId.Select(x => Create.ElementId(x)).ToList();
+            return elementId.Select(x => x.ToElementId()).ToList();
         }
 
         /***************************************************/

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -26,29 +26,34 @@ using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
-    public static partial class Query
+    public static partial class Convert
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Returns name of the paramter based on id.")]
-        [Input("doc", "Document where parameter belongs.")]
-        [Input("id", "Id of the parameter.")]
-        [Output("parameterName", "Parameter name.")]
-        public static string ParameterName(this Document doc, long id)
+        [Description("Converts an integer value to ElementId.")]
+        [Input("id", "Integer value to convert to ElementId.")]
+        [Output("elementId", "ElementId created from the provided integer value.")]
+        public static ElementId ToElementId(this int id)
         {
-            string parameterName;
+            return new ElementId(id);
+        }
 
-            if (id < 0)
-                parameterName = LabelUtils.GetLabelFor((BuiltInParameter)id);
-            else
-                parameterName = (doc.GetElement(id.ToElementId()) as ParameterElement)?.Name;
+        /***************************************************/
 
-            return parameterName;
+        [Description("Converts a long integer value to ElementId.")]
+        [Input("id", "Long integer value to convert to ElementId.")]
+        [Output("elementId", "ElementId created from the provided long integer value.")]
+        public static ElementId ToElementId(this long id)
+        {
+#if REVIT2022 || REVIT2023
+            return new ElementId((int)id);
+#else
+            return new ElementId(id);
+#endif
         }
 
         /***************************************************/
     }
 }
-

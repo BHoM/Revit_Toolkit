@@ -51,7 +51,7 @@ namespace BH.Revit.Engine.Core
                 HashSet<long> corruptIds = new HashSet<long>();
                 foreach (long id in elementIds)
                 {
-                    ElementId elementId = Create.ElementId(id);
+                    ElementId elementId = id.ToElementId();
                     if (document.GetElement(elementId) != null)
                         result.Add(elementId);
                     else

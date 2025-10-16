@@ -64,7 +64,7 @@ namespace BH.Revit.Engine.Core
             }
 
             Document doc = elements[0].Document;
-            List<Element> elementTypes = elementTypeIds.Select(x => doc.GetElement(Create.ElementId(x))).ToList();
+            List<Element> elementTypes = elementTypeIds.Select(x => doc.GetElement(x.ToElementId())).ToList();
 
             return elementTypes.Parameters(includeHiddenParameters);
         }

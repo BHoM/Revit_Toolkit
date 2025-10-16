@@ -21,7 +21,6 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Base;
 using BH.oM.Adapters.Revit.Settings;
@@ -76,7 +75,7 @@ namespace BH.Revit.Engine.Core
                     }
                 }
 
-                host = hostDoc.GetElement(Create.ElementId(hostFragment.HostId));
+                host = hostDoc.GetElement(hostFragment.HostId.ToElementId());
             }
             else if (geometrySearchIfNotFound)
                 host = bHoMObject.IFindHost(document, settings);

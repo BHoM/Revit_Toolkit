@@ -65,7 +65,7 @@ namespace BH.Revit.Engine.Core
                 return new List<ElementId>();
 
             HashSet<ElementId> result = new HashSet<ElementId>();
-            Element element = document.GetElement(Create.ElementId(parentId));
+            Element element = document.GetElement(parentId.ToElementId());
             if (element == null)
             {
                 BH.Engine.Base.Compute.RecordWarning(String.Format("Element under ElementId {0} does not exist in the Revit model.", parentId));

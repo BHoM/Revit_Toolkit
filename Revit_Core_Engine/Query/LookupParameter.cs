@@ -224,7 +224,7 @@ namespace BH.Revit.Engine.Core
         [Output("value", "Parameter value extracted from the input Revit element.")]
         public static ElementId LookupParameterElementId(this Element element, string parameterName)
         {
-            ElementId value = Create.ElementId(-1);
+            ElementId value = Autodesk.Revit.DB.ElementId.InvalidElementId;
 
             Parameter p = element.LookupParameter(parameterName);
             if (p != null && p.HasValue)
@@ -241,7 +241,7 @@ namespace BH.Revit.Engine.Core
         [Output("value", "Parameter value extracted from the input Revit element.")]
         public static ElementId LookupParameterElementId(this Element element, BuiltInParameter builtInParameter)
         {
-            ElementId value = Create.ElementId(-1);
+            ElementId value = Autodesk.Revit.DB.ElementId.InvalidElementId;
 
             Parameter p = element.get_Parameter(builtInParameter);
             if (p != null && p.HasValue)

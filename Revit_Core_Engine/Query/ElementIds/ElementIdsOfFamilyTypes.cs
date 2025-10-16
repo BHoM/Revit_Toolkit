@@ -48,7 +48,7 @@ namespace BH.Revit.Engine.Core
             if (ids != null && ids.Count() == 0)
                 return new List<ElementId>();
 
-            Family family = document.GetElement(Create.ElementId(familyId)) as Family;
+            Family family = document.GetElement(familyId.ToElementId()) as Family;
             if (family == null)
             {
                 BH.Engine.Base.Compute.RecordError(String.Format("Couldn't find a Family under ElementId {0}", familyId));

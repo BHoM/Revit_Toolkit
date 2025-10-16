@@ -57,7 +57,7 @@ namespace BH.Revit.Engine.Core
             long id;
             if (long.TryParse(linkName, out id))
             {
-                RevitLinkInstance instance = document.GetElement(Create.ElementId(id)) as RevitLinkInstance;
+                RevitLinkInstance instance = document.GetElement(id.ToElementId()) as RevitLinkInstance;
                 if (instance != null)
                     return new List<ElementId> { instance.Id };
             }

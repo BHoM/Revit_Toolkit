@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
             if (document == null)
                 return null;
 
-            View view = document.GetElement(Create.ElementId(viewId)) as View;
+            View view = document.GetElement(viewId.ToElementId()) as View;
             if (view != null)
             {
                 if (ids != null && ids.Count() == 0)
