@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
 
             foreach (Element element in elements)
             {
-                if (uniqueElementsKeys.Add(element.UniqueKey()))
+                if (element != null && uniqueElementsKeys.Add(element.UniqueKey()))
                 {
                     uniqueElements.Add(element);
                 }
@@ -58,9 +58,6 @@ namespace BH.Revit.Engine.Core
 
         private static string UniqueKey(this Element element)
         {
-            if (element == null)
-                return string.Empty;
-
             return $"{element.Document.PathName}-{element.Id.Value()}";
         }
 
