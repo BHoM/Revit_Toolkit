@@ -59,7 +59,7 @@ namespace BH.Revit.Engine.Core
             if (element == null)
                 return string.Empty;
 
-            return $"{element.Document.PathName}-{element.Id}";
+            return $"{element.Document.PathName}-{element.Id.Value()}";
         }
 
         /***************************************************/
