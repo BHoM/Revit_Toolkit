@@ -53,6 +53,8 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
 
         private static string UniqueKey(this Element element)
         {
