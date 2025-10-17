@@ -20,12 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.ComponentModel;
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -40,7 +40,7 @@ namespace BH.Revit.Engine.Core
         [Input("elementTypeId", "ElementId of the family type to be sought for.")]
         [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
-        public static IEnumerable<ElementId> ElementIdsByElementType(this Document document, int elementTypeId, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsByElementType(this Document document, long elementTypeId, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;
@@ -48,7 +48,7 @@ namespace BH.Revit.Engine.Core
             if (ids != null && ids.Count() == 0)
                 return new List<ElementId>();
 
-            ElementType elementType = document.GetElement(new ElementId(elementTypeId)) as ElementType;
+            ElementType elementType = document.GetElement(elementTypeId.ToElementId()) as ElementType;
             if (elementType == null)
             {
                 BH.Engine.Base.Compute.RecordError(String.Format("Active Revit model does not contain a family type under ElementId {0}.", elementTypeId));
@@ -59,7 +59,7 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-        
+
         [Description("Filters ElementIds of elements of given element type in a Revit document.")]
         [Input("document", "Revit document to be processed.")]
         [Input("elementType", "Family type to be sought for.")]

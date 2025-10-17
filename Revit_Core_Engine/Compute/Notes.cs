@@ -38,7 +38,7 @@ namespace BH.Revit.Engine.Core
             string message = "Material could not be found in BHoM Library.";
 
             if (material != null)
-                message = string.Format("{0} Material Id: {1}", message, material.Id.IntegerValue);
+                message = string.Format("{0} Material Id: {1}", message, material.Id.Value());
 
             BH.Engine.Base.Compute.RecordNote(message);
         }

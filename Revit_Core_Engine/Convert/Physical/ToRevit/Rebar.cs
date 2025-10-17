@@ -24,8 +24,8 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Physical.Reinforcement;
 using BH.oM.Base.Attributes;
+using BH.oM.Physical.Reinforcement;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -39,13 +39,14 @@ namespace BH.Revit.Engine.Core
         /****            Interface methods              ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.IToRevitRebar(BH.oM.Physical.Reinforcement.IReinforcingBar, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Physical.Reinforcement.IReinforcingBar to a Revit Rebar.")]
         [Input("reinforcement", "BH.oM.Physical.Reinforcement.IReinforcingBar to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("rebar", "Revit Rebar resulting from converting the input BH.oM.Physical.Reinforcement.IReinforcingBar.")]
-        public static Rebar IToRevitRebar(this IReinforcingBar reinforcement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Rebar IToRevitRebar(this IReinforcingBar reinforcement, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return ToRevitRebar(reinforcement as dynamic, document, settings, refObjects);
         }
@@ -55,26 +56,28 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitRebar(BH.oM.Physical.Reinforcement.PrimaryReinforcingBar, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Physical.Reinforcement.PrimaryReinforcingBar to a Revit Rebar.")]
         [Input("bar", "BH.oM.Physical.Reinforcement.PrimaryReinforcingBar to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("rebar", "Revit Rebar resulting from converting the input BH.oM.Physical.Reinforcement.PrimaryReinforcingBar.")]
-        public static Rebar ToRevitRebar(this PrimaryReinforcingBar bar, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Rebar ToRevitRebar(this PrimaryReinforcingBar bar, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return ToRevitRebar((IReinforcingBar)bar, document, settings, refObjects);
         }
 
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitRebar(BH.oM.Physical.Reinforcement.Stirrup, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Physical.Reinforcement.Stirrup to a Revit Rebar.")]
         [Input("stirrup", "BH.oM.Physical.Reinforcement.Stirrup to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("rebar", "Revit Rebar resulting from converting the input BH.oM.Physical.Reinforcement.Stirrup.")]
-        public static Rebar ToRevitRebar(this Stirrup stirrup, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Rebar ToRevitRebar(this Stirrup stirrup, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return ToRevitRebar((IReinforcingBar)stirrup, document, settings, refObjects);
         }
@@ -84,7 +87,7 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
-        private static Rebar ToRevitRebar(this IReinforcingBar bar, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        private static Rebar ToRevitRebar(this IReinforcingBar bar, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (bar == null || document == null)
                 return null;
@@ -98,7 +101,7 @@ namespace BH.Revit.Engine.Core
             //getting host
             Element host = null;
             if (bar.CustomData.ContainsKey("HostId"))
-                host = document.GetElement(new ElementId((int)bar.CustomData["HostId"]));
+                host = document.GetElement(Create.ElementId((long)bar.CustomData["HostId"]));
             else
             {
                 BH.Engine.Base.Compute.RecordError("One or more rebars does not contain information about the host.");

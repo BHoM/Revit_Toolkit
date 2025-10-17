@@ -37,13 +37,14 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitParameterElement(BH.oM.Adapters.Revit.Parameters.ParameterDefinition, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Adapters.Revit.Parameters.ParameterDefinition to a Revit ParameterElement.")]
         [Input("parameterDefinition", "BH.oM.Adapters.Revit.Parameters.ParameterDefinition to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("parameterElement", "Revit ParameterElement resulting from converting the input BH.oM.Adapters.Revit.Parameters.ParameterDefinition.")]
-        public static ParameterElement ToRevitParameterElement(this ParameterDefinition parameterDefinition, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static ParameterElement ToRevitParameterElement(this ParameterDefinition parameterDefinition, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (parameterDefinition == null)
                 return null;

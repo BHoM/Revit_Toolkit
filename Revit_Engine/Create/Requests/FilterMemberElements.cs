@@ -39,7 +39,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("request", "Created request.")]
         public static FilterMemberElements FilterMemberElements(IBHoMObject element)
         {
-            int elementId = element.ElementId();
+            long elementId = element.ElementId();
             if (elementId == -1)
             {
                 BH.Engine.Base.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", element.BHoM_Guid));

@@ -64,7 +64,7 @@ namespace BH.Revit.Engine.Core
             if (category == null)
                 return null;
 
-            return PanelType((BuiltInCategory)category.Id.IntegerValue);
+            return PanelType((BuiltInCategory)category.Id.Value());
         }
 
         /***************************************************/

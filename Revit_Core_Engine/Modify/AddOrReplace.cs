@@ -94,16 +94,17 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Modify.AddOrReplace(System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>, System.Guid, System.Collections.Generic.IEnumerable<System.Int32>)")]
         [Description("Adds or replaces the collection of integers correspondent to Revit ElementIds stored under the given key in the refObjects dictionary.")]
         [Input("refObjects", "Dictionary of objects already processed in the current adapter action, to be updated.")]
         [Input("key", "Key of the refObjects dictionary to be updated.")]
         [Input("values", "Collection of integers correspondent to Revit ElementIds to be assigned to the input key of refObjects.")]
-        public static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, Guid key, IEnumerable<int> values)
+        public static void AddOrReplace(this Dictionary<Guid, List<long>> refObjects, Guid key, IEnumerable<long> values)
         {
             if (refObjects == null || key == Guid.Empty || values == null)
                 return;
 
-            List<int> valueList = values.ToList();
+            List<long> valueList = values.ToList();
             if (refObjects.ContainsKey(key))
                 refObjects[key] = valueList;
             else
@@ -112,16 +113,17 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Modify.AddOrReplace(System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>, System.Guid, System.Int32)")]
         [Description("Adds or replaces the collection of integers correspondent to Revit ElementIds stored under the given key in the refObjects dictionary.")]
         [Input("refObjects", "Dictionary of objects already processed in the current adapter action, to be updated.")]
         [Input("key", "Key of the refObjects dictionary to be updated.")]
         [Input("value", "Integer correspondent to Revit ElementId to be assigned to the input key of refObjects.")]
-        public static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, Guid key, int value)
+        public static void AddOrReplace(this Dictionary<Guid, List<long>> refObjects, Guid key, long value)
         {
             if (refObjects == null || key == Guid.Empty)
                 return;
 
-            List<int> valueList = new List<int> { value };
+            List<long> valueList = new List<long> { value };
             if (refObjects.ContainsKey(key))
                 refObjects[key] = valueList;
             else
@@ -130,30 +132,32 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Modify.AddOrReplace(System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>, BH.oM.Base.IBHoMObject, System.Collections.Generic.IEnumerable<Autodesk.Revit.DB.Element>)")]
         [Description("Adds or replaces the collection of integers correspondent to Revit ElementIds stored under the refObjects dictionary key correspondent to the given BHoM object.")]
         [Input("refObjects", "Dictionary of objects already processed in the current adapter action, to be updated.")]
         [Input("obj", "BHoM object correspondent to the refObjects dictionary key to be updated.")]
         [Input("values", "Collection of Revit Elements with ElementIds to be assigned to the refObjects key correspondent to the input BHoM object.")]
-        public static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, IBHoMObject obj, IEnumerable<Element> values)
+        public static void AddOrReplace(this Dictionary<Guid, List<long>> refObjects, IBHoMObject obj, IEnumerable<Element> values)
         {
             if (obj == null)
                 return;
 
-            refObjects.AddOrReplace(obj.BHoM_Guid, values.Select(x => x.Id.IntegerValue));
+            refObjects.AddOrReplace(obj.BHoM_Guid, values.Select(x => x.Id.Value()));
         }
 
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Modify.AddOrReplace(System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>, BH.oM.Base.IBHoMObject, Autodesk.Revit.DB.Element)")]
         [Description("Adds or replaces the collection of integers correspondent to Revit ElementIds stored under the refObjects dictionary key correspondent to the given BHoM object.")]
         [Input("refObjects", "Dictionary of objects already processed in the current adapter action, to be updated.")]
         [Input("obj", "BHoM object correspondent to the refObjects dictionary key to be updated.")]
         [Input("value", "Revit Element with ElementId to be assigned to the refObjects key correspondent to the input BHoM object.")]
-        public static void AddOrReplace(this Dictionary<Guid, List<int>> refObjects, IBHoMObject obj, Element value)
+        public static void AddOrReplace(this Dictionary<Guid, List<long>> refObjects, IBHoMObject obj, Element value)
         {
             if (obj == null || value == null)
                 return;
 
-            refObjects.AddOrReplace(obj.BHoM_Guid, value.Id.IntegerValue);
+            refObjects.AddOrReplace(obj.BHoM_Guid, value.Id.Value());
         }
 
         /***************************************************/

@@ -33,7 +33,7 @@ namespace BH.oM.Adapters.Revit.Requests
         /***************************************************/
 
         [Description("ElementId of the Revit element that contains member elements.")]
-        public virtual int ParentId { get; set; } = -1;
+        public virtual long ParentId { get; set; } = -1;
 
         /***************************************************/
     }

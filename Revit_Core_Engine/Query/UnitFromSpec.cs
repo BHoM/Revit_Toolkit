@@ -38,11 +38,7 @@ namespace BH.Revit.Engine.Core
         [Output("unit", "Revit unit representing the input spec.")]
         public static ForgeTypeId UnitFromSpec(this ForgeTypeId spec, Document doc)
         {
-#if (REVIT2021)
-            if (spec != null)
-#else
             if (spec != null && UnitUtils.IsMeasurableSpec(spec))
-#endif
                 return doc.GetUnits().GetFormatOptions(spec).GetUnitTypeId();
             else
                 return null;

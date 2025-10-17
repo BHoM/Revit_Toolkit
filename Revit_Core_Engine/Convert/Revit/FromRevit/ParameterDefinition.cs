@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
 
             var groupTypeId = def.GroupTypeId();
 
-#if REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024
+#if REVIT2022 || REVIT2023 || REVIT2024
             string parameterGroup = LabelUtils.GetLabelFor(groupTypeId);
 #else
             string parameterGroup = LabelUtils.GetLabelForGroup(groupTypeId);

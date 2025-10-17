@@ -37,13 +37,14 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitSheet(BH.oM.Adapters.Revit.Elements.Sheet, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Adapters.Revit.Elements.Sheet to a Revit ViewSheet.")]
         [Input("sheet", "BH.oM.Adapters.Revit.Elements.Sheet to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("viewSheet", "Revit ViewSheet resulting from converting the input BH.oM.Adapters.Revit.Elements.Sheet.")]
-        public static ViewSheet ToRevitSheet(this Sheet sheet, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static ViewSheet ToRevitSheet(this Sheet sheet, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (sheet == null)
                 return null;

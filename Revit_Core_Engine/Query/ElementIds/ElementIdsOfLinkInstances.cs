@@ -22,7 +22,6 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -55,10 +54,10 @@ namespace BH.Revit.Engine.Core
                 return allInstances.Select(x => x.Id).ToList();
 
             // Try get the link doc by its link instance Id
-            int id;
-            if (int.TryParse(linkName, out id))
+            long id;
+            if (long.TryParse(linkName, out id))
             {
-                RevitLinkInstance instance = document.GetElement(new ElementId(id)) as RevitLinkInstance;
+                RevitLinkInstance instance = document.GetElement(id.ToElementId()) as RevitLinkInstance;
                 if (instance != null)
                     return new List<ElementId> { instance.Id };
             }
@@ -98,7 +97,7 @@ namespace BH.Revit.Engine.Core
                     fromPath = allInstances.Where(x => (document.GetElement(x.GetTypeId()) as RevitLinkType)?.Name?.ToLower() == casedLinkName).ToList();
             }
 
-            fromPath = fromPath.Where(x => result.All(y => y.IntegerValue != x.Id.IntegerValue)).ToList();
+            fromPath = fromPath.Where(x => result.All(y => y.Value() != x.Id.Value())).ToList();
             result.AddRange(fromPath.Select(x => x.Id));
 
             if (suffix && fromPath.Count != 0)

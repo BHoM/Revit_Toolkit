@@ -32,17 +32,17 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
+
         [Description("Returns the Revit ElementId stored by a given BHoM object.")]
         [Input("bHoMObject", "BHoM object to extract the Revit ElementId from.")]
         [Output("elementId", "Revit ElementId extracted from the input BHoM object.")]
         public static ElementId ElementId(this IBHoMObject bHoMObject)
         {
-            int id = BH.Engine.Adapters.Revit.Query.ElementId(bHoMObject);
+            long id = BH.Engine.Adapters.Revit.Query.ElementId(bHoMObject);
             if (id == -1)
-                return null;
+                return Autodesk.Revit.DB.ElementId.InvalidElementId;
             else
-                return new ElementId(id);
+                return Create.ElementId(id);
         }
 
         /***************************************************/
@@ -65,11 +65,11 @@ namespace BH.Revit.Engine.Core
 
             string elementID = originatingElementDescription.Substring(startIndex + 1, endIndex - startIndex - 1);
 
-            int id;
-            if (!int.TryParse(elementID, out id))
+            long id;
+            if (!long.TryParse(elementID, out id))
                 return null;
 
-            return new ElementId(id);
+            return Create.ElementId(id);
         }
 
         /***************************************************/

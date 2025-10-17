@@ -89,14 +89,14 @@ namespace BH.Revit.Engine.Core
                         openings.AddRange(ps.Select(x => new BH.oM.Physical.Elements.Void { Location = x }));
                     }
 
-                    foreach (FamilyInstance window in inserts.Where(x => x.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Windows))
+                    foreach (FamilyInstance window in inserts.Where(x => x.Category.Id.Value() == (int)BuiltInCategory.OST_Windows))
                     {
                         BH.oM.Physical.Elements.Window bHoMWindow = window.WindowFromRevit(floor, settings, refObjects);
                         if (bHoMWindow != null)
                             openings.Add(bHoMWindow);
                     }
 
-                    foreach (FamilyInstance door in inserts.Where(x => x.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Doors))
+                    foreach (FamilyInstance door in inserts.Where(x => x.Category.Id.Value() == (int)BuiltInCategory.OST_Doors))
                     {
                         BH.oM.Physical.Elements.Door bHoMDoor = door.DoorFromRevit(floor, settings, refObjects);
                         if (bHoMDoor != null)

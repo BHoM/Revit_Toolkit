@@ -22,12 +22,10 @@
 
 using BH.Engine.Base;
 using BH.oM.Adapters.Revit.Parameters;
-using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.Revit;
 using System.ComponentModel;
-using System.Linq;
 
 namespace BH.Engine.Adapters.Revit
 {
@@ -42,7 +40,7 @@ namespace BH.Engine.Adapters.Revit
         [Input("hostId", "ElementId of the host Revit element to be assigned to the BHoM object.")]
         [Input("linkDocument", "If the host Revit element originates from a link document, name, path or ElementId of the link document need to be specifiec here.")]
         [Output("withHost", "BHoM object with assigned host information.")]
-        public static IBHoMObject SetHost(this IBHoMObject obj, int hostId, string linkDocument = "")
+        public static IBHoMObject SetHost(this IBHoMObject obj, long hostId, string linkDocument = "")
         {
             if (obj == null)
             {

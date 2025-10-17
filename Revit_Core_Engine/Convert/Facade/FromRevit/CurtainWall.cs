@@ -87,7 +87,7 @@ namespace BH.Revit.Engine.Core
             IEnumerable<oM.Facade.Elements.Opening> curtainPanels = element.FacadeCurtainPanels(settings, refObjects);
 
             if (curtainPanels == null || !curtainPanels.Any())
-                BH.Engine.Base.Compute.RecordError($"Processing of panels of a Revit curtain wall failed. BHoM curtain wall without location has been returned. Revit ElementId: {element.Id.IntegerValue}");
+                BH.Engine.Base.Compute.RecordError($"Processing of panels of a Revit curtain wall failed. BHoM curtain wall without location has been returned. Revit ElementId: {element.Id.Value()}");
 
             // Unify edges
             double sqTol = settings.DistanceTolerance * settings.DistanceTolerance;

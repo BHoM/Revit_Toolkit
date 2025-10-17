@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
         [Output("outline", "The Title Block's drawing area.")]
         public static Outline DrawingArea(this FamilyInstance titleBlock)
         {
-            if (titleBlock == null || !((BuiltInCategory)titleBlock.Category.Id.IntegerValue == Autodesk.Revit.DB.BuiltInCategory.OST_TitleBlocks))
+            if (titleBlock == null || !((BuiltInCategory)titleBlock.Category.Id.Value() == Autodesk.Revit.DB.BuiltInCategory.OST_TitleBlocks))
             {
                 BH.Engine.Base.Compute.RecordError($"Title block cannot be null and has to be of the Title Block category.");
                 return null;

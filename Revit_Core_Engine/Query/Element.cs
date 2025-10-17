@@ -110,7 +110,7 @@ namespace BH.Revit.Engine.Core
         public static Element Element(this IBHoMObject bHoMObject, Document document)
         {
             ElementId elementId = bHoMObject.ElementId();
-            if (elementId != null && elementId.IntegerValue > 0)
+            if (elementId != null && elementId.Value() > 0)
                 return document.GetElement(elementId);
 
             string uniqueId = bHoMObject.UniqueId();

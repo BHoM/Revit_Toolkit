@@ -36,14 +36,14 @@ namespace BH.Revit.Engine.Core
         [Input("doc", "Document where parameter belongs.")]
         [Input("id", "Id of the parameter.")]
         [Output("parameterName", "Parameter name.")]
-        public static string ParameterName(this Document doc, int id)
+        public static string ParameterName(this Document doc, long id)
         {
             string parameterName;
 
             if (id < 0)
                 parameterName = LabelUtils.GetLabelFor((BuiltInParameter)id);
             else
-                parameterName = (doc.GetElement(new ElementId(id)) as ParameterElement)?.Name;
+                parameterName = (doc.GetElement(id.ToElementId()) as ParameterElement)?.Name;
 
             return parameterName;
         }

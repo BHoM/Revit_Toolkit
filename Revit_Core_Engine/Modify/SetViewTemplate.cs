@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
         {
             Document doc = view.Document;
 
-            if (viewTemplateId != null && viewTemplateId.IntegerValue != -1)
+            if (viewTemplateId != null && viewTemplateId.Value() != -1)
             {
                 if ((doc.GetElement(viewTemplateId) as View)?.IsTemplate != true)
                 {

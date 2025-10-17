@@ -51,7 +51,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                int category = panel.Category.Id.IntegerValue;
+                long category = panel.Category.Id.Value();
                 if (category == (int)Autodesk.Revit.DB.BuiltInCategory.OST_Walls)
                 {
                     HostObjAttributes hostObjAttributes = panel.Document.GetElement(panel.GetTypeId()) as HostObjAttributes;
@@ -84,7 +84,7 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                BH.Engine.Base.Compute.RecordWarning($"Construction of Opening could not be found, therefore default construction has been used. Revit ElementId: {familyInstance.Id.IntegerValue}");
+                BH.Engine.Base.Compute.RecordWarning($"Construction of Opening could not be found, therefore default construction has been used. Revit ElementId: {familyInstance.Id.Value()}");
                 constName = "Default Opening Construction";
                 bhomMat = new oM.Physical.Materials.Material { Name = "Default Opening Material" };
             }

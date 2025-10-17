@@ -38,7 +38,7 @@ namespace BH.Revit.Engine.Core
         [Output("reference", "Linked element reference prepared for dimensioning in the host document.")]
         public static Reference PrepareForLinkDimensioning(this Reference reference, Document hostDocument)
         {
-            if (reference.LinkedElementId.IntegerValue == -1)
+            if (reference.LinkedElementId.Value() == -1)
                 return null;
 
             string[] ss = reference.ConvertToStableRepresentation(hostDocument).Split(':');

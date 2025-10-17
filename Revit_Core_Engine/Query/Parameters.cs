@@ -23,11 +23,9 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Data;
 using BH.oM.Base.Attributes;
-using BH.oM.Graphics.Misc;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Security.Cryptography;
 
 namespace BH.Revit.Engine.Core
 {
@@ -55,18 +53,18 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            HashSet<int> elementTypeIds = new HashSet<int>();
+            HashSet<long> elementTypeIds = new HashSet<long>();
 
             foreach (Element elem in elements)
             {
                 ElementId elTypeId = elem.GetTypeId();
 
-                if (elTypeId.IntegerValue != -1)
-                    elementTypeIds.Add(elTypeId.IntegerValue);
+                if (elTypeId.Value() != -1)
+                    elementTypeIds.Add(elTypeId.Value());
             }
 
             Document doc = elements[0].Document;
-            List<Element> elementTypes = elementTypeIds.Select(x => doc.GetElement(new ElementId(x))).ToList();
+            List<Element> elementTypes = elementTypeIds.Select(x => doc.GetElement(x.ToElementId())).ToList();
 
             return elementTypes.Parameters(includeHiddenParameters);
         }
@@ -82,14 +80,14 @@ namespace BH.Revit.Engine.Core
             if (elements == null)
                 return null;
 
-            HashSet<int> ids = new HashSet<int>();
+            HashSet<long> ids = new HashSet<long>();
             List<Parameter> parameters = new List<Parameter>();
 
             foreach (Element elem in elements)
             {
                 foreach (Parameter param in elem.Parameters(includeHiddenParameters))
                 {
-                    if (ids.Add(param.Id.IntegerValue))
+                    if (ids.Add(param.Id.Value()))
                         parameters.Add(param);
                 }
             }

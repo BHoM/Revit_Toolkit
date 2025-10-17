@@ -60,7 +60,7 @@ namespace BH.Revit.Engine.Core
             IProfile profile = mullion.MullionType.ProfileFromRevit(settings, refObjects);
 
             if (profile == null)
-                BH.Engine.Base.Compute.RecordWarning($"Mullion profile could not be extracted. ElementId: {mullion.Id.IntegerValue}");
+                BH.Engine.Base.Compute.RecordWarning($"Mullion profile could not be extracted. ElementId: {mullion.Id.Value()}");
 
             // Get rotation
             double rotation = mullion.OrientationAngle(settings);

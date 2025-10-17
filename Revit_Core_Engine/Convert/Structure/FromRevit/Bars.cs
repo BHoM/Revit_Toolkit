@@ -58,10 +58,10 @@ namespace BH.Revit.Engine.Core
             List<Bar> bars = refObjects.GetValues<Bar>(familyInstance.Id);
             if (bars != null)
                 return bars;
-            
+
             // Get bar curve
             List<oM.Geometry.ICurve> locationCurves = null;
-#if (REVIT2021 || REVIT2022)
+#if REVIT2022
             AnalyticalModelStick analyticalModel = familyInstance.GetAnalyticalModel() as AnalyticalModelStick;
             if (analyticalModel != null)
             {
@@ -85,13 +85,13 @@ namespace BH.Revit.Engine.Core
 
             // Get bar material
             ElementId structuralMaterialId = familyInstance.StructuralMaterialId;
-            if (structuralMaterialId.IntegerValue < 0)
+            if (structuralMaterialId.Value() < 0)
                 structuralMaterialId = familyInstance.Symbol.LookupParameterElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
 
             Material revitMaterial = familyInstance.Document.GetElement(structuralMaterialId) as Material;
             if (revitMaterial == null)
                 revitMaterial = familyInstance.Category.Material;
-            
+
             // Get material grade
             string materialGrade = familyInstance.MaterialGrade(settings);
 
@@ -131,13 +131,13 @@ namespace BH.Revit.Engine.Core
                 property = property.ShallowClone();
 
                 if (!materialFound)
-                    BH.Engine.Base.Compute.RecordNote($"A matching section was found in the library. No valid material was defined in Revit, so the default material for this section was used. Revit ElementId: {familyInstance.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordNote($"A matching section was found in the library. No valid material was defined in Revit, so the default material for this section was used. Revit ElementId: {familyInstance.Id.Value()}");
                 else
                     property.Material = materialFragment;
 
                 property.Name = profileName;
             }
-            
+
             // Create linear bars
             bars = new List<Bar>();
             if (locationCurves != null && locationCurves.Count != 0)

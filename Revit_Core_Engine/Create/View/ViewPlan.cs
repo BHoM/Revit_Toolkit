@@ -114,7 +114,7 @@ namespace BH.Revit.Engine.Core
             {
                 Element scopeBox = document.GetElement(scopeBoxId);
 
-                if (!((BuiltInCategory)scopeBox.Category.Id.IntegerValue == BuiltInCategory.OST_VolumeOfInterest))
+                if (!((BuiltInCategory)scopeBox.Category.Id.Value() == BuiltInCategory.OST_VolumeOfInterest))
                 {
                     BH.Engine.Base.Compute.RecordWarning($"Could not apply the Scope Box of Id '{scopeBoxId}'. Please check if it's a valid Scope Box element.");
                     return newView;

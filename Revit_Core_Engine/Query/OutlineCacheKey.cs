@@ -37,7 +37,7 @@ namespace BH.Revit.Engine.Core
         [Output("key", "RefObjects key, under which the outlines of the input Revit structural panel element are stored.")]
         public static string OutlineCacheKey(this ElementId elementId)
         {
-            return $"AnalyticalOutlines_{elementId.IntegerValue}";
+            return $"AnalyticalOutlines_{elementId.Value()}";
         }
 
         /***************************************************/
