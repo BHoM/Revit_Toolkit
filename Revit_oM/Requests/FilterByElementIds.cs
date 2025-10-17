@@ -34,7 +34,7 @@ namespace BH.oM.Adapters.Revit.Requests
         /***************************************************/
 
         [Description("List of integers representing Revit ElementIds to be used to filter the elements.")]
-        public virtual List<int> ElementIds { get; set; } = new List<int>();
+        public virtual List<long> ElementIds { get; set; } = new List<long>();
 
         /***************************************************/
     }

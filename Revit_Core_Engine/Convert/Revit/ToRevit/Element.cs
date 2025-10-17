@@ -25,8 +25,8 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Geometry;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -40,13 +40,14 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitElement(BH.oM.Adapters.Revit.Elements.ModelInstance, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Adapters.Revit.Elements.ModelInstance to a Revit Element.")]
         [Input("modelInstance", "BH.oM.Adapters.Revit.Elements.ModelInstance to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("element", "Revit Element resulting from converting the input BH.oM.Adapters.Revit.Elements.ModelInstance.")]
-        public static Element ToRevitElement(this ModelInstance modelInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevitElement(this ModelInstance modelInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (modelInstance == null || document == null)
                 return null;
@@ -74,7 +75,7 @@ namespace BH.Revit.Engine.Core
                     return null;
                 }
 
-                DirectShape directShape = DirectShape.CreateElement(document, new ElementId((int)builtInCategory));
+                DirectShape directShape = DirectShape.CreateElement(document, new ElementId(builtInCategory));
                 directShape.AppendShape(new List<GeometryObject> { brep });
                 element = directShape;
             }
@@ -83,7 +84,7 @@ namespace BH.Revit.Engine.Core
                 ElementType elementType = modelInstance.ElementType(document, settings);
                 element = modelInstance.IToRevitElement(elementType, settings);
             }
-            
+
             if (element == null)
                 return null;
 
@@ -96,13 +97,14 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitElement(BH.oM.Adapters.Revit.Elements.DraftingInstance, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Adapters.Revit.Elements.DraftingInstance to a Revit Element.")]
         [Input("draftingInstance", "BH.oM.Adapters.Revit.Elements.DraftingInstance to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("element", "Revit Element resulting from converting the input BH.oM.Adapters.Revit.Elements.DraftingInstance.")]
-        public static Element ToRevitElement(this DraftingInstance draftingInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Element ToRevitElement(this DraftingInstance draftingInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (draftingInstance == null || string.IsNullOrWhiteSpace(draftingInstance.ViewName) || document == null)
                 return null;
@@ -125,7 +127,7 @@ namespace BH.Revit.Engine.Core
 
             ElementType elementType = draftingInstance.ElementType(document, settings);
             element = draftingInstance.IToRevitElement(elementType, view, settings);
-            
+
             if (element == null)
                 return null;
 
@@ -240,7 +242,7 @@ namespace BH.Revit.Engine.Core
                 return Create.AdaptiveComponent(doc, familySymbol, pts.Select(x => ((BH.oM.Geometry.Point)x).ToRevit()).ToList(), settings);
             }
 
-            if (modelInstance.Location is BH.oM.Geometry.Point) 
+            if (modelInstance.Location is BH.oM.Geometry.Point)
                 return Create.FamilyInstance(doc, familySymbol, ((BH.oM.Geometry.Point)modelInstance.Location).ToRevit(), modelInstance.Orientation.ToRevit(), modelInstance.HostElement(doc, settings), settings);
             else if (modelInstance.Location is ICurve)
                 return Create.FamilyInstance(doc, familySymbol, ((ICurve)modelInstance.Location).IToRevit(), modelInstance.HostElement(doc, settings), settings);

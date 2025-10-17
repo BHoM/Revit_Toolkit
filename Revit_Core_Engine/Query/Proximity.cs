@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
 
             Output<XYZ, XYZ, double> proximity = solids1.Proximity(solids2, tolerance);
             if (double.IsNaN(proximity.Item3))
-                BH.Engine.Base.Compute.RecordWarning($"Can't compute the distance between elements {element1.Id.IntegerValue} and {element2.Id.IntegerValue}.");
+                BH.Engine.Base.Compute.RecordWarning($"Can't compute the distance between elements {element1.Id.Value()} and {element2.Id.Value()}.");
 
             return proximity;
         }

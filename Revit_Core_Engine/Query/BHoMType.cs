@@ -79,7 +79,7 @@ namespace BH.Revit.Engine.Core
         public static Type BHoMType(this FamilyInstance familyInstance, Discipline discipline, RevitSettings settings = null)
         {
             string familyName = familyInstance?.Symbol?.FamilyName;
-            BuiltInCategory category = (BuiltInCategory)familyInstance.Category.Id.IntegerValue;
+            BuiltInCategory category = (BuiltInCategory)familyInstance.Category.Id.Value();
 
             switch (discipline)
             {
@@ -155,9 +155,9 @@ namespace BH.Revit.Engine.Core
             switch (discipline)
             {
                 default:
-                    if (typeof(BH.oM.Spatial.ShapeProfiles.IProfile).BuiltInCategories().Contains((BuiltInCategory)familySymbol.Category.Id.IntegerValue))
+                    if (typeof(BH.oM.Spatial.ShapeProfiles.IProfile).BuiltInCategories().Contains((BuiltInCategory)familySymbol.Category.Id.Value()))
                         return typeof(BH.oM.Spatial.ShapeProfiles.IProfile);
-                    else if (typeof(BH.oM.Lighting.Elements.LuminaireType).BuiltInCategories().Contains((BuiltInCategory)familySymbol.Category.Id.IntegerValue))
+                    else if (typeof(BH.oM.Lighting.Elements.LuminaireType).BuiltInCategories().Contains((BuiltInCategory)familySymbol.Category.Id.Value()))
                         return typeof(BH.oM.Lighting.Elements.LuminaireType);
                     else
                         return null;

@@ -21,11 +21,8 @@
  */
 
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base.Attributes;
 using BH.oM.Revit;
-using System;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
@@ -61,7 +58,7 @@ namespace BH.Revit.Engine.Core
             if (host == null)
                 return null;
 
-            int hostId = -1;
+            long hostId = -1;
             string hostLink = "";
 
             if (host is RevitLinkInstance)
@@ -70,18 +67,18 @@ namespace BH.Revit.Engine.Core
 
                 Reference faceReference = familyInstance.HostFace?.CreateReferenceInLink();
                 if (faceReference != null)
-                    hostId = faceReference.ElementId.IntegerValue;
+                    hostId = faceReference.ElementId.Value();
                 else
                     BH.Engine.Base.Compute.RecordWarning("The Revit element has been identified as hosted on a linked element, but the host could not be identified.");
             }
             else
             {
-                hostId = host.Id.IntegerValue;
+                hostId = host.Id.Value();
                 if (host.Document.IsLinked)
                 {
                     if (host.Document.IsDetached)
                         BH.Engine.Base.Compute.RecordWarning($"Host document name could not be scraped from a detached document.");
-             
+
                     hostLink = host.Document.Title + ".rvt";
                 }
             }

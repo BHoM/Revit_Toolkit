@@ -23,8 +23,8 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Environment.Elements;
 using BH.oM.Base.Attributes;
+using BH.oM.Environment.Elements;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -37,13 +37,14 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitSpace(BH.oM.Environment.Elements.Space, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Environment.Elements.Space to a Revit Space.")]
         [Input("space", "BH.oM.Environment.Elements.Space to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("space", "Revit Space resulting from converting the input BH.oM.Environment.Elements.Space.")]
-        public static Autodesk.Revit.DB.Mechanical.Space ToRevitSpace(this Space space, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static Autodesk.Revit.DB.Mechanical.Space ToRevitSpace(this Space space, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (space == null)
                 return null;

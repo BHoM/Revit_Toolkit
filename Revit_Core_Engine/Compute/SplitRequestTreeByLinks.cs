@@ -23,10 +23,8 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Data;
 using BH.oM.Adapters.Revit.Requests;
-using BH.oM.Data.Requests;
 using BH.oM.Base.Attributes;
-using BH.Revit.Engine.Core;
-using System;
+using BH.oM.Data.Requests;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -77,7 +75,7 @@ namespace BH.Revit.Engine.Core
             List<IRequest> linkRequests = request.AllRequestsOfType(typeof(FilterByLink));
             if (linkRequests.Count == 0)
             {
-                requestsByLinks.AddRequestByLink(request, new ElementId(-1));
+                requestsByLinks.AddRequestByLink(request, ElementId.InvalidElementId);
                 return true;
             }
             else if (linkRequests.Count == 1)

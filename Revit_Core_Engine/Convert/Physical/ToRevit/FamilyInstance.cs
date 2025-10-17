@@ -39,13 +39,14 @@ namespace BH.Revit.Engine.Core
         /****            Interface methods              ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.IToRevitFamilyInstance(BH.oM.Physical.Elements.IFramingElement, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Physical.Elements.IFramingElement to a Revit FamilyInstance.")]
         [Input("framingElement", "BH.oM.Physical.Elements.IFramingElement to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.IFramingElement.")]
-        public static FamilyInstance IToRevitFamilyInstance(this IFramingElement framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static FamilyInstance IToRevitFamilyInstance(this IFramingElement framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             return ToRevitFamilyInstance(framingElement as dynamic, document, settings, refObjects);
         }
@@ -55,13 +56,14 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitFamilyInstance(BH.oM.Physical.Elements.Column, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Physical.Elements.Column to a Revit FamilyInstance.")]
         [Input("framingElement", "BH.oM.Physical.Elements.Column to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.Column.")]
-        public static FamilyInstance ToRevitFamilyInstance(this Column framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static FamilyInstance ToRevitFamilyInstance(this Column framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (framingElement == null || document == null)
                 return null;
@@ -109,7 +111,7 @@ namespace BH.Revit.Engine.Core
                 //TODO: if the material does not get assigned an error should be thrown?
                 if (barProperty.Material != null)
                 {
-                    Autodesk.Revit.DB.Material material = document.GetElement(new ElementId(BH.Engine.Adapters.Revit.Query.ElementId(barProperty.Material))) as Autodesk.Revit.DB.Material;
+                    Material material = document.GetElement(barProperty.Material.ElementId()) as Material;
                     if (material != null)
                     {
                         Parameter param = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
@@ -137,13 +139,14 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitFamilyInstance(BH.oM.Physical.Elements.Pile, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Physical.Elements.Pile to a Revit FamilyInstance.")]
         [Input("framingElement", "BH.oM.Physical.Elements.Pile to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.Pile.")]
-        public static FamilyInstance ToRevitFamilyInstance(this Pile framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static FamilyInstance ToRevitFamilyInstance(this Pile framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (framingElement == null || document == null)
                 return null;
@@ -202,7 +205,7 @@ namespace BH.Revit.Engine.Core
                 //TODO: if the material does not get assigned an error should be thrown?
                 if (pileProperty.Material != null)
                 {
-                    Material material = document.GetElement(new ElementId(BH.Engine.Adapters.Revit.Query.ElementId(pileProperty.Material))) as Material;
+                    Material material = document.GetElement(pileProperty.Material.ElementId()) as Material;
                     if (material != null)
                     {
                         Parameter param = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
@@ -223,13 +226,14 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitFamilyInstance(BH.oM.Physical.Elements.IFramingElement, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Physical.Elements.IFramingElement to a Revit FamilyInstance.")]
         [Input("framingElement", "BH.oM.Physical.Elements.IFramingElement to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.IFramingElement.")]
-        public static FamilyInstance ToRevitFamilyInstance(this IFramingElement framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static FamilyInstance ToRevitFamilyInstance(this IFramingElement framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (framingElement == null || document == null)
                 return null;
@@ -313,7 +317,7 @@ namespace BH.Revit.Engine.Core
                 //TODO: if the material does not get assigned an error should be thrown?
                 if (barProperty.Material != null)
                 {
-                    Material material = document.GetElement(new ElementId(BH.Engine.Adapters.Revit.Query.ElementId(barProperty.Material))) as Material;
+                    Material material = document.GetElement(barProperty.Material.ElementId()) as Material;
                     if (material != null)
                     {
                         Parameter param = familyInstance.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);

@@ -33,7 +33,7 @@ namespace BH.oM.Revit
         /***************************************************/
 
         [Description("ElementId of the Revit element that hosts the Revit element correspondent to the BHoM object that carries this.")]
-        public virtual int HostId { get; } = -1;
+        public virtual long HostId { get; } = -1;
 
         [Description("Name of the link document, if the host Revit element is linked.")]
         public virtual string LinkDocument { get; } = "";
@@ -43,7 +43,7 @@ namespace BH.oM.Revit
         /****            Public Constructors            ****/
         /***************************************************/
 
-        public RevitHostFragment(int hostId, string linkDocument = "")
+        public RevitHostFragment(long hostId, string linkDocument = "")
         {
             HostId = hostId;
             LinkDocument = linkDocument;

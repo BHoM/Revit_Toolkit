@@ -40,7 +40,7 @@ namespace BH.Revit.Engine.Core
         [Input("familyId", "ElementId of the Revit family, to which filtered family types belong.")]
         [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
-        public static IEnumerable<ElementId> ElementIdsOfFamilyTypes(this Document document, int familyId, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsOfFamilyTypes(this Document document, long familyId, IEnumerable<ElementId> ids = null)
         {
             if (document == null)
                 return null;
@@ -48,7 +48,7 @@ namespace BH.Revit.Engine.Core
             if (ids != null && ids.Count() == 0)
                 return new List<ElementId>();
 
-            Family family = document.GetElement(new ElementId(familyId)) as Family;
+            Family family = document.GetElement(familyId.ToElementId()) as Family;
             if (family == null)
             {
                 BH.Engine.Base.Compute.RecordError(String.Format("Couldn't find a Family under ElementId {0}", familyId));

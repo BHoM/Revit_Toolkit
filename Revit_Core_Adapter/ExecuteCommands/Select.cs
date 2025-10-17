@@ -68,7 +68,7 @@ namespace BH.Revit.Adapter.Core
 
             uidoc.Selection.SetElementIds(elementIds);
 
-            output.Item1 = elementIds.Select(x => x.IntegerValue).Cast<object>().ToList();
+            output.Item1 = elementIds.Select(x => x.Value()).Cast<object>().ToList();
             output.Item2 = true;
             return output;
         }

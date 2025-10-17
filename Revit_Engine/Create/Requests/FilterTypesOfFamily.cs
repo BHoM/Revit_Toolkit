@@ -22,7 +22,7 @@
 
 /*	
  * This file is part of the Buildings and Habitats object Model (BHoM)	
- * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.	
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.	
  *	
  * Each contributor holds copyright over their respective contributions.	
  * The project versioning (Git) records all such contribution source information.	
@@ -61,7 +61,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("request", "Created request.")]
         public static FilterTypesOfFamily FilterTypesOfFamily(IBHoMObject family)
         {
-            int elementId = family.ElementId();
+            long elementId = family.ElementId();
             if (elementId == -1)
             {
                 BH.Engine.Base.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", family.BHoM_Guid));

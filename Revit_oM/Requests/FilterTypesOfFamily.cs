@@ -33,7 +33,7 @@ namespace BH.oM.Adapters.Revit.Requests
         /***************************************************/
 
         [Description("ElementId of the Revit family, which types are being queried.")]
-        public virtual int FamilyId { get; set; } = -1;
+        public virtual long FamilyId { get; set; } = -1;
 
         /***************************************************/
     }

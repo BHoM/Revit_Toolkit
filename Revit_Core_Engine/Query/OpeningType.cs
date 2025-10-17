@@ -61,7 +61,7 @@ namespace BH.Revit.Engine.Core
             if (category == null)
                 return null;
 
-            return OpeningType((BuiltInCategory)category.Id.IntegerValue);
+            return OpeningType((BuiltInCategory)category.Id.Value());
         }
 
         /***************************************************/

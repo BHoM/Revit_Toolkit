@@ -50,7 +50,7 @@ namespace BH.Revit.Engine.Core
                 List<CurtainCell> cells = cg.GetCurtainCells().ToList();
                 for (int i = 0; i < ids.Count; i++)
                 {
-                    if (ids[i].IntegerValue == curtainCell.Id.IntegerValue)
+                    if (ids[i].Value() == curtainCell.Id.Value())
                     {
                         if (!cells[i].HasValidLocation())
                             return null;

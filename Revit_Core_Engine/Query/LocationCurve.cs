@@ -50,11 +50,11 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
             ICurve curve = null;
 
-            if (typeof(Column).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+            if (typeof(Column).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.Value()))
                 curve = familyInstance.LocationCurveColumn(settings);
-            else if (typeof(Pile).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+            else if (typeof(Pile).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.Value()))
                 curve = familyInstance.LocationCurvePile(settings);
-            else if (typeof(IFramingElement).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.IntegerValue))
+            else if (typeof(IFramingElement).BuiltInCategories().Contains((BuiltInCategory)familyInstance.Category.Id.Value()))
                 curve = familyInstance.LocationCurveFraming(settings);
 
             return curve;
@@ -240,7 +240,7 @@ namespace BH.Revit.Engine.Core
             if (!double.IsNaN(embedment))
                 top.Z -= embedment;
             else
-                BH.Engine.Base.Compute.RecordWarning($"Parameter 'Pile Embedment' could not be found on the pile, therefore embedment may not be taken into account correctly. ElementId: {familyInstance.Id.IntegerValue}");
+                BH.Engine.Base.Compute.RecordWarning($"Parameter 'Pile Embedment' could not be found on the pile, therefore embedment may not be taken into account correctly. ElementId: {familyInstance.Id.Value()}");
 
             return new BH.oM.Geometry.Line { Start = bottom, End = top };
         }

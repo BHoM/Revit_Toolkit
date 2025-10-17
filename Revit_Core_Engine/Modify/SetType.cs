@@ -72,7 +72,7 @@ namespace BH.Revit.Engine.Core
                 return true;
 
             HostObjAttributes hostObjAttr = bHoMObject.IElementType(element.Document, settings) as HostObjAttributes;
-            if (hostObjAttr != null && hostObjAttr.Id.IntegerValue != element.GetTypeId().IntegerValue)
+            if (hostObjAttr != null && hostObjAttr.Id.Value() != element.GetTypeId().Value())
                 return element.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, hostObjAttr.Id);
 
             return false;
@@ -161,19 +161,19 @@ namespace BH.Revit.Engine.Core
         [Output("success", "True if the type of the Element has been successfully updated.")]
         private static bool TrySetTypeFromString(this Element element, IBHoMObject bHoMObject, RevitSettings settings)
         {
-            if (element?.Category != null && element.Category.Id.IntegerValue < 0)
+            if (element?.Category != null && element.Category.Id.Value() < 0)
             {
                 RevitParameter param = (bHoMObject.Fragments?.FirstOrDefault(x => x is RevitParametersToPush) as RevitParametersToPush)?.Parameters?.FirstOrDefault(x => x.Name == "Type");
                 if (param?.Value is string)
                 {
-                    ElementType et = element.Document.ElementType(null, (string)param.Value, new[] { (BuiltInCategory)element.Category.Id.IntegerValue }, settings);
+                    ElementType et = element.Document.ElementType(null, (string)param.Value, new[] { (BuiltInCategory)element.Category.Id.Value() }, settings);
                     if (et != null)
                     {
                         element.SetParameter(BuiltInParameter.ELEM_TYPE_PARAM, et.Id);
                         return true;
                     }
                     else
-                        BH.Engine.Base.Compute.RecordWarning($"Element type not updated: type named {param.Value} of category {element.Category.Name} could not be found in the model. ElementId: {element.Id.IntegerValue}");
+                        BH.Engine.Base.Compute.RecordWarning($"Element type not updated: type named {param.Value} of category {element.Category.Name} could not be found in the model. ElementId: {element.Id.Value()}");
                 }
             }
 

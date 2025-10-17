@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
         [Output("solid", "Revit Solid resulting from converting the input Revit scope box.")]
         public static Solid ToSolid(this Element scopeBox, RevitSettings settings = null)
         {
-            if (scopeBox == null || scopeBox.Category.Id.IntegerValue != (int)BuiltInCategory.OST_VolumeOfInterest)
+            if (scopeBox == null || scopeBox.Category.Id.Value() != (int)BuiltInCategory.OST_VolumeOfInterest)
                 return null;
 
             settings = settings.DefaultIfNull();

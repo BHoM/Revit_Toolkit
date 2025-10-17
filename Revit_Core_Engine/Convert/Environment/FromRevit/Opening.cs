@@ -23,16 +23,17 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Base;
 using BH.Engine.Environment;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Base.Attributes;
 using BH.oM.Environment.Elements;
 using BH.oM.Environment.Fragments;
 using BH.oM.Geometry;
-using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
-using BH.Engine.Base;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -58,13 +59,17 @@ namespace BH.Revit.Engine.Core
                 if (result != null)
                     return result;
 
+#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
                 ICurve curve = energyAnalysisOpening.GetPolyloop().FromRevit();
+#else
+                ICurve curve = energyAnalysisOpening.GetPolyloops().FirstOrDefault()?.FromRevit();
+#endif
                 result = new oM.Environment.Elements.Opening()
                 {
                     Edges = curve.ToEdges(),
                 };
 
-                OriginContextFragment originContext = new OriginContextFragment() { ElementID = energyAnalysisOpening.Id.IntegerValue.ToString(), TypeName = energyAnalysisOpening.OpeningName };
+                OriginContextFragment originContext = new OriginContextFragment() { ElementID = energyAnalysisOpening.Id.Value().ToString(), TypeName = energyAnalysisOpening.OpeningName };
                 originContext.SetProperties(energyAnalysisOpening, settings.MappingSettings);
                 result.AddFragment(originContext);
 
@@ -81,20 +86,24 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                oM.Environment.Elements.Opening result = refObjects.GetValue<oM.Environment.Elements.Opening>(energyAnalysisOpening.Id.IntegerValue);
+                oM.Environment.Elements.Opening result = refObjects.GetValue<oM.Environment.Elements.Opening>(energyAnalysisOpening.Id.Value());
                 if (result != null)
                     return result;
 
                 ElementType elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
 
+#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
                 ICurve curve = energyAnalysisOpening.GetPolyloop().FromRevit();
+#else
+                ICurve curve = energyAnalysisOpening.GetPolyloops().FirstOrDefault()?.FromRevit();
+#endif
                 result = new oM.Environment.Elements.Opening()
                 {
                     Edges = curve.ToEdges(),
                     Name = element.FamilyTypeFullName(),
                 };
 
-                OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.IntegerValue.ToString(), TypeName = element.FamilyTypeFullName() };
+                OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.Value().ToString(), TypeName = element.FamilyTypeFullName() };
                 originContext.SetProperties(element, settings.MappingSettings);
                 originContext.SetProperties(elementType, settings.MappingSettings);
                 result.AddFragment(originContext);

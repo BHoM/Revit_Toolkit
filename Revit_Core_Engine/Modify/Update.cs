@@ -425,8 +425,8 @@ namespace BH.Revit.Engine.Core
         private static void ErrorOnHostChange(this FamilyInstance element, IBHoMObject bHoMObject)
         {
             bool ok = true;
-            Output<int, string> hostInfo = bHoMObject.HostInformation();
-            int hostId = hostInfo.Item1;
+            Output<long, string> hostInfo = bHoMObject.HostInformation();
+            long hostId = hostInfo.Item1;
             if (hostId == -1)
                 ok = element.Host == null || element.Host is ReferencePlane;
             else
@@ -434,9 +434,9 @@ namespace BH.Revit.Engine.Core
                 if (element.Host == null)
                     ok = false;
                 else if (element.Host is RevitLinkInstance)
-                    ok = hostId == element.HostFace?.LinkedElementId.IntegerValue && hostInfo.Item2 == (element.Document.GetElement(element.Host.GetTypeId()) as RevitLinkType)?.Name;
+                    ok = hostId == element.HostFace?.LinkedElementId.Value() && hostInfo.Item2 == (element.Document.GetElement(element.Host.GetTypeId()) as RevitLinkType)?.Name;
                 else
-                    ok = hostId == element.Host.Id.IntegerValue;
+                    ok = hostId == element.Host.Id.Value();
             }
 
             if (!ok)

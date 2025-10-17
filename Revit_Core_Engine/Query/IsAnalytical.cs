@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
             if (element == null || element.Category == null)
                 return false;
 
-            return AnalyticalCategories.Any(x => element.Category.Id.IntegerValue == (int)x);
+            return AnalyticalCategories.Any(x => element.Category.Id.Value() == (long)x);
         }
 
 

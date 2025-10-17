@@ -188,7 +188,7 @@ namespace BH.Revit.Engine.Core
 
             // Workset parameters
             // Filter for worksets
-            if (parameter.Id.IntegerValue == (int)BuiltInParameter.ELEM_PARTITION_PARAM)
+            if (parameter.Id.Value() == (int)BuiltInParameter.ELEM_PARTITION_PARAM)
             {
                 // Find an existing workset with a specified name if it exists
                 string worksetName = value as string;
@@ -245,7 +245,7 @@ namespace BH.Revit.Engine.Core
 
                             if (!double.IsNaN(dbl))
                             {
-                                if (parameter.Id.IntegerValue == (int)BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE)
+                                if (parameter.Id.Value() == (int)BuiltInParameter.STRUCTURAL_BEND_DIR_ANGLE)
                                     dbl = dbl.NormalizeAngleDomain();
 
                                 return parameter.Set(dbl);
@@ -258,12 +258,14 @@ namespace BH.Revit.Engine.Core
                         ElementId elementID = null;
 
                         if (value is int)
-                            elementID = new ElementId((int)value);
+                            elementID = Create.ElementId((int)value);
+                        else if (value is long)
+                            elementID = Create.ElementId((long)value);
                         else if (value is string)
                         {
                             int num;
                             if (int.TryParse((string)value, out num))
-                                elementID = new ElementId(num);
+                                elementID = Create.ElementId(num);
                         }
                         else if (value is IBHoMObject)
                         {
@@ -273,7 +275,7 @@ namespace BH.Revit.Engine.Core
                         {
                             int num;
                             if (int.TryParse(value.ToString(), out num))
-                                elementID = new ElementId(num);
+                                elementID = Create.ElementId(num);
                         }
 
                         if (elementID != null)

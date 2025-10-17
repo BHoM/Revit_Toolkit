@@ -32,7 +32,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
+
         [Description("Returns multiplier to be applied to achieve the conversion between internal Revit units and SI system used by BHoM." +
                      "\nFor example, for Length it will be 0.3048 (conversion from feet to metres).")]
         [Input("quantity", "Quantity for which the multiplier is to be found.")]
@@ -40,11 +40,7 @@ namespace BH.Revit.Engine.Core
         public static double ToSIMultiplier(this ForgeTypeId quantity)
         {
             // In case of unitless numbers
-#if REVIT2021
-            if (quantity == null)
-#else
             if (quantity == null || !UnitUtils.IsMeasurableSpec(quantity))
-#endif
                 return 1;
 
             string typeId = quantity.TypeId;
@@ -53,9 +49,9 @@ namespace BH.Revit.Engine.Core
 
             return m_ToSIMultipliers[typeId];
         }
-        
+
         /***************************************************/
-        
+
         [Description("Returns multiplier to be applied to achieve the conversion between SI system used by BHoM and internal Revit units." +
                      "\nFor example, for Length it will be 1/0.3048 (conversion from meters to feet).")]
         [Input("quantity", "Quantity for which the multiplier is to be found.")]
@@ -63,11 +59,7 @@ namespace BH.Revit.Engine.Core
         public static double FromSIMultiplier(this ForgeTypeId quantity)
         {
             // In case of unitless numbers
-#if REVIT2021
-            if (quantity == null)
-#else
             if (quantity == null || !UnitUtils.IsMeasurableSpec(quantity))
-#endif
                 return 1;
 
             string typeId = quantity.TypeId;

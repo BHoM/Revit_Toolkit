@@ -125,14 +125,14 @@ namespace BH.Revit.Engine.Core
                         openings.AddRange(ps.Select(x => new BH.oM.Physical.Elements.Void { Location = x }));
                     }
 
-                    foreach (FamilyInstance window in inserts.Where(x => x.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Windows))
+                    foreach (FamilyInstance window in inserts.Where(x => x.Category.Id.Value() == (int)BuiltInCategory.OST_Windows))
                     {
                         BH.oM.Physical.Elements.Window bHoMWindow = window.WindowFromRevit(wall, settings, refObjects);
                         if (bHoMWindow != null)
                             openings.Add(bHoMWindow);
                     }
 
-                    foreach (FamilyInstance door in inserts.Where(x => x.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Doors))
+                    foreach (FamilyInstance door in inserts.Where(x => x.Category.Id.Value() == (int)BuiltInCategory.OST_Doors))
                     {
                         BH.oM.Physical.Elements.Door bHoMDoor = door.DoorFromRevit(wall, settings, refObjects);
                         if (bHoMDoor != null)
@@ -160,7 +160,7 @@ namespace BH.Revit.Engine.Core
             
             ISurface location = null;
             if (curtainPanels == null || curtainPanels.Count == 0)
-                BH.Engine.Base.Compute.RecordError(String.Format("Processing of panels of Revit curtain wall failed. BHoM wall without location has been returned. Revit ElementId: {0}", wall.Id.IntegerValue));
+                BH.Engine.Base.Compute.RecordError(String.Format("Processing of panels of Revit curtain wall failed. BHoM wall without location has been returned. Revit ElementId: {0}", wall.Id.Value()));
             else if (curtainPanels.Count == 1)
                 location = curtainPanels[0].Location;
             else

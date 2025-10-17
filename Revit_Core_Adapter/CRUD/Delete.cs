@@ -106,7 +106,7 @@ namespace BH.Revit.Adapter.Core
                 }
             }
 
-            if (elementId == null || elementId.IntegerValue < 0)
+            if (elementId == null || elementId.Value() < 0)
                 return false;
 
             return Delete(elementId, document, false).Count() != 0;

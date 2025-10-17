@@ -23,17 +23,18 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
 using BH.Engine.Adapters.Revit;
+using BH.Engine.Base;
 using BH.Engine.Environment;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Base.Attributes;
 using BH.oM.Environment.Fragments;
 using BH.oM.Geometry;
-using BH.oM.Base.Attributes;
+using BH.Revit.Engine.Core.Objects;
 using System.Collections.Generic;
 using System.ComponentModel;
-using BH.Engine.Base;
-using BH.Revit.Engine.Core.Objects;
-using BH.oM.Adapters.Revit.Enums;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -69,7 +70,7 @@ namespace BH.Revit.Engine.Core
             };
 
             //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment() { ElementID = familyInstance.Id.IntegerValue.ToString(), TypeName = familyInstance.FamilyTypeFullName() };
+            OriginContextFragment originContext = new OriginContextFragment() { ElementID = familyInstance.Id.Value().ToString(), TypeName = familyInstance.FamilyTypeFullName() };
             originContext.SetProperties(familyInstance.Symbol, settings.MappingSettings);
             originContext.SetProperties(familyInstance, settings.MappingSettings);
             panel.Fragments.Add(originContext);
@@ -131,7 +132,7 @@ namespace BH.Revit.Engine.Core
 
             CeilingType ceilingType = ceiling.Document.GetElement(ceiling.GetTypeId()) as CeilingType;
             BH.oM.Physical.Constructions.Construction construction = ceilingType.ConstructionFromRevit(null, settings, refObjects);
-            
+
             panels = new List<oM.Environment.Elements.Panel>();
             foreach (PlanarSurface surface in surfaces.Keys)
             {
@@ -143,7 +144,7 @@ namespace BH.Revit.Engine.Core
                 };
 
                 //Set ExtendedProperties
-                OriginContextFragment originContext = new OriginContextFragment() { ElementID = ceiling.Id.IntegerValue.ToString(), TypeName = ceiling.FamilyTypeFullName() };
+                OriginContextFragment originContext = new OriginContextFragment() { ElementID = ceiling.Id.Value().ToString(), TypeName = ceiling.FamilyTypeFullName() };
                 originContext.SetProperties(ceilingType, settings.MappingSettings);
                 originContext.SetProperties(ceiling, settings.MappingSettings);
                 panel.AddFragment(originContext);
@@ -174,7 +175,7 @@ namespace BH.Revit.Engine.Core
                 refObjects.AddOrReplace(ceiling.Id, panel);
                 panels.Add(panel);
             }
-            
+
             return panels;
         }
 
@@ -205,7 +206,7 @@ namespace BH.Revit.Engine.Core
 
             FloorType floorType = floor.FloorType;
             BH.oM.Physical.Constructions.Construction construction = floorType.ConstructionFromRevit(null, settings, refObjects);
-            
+
             panels = new List<oM.Environment.Elements.Panel>();
             foreach (PlanarSurface surface in surfaces.Keys)
             {
@@ -217,7 +218,7 @@ namespace BH.Revit.Engine.Core
                 };
 
                 //Set ExtendedProperties
-                OriginContextFragment originContext = new OriginContextFragment() { ElementID = floor.Id.IntegerValue.ToString(), TypeName = floor.FamilyTypeFullName() };
+                OriginContextFragment originContext = new OriginContextFragment() { ElementID = floor.Id.Value().ToString(), TypeName = floor.FamilyTypeFullName() };
                 originContext.SetProperties(floorType, settings.MappingSettings);
                 originContext.SetProperties(floor, settings.MappingSettings);
                 panel.AddFragment(originContext);
@@ -249,7 +250,7 @@ namespace BH.Revit.Engine.Core
 
                 panels.Add(panel);
             }
-            
+
             return panels;
         }
 
@@ -267,17 +268,17 @@ namespace BH.Revit.Engine.Core
             List<oM.Environment.Elements.Panel> panels = refObjects.GetValues<oM.Environment.Elements.Panel>(roofBase.Id);
             if (panels != null && panels.Count > 0)
                 return panels;
-            
+
             Dictionary<PlanarSurface, List<PlanarSurface>> surfaces;
             SurfaceCache cache = refObjects.GetValue<SurfaceCache>(roofBase.Id.SurfaceCacheKey());
             if (cache != null)
                 surfaces = cache.Surfaces;
             else
                 surfaces = roofBase.PanelSurfaces(roofBase.InsertsToIgnore(Discipline.Environmental), settings);
-            
+
             if (surfaces == null)
                 return panels;
-            
+
             BH.oM.Physical.Constructions.Construction construction = roofBase.RoofType.ConstructionFromRevit(null, settings, refObjects);
 
             panels = new List<oM.Environment.Elements.Panel>();
@@ -291,7 +292,7 @@ namespace BH.Revit.Engine.Core
                 };
 
                 //Set ExtendedProperties
-                OriginContextFragment originContext = new OriginContextFragment() { ElementID = roofBase.Id.IntegerValue.ToString(), TypeName = roofBase.FamilyTypeFullName() };
+                OriginContextFragment originContext = new OriginContextFragment() { ElementID = roofBase.Id.Value().ToString(), TypeName = roofBase.FamilyTypeFullName() };
                 originContext.SetProperties(roofBase.RoofType, settings.MappingSettings);
                 originContext.SetProperties(roofBase, settings.MappingSettings);
                 panel.AddFragment(originContext);
@@ -323,7 +324,7 @@ namespace BH.Revit.Engine.Core
 
                 panels.Add(panel);
             }
-            
+
             return panels;
         }
 
@@ -356,7 +357,7 @@ namespace BH.Revit.Engine.Core
                 return panels;
 
             BH.oM.Physical.Constructions.Construction constrtuction = wall.WallType.ConstructionFromRevit(null, settings, refObjects);
-            
+
             panels = new List<oM.Environment.Elements.Panel>();
             foreach (PlanarSurface surface in surfaces.Keys)
             {
@@ -368,7 +369,7 @@ namespace BH.Revit.Engine.Core
                 };
 
                 //Set ExtendedProperties
-                OriginContextFragment originContext = new OriginContextFragment() { ElementID = wall.Id.IntegerValue.ToString(), TypeName = wall.FamilyTypeFullName() };
+                OriginContextFragment originContext = new OriginContextFragment() { ElementID = wall.Id.Value().ToString(), TypeName = wall.FamilyTypeFullName() };
                 originContext.SetProperties(wall.WallType, settings.MappingSettings);
                 originContext.SetProperties(wall, settings.MappingSettings);
                 panel.AddFragment(originContext);
@@ -400,7 +401,7 @@ namespace BH.Revit.Engine.Core
 
                 panels.Add(panel);
             }
-            
+
             return panels;
         }
 
@@ -425,14 +426,18 @@ namespace BH.Revit.Engine.Core
             //Get the geometry Curve
             ICurve curve = null;
             if (energyAnalysisSurface != null)
+#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
                 curve = energyAnalysisSurface.GetPolyloop().FromRevit();
+#else
+                curve = energyAnalysisSurface.GetPolyloops().FirstOrDefault()?.FromRevit();
+#endif
 
             //Get the name and element type
             Element element = energyAnalysisSurface.Document.Element(energyAnalysisSurface.CADObjectUniqueId, energyAnalysisSurface.CADLinkUniqueId);
             ElementType elementType = null;
             if (element == null)
                 return panel;
-            
+
             elementType = element.Document.GetElement(element.GetTypeId()) as ElementType;
             panel = new oM.Environment.Elements.Panel()
             {
@@ -441,7 +446,7 @@ namespace BH.Revit.Engine.Core
             };
 
             //Set ExtendedProperties
-            OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.IntegerValue.ToString(), TypeName = element.FamilyTypeFullName() };
+            OriginContextFragment originContext = new OriginContextFragment() { ElementID = element.Id.Value().ToString(), TypeName = element.FamilyTypeFullName() };
             originContext.SetProperties(element, settings.MappingSettings);
             originContext.SetProperties(elementType, settings.MappingSettings);
             panel.AddFragment(originContext);

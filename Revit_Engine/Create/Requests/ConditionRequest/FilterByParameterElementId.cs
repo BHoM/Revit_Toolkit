@@ -43,7 +43,7 @@ namespace BH.Engine.Adapters.Revit
         [Output("request", "Created request.")]
         public static ConditionRequest FilterByParameterElementId(string parameterName, IBHoMObject idElement)
         {
-            int elementId = idElement.ElementId();
+            long elementId = idElement.ElementId();
             if (elementId == -1)
             {
                 BH.Engine.Base.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", idElement.BHoM_Guid));

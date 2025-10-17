@@ -23,7 +23,6 @@
 using Autodesk.Revit.DB;
 using BH.oM.Adapters.Revit.Parameters;
 using BH.oM.Base.Attributes;
-using System;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
@@ -52,7 +51,7 @@ namespace BH.Revit.Engine.Core
         [Output("identifiers", "Input Revit family's identification information in a form of RevitIdentifiers fragment.")]
         public static RevitIdentifiers Identifiers(this Family family)
         {
-            return new RevitIdentifiers(family.UniqueId, family.Id.IntegerValue, family.FamilyCategory.Name, family.Name);
+            return new RevitIdentifiers(family.UniqueId, family.Id.Value(), family.FamilyCategory.Name, family.Name);
         }
 
         /***************************************************/
@@ -62,7 +61,7 @@ namespace BH.Revit.Engine.Core
         [Output("identifiers", "Input Revit graphics style's identification information in a form of RevitIdentifiers fragment.")]
         public static RevitIdentifiers Identifiers(this GraphicsStyle graphicsStyle)
         {
-            return new RevitIdentifiers(graphicsStyle.UniqueId, graphicsStyle.Id.IntegerValue, graphicsStyle.GraphicsStyleCategory?.Parent?.Name ?? "");
+            return new RevitIdentifiers(graphicsStyle.UniqueId, graphicsStyle.Id.Value(), graphicsStyle.GraphicsStyleCategory?.Parent?.Name ?? "");
         }
 
         /***************************************************/
@@ -72,7 +71,7 @@ namespace BH.Revit.Engine.Core
         [Output("identifiers", "Input Revit element type's identification information in a form of RevitIdentifiers fragment.")]
         public static RevitIdentifiers Identifiers(this ElementType elementType)
         {
-            return new RevitIdentifiers(elementType.UniqueId, elementType.Id.IntegerValue, elementType.Category?.Name, elementType.FamilyName, elementType.Name, elementType.Id.IntegerValue);
+            return new RevitIdentifiers(elementType.UniqueId, elementType.Id.Value(), elementType.Category?.Name, elementType.FamilyName, elementType.Name, elementType.Id.Value());
         }
 
         /***************************************************/
@@ -88,10 +87,10 @@ namespace BH.Revit.Engine.Core
             string categoryName = "";
             string familyName = "";
             string familyTypeName = "";
-            int familyTypeId = -1;
+            long familyTypeId = -1;
             string workset = "";
-            int ownerViewId = -1;
-            int parentElementId = -1;
+            long ownerViewId = -1;
+            long parentElementId = -1;
             string linkPath = "";
 
             Parameter parameter = element.get_Parameter(BuiltInParameter.ELEM_CATEGORY_PARAM);
@@ -108,7 +107,7 @@ namespace BH.Revit.Engine.Core
 
             parameter = element.get_Parameter(BuiltInParameter.SYMBOL_ID_PARAM);
             if (parameter != null)
-                int.TryParse(parameter.AsValueString(), out familyTypeId);
+                long.TryParse(parameter.AsValueString(), out familyTypeId);
 
             if (element.Document.IsWorkshared)
             {
@@ -118,7 +117,7 @@ namespace BH.Revit.Engine.Core
             }
 
             if (element.ViewSpecific)
-                ownerViewId = element.OwnerViewId.IntegerValue;
+                ownerViewId = element.OwnerViewId.Value();
 
             if (element is FamilyInstance)
             {
@@ -126,14 +125,14 @@ namespace BH.Revit.Engine.Core
                 Element parentElement = famInstance.SuperComponent;
                 if (parentElement != null)
                 {
-                    parentElementId = parentElement.Id.IntegerValue;
+                    parentElementId = parentElement.Id.Value();
                 }
             }
 
             if (element.Document.IsLinked)
                 linkPath = element.Document.Title;
 
-            return new RevitIdentifiers(element.UniqueId, element.Id.IntegerValue, categoryName, familyName, familyTypeName, familyTypeId, workset, ownerViewId, parentElementId, linkPath);
+            return new RevitIdentifiers(element.UniqueId, element.Id.Value(), categoryName, familyName, familyTypeName, familyTypeId, workset, ownerViewId, parentElementId, linkPath);
         }
 
         /***************************************************/

@@ -108,12 +108,12 @@ namespace BH.Revit.Engine.Core
                 IntersectionResult ir2 = face?.Project(end);
                 if (ir1 == null || ir2 == null)
                 {
-                    BH.Engine.Base.Compute.RecordError($"Location update failed: the new location line used on update of a family instance could not be placed on its host face. BHoM_Guid: {instance.BHoM_Guid} ElementId: {element.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordError($"Location update failed: the new location line used on update of a family instance could not be placed on its host face. BHoM_Guid: {instance.BHoM_Guid} ElementId: {element.Id.Value()}");
                     return false;
                 }
 
                 if (ir1.Distance > settings.DistanceTolerance || ir2.Distance > settings.DistanceTolerance)
-                    BH.Engine.Base.Compute.RecordWarning($"The location line used on update of a family instance has been snapped to its host face. BHoM_Guid: {instance.BHoM_Guid} ElementId: {element.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordWarning($"The location line used on update of a family instance has been snapped to its host face. BHoM_Guid: {instance.BHoM_Guid} ElementId: {element.Id.Value()}");
 
                 start = ir1.XYZPoint;
                 end = ir2.XYZPoint;
@@ -145,7 +145,7 @@ namespace BH.Revit.Engine.Core
         [Output("success", "True if location of the input Revit FamilyInstance has been successfully set.")]
         public static bool SetLocation(this FamilyInstance element, Column column, RevitSettings settings)
         {
-            if (!(typeof(Column).BuiltInCategories().Contains((BuiltInCategory)element.Category.Id.IntegerValue)))
+            if (!(typeof(Column).BuiltInCategories().Contains((BuiltInCategory)element.Category.Id.Value())))
                 return false;
 
             oM.Geometry.Line columnLine = column.VerticalElementLocation(settings);
@@ -217,7 +217,7 @@ namespace BH.Revit.Engine.Core
         [Output("success", "True if location of the input Revit FamilyInstance has been successfully set.")]
         public static bool SetLocation(this FamilyInstance element, IFramingElement framingElement, RevitSettings settings)
         {
-            if (!(typeof(IFramingElement).BuiltInCategories().Contains((BuiltInCategory)element.Category.Id.IntegerValue)))
+            if (!(typeof(IFramingElement).BuiltInCategories().Contains((BuiltInCategory)element.Category.Id.Value())))
                 return false;
 
             double rotation = 0;
@@ -266,7 +266,7 @@ namespace BH.Revit.Engine.Core
 
             if (1 - Math.Abs(locationLine.Direction().DotProduct(Vector.ZAxis)) > settings.AngleTolerance)
             {
-                BH.Engine.Base.Compute.RecordWarning($"Nonvertical pile location is currently not supported. Pile ElementId: {element.Id.IntegerValue}");
+                BH.Engine.Base.Compute.RecordWarning($"Nonvertical pile location is currently not supported. Pile ElementId: {element.Id.Value()}");
                 return false;
             }
 
@@ -285,7 +285,7 @@ namespace BH.Revit.Engine.Core
                 }
                 catch (Exception ex)
                 {
-                    BH.Engine.Base.Compute.RecordWarning($"XY location could not be updated because element location was blocked. Please check if the element is not pinned etc. Pile ElementId: {element.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordWarning($"XY location could not be updated because element location was blocked. Please check if the element is not pinned etc. Pile ElementId: {element.Id.Value()}");
                     updated = false;
                 }
             }
@@ -293,7 +293,7 @@ namespace BH.Revit.Engine.Core
             Level level = element.Document.GetElement(element.LevelId) as Level;
             if (level == null)
             {
-                BH.Engine.Base.Compute.RecordWarning($"Cannot update location of a pile with valid reference level. Pile ElementId: {element.Id.IntegerValue}");
+                BH.Engine.Base.Compute.RecordWarning($"Cannot update location of a pile with valid reference level. Pile ElementId: {element.Id.Value()}");
                 return false;
             }
 
@@ -510,7 +510,7 @@ namespace BH.Revit.Engine.Core
                     {
                         List<Solid> hostSolids = element.Host.Solids(new Options());
                         if (hostSolids != null && hostSolids.All(x => !x.IsContaining(newLocation, settings.DistanceTolerance)))
-                            BH.Engine.Base.Compute.RecordWarning($"The new location point used to update the location of a family instance was outside of the host solid, the point has been snapped to the host. ElementId: {element.Id.IntegerValue}");
+                            BH.Engine.Base.Compute.RecordWarning($"The new location point used to update the location of a family instance was outside of the host solid, the point has been snapped to the host. ElementId: {element.Id.Value()}");
                     }
                     else
                     {
@@ -519,7 +519,7 @@ namespace BH.Revit.Engine.Core
                             Autodesk.Revit.DB.Plane p = ((ReferencePlane)element.Host).GetPlane();
                             if (p.Origin.DistanceTo(newLocation) > settings.DistanceTolerance && Math.Abs((p.Origin - newLocation).Normalize().DotProduct(p.Normal)) > settings.AngleTolerance)
                             {
-                                BH.Engine.Base.Compute.RecordError($"Location update failed: the new location point used on update of a family instance does not lie in plane with its reference plane. ElementId: {element.Id.IntegerValue}");
+                                BH.Engine.Base.Compute.RecordError($"Location update failed: the new location point used on update of a family instance does not lie in plane with its reference plane. ElementId: {element.Id.Value()}");
                                 return false;
                             }
                         }
@@ -549,7 +549,7 @@ namespace BH.Revit.Engine.Core
                             IntersectionResult ir = face?.Project(toProject);
                             if (ir == null)
                             {
-                                BH.Engine.Base.Compute.RecordError($"Location update failed: the new location point used on update of a family instance could not be placed on its host face. ElementId: {element.Id.IntegerValue}");
+                                BH.Engine.Base.Compute.RecordError($"Location update failed: the new location point used on update of a family instance could not be placed on its host face. ElementId: {element.Id.Value()}");
                                 return false;
                             }
 
@@ -561,7 +561,7 @@ namespace BH.Revit.Engine.Core
                                 newLocation = linkTransform.OfPoint(newLocation);
 
                             if (ir.Distance > settings.DistanceTolerance)
-                                BH.Engine.Base.Compute.RecordWarning($"The location point used on update of a family instance has been snapped to its host face. ElementId: {element.Id.IntegerValue}");
+                                BH.Engine.Base.Compute.RecordWarning($"The location point used on update of a family instance has been snapped to its host face. ElementId: {element.Id.Value()}");
                         }
                     }
                 }
@@ -591,7 +591,7 @@ namespace BH.Revit.Engine.Core
                     }
 
                     if (1 - Math.Abs(revitNormal.DotProduct(bHoMNormal)) > settings.AngleTolerance)
-                        BH.Engine.Base.Compute.RecordWarning($"The orientation applied to the family instance on update has different normal than the original one. Only in-plane rotation has been applied, the orientation out of plane has been ignored. ElementId: {element.Id.IntegerValue}");
+                        BH.Engine.Base.Compute.RecordWarning($"The orientation applied to the family instance on update has different normal than the original one. Only in-plane rotation has been applied, the orientation out of plane has been ignored. ElementId: {element.Id.Value()}");
 
                     double angle = transform.BasisX.AngleOnPlaneTo(newX, revitNormal);
                     if (Math.Abs(angle) > settings.AngleTolerance)

@@ -42,7 +42,7 @@ namespace BH.Revit.Adapter.Core
             Document document = this.Document;
             RevitSettings settings = this.RevitSettings.DefaultIfNull();
 
-            Dictionary<Guid, List<int>> refObjects = new Dictionary<Guid, List<int>>();
+            Dictionary<Guid, List<long>> refObjects = new Dictionary<Guid, List<long>>();
             List<IBHoMObject> created = new List<IBHoMObject>();
             foreach (IBHoMObject obj in bHoMObjects)
             {
@@ -55,7 +55,7 @@ namespace BH.Revit.Adapter.Core
 
         /***************************************************/
 
-        public static Element Create(IBHoMObject bHoMObject, Document document, RevitSettings settings, Dictionary<Guid, List<int>> refObjects)
+        public static Element Create(IBHoMObject bHoMObject, Document document, RevitSettings settings, Dictionary<Guid, List<long>> refObjects)
         {
             if (bHoMObject == null)
             {
@@ -67,12 +67,12 @@ namespace BH.Revit.Adapter.Core
             {
                 Element element = bHoMObject.IToRevit(document, settings, refObjects);
                 bHoMObject.SetIdentifiers(element);
-                
+
                 //Assign Tags
                 string tagsParameterName = null;
                 if (settings != null)
                     tagsParameterName = settings.MappingSettings?.TagsParameter;
-                
+
                 if (!string.IsNullOrEmpty(tagsParameterName))
                     element.SetTags(bHoMObject, tagsParameterName);
 

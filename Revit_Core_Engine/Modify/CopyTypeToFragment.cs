@@ -49,7 +49,7 @@ namespace BH.Revit.Engine.Core
             if (type != null)
                 target.Fragments.Add(type.TypeFragmentFromRevit(settings, refObjects));
             else
-                BH.Engine.Base.Compute.RecordWarning($"Revit element type could not be extracted from the Revit element, so it has been skipped on convert. Element id: {source.Id.IntegerValue}");
+                BH.Engine.Base.Compute.RecordWarning($"Revit element type could not be extracted from the Revit element, so it has been skipped on convert. Element id: {source.Id.Value()}");
         }
 
         /***************************************************/

@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
                 case StorageType.Double:
                     return parameter.AsDouble().ToSI(parameter.Definition.GetDataType());
                 case StorageType.ElementId:
-                    return parameter.AsElementId()?.IntegerValue;
+                    return parameter.AsElementId()?.Value();
                 case StorageType.Integer:
                     if (parameter.IsBooleanParameter())
                         return parameter.AsInteger() == 1;

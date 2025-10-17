@@ -41,13 +41,14 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToCurveElement(BH.oM.Adapters.Revit.Elements.ModelInstance, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Adapters.Revit.Elements.ModelInstance to a Revit CurveElement.")]
         [Input("modelInstance", "BH.oM.Adapters.Revit.Elements.ModelInstance to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("element", "Revit CurveElement resulting from converting the input BH.oM.Adapters.Revit.Elements.ModelInstance.")]
-        public static CurveElement ToCurveElement(this ModelInstance modelInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static CurveElement ToCurveElement(this ModelInstance modelInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             CurveElement curveElement = refObjects.GetValue<CurveElement>(document, modelInstance.BHoM_Guid);
             if (curveElement != null)
@@ -94,13 +95,14 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToCurveElement(BH.oM.Adapters.Revit.Elements.DraftingInstance, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Adapters.Revit.Elements.DraftingInstance to a Revit CurveElement.")]
         [Input("draftingInstance", "BH.oM.Adapters.Revit.Elements.DraftingInstance to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("element", "Revit CurveElement resulting from converting the input BH.oM.Adapters.Revit.Elements.DraftingInstance.")]
-        public static CurveElement ToCurveElement(this DraftingInstance draftingInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static CurveElement ToCurveElement(this DraftingInstance draftingInstance, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             CurveElement curveElement = refObjects.GetValue<CurveElement>(document, draftingInstance.BHoM_Guid);
             if (curveElement != null)
