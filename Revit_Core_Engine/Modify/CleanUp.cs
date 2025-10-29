@@ -64,8 +64,8 @@ namespace BH.Revit.Engine.Core
             }
             catch (Exception ex)
             {
-                BH.Engine.Base.Compute.RecordWarning($"CleanUp operation failed. Error: {ex.Message}. Returning empty list.");
-                return new List<Solid>();
+                BH.Engine.Base.Compute.RecordWarning($"CleanUp operation failed. Error: {ex.Message}. Returning input solids.");
+                return solids;
             }
         }
 
