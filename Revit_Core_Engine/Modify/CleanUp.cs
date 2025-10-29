@@ -56,14 +56,7 @@ namespace BH.Revit.Engine.Core
                     Solid result = solids[0];
                     foreach (Solid solid in solids.Skip(1))
                     {
-                        try
-                        {
-                            result = BooleanOperationsUtils.ExecuteBooleanOperation(result, solid, BooleanOperationsType.Union);
-                        }
-                        catch (Exception ex)
-                        {
-                            BH.Engine.Base.Compute.RecordWarning($"Boolean union operation failed during CleanUp. Error: {ex.Message}. The operation will continue with the remaining solids.");
-                        }
+                        result = BooleanOperationsUtils.ExecuteBooleanOperation(result, solid, BooleanOperationsType.Union);
                     }
 
                     return SolidUtils.SplitVolumes(result).ToList();
