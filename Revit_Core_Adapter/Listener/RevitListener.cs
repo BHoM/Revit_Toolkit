@@ -469,7 +469,7 @@ namespace BH.Revit.Adapter.Core
 
             List<PushButton> infoButtons = panel.AddStackedItems(bHoMInfoButton, bHoMWebsiteButton, bHoMVersionButton).Cast<PushButton>().ToList();
             infoButtons[0].ToolTip = "Visit the BHoM Wiki page.";
-            infoButtons[0].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info32.png")));
+            infoButtons[0].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info16.png")));
             infoButtons[0].Enabled = true;
             infoButtons[0].Visible = true;
             infoButtons[0].AvailabilityClassName = alwaysAvailable;
