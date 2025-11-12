@@ -20,12 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Diagnostics;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using BH.Engine.UI;
 using BH.oM.UI;
+using System.Diagnostics;
 
 namespace BH.Revit.Adapter.Core
 {
@@ -40,7 +40,14 @@ namespace BH.Revit.Adapter.Core
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             BHoMInformation bHoMInformation = Query.Information();
-            Process.Start(bHoMInformation.WikiLink);
+
+            ProcessStartInfo processInfo = new ProcessStartInfo
+            {
+                UseShellExecute = true,
+                FileName = bHoMInformation.WikiLink,
+            };
+
+            Process.Start(processInfo);
             return Result.Succeeded;
         }
 
