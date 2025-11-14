@@ -23,6 +23,7 @@
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using System.Diagnostics;
 
 namespace BH.Revit.Adapter.Core
 {
@@ -36,7 +37,13 @@ namespace BH.Revit.Adapter.Core
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            System.Diagnostics.Process.Start(BH.Engine.Adapters.Revit.Query.RevitToolkitWiki());
+            ProcessStartInfo processInfo = new ProcessStartInfo
+            {
+                UseShellExecute = true,
+                FileName = BH.Engine.Adapters.Revit.Query.RevitToolkitWiki(),
+            };
+
+            Process.Start(processInfo);
             return Result.Succeeded;
         }
 
