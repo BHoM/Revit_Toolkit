@@ -61,11 +61,16 @@ namespace BH.Revit.Engine.Core
                 Curve curve = lc?.Curve;
                 locationPoint = curve?.Evaluate(0.5, true); // Midpoint of the curve
             }
+            // Handle Instance
+            else if (locationPoint == null && element is Instance instance)
+            {
+                locationPoint = instance.GetTotalTransform().Origin;
+            }
 
             // Fallback to bounding box center
             if (locationPoint == null)
             {
-                BoundingBoxXYZ bbox = element.PhysicalBounds();
+                BoundingBoxXYZ bbox = element.PhysicalBounds() ?? element.get_BoundingBox(null);
                 if (bbox != null)
                     locationPoint = (bbox.Max + bbox.Min) / 2;
             }
