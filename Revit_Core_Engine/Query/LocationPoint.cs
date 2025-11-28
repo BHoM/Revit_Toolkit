@@ -35,7 +35,7 @@ namespace BH.Revit.Engine.Core
         [Description("Returns the 3D location point of a given Revit element. The method determines the most appropriate point based on the element type, such as the spatial element calculation point, the element's location point, the midpoint of its location curve, or the center of its bounding box.")]
         [Input("element", "The Revit element from which to extract the location point.")]
         [Input("useRoomCalculationPoint", "If true and the element is a FamilyInstance with a spatial element calculation point, use that point as the location.")]
-        [Output("locationPoint", "The 3D point representing the location of the input Revit element")]
+        [Output("locationPoint", "The 3D point representing the location of the input Revit element.")]
         public static XYZ LocationPoint(this Element element, bool useRoomCalculationPoint = false)
         {
             if (element == null)
@@ -61,11 +61,16 @@ namespace BH.Revit.Engine.Core
                 Curve curve = lc?.Curve;
                 locationPoint = curve?.Evaluate(0.5, true); // Midpoint of the curve
             }
+            // Handle Instance
+            else if (locationPoint == null && element is Instance instance)
+            {
+                locationPoint = instance.GetTotalTransform().Origin;
+            }
 
             // Fallback to bounding box center
             if (locationPoint == null)
             {
-                BoundingBoxXYZ bbox = element.PhysicalBounds();
+                BoundingBoxXYZ bbox = element.PhysicalBounds() ?? element.get_BoundingBox(null);
                 if (bbox != null)
                     locationPoint = (bbox.Max + bbox.Min) / 2;
             }
