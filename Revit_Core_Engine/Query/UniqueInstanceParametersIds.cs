@@ -47,21 +47,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Returns unique type parameter ids for all elements of category.")]
-        [Input("document", "Document where elements belong.")]
-        [Input("category", "Category of the elements.")]
-        [Input("includeNotInstantinated", "True to include all element types of category from the model, false for only instanited.")]
-        [Output("parameterIds", "Unique parameter ids of types that belong to the input document and category.")]
-        public static HashSet<long> UniqueTypeParametersIds(this Document document, BuiltInCategory category, bool includeNotInstantinated = false)
-        {
-            if (includeNotInstantinated)
-                return UniqueInstanceParametersIds(new FilteredElementCollector(document).OfCategory(category).WhereElementIsElementType());
-            else
-                return UniqueTypeParametersIds(new FilteredElementCollector(document).OfCategory(category).WhereElementIsNotElementType());
-        }
-
-        /***************************************************/
-
         [Description("Returns unique instance parameter ids for the collection of the elements.")]
         [Input("elementsFromOneDocument", "Elements from the same document to get the unique parameter ids from.")]
         [Output("parameterIds", "Unique ids of instance parameters for the input collection of the elements.")]
@@ -79,31 +64,6 @@ namespace BH.Revit.Engine.Core
             {
                 List<Element> elementsOfCat = elementsByCatPair.Value;
                 parameterIds.UnionWith(elementsOfCat.UniqueParametersIds());
-            }
-
-            return parameterIds;
-        }
-
-        /***************************************************/
-
-        [Description("Returns unique type parameter ids for the collection of the elements.")]
-        [Input("elementsFromOneDocument", "Elements from the same document to get the unique type parameter ids from.")]
-        [Output("parameterIds", "Unique ids of type parameters for the input collection of elements.")]
-        public static HashSet<long> UniqueTypeParametersIds(this IEnumerable<Element> elementsFromOneDocument)
-        {
-            HashSet<long> parameterIds = new HashSet<long>();
-
-            if (elementsFromOneDocument == null || !elementsFromOneDocument.Any())
-                return parameterIds;
-
-            Document doc = elementsFromOneDocument.FirstOrDefault().Document;
-            Dictionary<ElementId, List<Element>> elementsByCategory = elementsFromOneDocument.GroupBy(x => x.Category.Id).ToDictionary(x => x.Key, x => x.ToList());
-
-            foreach (KeyValuePair<ElementId, List<Element>> elementsByCatPair in elementsByCategory)
-            {
-                List<Element> elementsOfCat = elementsByCatPair.Value;
-                IEnumerable<Element> elementTypes = elementsOfCat.UniqueTypeIds().Select(x => doc.GetElement(x.ToElementId()));
-                parameterIds.UnionWith(elementTypes.UniqueParametersIds());
             }
 
             return parameterIds;
