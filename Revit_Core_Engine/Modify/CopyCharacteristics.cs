@@ -125,7 +125,7 @@ namespace BH.Revit.Engine.Core
 
         private static void CopyCharacteristics(this BH.oM.Physical.Materials.IMaterialProperties toMaterial, Material fromMaterial)
         {
-            BH.Engine.Base.Compute.RecordWarning(String.Format("Copying characteristics to BHoM material fragment of type {0} is currently not supported. Revit ElementId: {1}", toMaterial.GetType().Name, fromMaterial.Id.IntegerValue));
+            BH.Engine.Base.Compute.RecordWarning(String.Format("Copying characteristics to BHoM material fragment of type {0} is currently not supported. Revit ElementId: {1}", toMaterial.GetType().Name, fromMaterial.Id.Value()));
         }
 
         /***************************************************/

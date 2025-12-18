@@ -97,7 +97,7 @@ namespace BH.Revit.Engine.Core
                         materialFragment = revitMaterial.MaterialFragmentFromRevit(materialGrade, settings, refObjects);
                         if (materialFragment == null)
                         {
-                            BH.Engine.Base.Compute.RecordWarning("There is a structural layer in wall/floor type without material assigned. A default empty material is returned. ElementId: " + hostObjAttributes.Id.IntegerValue.ToString());
+                            BH.Engine.Base.Compute.RecordWarning("There is a structural layer in wall/floor type without material assigned. A default empty material is returned. ElementId: " + hostObjAttributes.Id.Value().ToString());
                             materialFragment = Autodesk.Revit.DB.Structure.StructuralMaterialType.Undefined.EmptyMaterialFragment(materialGrade);
                         }
                     }
@@ -113,7 +113,7 @@ namespace BH.Revit.Engine.Core
                 if (composite)
                     hostObjAttributes.CompositePanelWarning();
                 else if (thickness == 0)
-                    BH.Engine.Base.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", hostObjAttributes.Id.IntegerValue));
+                    BH.Engine.Base.Compute.RecordWarning(string.Format("A zero thickness panel is created. Element type Id: {0}", hostObjAttributes.Id.Value()));
             }
             else
                 BH.Engine.Base.Compute.RecordWarning(String.Format("Revit panel type does not contain any layers (possibly it is a curtain panel). A BHoM panel type with zero thickness and no material is returned. Revit ElementId: {0}", hostObjAttributes.Id));

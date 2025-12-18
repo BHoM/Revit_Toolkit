@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
             if (document == null)
                 return null;
 
-            List<int> elementIds = new List<int>();
+            List<long> elementIds = new List<long>();
             List<string> uniqueIds = new List<string>();
             if (idObjects != null && idObjects.Count != 0)
             {
@@ -52,11 +52,13 @@ namespace BH.Revit.Engine.Core
                 {
                     if (obj is int)
                         elementIds.Add((int)obj);
+                    if (obj is long)
+                        elementIds.Add((long)obj);
                     else if (obj is string)
                     {
                         string stringId = (string)obj;
-                        int id;
-                        if (int.TryParse(stringId, out id))
+                        long id;
+                        if (long.TryParse(stringId, out id))
                             elementIds.Add(id);
                         else
                             uniqueIds.Add(stringId);
@@ -65,7 +67,7 @@ namespace BH.Revit.Engine.Core
             }
             else
                 return ids;
-            
+
             HashSet<ElementId> result = new HashSet<ElementId>();
             result.UnionWith(document.ElementIdsByInts(elementIds, ids));
             result.UnionWith(document.ElementIdsByUniqueIds(uniqueIds, ids));

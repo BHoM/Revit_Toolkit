@@ -60,7 +60,7 @@ namespace BH.Revit.Engine.Core
                     return null;
 
                 bool invert = comparisonType == ValueComparisonType.NotEqualTo;
-                bool equal = id.IntegerValue == value.AsElementId()?.IntegerValue;
+                bool equal = id.Value() == value.AsElementId()?.Value();
                 return equal != invert;
             }
             else if (referenceValue is Element e)
@@ -69,7 +69,7 @@ namespace BH.Revit.Engine.Core
                     return null;
 
                 bool invert = comparisonType == ValueComparisonType.NotEqualTo;
-                bool equal = e.Id.IntegerValue == value.AsElementId()?.IntegerValue && e.Document.PathName == value.Element?.Document.PathName;
+                bool equal = e.Id.Value() == value.AsElementId()?.Value() && e.Document.PathName == value.Element?.Document.PathName;
                 return equal != invert;
             }
             else

@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -42,21 +43,29 @@ namespace BH.Revit.Engine.Core
         [Output("clean", "Cleaned up solids.")]
         public static List<Solid> CleanUp(this List<Solid> solids)
         {
-            solids = solids.Where(x => x.Volume > 1e-6).ToList();
-
-            if (solids.Count == 0)
-                return new List<Solid>();
-            if (solids.Count == 1)
-                return SolidUtils.SplitVolumes(solids[0]).ToList();
-            else
+            try
             {
-                Solid result = solids[0];
-                foreach (Solid solid in solids.Skip(1))
-                {
-                    result = BooleanOperationsUtils.ExecuteBooleanOperation(result, solid, BooleanOperationsType.Union);
-                }
+                solids = solids.Where(x => x.Volume > 1e-6).ToList();
 
-                return SolidUtils.SplitVolumes(result).ToList();
+                if (solids.Count == 0)
+                    return new List<Solid>();
+                if (solids.Count == 1)
+                    return SolidUtils.SplitVolumes(solids[0]).ToList();
+                else
+                {
+                    Solid result = solids[0];
+                    foreach (Solid solid in solids.Skip(1))
+                    {
+                        result = BooleanOperationsUtils.ExecuteBooleanOperation(result, solid, BooleanOperationsType.Union);
+                    }
+
+                    return SolidUtils.SplitVolumes(result).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                BH.Engine.Base.Compute.RecordWarning($"CleanUp operation failed. Error: {ex.Message}. Returning input solids.");
+                return solids;
             }
         }
 

@@ -36,13 +36,13 @@ namespace BH.Revit.Engine.Core
         [Description("Extracts element types of the input elements and returns a set of unique integer values of their ElementIds.")]
         [Input("elementsFromOneDocument", "Elements to get the unique types from. Should belong to a single document to avoid ambiguity between same ElementIds in different documents.")]
         [Output("ids", "Unique element type ids for the collection of the elements.")]
-        public static HashSet<int> UniqueTypeIds(this IEnumerable<Element> elementsFromOneDocument)
+        public static HashSet<long> UniqueTypeIds(this IEnumerable<Element> elementsFromOneDocument)
         {
-            HashSet<int> ids = new HashSet<int>();
+            HashSet<long> ids = new HashSet<long>();
 
             foreach (Element element in elementsFromOneDocument)
             {
-                int elementTypeId = element.GetTypeId().IntegerValue;
+                long elementTypeId = element.GetTypeId().Value();
 
                 if (elementTypeId != -1)
                     ids.Add(elementTypeId);

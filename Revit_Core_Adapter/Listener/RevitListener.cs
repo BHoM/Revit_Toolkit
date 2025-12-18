@@ -298,7 +298,7 @@ namespace BH.Revit.Adapter.Core
                             //Set the event to raise
                             eve = m_UpdateTagsEvent;
 
-                            var tuple = package.Data[1] as Tuple<IRequest, string, object>;
+                            Tuple<IRequest, string, object> tuple = package.Data[1] as Tuple<IRequest, string, object>;
                             LatestRequest = tuple.Item1;
                             LatestKeyValuePair = new KeyValuePair<string, object>(tuple.Item2, tuple.Item3);
                             break;
@@ -466,10 +466,10 @@ namespace BH.Revit.Adapter.Core
             PushButtonData bHoMInfoButton = new PushButtonData("BHoM Wiki", "BHoM Wiki", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(BHoMWiki).FullName);
             PushButtonData bHoMWebsiteButton = new PushButtonData("bhom.xyz", "bhom.xyz", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(BHoMWebsite).FullName);
             PushButtonData bHoMVersionButton = new PushButtonData("BHoM Version", "BHoM Version", System.Reflection.Assembly.GetExecutingAssembly().Location, typeof(BHoMVersion).FullName);
-            
+
             List<PushButton> infoButtons = panel.AddStackedItems(bHoMInfoButton, bHoMWebsiteButton, bHoMVersionButton).Cast<PushButton>().ToList();
             infoButtons[0].ToolTip = "Visit the BHoM Wiki page.";
-            infoButtons[0].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Info16.png")));
+            infoButtons[0].Image = new BitmapImage(new Uri(Path.Combine(m_ResourceFolder, "Wiki16.png")));
             infoButtons[0].Enabled = true;
             infoButtons[0].Visible = true;
             infoButtons[0].AvailabilityClassName = alwaysAvailable;

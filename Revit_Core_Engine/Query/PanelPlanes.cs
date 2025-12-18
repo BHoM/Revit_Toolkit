@@ -85,7 +85,7 @@ namespace BH.Revit.Engine.Core
                         result.Add(plane);
                 }
                 else
-                    BH.Engine.Base.Compute.RecordWarning($"Some top faces of the floor are not planar, therefore they could not be queried. ElementId: {floor.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordWarning($"Some top faces of the floor are not planar, therefore they could not be queried. ElementId: {floor.Id.Value()}");
             }
 
             return result;
@@ -112,7 +112,7 @@ namespace BH.Revit.Engine.Core
                         result.Add(plane);
                 }
                 else
-                    BH.Engine.Base.Compute.RecordWarning($"Some top faces of the roof are not planar, therefore they could not be queried. ElementId: {roof.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordWarning($"Some top faces of the roof are not planar, therefore they could not be queried. ElementId: {roof.Id.Value()}");
             }
 
             return result;
@@ -139,7 +139,7 @@ namespace BH.Revit.Engine.Core
                         result.Add(plane);
                 }
                 else
-                    BH.Engine.Base.Compute.RecordWarning($"Some top faces of the ceiling are not planar, therefore they could not be queried. ElementId: {ceiling.Id.IntegerValue}");
+                    BH.Engine.Base.Compute.RecordWarning($"Some top faces of the ceiling are not planar, therefore they could not be queried. ElementId: {ceiling.Id.Value()}");
             }
 
             return result;

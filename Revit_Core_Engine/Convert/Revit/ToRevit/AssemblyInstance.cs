@@ -37,6 +37,7 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
+        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitAssembly(BH.oM.Adapters.Revit.Elements.Assembly, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Adapters.Revit.Elements.Assembly to a Revit AssemblyInstance." +
                      "\nOnly the assembly instance itself is created, while any updates of name or parameters need to happen in a separate transaction, which is caused by Revit API limitations.")]
         [Input("assembly", "BH.oM.Adapters.Revit.Elements.Assembly to be converted.")]
@@ -44,7 +45,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("assemblyInstance", "Revit AssemblyInstance resulting from converting the input BH.oM.Adapters.Revit.Elements.Assembly.")]
-        public static AssemblyInstance ToRevitAssembly(this oM.Adapters.Revit.Elements.Assembly assembly, Document document, RevitSettings settings = null, Dictionary<Guid, List<int>> refObjects = null)
+        public static AssemblyInstance ToRevitAssembly(this oM.Adapters.Revit.Elements.Assembly assembly, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (assembly?.MemberElements == null)
                 return null;

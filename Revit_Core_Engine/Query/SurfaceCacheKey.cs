@@ -37,7 +37,7 @@ namespace BH.Revit.Engine.Core
         [Output("key", "RefObjects key, under which the surface location of the input Revit panel element is stored.")]
         public static string SurfaceCacheKey(this ElementId elementId)
         {
-            return $"AnalyticalOutlines_{elementId.IntegerValue}";
+            return $"AnalyticalOutlines_{elementId.Value()}";
         }
 
         /***************************************************/

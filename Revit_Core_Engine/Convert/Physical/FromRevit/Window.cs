@@ -72,10 +72,10 @@ namespace BH.Revit.Engine.Core
             if (location == null)
             {
                 if (host == null)
-                    BH.Engine.Base.Compute.RecordWarning(String.Format("Location of the window could not be retrieved from the model (possibly it has zero area or lies on a non-planar face). A window object without location has been returned. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
+                    BH.Engine.Base.Compute.RecordWarning(String.Format("Location of the window could not be retrieved from the model (possibly it has zero area or lies on a non-planar face). A window object without location has been returned. Revit ElementId: {0}", familyInstance.Id.Value()));
                 else
                 {
-                    BH.Engine.Base.Compute.RecordWarning(String.Format("Location of the window could not be retrieved from the model (possibly it has zero area or lies on a non-planar face), the opening has been skipped. Revit ElementId: {0}", familyInstance.Id.IntegerValue));
+                    BH.Engine.Base.Compute.RecordWarning(String.Format("Location of the window could not be retrieved from the model (possibly it has zero area or lies on a non-planar face), the opening has been skipped. Revit ElementId: {0}", familyInstance.Id.Value()));
                     return null;
                 }
             }

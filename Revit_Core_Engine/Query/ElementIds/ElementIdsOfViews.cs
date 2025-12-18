@@ -93,9 +93,9 @@ namespace BH.Revit.Engine.Core
         [Input("templateId", "Integer representing ElementId of Revit view template implemented by filtered views.")]
         [Input("ids", "Optional, allows narrowing the search: if not null, the output will be an intersection of this collection and ElementIds filtered by the query.")]
         [Output("elementIds", "Collection of filtered ElementIds.")]
-        public static IEnumerable<ElementId> ElementIdsOfViews(this Document document, int templateId, IEnumerable<ElementId> ids = null)
+        public static IEnumerable<ElementId> ElementIdsOfViews(this Document document, long templateId, IEnumerable<ElementId> ids = null)
         {
-            View viewTemplate = document.GetElement(new ElementId(templateId)) as View;
+            View viewTemplate = document.GetElement(templateId.ToElementId()) as View;
             if (viewTemplate == null || !viewTemplate.IsTemplate)
             {
                 BH.Engine.Base.Compute.RecordError(String.Format("Couldn't find a View Template under ElementId {0}", templateId));

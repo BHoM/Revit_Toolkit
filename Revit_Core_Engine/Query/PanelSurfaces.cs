@@ -220,7 +220,7 @@ namespace BH.Revit.Engine.Core
                     IEnumerable<ElementId> insertsToIgnore = tuple.Item2;
                     IList<ElementId> inserts = hostObject.FindInserts(true, true, true, true);
                     if (insertsToIgnore != null)
-                        inserts = inserts.Where(x => insertsToIgnore.All(y => x.IntegerValue != y.IntegerValue)).ToList();
+                        inserts = inserts.Where(x => insertsToIgnore.All(y => x.Value() != y.Value())).ToList();
 
                     insertsDeleted.Add(id, inserts.Count != 0);
                     foreach (ElementId insert in inserts)
@@ -402,7 +402,7 @@ namespace BH.Revit.Engine.Core
             Dictionary<PlanarSurface, List<PlanarSurface>> result = new Dictionary<PlanarSurface, List<PlanarSurface>>();
             List<Autodesk.Revit.DB.Face> edgeFaces = null;
             if (insertsToIgnore != null && insertsToIgnore.Any())
-                edgeFaces = hostObject.Faces(new Options(), settings).Where(x => hostObject.GetGeneratingElementIds(x).Any(y => insertsToIgnore.Any(z => y.IntegerValue == z.IntegerValue))).ToList();
+                edgeFaces = hostObject.Faces(new Options(), settings).Where(x => hostObject.GetGeneratingElementIds(x).Any(y => insertsToIgnore.Any(z => y.Value() == z.Value()))).ToList();
 
             foreach (PlanarFace pf in planarFaces)
             {

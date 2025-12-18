@@ -49,7 +49,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            SolidMaterial result = refObjects.GetValue<SolidMaterial>(material.Id.IntegerValue);
+            SolidMaterial result = refObjects.GetValue<SolidMaterial>(material.Id.Value());
             if (result != null)
                 return result;
             else

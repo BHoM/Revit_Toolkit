@@ -97,11 +97,11 @@ namespace BH.Revit.Engine.Core
             // Check invalid element IDs
             List<ElementId> invalidedIds = elementIds.Where(id => doc.GetElement(id) == null).ToList();
             if (invalidedIds.Count > 0)
-                BH.Engine.Base.Compute.RecordWarning($"Elements under some element IDs do not exist in the current document: {string.Join(", ", invalidedIds.Select(id => id.IntegerValue))}");
+                BH.Engine.Base.Compute.RecordWarning($"Elements under some element IDs do not exist in the current document: {string.Join(", ", invalidedIds.Select(id => id.Value()))}");
 
             // Check if selected viewspecific elements are at same view, then check host elements
             List<ElementId> viewSpecific = elementIds.Where(id => doc.GetElement(id)?.ViewSpecific == true).ToList();
-            HashSet<int> nonViewSpecificSet = elementIds.Except(viewSpecific).Select(id => id.IntegerValue).ToHashSet();
+            HashSet<long> nonViewSpecificSet = elementIds.Except(viewSpecific).Select(id => id.Value()).ToHashSet();
 
             if (viewSpecific.Count > 0)
             {
@@ -116,10 +116,10 @@ namespace BH.Revit.Engine.Core
                 }
 
                 // Warn if hosts of view-specific items are not included in selection
-                List<int> hostIds = viewSpecific.GetHostElementIds(doc).Select(x => x.IntegerValue).ToList();
+                List<long> hostIds = viewSpecific.GetHostElementIds(doc).Select(x => x.Value()).ToList();
                 if (hostIds.Count > 0)
                 {
-                    List<int> missingHosts = hostIds.Where(h => !nonViewSpecificSet.Contains(h)).Distinct().ToList();
+                    List<long> missingHosts = hostIds.Where(h => !nonViewSpecificSet.Contains(h)).Distinct().ToList();
                     if (missingHosts.Count > 0)
                     {
                         BH.Engine.Base.Compute.RecordWarning($"Some host elements are not selected: {string.Join(", ", missingHosts)}. " +
@@ -185,19 +185,27 @@ namespace BH.Revit.Engine.Core
 
         private static View3D GetOrCreate3D(Document doc)
         {
-            View3D v = new FilteredElementCollector(doc)
-                .OfClass(typeof(View3D))
-                .Cast<View3D>()
-                .FirstOrDefault(x => !x.IsTemplate && !x.IsPerspective && x.ViewType == ViewType.ThreeD);
-
-            if (v != null) return v;
+            View3D view = doc.Default3DView();
+            if (view != null)
+                return view;
 
             ElementId vftId = new FilteredElementCollector(doc)
                 .OfClass(typeof(ViewFamilyType))
                 .Cast<ViewFamilyType>()
                 .FirstOrDefault(t => t.ViewFamily == ViewFamily.ThreeDimensional)?.Id;
 
-            return vftId != null ? View3D.CreateIsometric(doc, vftId) : null;
+            if (vftId != null)
+            {
+                using (Transaction transaction = new Transaction(doc, "Create Isolated Elements View"))
+                {
+                    transaction.Start();
+                    view = View3D.CreateIsometric(doc, vftId);
+                    view.Name = "Isolated Elements";
+                    transaction.Commit();
+                }
+            }
+
+            return view;
         }
 
         /***************************************************/
@@ -210,13 +218,7 @@ namespace BH.Revit.Engine.Core
             {
                 Element el = doc.GetElement(id);
                 if (el is IndependentTag tag)
-                {
-#if (REVIT2021)
-                    hostIds.Add(tag.GetTaggedLocalElement().Id);//Check for local host elements only
-#else
                     hostIds.AddRange(tag.GetTaggedLocalElementIds().ToList());//Check for local host elements only
-#endif
-                }
 
                 if (el is FamilyInstance fi && fi.Host != null)
                 {

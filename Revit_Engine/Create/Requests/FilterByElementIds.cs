@@ -40,10 +40,10 @@ namespace BH.Engine.Adapters.Revit
         [Output("request", "Created request.")]
         public static FilterByElementIds FilterByElementIds(IEnumerable<IBHoMObject> bHoMObjects)
         {
-            List<int> elementIds = new List<int>();
+            List<long> elementIds = new List<long>();
             foreach (IBHoMObject bHoMObject in bHoMObjects)
             {
-                int elementId = bHoMObject.ElementId();
+                long elementId = bHoMObject.ElementId();
                 if (elementId == -1)
                 {
                     BH.Engine.Base.Compute.RecordError(String.Format("Valid ElementId has not been found. BHoM Guid: {0}", bHoMObject.BHoM_Guid));

@@ -58,7 +58,7 @@ namespace BH.Revit.Engine.Core
             InsulationLiningBase ins = null;
             ICollection<ElementId> insIds = InsulationLiningBase.GetInsulationIds(doc, host.Id);
             insulationThickness = insulationThickness.FromSI(SpecTypeId.Length);
-            BuiltInCategory hostCategory = (BuiltInCategory)host.Category.Id.IntegerValue;
+            BuiltInCategory hostCategory = (BuiltInCategory)host.Category.Id.Value();
 
             if (insIds.Count == 0 && insulationType != null)
             {

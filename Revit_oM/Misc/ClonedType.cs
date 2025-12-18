@@ -33,7 +33,7 @@ namespace BH.oM.Adapters.Revit
         /***************************************************/
 
         [Description("ElementId of the source Revit type to be cloned.")]
-        public virtual int SourceTypeId { get; set; } = -1;
+        public virtual long SourceTypeId { get; set; } = -1;
 
         /***************************************************/
     }

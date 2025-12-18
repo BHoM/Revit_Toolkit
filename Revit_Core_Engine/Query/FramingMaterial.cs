@@ -48,11 +48,11 @@ namespace BH.Revit.Engine.Core
 
             // Look up the material in structural material parameters
             ElementId structuralMaterialId = familyInstance.StructuralMaterialId;
-            if (structuralMaterialId.IntegerValue < 0)
+            if (structuralMaterialId.Value() < 0)
                 structuralMaterialId = familyInstance.Symbol.LookupParameterElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
 
             // If not found under structural material parameters, check if the solid representation has a consistent material assigned - if so, use it
-            if (structuralMaterialId.IntegerValue < 0)
+            if (structuralMaterialId.Value() < 0)
             {
                 Options options = new Options();
                 options.DetailLevel = Autodesk.Revit.DB.ViewDetailLevel.Coarse;

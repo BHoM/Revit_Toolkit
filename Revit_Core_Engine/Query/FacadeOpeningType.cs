@@ -38,7 +38,7 @@ namespace BH.Revit.Engine.Core
         [Output("openingType", "Facade opening type deducted from the input curtain panel represented by a FamilyInstance.")]
         public static OpeningType FacadeOpeningType(this FamilyInstance panel)
         {
-            BuiltInCategory category = (BuiltInCategory)panel.Category.Id.IntegerValue;
+            BuiltInCategory category = (BuiltInCategory)panel.Category.Id.Value();
             if (category == Autodesk.Revit.DB.BuiltInCategory.OST_Windows)
                 return BH.oM.Facade.Elements.OpeningType.Window;
             else if (category == Autodesk.Revit.DB.BuiltInCategory.OST_CurtainWallPanels)

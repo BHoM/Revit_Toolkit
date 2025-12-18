@@ -113,14 +113,14 @@ namespace BH.Revit.Engine.Core
                         }
                     }
 
-                    foreach (FamilyInstance window in inserts.Where(x => x.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Windows))
+                    foreach (FamilyInstance window in inserts.Where(x => x.Category.Id.Value() == (int)BuiltInCategory.OST_Windows))
                     {
                         BH.oM.Facade.Elements.Opening bHoMWindow = window.FacadeOpeningFromRevit(settings, refObjects);
                         if (bHoMWindow != null)
                             openings.Add(bHoMWindow);
                     }
 
-                    foreach (FamilyInstance door in inserts.Where(x => x.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Doors))
+                    foreach (FamilyInstance door in inserts.Where(x => x.Category.Id.Value() == (int)BuiltInCategory.OST_Doors))
                     {
                         BH.oM.Facade.Elements.Opening bHoMDoor = door.FacadeOpeningFromRevit(settings, refObjects);
                         if (bHoMDoor != null)
