@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
@@ -32,7 +32,6 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("8.2", "BH.Revit.Engine.UI.Query.UnitFromSpec(Autodesk.Revit.DB.ForgeTypeId, Autodesk.Revit.DB.Document)")]
         [Description("Returns document-specific Revit spec representing a given unit type.")]
         [Input("spec", "Revit spec queried for unit representing it.")]
         [Input("doc", "Revit document that contains the information about units used per each unit type (e.g. sqm for area).")]
