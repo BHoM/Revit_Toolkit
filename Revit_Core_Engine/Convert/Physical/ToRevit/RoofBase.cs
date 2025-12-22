@@ -39,7 +39,6 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitRoofBase(BH.oM.Physical.Elements.Roof, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Physical.Elements.Roof to a Revit RoofBase.")]
         [Input("roof", "BH.oM.Physical.Elements.Roof to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]

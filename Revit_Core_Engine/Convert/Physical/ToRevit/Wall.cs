@@ -39,7 +39,6 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitWall(BH.oM.Physical.Elements.Wall, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Physical.Elements.Wall to a Revit Wall.")]
         [Input("wall", "BH.oM.Physical.Elements.Wall to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]

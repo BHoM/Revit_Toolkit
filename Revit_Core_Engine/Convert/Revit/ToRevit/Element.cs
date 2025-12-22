@@ -40,7 +40,6 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitElement(BH.oM.Adapters.Revit.Elements.ModelInstance, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Adapters.Revit.Elements.ModelInstance to a Revit Element.")]
         [Input("modelInstance", "BH.oM.Adapters.Revit.Elements.ModelInstance to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
@@ -97,7 +96,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitElement(BH.oM.Adapters.Revit.Elements.DraftingInstance, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Adapters.Revit.Elements.DraftingInstance to a Revit Element.")]
         [Input("draftingInstance", "BH.oM.Adapters.Revit.Elements.DraftingInstance to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]

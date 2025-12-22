@@ -37,7 +37,6 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitViewport(BH.oM.Adapters.Revit.Elements.Viewport, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Adapters.Revit.Elements.Viewport to a Revit Viewport.")]
         [Input("viewport", "BH.oM.Adapters.Revit.Elements.Viewport to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]

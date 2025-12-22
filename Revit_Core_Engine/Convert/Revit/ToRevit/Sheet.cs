@@ -37,7 +37,6 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitSheet(BH.oM.Adapters.Revit.Elements.Sheet, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Adapters.Revit.Elements.Sheet to a Revit ViewSheet.")]
         [Input("sheet", "BH.oM.Adapters.Revit.Elements.Sheet to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]

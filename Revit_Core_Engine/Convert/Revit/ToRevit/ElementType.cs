@@ -38,7 +38,6 @@ namespace BH.Revit.Engine.Core
         /****               Public Methods              ****/
         /***************************************************/
 
-        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitElementType(BH.oM.Adapters.Revit.Properties.InstanceProperties, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Adapters.Revit.Properties.InstanceProperties to a Revit ElementType.")]
         [Input("instanceProperties", "BH.oM.Adapters.Revit.Properties.InstanceProperties to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
@@ -66,7 +65,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Convert.ToRevitElementType(BH.oM.Adapters.Revit.ClonedType, Autodesk.Revit.DB.Document, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.List<System.Int32>>)")]
         [Description("Converts BH.oM.Adapters.Revit.ClonedType to a Revit ElementType.")]
         [Input("clonedType", "BH.oM.Adapters.Revit.ClonedType to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]

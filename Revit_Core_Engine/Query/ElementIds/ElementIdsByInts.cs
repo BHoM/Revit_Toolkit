@@ -34,7 +34,6 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Query.ElementIdsByInts(Autodesk.Revit.DB.Document, System.Collections.Generic.IEnumerable<System.Int32>, System.Collections.Generic.IEnumerable<Autodesk.Revit.DB.ElementId>)")]
         [Description("Filters ElementIds of elements and types in a Revit document based on a collection of integers that represent Revit ElementIds.")]
         [Input("document", "Revit document to be processed.")]
         [Input("elementIds", "Collection of integers representing Revit ElementIds.")]
