@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -34,7 +34,6 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("9.0", "BH.Revit.Engine.Core.Query.ElementIdsByInts(Autodesk.Revit.DB.Document, System.Collections.Generic.IEnumerable<System.Int32>, System.Collections.Generic.IEnumerable<Autodesk.Revit.DB.ElementId>)")]
         [Description("Filters ElementIds of elements and types in a Revit document based on a collection of integers that represent Revit ElementIds.")]
         [Input("document", "Revit document to be processed.")]
         [Input("elementIds", "Collection of integers representing Revit ElementIds.")]
@@ -71,6 +70,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
+
 
 
 

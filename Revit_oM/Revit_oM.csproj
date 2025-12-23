@@ -7,7 +7,7 @@
     <Authors>BHoM</Authors>
     <Copyright>Copyright © https://github.com/BHoM</Copyright>
     <RootNamespace>BH.oM.Revit</RootNamespace>
-    <FileVersion>9.0.0.0</FileVersion>
+    <FileVersion>9.1.0.0</FileVersion>
   </PropertyGroup>
   <PropertyGroup>
     <OutputPath>..\Build\</OutputPath>
