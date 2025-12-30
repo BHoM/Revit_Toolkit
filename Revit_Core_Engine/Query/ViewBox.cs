@@ -105,7 +105,7 @@ namespace BH.Revit.Engine.Core
             Plane plane = Plane.CreateByOriginAndBasis(XYZ.Zero, rightDirection, upDirection);
             Cartesian coordinateSystem = plane.FromRevit();
             BH.oM.Geometry.TransformMatrix orientationMatrix = BH.Engine.Geometry.Create.OrientationMatrixGlobalToLocal(coordinateSystem);
-            Transform transform = orientationMatrix.ToRevit();
+            Transform transform = orientationMatrix.ToRevit().TryFixIfNonConformal();
 
             // Bounds of the element in the provided coordinate system
             BoundingBoxXYZ boundingBox = elements.PhysicalBounds(transform.Inverse);

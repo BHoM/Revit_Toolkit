@@ -25,7 +25,6 @@ using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.DB.Mechanical;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -66,17 +65,7 @@ namespace BH.Revit.Engine.Core
                     if (distanceFromZero != 0 && distanceFromZero < 1e-6)
                         geometryTransform.Origin = XYZ.Zero;
 
-                    if (!geometryTransform.IsConformal)
-                    {
-                        // This is an edge case related to numerical noise in identity matrix
-                        // See #1484 for reference
-                        XYZ x = geometryTransform.BasisX;
-                        XYZ y = geometryTransform.BasisY;
-                        XYZ z = geometryTransform.BasisZ;
-                        geometryTransform.BasisX = new XYZ(Math.Round(x.X, 6), Math.Round(x.Y, 6), Math.Round(x.Z, 6));
-                        geometryTransform.BasisY = new XYZ(Math.Round(y.X, 6), Math.Round(y.Y, 6), Math.Round(y.Z, 6));
-                        geometryTransform.BasisZ = new XYZ(Math.Round(z.X, 6), Math.Round(z.Y, 6), Math.Round(z.Z, 6));
-                    }
+                    geometryTransform = geometryTransform.TryFixIfNonConformal();
 
                     GeometryElement geomElement = geometryInstance.GetInstanceGeometry(geometryTransform);
                     if (geomElement == null)
