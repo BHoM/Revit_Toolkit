@@ -167,9 +167,6 @@ namespace BH.Revit.Adapter.Core
 
             UIControlledApplication = uIControlledApplication;
 
-            //Make sure all BHoM assemblies and methods are loaded
-            BH.Engine.Base.Compute.LoadAllAssemblies();
-
             //Add buttons to manage the adapter
             AddAdapterButtons(uIControlledApplication);
 
