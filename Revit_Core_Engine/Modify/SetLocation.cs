@@ -445,6 +445,18 @@ namespace BH.Revit.Engine.Core
             return false;
         }
 
+        /***************************************************/
+
+        //[Description("Sets the location of a given Revit HostObject based on a given BHoM ISurface.")]
+        //[Input("element", "Revit HostObject to be modified.")]
+        //[Input("bHoMObject", "BHoM ISurface acting as a source of information about the new location.")]
+        //[Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        //[Output("success", "True if location of the input Revit HostObject has been successfully set.")]
+        public static bool SetLocation(this Autodesk.Revit.DB.Floor element, BH.oM.Physical.Elements.Floor bHoMObject, RevitSettings settings)
+        {
+            return element.SetLocation(bHoMObject.Location, settings);
+        }
+
 
         /***************************************************/
         /****             Fallback Methods              ****/
@@ -492,6 +504,30 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         /****              Private Methods              ****/
         /***************************************************/
+
+        private static bool SetLocation(this Autodesk.Revit.DB.Floor element, BH.oM.Geometry.ISurface location, RevitSettings settings)
+        {
+            PlanarSurface ps = location as PlanarSurface;
+            if (ps == null)
+            {
+                BH.Engine.Base.Compute.RecordWarning("...");
+                return false;
+            }
+
+            //Update floor location:
+            //- outline
+            //- ignore openings - check if any, if yes then warning
+            //- offset from level
+            //- floor slope
+
+            Document doc = element.Document;
+            CurveArray arr = ps.ExternalBoundary.ToRevitCurveArray();
+
+            //use SketchEditScope
+
+
+            return true;
+        }
 
         private static bool SetLocation(this FamilyInstance element, BH.oM.Geometry.Point location, Basis orientation, RevitSettings settings)
         {
