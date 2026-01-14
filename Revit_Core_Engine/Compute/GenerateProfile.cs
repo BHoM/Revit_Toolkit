@@ -116,6 +116,43 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
+        private static Family SaveAndLoadFamily(Document document, Document familyDocument, string familyName, IFramingElement element, RevitSettings settings)
+        {
+            Family result = null;
+            string tempFolder = Path.GetTempPath();
+            string tempLocation = SanitizePath($"{tempFolder}\\{familyName}.rfa");
+
+            try
+            {
+                if (!Directory.Exists(tempFolder))
+                    Directory.CreateDirectory(tempFolder);
+
+                SaveAsOptions saveOptions = new SaveAsOptions();
+                saveOptions.OverwriteExistingFile = true;
+                familyDocument.SaveAs(tempLocation, saveOptions);
+            }
+            catch (Exception ex)
+            {
+                BH.Engine.Base.Compute.RecordError($"Creation of a freeform Revit profile geometry failed because the family could not be temporarily saved in {tempFolder}. Please make sure the folder exists and you have access to it, then try to empty it in case the issue persists.");
+                return null;
+            }
+
+            document.LoadFamily(tempLocation, out result);
+
+            try
+            {
+                File.Delete(tempLocation);
+            }
+            catch (Exception ex)
+            {
+                BH.Engine.Base.Compute.RecordNote($"File {tempLocation} could not be deleted.");
+            }
+
+            return result;
+        }
+
+        /***************************************************/
+
         private static Family GenerateFamilyFromTemplate(this Document document, IFramingElement element, string familyName, RevitSettings settings = null)
         {
             string templateFamilyName = element.TemplateProfileFamilyName();
@@ -137,39 +174,7 @@ namespace BH.Revit.Engine.Core
                     t.Commit();
                 }
 
-                //TODO: unify boilerplate - cursor
-                string tempFolder = Path.GetTempPath();
-                string tempLocation = SanitizePath($"{tempFolder}\\{familyName}.rfa");
-                try
-                {
-                    if (!Directory.Exists(tempFolder))
-                        Directory.CreateDirectory(tempFolder);
-
-                    SaveAsOptions saveOptions = new SaveAsOptions();
-                    saveOptions.OverwriteExistingFile = true;
-                    familyDocument.SaveAs(tempLocation, saveOptions);
-                }
-                catch (Exception ex)
-                {
-                    BH.Engine.Base.Compute.RecordError($"Creation of a freeform Revit profile geometry failed because the family could not be temporarily saved in {tempFolder}. Please make sure the folder exists and you have access to it, then try to empty it in case the issue persists.");
-                    familyDocument.Close(false);
-                    return null;
-                }
-
-                document.LoadFamily(tempLocation, out result);
-
-                FamilySymbol symbol = document.GetElement(result.GetFamilySymbolIds().FirstOrDefault()) as FamilySymbol;
-                if (symbol != null)
-                    element.ICopyProfileDimensions(symbol, settings);
-
-                try
-                {
-                    File.Delete(tempLocation);
-                }
-                catch (Exception ex)
-                {
-                    BH.Engine.Base.Compute.RecordNote($"File {tempLocation} could not be deleted.");
-                }
+                result = SaveAndLoadFamily(document, familyDocument, familyName, element, settings);
             }
             catch (Exception ex)
             {
@@ -178,6 +183,13 @@ namespace BH.Revit.Engine.Core
             finally
             {
                 familyDocument.Close(false);
+            }
+
+            if (result != null)
+            {
+                FamilySymbol symbol = document.GetElement(result?.GetFamilySymbolIds().FirstOrDefault()) as FamilySymbol;
+                if (symbol != null)
+                    element.ICopyProfileDimensions(symbol, settings);
             }
 
             return result;
@@ -261,34 +273,7 @@ namespace BH.Revit.Engine.Core
                     t.Commit();
                 }
 
-                string tempFolder = Path.GetTempPath();
-                string tempLocation = SanitizePath($"{tempFolder}\\{familyName}.rfa");
-                try
-                {
-                    if (!Directory.Exists(tempFolder))
-                        Directory.CreateDirectory(tempFolder);
-
-                    SaveAsOptions saveOptions = new SaveAsOptions();
-                    saveOptions.OverwriteExistingFile = true;
-                    familyDocument.SaveAs(tempLocation, saveOptions);
-                }
-                catch (Exception ex)
-                {
-                    BH.Engine.Base.Compute.RecordError($"Creation of a freeform Revit profile geometry failed because the family could not be temporarily saved in {tempFolder}. Please make sure the folder exists and you have access to it, then try to empty it in case the issue persists.");
-                    familyDocument.Close(false);
-                    return null;
-                }
-
-                document.LoadFamily(tempLocation, out result);
-
-                try
-                {
-                    File.Delete(tempLocation);
-                }
-                catch (Exception ex)
-                {
-                    BH.Engine.Base.Compute.RecordNote($"File {tempLocation} could not be deleted.");
-                }
+                result = SaveAndLoadFamily(document, familyDocument, familyName, element, settings);
             }
             catch (Exception ex)
             {
