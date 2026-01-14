@@ -102,6 +102,7 @@ namespace BH.Revit.Engine.Core
                 }
 
                 family.SetMaterialForModelBehaviour(property?.Material);
+                family.SetMaterialSubcategory(property?.Material);
 
                 FamilySymbol result = document.GetElement(family.GetFamilySymbolIds().FirstOrDefault()) as FamilySymbol;
                 if (result == null)
@@ -282,6 +283,49 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Base.Compute.RecordWarning($"Material for model behaviour of family {family.Name} has been set to \'Other\' set because the material of source BHoM section property is not supported by Revit in this context. ElementId: {family.Id}");
                 return family.SetParameter(BuiltInParameter.FAMILY_STRUCT_MATERIAL_TYPE, (int)Autodesk.Revit.DB.Structure.StructuralMaterialType.Other);
             }
+        }
+
+        /***************************************************/
+
+        private static bool SetMaterialSubcategory(this Family family, BH.oM.Physical.Materials.Material material)
+        {
+            List<BH.oM.Physical.Materials.IMaterialProperties> structuralProperties = material?.Properties?.Where(x => x is BH.oM.Structure.MaterialFragments.IMaterialFragment)?.ToList();
+            if (structuralProperties == null || structuralProperties.Count == 0)
+                return false;
+            else if (structuralProperties.Select(x => x.GetType().FullName).Distinct().Count() > 1)
+                return false;
+
+            string keyword;
+            Type materialType = structuralProperties[0].GetType();
+            if (materialType == typeof(BH.oM.Structure.MaterialFragments.Steel))
+                keyword = "Steel";
+            else if (materialType == typeof(BH.oM.Structure.MaterialFragments.Concrete))
+                keyword = "Concrete In-Place";
+            else if (materialType == typeof(BH.oM.Structure.MaterialFragments.Timber))
+                keyword = "Timber";
+            else
+                return false;
+
+            Category subCategory = family.FamilyCategory.SubCategories.Cast<Category>().FirstOrDefault(x => x.Name.EndsWith(keyword));
+            if (subCategory != null)
+            {
+                Document familyDocument = family.Document.EditFamily(family);
+                using (Transaction t = new Transaction(familyDocument, "Update Subcategory"))
+                {
+                    t.Start();
+
+                    foreach (GenericForm gf in new FilteredElementCollector(familyDocument).OfClass(typeof(GenericForm)))
+                    {
+                        gf.Subcategory = subCategory;
+                    }
+
+                    t.Commit();
+                }
+
+                return true;
+            }
+            else
+                return false;
         }
 
         /***************************************************/
