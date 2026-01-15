@@ -27,6 +27,7 @@ using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Base;
 using BH.Revit.Engine.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -60,7 +61,7 @@ namespace BH.Revit.Adapter.Core
                 BH.Engine.Base.Compute.RecordError("BHoM objects could not be removed because another transaction is open in Revit.");
                 return new List<object>();
             }
-            
+
             // If unset, set the pushType to AdapterSettings' value (base AdapterSettings default is FullCRUD). Disallow the unsupported PushTypes.
             if (pushType == PushType.AdapterDefault)
                 pushType = PushType.UpdateOrCreateOnly;
@@ -69,7 +70,7 @@ namespace BH.Revit.Adapter.Core
                 BH.Engine.Base.Compute.RecordError("Full Push is currently not supported by Revit_Toolkit, please use Create, UpdateOnly or DeleteThenCreate instead.");
                 return new List<object>();
             }
-            
+
             // Set config
             RevitPushConfig pushConfig = actionConfig as RevitPushConfig;
             if (pushConfig == null)
@@ -81,7 +82,7 @@ namespace BH.Revit.Adapter.Core
             // Suppress warnings
             if (UIControlledApplication != null && pushConfig.SuppressFailureMessages)
                 UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
-            
+
             // Process the objects (verify they are valid; DeepClone them, wrap them, etc).
             IEnumerable<IBHoMObject> objectsToPush = ProcessObjectsForPush(objects, pushConfig); // Note: default Push only supports IBHoMObjects.
 
@@ -150,6 +151,8 @@ namespace BH.Revit.Adapter.Core
         private List<IBHoMObject> PushToRevit(Document document, IEnumerable<IBHoMObject> objects, PushType pushType, RevitPushConfig pushConfig, string transactionName)
         {
             List<IBHoMObject> pushed = new List<IBHoMObject>();
+
+            //TODO: wrap into transaction group maybe?
             using (Transaction transaction = new Transaction(document, transactionName))
             {
                 transaction.Start();
@@ -198,6 +201,25 @@ namespace BH.Revit.Adapter.Core
                 }
 
                 transaction.Commit();
+            }
+
+            try
+            {
+                try
+                {
+                    foreach (Action call in SketchUpdateQueue.SketchUpdates)
+                    {
+                        call.Invoke();
+                    }
+                }
+                catch
+                {
+                    BH.Engine.Base.Compute.RecordError("...");
+                }
+            }
+            finally
+            {
+                SketchUpdateQueue.SketchUpdates.Clear();
             }
 
             return pushed;

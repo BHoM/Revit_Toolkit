@@ -525,6 +525,20 @@ namespace BH.Revit.Engine.Core
 
             //use SketchEditScope
 
+            SketchUpdateQueue.SketchUpdates.Enqueue(() =>
+            {
+                using (SketchEditScope ses = new SketchEditScope(doc, "Update sketches"))
+                {
+                    ses.Start(sketchId);
+
+                    //TODO: update sketch
+
+                    ses.Commit(new SketchUpdateFailurePreprocessor());
+
+                    //TODO: add to group rather than commit? make sure it is shown as a single undo action in revit
+                }
+            });
+
 
             return true;
         }
