@@ -303,7 +303,7 @@ namespace BH.Revit.Engine.Core
                 keyword = "Steel";
             else if (materialType == typeof(BH.oM.Structure.MaterialFragments.Concrete))
                 keyword = "Concrete In-Place";
-            else if (materialType == typeof(BH.oM.Structure.MaterialFragments.Timber))
+            else if (materialType == typeof(BH.oM.Structure.MaterialFragments.Timber) || materialType == typeof(BH.oM.Structure.MaterialFragments.SawnTimber) || materialType == typeof(BH.oM.Structure.MaterialFragments.Glulam))
                 keyword = "Timber";
             else
                 return false;
@@ -803,6 +803,7 @@ namespace BH.Revit.Engine.Core
             { typeof(TubeProfile), "TubeProfile" },
             { typeof(FabricatedBoxProfile), "FabricatedBoxProfile" },
             { typeof(GeneralisedFabricatedBoxProfile), "FabricatedBoxProfile" },
+            { typeof(FreeFormProfile), "FreeformProfile" },
         };
 
         /***************************************************/
