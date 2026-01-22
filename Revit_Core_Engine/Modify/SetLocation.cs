@@ -510,7 +510,7 @@ namespace BH.Revit.Engine.Core
             PlanarSurface ps = location as PlanarSurface;
             if (ps == null)
             {
-                BH.Engine.Base.Compute.RecordWarning("...");
+                BH.Engine.Base.Compute.RecordWarning("Ps error");
                 return false;
             }
 
@@ -520,25 +520,194 @@ namespace BH.Revit.Engine.Core
             //- offset from level
             //- floor slope
 
+            if (ps.InternalBoundaries != null && ps.InternalBoundaries.Count > 0)
+                BH.Engine.Base.Compute.RecordWarning($"Floor has openings which will be ignored during sketch update. ElementId: {element.Id.Value()}");
+
             Document doc = element.Document;
-            CurveArray arr = ps.ExternalBoundary.ToRevitCurveArray();
+            ElementId floorId = element.Id;
+            
+            // Find sketch by OwnerId
+            Sketch sketch = new FilteredElementCollector(doc)
+                .OfClass(typeof(Sketch))
+                .Cast<Sketch>()
+                .FirstOrDefault(s => s.OwnerId == floorId);
+            ElementId sketchId = sketch?.Id;
+            
+            if (sketchId == null)
+            {
+                BH.Engine.Base.Compute.RecordError($"Floor sketch not found. ElementId: {element.Id.Value()}");
+                return false;
+            }
+
+            SketchPlane sketchPlane = sketch.SketchPlane;
+            if (sketchPlane == null)
+            {
+                BH.Engine.Base.Compute.RecordError($"Floor sketch plane not found. ElementId: {element.Id.Value()}");
+                return false;
+            }
+
+            Autodesk.Revit.DB.Plane revitPlane = sketchPlane.GetPlane();
+            BH.oM.Geometry.Plane bhomPlane = BH.Engine.Geometry.Create.Plane(revitPlane.Origin.PointFromRevit(), revitPlane.Normal.VectorFromRevit());
+            BH.oM.Geometry.ICurve projectedBoundary = ps.ExternalBoundary.IProject(bhomPlane);
+            CurveLoop newOutline = projectedBoundary.ToRevitCurveLoop();
+            
+            Level level = doc.GetElement(element.LevelId) as Level;
+            BH.oM.Geometry.Plane slabPlane = ps.FitPlane();
+            double newOffset = (ps.IBounds().Min.Z.FromSI(SpecTypeId.Length) - level.ProjectElevation);
+            
+            XYZ n = slabPlane.Normal.ToRevit().Normalize();
+            double dot = Math.Abs(n.DotProduct(XYZ.BasisZ));
+            dot = Math.Min(1.0, Math.Max(-1.0, dot));
+            double slopeAngleRad = Math.Acos(dot);
+            double tol = settings.AngleTolerance;
+            bool hasSlope = slopeAngleRad > tol;
+            Autodesk.Revit.DB.Line spanDirectionLine = null;
+            double slopeAngle = 0.0;
+            
+            if (hasSlope)
+            {
+                Vector normal = slabPlane.Normal;
+                if (normal.Z < 0)
+                    normal = -slabPlane.Normal;
+                
+                double angle = normal.Angle(Vector.ZAxis);
+                slopeAngle = -Math.Tan(angle);
+                
+                Vector dir = normal.Project(oM.Geometry.Plane.XY);
+                BH.oM.Geometry.Line intersectionLine = slabPlane.PlaneIntersection(bhomPlane);
+                XYZ start = intersectionLine.ClosestPoint(projectedBoundary.IStartPoint(), true).ToRevit();
+                XYZ direction = dir.ToRevit().Normalize();
+                spanDirectionLine = Autodesk.Revit.DB.Line.CreateBound(start, start + direction);
+            }
 
             //use SketchEditScope
-
             SketchUpdateQueue.SketchUpdates.Enqueue(() =>
             {
-                using (SketchEditScope ses = new SketchEditScope(doc, "Update sketches"))
+                Autodesk.Revit.DB.Floor floor = doc.GetElement(floorId) as Autodesk.Revit.DB.Floor;
+                if (floor == null || !floor.IsValidObject)
                 {
-                    ses.Start(sketchId);
+                    BH.Engine.Base.Compute.RecordWarning($"Floor with ElementId {floorId.Value()} is no longer valid. Skipping sketch update.");
+                    return;
+                }
 
-                    //TODO: update sketch
+                Sketch floorSketch = doc.GetElement(sketchId) as Sketch;
+                if (floorSketch == null)
+                {
+                    BH.Engine.Base.Compute.RecordWarning($"Sketch with ElementId {sketchId.Value()} not found for floor {floorId.Value()}. Skipping sketch update.");
+                    return;
+                }
 
-                    ses.Commit(new SketchUpdateFailurePreprocessor());
+                try
+                {
+                    using (SketchEditScope ses = new SketchEditScope(doc, "Update floor sketch"))
+                    {
+                        ses.Start(sketchId);
+                        
+                        using (Transaction t = new Transaction(doc, "Modify sketch profile"))
+                        {
+                            t.Start();
+                            
+                            Sketch currentSketch = doc.GetElement(sketchId) as Sketch;
+                            if (currentSketch != null)
+                            {
+                                IList<ElementId> existingElements = currentSketch.GetAllElements();
+                                if (existingElements != null && existingElements.Count > 0)
+                                {
+                                    doc.Delete(existingElements);
+                                }
+                                
+                                SketchPlane sketchPlane = currentSketch.SketchPlane;
+                                if (sketchPlane != null)
+                                {
+                                    foreach (Curve curve in newOutline)
+                                    {
+                                        doc.Create.NewModelCurve(curve, sketchPlane);
+                                    }
+                                }
+                            }
+                            
+                            t.Commit();
+                        }
 
-                    //TODO: add to group rather than commit? make sure it is shown as a single undo action in revit
+                        ses.Commit(new SketchUpdateFailurePreprocessor());
+                    }
+
+                    using (Transaction tOffset = new Transaction(doc, "Update floor offset and slope"))
+                    {
+                        tOffset.Start();
+                        floor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, newOffset, false);
+                        doc.Regenerate();
+                        
+                        if (hasSlope)
+                        {
+                            //Maybe bug withSlabSHapeEditor due to issue #1631
+                            SlabShapeEditor slabShapeEditor = floor.SlabShapeEditor;
+                            slabShapeEditor.ResetSlabShape();
+                            slabShapeEditor.Enable(); 
+                            doc.Regenerate(); 
+                            
+                            IList<Reference> topFaces = HostObjectUtils.GetTopFaces(floor);
+                            if (topFaces != null && topFaces.Count > 0)
+                            {
+                                Autodesk.Revit.DB.Face topFace = floor.GetGeometryObjectFromReference(topFaces[0]) as Autodesk.Revit.DB.Face;
+                                if (topFace != null)
+                                {
+                                    List<BH.oM.Geometry.Point> controlPoints = ps.ExternalBoundary.IControlPoints();
+                                    if (controlPoints != null && controlPoints.Count >= 3)
+                                    {
+                                        foreach (BH.oM.Geometry.Point point in controlPoints)
+                                        {
+                                            XYZ targetPoint = point.ToRevit();
+                                            
+                                            // Validate point coordinates
+                                            if (!IsValidPoint(targetPoint))
+                                            {
+                                                BH.Engine.Base.Compute.RecordWarning($"Invalid point coordinates (NaN or Infinity) for floor {floorId.Value()}. Skipping point.");
+                                                continue;
+                                            }
+                                            
+                                            IntersectionResult result = topFace.Project(targetPoint);
+                                            if (result != null)
+                                            {
+                                                UV uv = result.UVPoint;
+                                                XYZ projectedPoint = topFace.Evaluate(uv);
+                                                double currentTopZ = projectedPoint.Z;
+                                                double targetZ = targetPoint.Z;
+                                                double elevationOffset = targetZ - currentTopZ;
+                                                
+                                                if (Math.Abs(elevationOffset) > settings.DistanceTolerance)
+                                                {
+                                                    
+                                                    XYZ pointToAdd = new XYZ(projectedPoint.X, projectedPoint.Y, targetZ);
+                                                    
+                                                    if (IsValidPoint(pointToAdd))
+                                                    {
+                                                        try
+                                                        {
+                                                            slabShapeEditor.AddPoint(pointToAdd);
+                                                        }
+                                                        catch (Exception addPointEx)
+                                                        {
+                                                            BH.Engine.Base.Compute.RecordWarning($"Could not add point ({pointToAdd.X:F3}, {pointToAdd.Y:F3}, {pointToAdd.Z:F3}) to floor {floorId.Value()}: {addPointEx.Message}");
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        tOffset.Commit();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    BH.Engine.Base.Compute.RecordError($"Failed to update floor sketch for ElementId {floorId.Value()}: {ex.Message}");
+                    throw; 
                 }
             });
-
 
             return true;
         }
@@ -653,6 +822,18 @@ namespace BH.Revit.Engine.Core
             }
 
             return success;
+        }
+
+        /***************************************************/
+
+        private static bool IsValidPoint(XYZ point)
+        {
+            if (point == null)
+                return false;
+            
+            return !double.IsNaN(point.X) && !double.IsInfinity(point.X) &&
+                   !double.IsNaN(point.Y) && !double.IsInfinity(point.Y) &&
+                   !double.IsNaN(point.Z) && !double.IsInfinity(point.Z);
         }
 
         /***************************************************/

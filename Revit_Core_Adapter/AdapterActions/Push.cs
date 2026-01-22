@@ -203,24 +203,56 @@ namespace BH.Revit.Adapter.Core
                 transaction.Commit();
             }
 
-            try
+            if (SketchUpdateQueue.SketchUpdates.Count > 0)
             {
-                try
+                using (TransactionGroup tg = new TransactionGroup(document, "Update floor sketches"))
                 {
+                    tg.Start();
+                    
+                    int successCount = 0;
+                    int errorCount = 0;
+                    List<string> errors = new List<string>();
+                    
                     foreach (Action call in SketchUpdateQueue.SketchUpdates)
                     {
-                        call.Invoke();
+                        try
+                        {
+                            call.Invoke();
+                            successCount++;
+                        }
+                        catch (Exception ex)
+                        {
+                            errorCount++;
+                            string errorMsg = $"Sketch update failed: {ex.Message}";
+                            if (ex.InnerException != null)
+                                errorMsg += $" Inner: {ex.InnerException.Message}";
+                            errors.Add(errorMsg);
+                            BH.Engine.Base.Compute.RecordError(errorMsg);
+                        }
+                    }
+                    
+                    if (errorCount == 0)
+                    {
+                        tg.Assimilate(); 
+                    }
+                    else
+                    {
+                       
+                        if (successCount > 0)
+                        {
+                            BH.Engine.Base.Compute.RecordWarning($"Some sketch updates failed ({errorCount} of {SketchUpdateQueue.SketchUpdates.Count}). Partial updates may have been applied.");
+                            tg.Assimilate();
+                        }
+                        else
+                        {
+                            tg.RollBack();
+                            BH.Engine.Base.Compute.RecordError($"All sketch updates failed. Rolled back all changes.");
+                        }
                     }
                 }
-                catch
-                {
-                    BH.Engine.Base.Compute.RecordError("...");
-                }
             }
-            finally
-            {
-                SketchUpdateQueue.SketchUpdates.Clear();
-            }
+            
+            SketchUpdateQueue.SketchUpdates.Clear();
 
             return pushed;
         }
