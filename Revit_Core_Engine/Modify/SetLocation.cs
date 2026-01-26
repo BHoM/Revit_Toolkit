@@ -514,202 +514,212 @@ namespace BH.Revit.Engine.Core
                 return false;
             }
 
-            //Update floor location:
-            //- outline
-            //- ignore openings - check if any, if yes then warning
-            //- offset from level
-            //- floor slope
-
             if (ps.InternalBoundaries != null && ps.InternalBoundaries.Count > 0)
                 BH.Engine.Base.Compute.RecordWarning($"Floor has openings which will be ignored during sketch update. ElementId: {element.Id.Value()}");
 
             Document doc = element.Document;
             ElementId floorId = element.Id;
-            
-            // Find sketch by OwnerId
-            Sketch sketch = new FilteredElementCollector(doc)
-                .OfClass(typeof(Sketch))
-                .Cast<Sketch>()
-                .FirstOrDefault(s => s.OwnerId == floorId);
-            ElementId sketchId = sketch?.Id;
-            
-            if (sketchId == null)
+            Sketch sketch = new FilteredElementCollector(doc).OfClass(typeof(Sketch)).Cast<Sketch>().FirstOrDefault(s => s.OwnerId == floorId);
+            if (sketch?.Id == null || sketch.SketchPlane == null)
             {
                 BH.Engine.Base.Compute.RecordError($"Floor sketch not found. ElementId: {element.Id.Value()}");
                 return false;
             }
 
             SketchPlane sketchPlane = sketch.SketchPlane;
-            if (sketchPlane == null)
-            {
-                BH.Engine.Base.Compute.RecordError($"Floor sketch plane not found. ElementId: {element.Id.Value()}");
-                return false;
-            }
-
             Autodesk.Revit.DB.Plane revitPlane = sketchPlane.GetPlane();
             BH.oM.Geometry.Plane bhomPlane = BH.Engine.Geometry.Create.Plane(revitPlane.Origin.PointFromRevit(), revitPlane.Normal.VectorFromRevit());
             BH.oM.Geometry.ICurve projectedBoundary = ps.ExternalBoundary.IProject(bhomPlane);
             CurveLoop newOutline = projectedBoundary.ToRevitCurveLoop();
-            
             Level level = doc.GetElement(element.LevelId) as Level;
             BH.oM.Geometry.Plane slabPlane = ps.FitPlane();
             double newOffset = (ps.IBounds().Min.Z.FromSI(SpecTypeId.Length) - level.ProjectElevation);
-            
-            XYZ n = slabPlane.Normal.ToRevit().Normalize();
-            double dot = Math.Abs(n.DotProduct(XYZ.BasisZ));
-            dot = Math.Min(1.0, Math.Max(-1.0, dot));
-            double slopeAngleRad = Math.Acos(dot);
-            double tol = settings.AngleTolerance;
-            bool hasSlope = slopeAngleRad > tol;
-            Autodesk.Revit.DB.Line spanDirectionLine = null;
-            double slopeAngle = 0.0;
-            
-            if (hasSlope)
-            {
-                Vector normal = slabPlane.Normal;
-                if (normal.Z < 0)
-                    normal = -slabPlane.Normal;
-                
-                double angle = normal.Angle(Vector.ZAxis);
-                slopeAngle = -Math.Tan(angle);
-                
-                Vector dir = normal.Project(oM.Geometry.Plane.XY);
-                BH.oM.Geometry.Line intersectionLine = slabPlane.PlaneIntersection(bhomPlane);
-                XYZ start = intersectionLine.ClosestPoint(projectedBoundary.IStartPoint(), true).ToRevit();
-                XYZ direction = dir.ToRevit().Normalize();
-                spanDirectionLine = Autodesk.Revit.DB.Line.CreateBound(start, start + direction);
-            }
 
-            //use SketchEditScope
+            bool hasSlope = CalculateSlopeInfo(slabPlane, bhomPlane, projectedBoundary, settings, out Autodesk.Revit.DB.Line spanDirectionLine, out double tan);
+
             SketchUpdateQueue.SketchUpdates.Enqueue(() =>
             {
                 Autodesk.Revit.DB.Floor floor = doc.GetElement(floorId) as Autodesk.Revit.DB.Floor;
-                if (floor == null || !floor.IsValidObject)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"Floor with ElementId {floorId.Value()} is no longer valid. Skipping sketch update.");
-                    return;
-                }
+                if (floor == null || !floor.IsValidObject) return;
 
-                Sketch floorSketch = doc.GetElement(sketchId) as Sketch;
-                if (floorSketch == null)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"Sketch with ElementId {sketchId.Value()} not found for floor {floorId.Value()}. Skipping sketch update.");
-                    return;
-                }
+                Sketch floorSketch = doc.GetElement(sketch.Id) as Sketch;
+                if (floorSketch == null) return;
 
                 try
                 {
-                    using (SketchEditScope ses = new SketchEditScope(doc, "Update floor sketch"))
-                    {
-                        ses.Start(sketchId);
-                        
-                        using (Transaction t = new Transaction(doc, "Modify sketch profile"))
-                        {
-                            t.Start();
-                            
-                            Sketch currentSketch = doc.GetElement(sketchId) as Sketch;
-                            if (currentSketch != null)
-                            {
-                                IList<ElementId> existingElements = currentSketch.GetAllElements();
-                                if (existingElements != null && existingElements.Count > 0)
-                                {
-                                    doc.Delete(existingElements);
-                                }
-                                
-                                SketchPlane sketchPlane = currentSketch.SketchPlane;
-                                if (sketchPlane != null)
-                                {
-                                    foreach (Curve curve in newOutline)
-                                    {
-                                        doc.Create.NewModelCurve(curve, sketchPlane);
-                                    }
-                                }
-                            }
-                            
-                            t.Commit();
-                        }
-
-                        ses.Commit(new SketchUpdateFailurePreprocessor());
-                    }
-
-                    using (Transaction tOffset = new Transaction(doc, "Update floor offset and slope"))
-                    {
-                        tOffset.Start();
-                        floor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, newOffset, false);
-                        doc.Regenerate();
-                        
-                        if (hasSlope)
-                        {
-                            //Maybe bug withSlabSHapeEditor due to issue #1631
-                            SlabShapeEditor slabShapeEditor = floor.SlabShapeEditor;
-                            slabShapeEditor.ResetSlabShape();
-                            slabShapeEditor.Enable(); 
-                            doc.Regenerate(); 
-                            
-                            IList<Reference> topFaces = HostObjectUtils.GetTopFaces(floor);
-                            if (topFaces != null && topFaces.Count > 0)
-                            {
-                                Autodesk.Revit.DB.Face topFace = floor.GetGeometryObjectFromReference(topFaces[0]) as Autodesk.Revit.DB.Face;
-                                if (topFace != null)
-                                {
-                                    List<BH.oM.Geometry.Point> controlPoints = ps.ExternalBoundary.IControlPoints();
-                                    if (controlPoints != null && controlPoints.Count >= 3)
-                                    {
-                                        foreach (BH.oM.Geometry.Point point in controlPoints)
-                                        {
-                                            XYZ targetPoint = point.ToRevit();
-                                            
-                                            // Validate point coordinates
-                                            if (!IsValidPoint(targetPoint))
-                                            {
-                                                BH.Engine.Base.Compute.RecordWarning($"Invalid point coordinates (NaN or Infinity) for floor {floorId.Value()}. Skipping point.");
-                                                continue;
-                                            }
-                                            
-                                            IntersectionResult result = topFace.Project(targetPoint);
-                                            if (result != null)
-                                            {
-                                                UV uv = result.UVPoint;
-                                                XYZ projectedPoint = topFace.Evaluate(uv);
-                                                double currentTopZ = projectedPoint.Z;
-                                                double targetZ = targetPoint.Z;
-                                                double elevationOffset = targetZ - currentTopZ;
-                                                
-                                                if (Math.Abs(elevationOffset) > settings.DistanceTolerance)
-                                                {
-                                                    
-                                                    XYZ pointToAdd = new XYZ(projectedPoint.X, projectedPoint.Y, targetZ);
-                                                    
-                                                    if (IsValidPoint(pointToAdd))
-                                                    {
-                                                        try
-                                                        {
-                                                            slabShapeEditor.AddPoint(pointToAdd);
-                                                        }
-                                                        catch (Exception addPointEx)
-                                                        {
-                                                            BH.Engine.Base.Compute.RecordWarning($"Could not add point ({pointToAdd.X:F3}, {pointToAdd.Y:F3}, {pointToAdd.Z:F3}) to floor {floorId.Value()}: {addPointEx.Message}");
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        
-                        tOffset.Commit();
-                    }
+                    UpdateSketchOutline(doc, sketch.Id, newOutline);
+                    UpdateFloorOffsetAndSlope(doc, floor, sketch.Id, hasSlope, spanDirectionLine, tan, newOutline, slabPlane, projectedBoundary, newOffset, floorId, settings);
                 }
                 catch (Exception ex)
                 {
                     BH.Engine.Base.Compute.RecordError($"Failed to update floor sketch for ElementId {floorId.Value()}: {ex.Message}");
-                    throw; 
+                    throw;
                 }
             });
 
             return true;
+        }
+
+        private static bool CalculateSlopeInfo(BH.oM.Geometry.Plane slabPlane, BH.oM.Geometry.Plane bhomPlane, BH.oM.Geometry.ICurve projectedBoundary, RevitSettings settings, out Autodesk.Revit.DB.Line spanDirectionLine, out double tan)
+        {
+            spanDirectionLine = null;
+            tan = 0.0;
+            XYZ n = slabPlane.Normal.ToRevit().Normalize();
+            double dot = Math.Abs(n.DotProduct(XYZ.BasisZ));
+            double slopeAngleRad = Math.Acos(Math.Min(1.0, Math.Max(-1.0, dot)));
+            bool hasSlope = slopeAngleRad > settings.AngleTolerance;
+
+            if (hasSlope)
+            {
+                Vector normal = slabPlane.Normal;
+                if (normal.Z < 0) normal = -slabPlane.Normal;
+                double angle = normal.Angle(Vector.ZAxis);
+                tan = Math.Tan(angle);
+                Vector dir = normal.Project(oM.Geometry.Plane.XY);
+                BH.oM.Geometry.Line intersectionLine = slabPlane.PlaneIntersection(bhomPlane);
+                XYZ start = intersectionLine.ClosestPoint(projectedBoundary.IStartPoint(), true).ToRevit();
+                spanDirectionLine = Autodesk.Revit.DB.Line.CreateBound(start, start + dir.ToRevit().Normalize());
+            }
+            return hasSlope;
+        }
+
+        private static void UpdateSketchOutline(Document doc, ElementId sketchId, CurveLoop newOutline)
+        {
+            using (SketchEditScope ses = new SketchEditScope(doc, "Update floor sketch"))
+            {
+                ses.Start(sketchId);
+                using (Transaction t = new Transaction(doc, "Modify sketch profile"))
+                {
+                    t.Start();
+                    Sketch currentSketch = doc.GetElement(sketchId) as Sketch;
+                    if (currentSketch != null)
+                    {
+                        IList<ElementId> existingElements = currentSketch.GetAllElements();
+                        if (existingElements != null && existingElements.Count > 0)
+                            doc.Delete(existingElements);
+                        SketchPlane sketchPlane = currentSketch.SketchPlane;
+                        if (sketchPlane != null)
+                            foreach (Curve curve in newOutline)
+                                doc.Create.NewModelCurve(curve, sketchPlane);
+                    }
+                    t.Commit();
+                }
+                ses.Commit(new SketchUpdateFailurePreprocessor());
+            }
+        }
+
+        private static void UpdateFloorOffsetAndSlope(Document doc, Autodesk.Revit.DB.Floor floor, ElementId sketchId, bool hasSlope, Autodesk.Revit.DB.Line spanDirectionLine, double tan, CurveLoop newOutline, BH.oM.Geometry.Plane slabPlane, BH.oM.Geometry.ICurve projectedBoundary, double newOffset, ElementId floorId, RevitSettings settings)
+        {
+            using (Transaction tOffset = new Transaction(doc, "Update floor offset and slope"))
+            {
+                tOffset.Start();
+                if (hasSlope && spanDirectionLine != null)
+                {
+                    FloorType floorType = doc.GetElement(floor.GetTypeId()) as FloorType;
+                    Level floorLevel = doc.GetElement(floor.LevelId) as Level;
+                    if (floorType != null && floorLevel != null && newOutline != null && !newOutline.IsOpen() && newOutline.Count() > 0)
+                    {
+                        Autodesk.Revit.DB.Line slopeArrowLine = CalculateSlopeArrowLine(doc, sketchId, slabPlane, projectedBoundary, newOutline, spanDirectionLine, floorId, settings);
+                        doc.Delete(floor.Id);
+                        doc.Regenerate();
+                        Autodesk.Revit.DB.Floor newFloor = CreateFloorWithSlope(doc, newOutline, floorType.Id, floorLevel.Id, slopeArrowLine, tan, newOffset, settings);
+                        if (newFloor != null)
+                            VerifySlopeArrow(doc, newFloor, newOutline);
+                    }
+                    else if (floorType == null || floorLevel == null)
+                    {
+                        floor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, newOffset, false);
+                        doc.Regenerate();
+                    }
+                }
+                else
+                {
+                    floor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, newOffset, false);
+                    doc.Regenerate();
+                }
+                tOffset.Commit();
+            }
+        }
+
+        private static Autodesk.Revit.DB.Line CalculateSlopeArrowLine(Document doc, ElementId sketchId, BH.oM.Geometry.Plane slabPlane, BH.oM.Geometry.ICurve projectedBoundary, CurveLoop newOutline, Autodesk.Revit.DB.Line spanDirectionLine, ElementId floorId, RevitSettings settings)
+        {
+            Sketch updatedSketch = doc.GetElement(sketchId) as Sketch;
+            SketchPlane sketchPlaneForArrow = updatedSketch?.SketchPlane;
+            if (sketchPlaneForArrow == null) return spanDirectionLine;
+
+            Autodesk.Revit.DB.Plane revitPlaneForArrow = sketchPlaneForArrow.GetPlane();
+            BH.oM.Geometry.Plane bhomPlaneForArrow = BH.Engine.Geometry.Create.Plane(revitPlaneForArrow.Origin.PointFromRevit(), revitPlaneForArrow.Normal.VectorFromRevit());
+
+            List<BH.oM.Geometry.Point> boundaryPoints = projectedBoundary.IControlPoints();
+            if (boundaryPoints == null || boundaryPoints.Count < 2) return spanDirectionLine;
+
+            double highestZ = double.MinValue;
+            double lowestZ = double.MaxValue;
+            BH.oM.Geometry.Point highestPoint = null;
+            BH.oM.Geometry.Point lowestPoint = null;
+
+            foreach (BH.oM.Geometry.Point pt in boundaryPoints)
+            {
+                BH.oM.Geometry.Point pointOnSlab = slabPlane.ClosestPoint(pt);
+                double z = pointOnSlab.Z;
+                if (z > highestZ)
+                {
+                    highestZ = z;
+                    highestPoint = pt;
+                }
+                if (z < lowestZ)
+                {
+                    lowestZ = z;
+                    lowestPoint = pt;
+                }
+            }
+
+            if (highestPoint == null || lowestPoint == null) return spanDirectionLine;
+
+            XYZ highestXYZ = highestPoint.ToRevit();
+            XYZ lowestXYZ = lowestPoint.ToRevit();
+
+            XYZ highestProjected = highestXYZ.Project(revitPlaneForArrow);
+            XYZ lowestProjected = lowestXYZ.Project(revitPlaneForArrow);
+
+            return Autodesk.Revit.DB.Line.CreateBound(highestProjected, lowestProjected);
+        }
+
+        private static Autodesk.Revit.DB.Floor CreateFloorWithSlope(Document doc, CurveLoop newOutline, ElementId floorTypeId, ElementId levelId, Autodesk.Revit.DB.Line slopeArrowLine, double tan, double newOffset, RevitSettings settings)
+        {
+            if (slopeArrowLine == null || slopeArrowLine.Length < settings.DistanceTolerance)
+            {
+                Autodesk.Revit.DB.Floor newFloor = Autodesk.Revit.DB.Floor.Create(doc, new List<CurveLoop> { newOutline }, floorTypeId, levelId);
+                if (newFloor != null)
+                {
+                    newFloor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, newOffset, false);
+                    doc.Regenerate();
+                }
+                return newFloor;
+            }
+
+            Autodesk.Revit.DB.Floor newFloorWithSlope = Autodesk.Revit.DB.Floor.Create(doc, new List<CurveLoop> { newOutline }, floorTypeId, levelId, true, slopeArrowLine, -tan);
+            if (newFloorWithSlope != null)
+            {
+                newFloorWithSlope.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, newOffset, false);
+                doc.Regenerate();
+            }
+            return newFloorWithSlope;
+        }
+
+        private static void VerifySlopeArrow(Document doc, Autodesk.Revit.DB.Floor newFloor, CurveLoop newOutline)
+        {
+            Sketch newFloorSketch = new FilteredElementCollector(doc).OfClass(typeof(Sketch)).Cast<Sketch>().FirstOrDefault(s => s.OwnerId == newFloor.Id);
+            if (newFloorSketch == null) return;
+
+            int lineCount = newFloorSketch.GetAllElements().Count(elemId =>
+            {
+                ModelCurve modelCurve = doc.GetElement(elemId) as ModelCurve;
+                return modelCurve != null && modelCurve.GeometryCurve is Autodesk.Revit.DB.Line;
+            });
+
+            if (lineCount <= newOutline.Count())
+                BH.Engine.Base.Compute.RecordWarning($"Slope arrow may not have been created properly for floor {newFloor.Id.Value()}. Expected slope arrow in sketch but found {lineCount} lines (boundary has {newOutline.Count()} curves).");
         }
 
         private static bool SetLocation(this FamilyInstance element, BH.oM.Geometry.Point location, Basis orientation, RevitSettings settings)
