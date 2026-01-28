@@ -38,22 +38,28 @@ namespace BH.Revit.Engine.Core
         [Output("level", "Level that the element is assigned to, or null if not found.")]
         public static Level Level(this Element element)
         {
+            // Null check
             if (element == null)
                 return null;
 
-            Level elementLevel = null;
             Document doc = element.Document;
-            Parameter levelParameter = element.LevelParameter() ?? element.BaseLevelParameter();
             ElementId levelId = element.LevelId;
 
+            // First priority: Check LevelId property (most direct way to get level)
             if (levelId.Value() != -1)
-                elementLevel = doc.GetElement(levelId) as Level;
-            else if (levelParameter != null)
-                elementLevel = doc.GetElement(levelParameter.AsElementId()) as Level;
-            else if (element.IsWorkPlaneLevelBased())
-                elementLevel = (element as FamilyInstance)?.Host as Level;
+                return doc.GetElement(levelId) as Level;
 
-            return elementLevel;
+            // Second priority: Check level parameters (LevelParameter or BaseLevelParameter)
+            Parameter levelParameter = element.LevelParameter() ?? element.BaseLevelParameter();
+            if (levelParameter != null)
+                return doc.GetElement(levelParameter.AsElementId()) as Level;
+
+            // Third priority: Check if element is work plane-based and hosted on a level
+            if (element.IsWorkPlaneLevelBased())
+                return (element as FamilyInstance)?.Host as Level;
+
+            // No level found
+            return null;
         }
 
         /***************************************************/
