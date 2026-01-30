@@ -63,57 +63,6 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-
-        [Description("Returns the element parameter that stores the level of the element. Checks multiple built-in level parameters in order of preference.")]
-        [Input("element", "Element to get the level parameter from.")]
-        [Output("parameter", "Parameter that stores the level, or null if not found or parameter is read-only.")]
-        public static Parameter LevelParameter(this Element element)
-        {
-            if (element == null)
-                return null;
-
-            return m_LevelParameters
-                .Select(x => element.get_Parameter(x))
-                .Where(x => x != null)
-                .OrderByDescending(x => x.AsElementId().Value() != -1) // Valid ElementIds first
-                .FirstOrDefault(x => !x.IsReadOnly);
-        }
-
-        /***************************************************/
-
-        [Description("Returns the element parameter that stores the base level of the element. Checks multiple built-in base level parameters in order of preference.")]
-        [Input("element", "Element to get the base level parameter from.")]
-        [Output("parameter", "Parameter that stores the base level, or null if not found or parameter is read-only.")]
-        public static Parameter BaseLevelParameter(this Element element)
-        {
-            if (element == null)
-                return null;
-
-            return m_BaseLevelParameters
-                .Select(x => element.get_Parameter(x))
-                .Where(x => x != null)
-                .OrderByDescending(x => x.AsElementId().Value() != -1) // Valid ElementIds first
-                .FirstOrDefault(x => !x.IsReadOnly);
-        }
-
-        /***************************************************/
-
-        [Description("Returns the element parameter that stores the top level of the element. Checks multiple built-in top level parameters in order of preference.")]
-        [Input("element", "Element to get the top level parameter from.")]
-        [Output("parameter", "Parameter that stores the top level, or null if not found or parameter is read-only.")]
-        public static Parameter TopLevelParameter(this Element element)
-        {
-            if (element == null)
-                return null;
-
-            return m_TopLevelParameters
-                .Select(x => element.get_Parameter(x))
-                .Where(x => x != null)
-                .OrderByDescending(x => x.AsElementId().Value() != -1) // Valid ElementIds first
-                .FirstOrDefault(x => !x.IsReadOnly);
-        }
-
-        /***************************************************/
         /****              Private methods               ****/
         /***************************************************/
 
@@ -129,41 +78,6 @@ namespace BH.Revit.Engine.Core
 
             return (familyInstance.Host as Level) != null;
         }
-
-        /***************************************************/
-        /****              Private fields                ****/
-        /***************************************************/
-
-        private static BuiltInParameter[] m_LevelParameters = new BuiltInParameter[]
-        {
-            BuiltInParameter.FAMILY_LEVEL_PARAM,
-            BuiltInParameter.INSTANCE_REFERENCE_LEVEL_PARAM,
-            BuiltInParameter.INSTANCE_SCHEDULE_ONLY_LEVEL_PARAM,
-            BuiltInParameter.SCHEDULE_LEVEL_PARAM,
-            BuiltInParameter.RBS_START_LEVEL_PARAM,
-            BuiltInParameter.GROUP_LEVEL,
-            BuiltInParameter.ROOM_LEVEL_ID,
-            BuiltInParameter.LEVEL_PARAM,
-            BuiltInParameter.FACEROOF_LEVEL_PARAM
-        };
-
-        /***************************************************/
-
-        private static BuiltInParameter[] m_BaseLevelParameters = new BuiltInParameter[]
-        {
-            BuiltInParameter.WALL_BASE_CONSTRAINT,
-            BuiltInParameter.FAMILY_BASE_LEVEL_PARAM,
-            BuiltInParameter.SCHEDULE_BASE_LEVEL_PARAM,
-        };
-
-        /***************************************************/
-
-        private static BuiltInParameter[] m_TopLevelParameters = new BuiltInParameter[]
-        {
-            BuiltInParameter.WALL_HEIGHT_TYPE,
-            BuiltInParameter.FAMILY_TOP_LEVEL_PARAM,
-            BuiltInParameter.SCHEDULE_TOP_LEVEL_PARAM,
-        };
 
         /***************************************************/
     }
