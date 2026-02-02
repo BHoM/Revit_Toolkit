@@ -152,103 +152,88 @@ namespace BH.Revit.Adapter.Core
         {
             List<IBHoMObject> pushed = new List<IBHoMObject>();
 
-            //TODO: wrap into transaction group maybe?
-            using (Transaction transaction = new Transaction(document, transactionName))
+            using (TransactionGroup tg = new TransactionGroup(document, transactionName))
             {
-                transaction.Start();
+                tg.Start();
 
-                if (pushType == PushType.CreateOnly)
-                    pushed = Create(objects, pushConfig);
-                else if (pushType == PushType.CreateNonExisting)
+                using (Transaction transaction = new Transaction(document, transactionName))
                 {
-                    IEnumerable<IBHoMObject> toCreate = objects.Where(x => x.Element(document) == null);
-                    pushed = Create(toCreate, pushConfig);
-                }
-                else if (pushType == PushType.DeleteThenCreate)
-                {
-                    List<IBHoMObject> toCreate = new List<IBHoMObject>();
-                    foreach (IBHoMObject obj in objects)
+                    transaction.Start();
+
+                    if (pushType == PushType.CreateOnly)
+                        pushed = Create(objects, pushConfig);
+                    else if (pushType == PushType.CreateNonExisting)
                     {
-                        Element element = obj.Element(document);
-                        if (element == null || Delete(element.Id, document, false).Count() != 0)
-                            toCreate.Add(obj);
+                        IEnumerable<IBHoMObject> toCreate = objects.Where(x => x.Element(document) == null);
+                        pushed = Create(toCreate, pushConfig);
+                    }
+                    else if (pushType == PushType.DeleteThenCreate)
+                    {
+                        List<IBHoMObject> toCreate = new List<IBHoMObject>();
+                        foreach (IBHoMObject obj in objects)
+                        {
+                            Element element = obj.Element(document);
+                            if (element == null || Delete(element.Id, document, false).Count() != 0)
+                                toCreate.Add(obj);
+                        }
+
+                        pushed = Create(toCreate, pushConfig);
+                    }
+                    else if (pushType == PushType.UpdateOnly)
+                    {
+                        foreach (IBHoMObject obj in objects)
+                        {
+                            Element element = obj.Element(document);
+                            if (element != null && Update(element, obj, pushConfig))
+                                pushed.Add(obj);
+                        }
+                    }
+                    else if (pushType == PushType.UpdateOrCreateOnly)
+                    {
+                        List<IBHoMObject> toCreate = new List<IBHoMObject>();
+                        foreach (IBHoMObject obj in objects)
+                        {
+                            Element element = obj.Element(document);
+                            if (element != null && Update(element, obj, pushConfig))
+                                pushed.Add(obj);
+                            else if (element == null || Delete(element.Id, document, false).Count() != 0)
+                                toCreate.Add(obj);
+                        }
+
+                        pushed.AddRange(Create(toCreate, pushConfig));
                     }
 
-                    pushed = Create(toCreate, pushConfig);
-                }
-                else if (pushType == PushType.UpdateOnly)
-                {
-                    foreach (IBHoMObject obj in objects)
-                    {
-                        Element element = obj.Element(document);
-                        if (element != null && Update(element, obj, pushConfig))
-                            pushed.Add(obj);
-                    }
-                }
-                else if (pushType == PushType.UpdateOrCreateOnly)
-                {
-                    List<IBHoMObject> toCreate = new List<IBHoMObject>();
-                    foreach (IBHoMObject obj in objects)
-                    {
-                        Element element = obj.Element(document);
-                        if (element != null && Update(element, obj, pushConfig))
-                            pushed.Add(obj);
-                        else if (element == null || Delete(element.Id, document, false).Count() != 0)
-                            toCreate.Add(obj);
-                    }
-
-                    pushed.AddRange(Create(toCreate, pushConfig));
+                    transaction.Commit();
                 }
 
-                transaction.Commit();
-            }
-
-            if (SketchUpdateQueue.SketchUpdates.Count > 0)
-            {
-                using (TransactionGroup tg = new TransactionGroup(document, "Update floor sketches"))
+                if (SketchUpdateQueue.SketchUpdates.Count > 0)
                 {
-                    tg.Start();
-                    
-                    int successCount = 0;
-                    int errorCount = 0;
-                    List<string> errors = new List<string>();
+                    bool hasErrors = false;
                     
                     foreach (Action call in SketchUpdateQueue.SketchUpdates)
                     {
                         try
                         {
                             call.Invoke();
-                            successCount++;
                         }
                         catch (Exception ex)
                         {
-                            errorCount++;
+                            hasErrors = true;
                             string errorMsg = $"Sketch update failed: {ex.Message}";
                             if (ex.InnerException != null)
                                 errorMsg += $" Inner: {ex.InnerException.Message}";
-                            errors.Add(errorMsg);
                             BH.Engine.Base.Compute.RecordError(errorMsg);
                         }
                     }
                     
-                    if (errorCount == 0)
-                    {
-                        tg.Assimilate(); 
-                    }
+                    if (hasErrors)
+                        tg.RollBack();
                     else
-                    {
-                       
-                        if (successCount > 0)
-                        {
-                            BH.Engine.Base.Compute.RecordWarning($"Some sketch updates failed ({errorCount} of {SketchUpdateQueue.SketchUpdates.Count}). Partial updates may have been applied.");
-                            tg.Assimilate();
-                        }
-                        else
-                        {
-                            tg.RollBack();
-                            BH.Engine.Base.Compute.RecordError($"All sketch updates failed. Rolled back all changes.");
-                        }
-                    }
+                        tg.Assimilate();
+                }
+                else
+                {
+                    tg.Assimilate();
                 }
             }
             

@@ -447,11 +447,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Sets the location of a given Revit HostObject based on a given BHoM ISurface.")]
-        //[Input("element", "Revit HostObject to be modified.")]
-        //[Input("bHoMObject", "BHoM ISurface acting as a source of information about the new location.")]
-        //[Input("settings", "Revit adapter settings to be used while performing the operation.")]
-        //[Output("success", "True if location of the input Revit HostObject has been successfully set.")]
+        [Description("Sets the location of a given Revit Floor based on a given BHoM Floor.")]
+        [Input("element", "Revit Floor to be modified.")]
+        [Input("bHoMObject", "BHoM Floor acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit Floor has been successfully set.")]
         public static bool SetLocation(this Autodesk.Revit.DB.Floor element, BH.oM.Physical.Elements.Floor bHoMObject, RevitSettings settings)
         {
             return element.SetLocation(bHoMObject.Location, settings);
@@ -535,35 +535,40 @@ namespace BH.Revit.Engine.Core
             BH.oM.Geometry.Plane slabPlane = ps.FitPlane();
             double newOffset = (ps.IBounds().Min.Z.FromSI(SpecTypeId.Length) - level.ProjectElevation);
 
-            bool hasSlope = CalculateSlopeInfo(slabPlane, bhomPlane, projectedBoundary, settings, out Autodesk.Revit.DB.Line spanDirectionLine, out double tan);
+            (bool hasSlope, Autodesk.Revit.DB.Line spanDirectionLine, double tan) = CalculateSlopeInfo(slabPlane, bhomPlane, projectedBoundary, settings);
 
-            SketchUpdateQueue.SketchUpdates.Enqueue(() =>
+            if (HasFloorChanged(element, sketch, newOutline, newOffset, hasSlope, settings))
             {
-                Autodesk.Revit.DB.Floor floor = doc.GetElement(floorId) as Autodesk.Revit.DB.Floor;
-                if (floor == null || !floor.IsValidObject) return;
-
-                Sketch floorSketch = doc.GetElement(sketch.Id) as Sketch;
-                if (floorSketch == null) return;
-
-                try
+                SketchUpdateQueue.SketchUpdates.Enqueue(() =>
                 {
-                    UpdateSketchOutline(doc, sketch.Id, newOutline);
-                    UpdateFloorOffsetAndSlope(doc, floor, sketch.Id, hasSlope, spanDirectionLine, tan, newOutline, slabPlane, projectedBoundary, newOffset, floorId, settings);
-                }
-                catch (Exception ex)
-                {
-                    BH.Engine.Base.Compute.RecordError($"Failed to update floor sketch for ElementId {floorId.Value()}: {ex.Message}");
-                    throw;
-                }
-            });
+                    Autodesk.Revit.DB.Floor floor = doc.GetElement(floorId) as Autodesk.Revit.DB.Floor;
+                    if (floor == null || !floor.IsValidObject) return;
+
+                    Sketch floorSketch = doc.GetElement(sketch.Id) as Sketch;
+                    if (floorSketch == null) return;
+
+                    try
+                    {
+                        UpdateSketchOutline(doc, sketch.Id, newOutline);
+                        UpdateFloorOffsetAndSlope(doc, floor, sketch.Id, hasSlope, spanDirectionLine, tan, newOutline, slabPlane, projectedBoundary, newOffset, floorId, settings);
+                    }
+                    catch (Exception ex)
+                    {
+                        BH.Engine.Base.Compute.RecordError($"Failed to update floor sketch for ElementId {floorId.Value()}: {ex.Message}");
+                        throw;
+                    }
+                });
+            }
 
             return true;
         }
 
-        private static bool CalculateSlopeInfo(BH.oM.Geometry.Plane slabPlane, BH.oM.Geometry.Plane bhomPlane, BH.oM.Geometry.ICurve projectedBoundary, RevitSettings settings, out Autodesk.Revit.DB.Line spanDirectionLine, out double tan)
+        /***************************************************/
+
+        private static (bool hasSlope, Autodesk.Revit.DB.Line spanDirectionLine, double tan) CalculateSlopeInfo(BH.oM.Geometry.Plane slabPlane, BH.oM.Geometry.Plane bhomPlane, BH.oM.Geometry.ICurve projectedBoundary, RevitSettings settings)
         {
-            spanDirectionLine = null;
-            tan = 0.0;
+            Autodesk.Revit.DB.Line spanDirectionLine = null;
+            double tan = 0.0;
             XYZ n = slabPlane.Normal.ToRevit().Normalize();
             double dot = Math.Abs(n.DotProduct(XYZ.BasisZ));
             double slopeAngleRad = Math.Acos(Math.Min(1.0, Math.Max(-1.0, dot)));
@@ -572,7 +577,9 @@ namespace BH.Revit.Engine.Core
             if (hasSlope)
             {
                 Vector normal = slabPlane.Normal;
-                if (normal.Z < 0) normal = -slabPlane.Normal;
+                if (normal.Z < 0) 
+                    normal = -slabPlane.Normal;
+
                 double angle = normal.Angle(Vector.ZAxis);
                 tan = Math.Tan(angle);
                 Vector dir = normal.Project(oM.Geometry.Plane.XY);
@@ -580,8 +587,10 @@ namespace BH.Revit.Engine.Core
                 XYZ start = intersectionLine.ClosestPoint(projectedBoundary.IStartPoint(), true).ToRevit();
                 spanDirectionLine = Autodesk.Revit.DB.Line.CreateBound(start, start + dir.ToRevit().Normalize());
             }
-            return hasSlope;
+            return (hasSlope, spanDirectionLine, tan);
         }
+
+        /***************************************************/
 
         private static void UpdateSketchOutline(Document doc, ElementId sketchId, CurveLoop newOutline)
         {
@@ -607,6 +616,8 @@ namespace BH.Revit.Engine.Core
                 ses.Commit(new SketchUpdateFailurePreprocessor());
             }
         }
+
+        /***************************************************/
 
         private static void UpdateFloorOffsetAndSlope(Document doc, Autodesk.Revit.DB.Floor floor, ElementId sketchId, bool hasSlope, Autodesk.Revit.DB.Line spanDirectionLine, double tan, CurveLoop newOutline, BH.oM.Geometry.Plane slabPlane, BH.oM.Geometry.ICurve projectedBoundary, double newOffset, ElementId floorId, RevitSettings settings)
         {
@@ -640,6 +651,8 @@ namespace BH.Revit.Engine.Core
                 tOffset.Commit();
             }
         }
+        
+        /***************************************************/
 
         private static Autodesk.Revit.DB.Line CalculateSlopeArrowLine(Document doc, ElementId sketchId, BH.oM.Geometry.Plane slabPlane, BH.oM.Geometry.ICurve projectedBoundary, CurveLoop newOutline, Autodesk.Revit.DB.Line spanDirectionLine, ElementId floorId, RevitSettings settings)
         {
@@ -685,6 +698,8 @@ namespace BH.Revit.Engine.Core
             return Autodesk.Revit.DB.Line.CreateBound(highestProjected, lowestProjected);
         }
 
+        /***************************************************/
+
         private static Autodesk.Revit.DB.Floor CreateFloorWithSlope(Document doc, CurveLoop newOutline, ElementId floorTypeId, ElementId levelId, Autodesk.Revit.DB.Line slopeArrowLine, double tan, double newOffset, RevitSettings settings)
         {
             if (slopeArrowLine == null || slopeArrowLine.Length < settings.DistanceTolerance)
@@ -707,6 +722,8 @@ namespace BH.Revit.Engine.Core
             return newFloorWithSlope;
         }
 
+        /***************************************************/
+
         private static void VerifySlopeArrow(Document doc, Autodesk.Revit.DB.Floor newFloor, CurveLoop newOutline)
         {
             Sketch newFloorSketch = new FilteredElementCollector(doc).OfClass(typeof(Sketch)).Cast<Sketch>().FirstOrDefault(s => s.OwnerId == newFloor.Id);
@@ -721,6 +738,39 @@ namespace BH.Revit.Engine.Core
             if (lineCount <= newOutline.Count())
                 BH.Engine.Base.Compute.RecordWarning($"Slope arrow may not have been created properly for floor {newFloor.Id.Value()}. Expected slope arrow in sketch but found {lineCount} lines (boundary has {newOutline.Count()} curves).");
         }
+
+        /***************************************************/
+        private static bool HasFloorChanged(Autodesk.Revit.DB.Floor floor, Sketch sketch, CurveLoop newOutline, double newOffset, bool hasSlope, RevitSettings settings)
+        {
+            double currentOffset = floor.LookupParameterDouble(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM);
+            if (Math.Abs(currentOffset - newOffset.FromSI(SpecTypeId.Length)) > settings.DistanceTolerance)
+                return true;
+
+            IList<ElementId> sketchElements = sketch.GetAllElements();
+            if (sketchElements == null || sketchElements.Count == 0)
+                return true;
+
+            List<Curve> currentCurves = new List<Curve>();
+            foreach (ElementId elemId in sketchElements)
+            {
+                ModelCurve modelCurve = floor.Document.GetElement(elemId) as ModelCurve;
+                if (modelCurve != null && modelCurve.GeometryCurve != null && !(modelCurve.GeometryCurve is Autodesk.Revit.DB.Line && modelCurve.GeometryCurve.Length < 1.1))
+                    currentCurves.Add(modelCurve.GeometryCurve);
+            }
+
+            if (currentCurves.Count != newOutline.Count())
+                return true;
+
+            for (int i = 0; i < currentCurves.Count; i++)
+            {
+                if (!currentCurves[i].IsSimilar(newOutline.ElementAt(i), settings))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /***************************************************/
 
         private static bool SetLocation(this FamilyInstance element, BH.oM.Geometry.Point location, Basis orientation, RevitSettings settings)
         {
