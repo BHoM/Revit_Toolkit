@@ -542,10 +542,12 @@ namespace BH.Revit.Engine.Core
                 SketchUpdateQueue.SketchUpdates.Enqueue(() =>
                 {
                     Autodesk.Revit.DB.Floor floor = doc.GetElement(floorId) as Autodesk.Revit.DB.Floor;
-                    if (floor == null || !floor.IsValidObject) return;
+                    if (floor == null || !floor.IsValidObject) 
+                        return;
 
                     Sketch floorSketch = doc.GetElement(sketch.Id) as Sketch;
-                    if (floorSketch == null) return;
+                    if (floorSketch == null) 
+                        return;
 
                     try
                     {
@@ -606,6 +608,7 @@ namespace BH.Revit.Engine.Core
                         IList<ElementId> existingElements = currentSketch.GetAllElements();
                         if (existingElements != null && existingElements.Count > 0)
                             doc.Delete(existingElements);
+
                         SketchPlane sketchPlane = currentSketch.SketchPlane;
                         if (sketchPlane != null)
                             foreach (Curve curve in newOutline)
@@ -692,8 +695,18 @@ namespace BH.Revit.Engine.Core
             XYZ highestXYZ = highestPoint.ToRevit();
             XYZ lowestXYZ = lowestPoint.ToRevit();
 
+            if (!Query.IsValid(highestXYZ) || !Query.IsValid(lowestXYZ))
+            {
+                return spanDirectionLine;
+            }
+
             XYZ highestProjected = highestXYZ.Project(revitPlaneForArrow);
             XYZ lowestProjected = lowestXYZ.Project(revitPlaneForArrow);
+
+            if (!Query.IsValid(highestProjected) || !Query.IsValid(lowestProjected))
+            {
+                return spanDirectionLine;
+            }
 
             return Autodesk.Revit.DB.Line.CreateBound(highestProjected, lowestProjected);
         }
@@ -883,21 +896,8 @@ namespace BH.Revit.Engine.Core
 
             return success;
         }
-
+        
         /***************************************************/
-
-        private static bool IsValidPoint(XYZ point)
-        {
-            if (point == null)
-                return false;
-            
-            return !double.IsNaN(point.X) && !double.IsInfinity(point.X) &&
-                   !double.IsNaN(point.Y) && !double.IsInfinity(point.Y) &&
-                   !double.IsNaN(point.Z) && !double.IsInfinity(point.Z);
-        }
-
-        /***************************************************/
-
         private static bool UpdateRotationOfVerticalElement(this FamilyInstance element, IFramingElement bhomElement, RevitSettings settings)
         {
             bool updated = false;

@@ -150,6 +150,9 @@ namespace BH.Revit.Adapter.Core
 
         private List<IBHoMObject> PushToRevit(Document document, IEnumerable<IBHoMObject> objects, PushType pushType, RevitPushConfig pushConfig, string transactionName)
         {
+
+            SketchUpdateQueue.SketchUpdates.Clear();
+
             List<IBHoMObject> pushed = new List<IBHoMObject>();
 
             using (TransactionGroup tg = new TransactionGroup(document, transactionName))
@@ -208,8 +211,6 @@ namespace BH.Revit.Adapter.Core
 
                 if (SketchUpdateQueue.SketchUpdates.Count > 0)
                 {
-                    bool hasErrors = false;
-                    
                     foreach (Action call in SketchUpdateQueue.SketchUpdates)
                     {
                         try
@@ -218,26 +219,20 @@ namespace BH.Revit.Adapter.Core
                         }
                         catch (Exception ex)
                         {
-                            hasErrors = true;
-                            string errorMsg = $"Sketch update failed: {ex.Message}";
+                            string warningMsg = $"Sketch update failed: {ex.Message}";
                             if (ex.InnerException != null)
-                                errorMsg += $" Inner: {ex.InnerException.Message}";
-                            BH.Engine.Base.Compute.RecordError(errorMsg);
+                                warningMsg += $" Inner: {ex.InnerException.Message}";
+                            BH.Engine.Base.Compute.RecordWarning(warningMsg);
                         }
                     }
-                    
-                    if (hasErrors)
-                        tg.RollBack();
-                    else
-                        tg.Assimilate();
+
+                    tg.Assimilate();
                 }
                 else
                 {
                     tg.Assimilate();
                 }
             }
-            
-            SketchUpdateQueue.SketchUpdates.Clear();
 
             return pushed;
         }
