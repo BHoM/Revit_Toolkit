@@ -510,7 +510,7 @@ namespace BH.Revit.Engine.Core
             PlanarSurface ps = location as PlanarSurface;
             if (ps == null)
             {
-                BH.Engine.Base.Compute.RecordWarning("Ps error");
+                BH.Engine.Base.Compute.RecordWarning("Floor location must be a PlanarSurface");
                 return false;
             }
 
@@ -554,10 +554,10 @@ namespace BH.Revit.Engine.Core
                         UpdateSketchOutline(doc, sketch.Id, newOutline);
                         UpdateFloorOffsetAndSlope(doc, floor, sketch.Id, hasSlope, spanDirectionLine, tan, newOutline, slabPlane, projectedBoundary, newOffset, floorId, settings);
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) 
                     {
                         BH.Engine.Base.Compute.RecordError($"Failed to update floor sketch for ElementId {floorId.Value()}: {ex.Message}");
-                        throw;
+                        return;
                     }
                 });
             }
@@ -589,6 +589,7 @@ namespace BH.Revit.Engine.Core
                 XYZ start = intersectionLine.ClosestPoint(projectedBoundary.IStartPoint(), true).ToRevit();
                 spanDirectionLine = Autodesk.Revit.DB.Line.CreateBound(start, start + dir.ToRevit().Normalize());
             }
+
             return (hasSlope, spanDirectionLine, tan);
         }
 
@@ -661,13 +662,15 @@ namespace BH.Revit.Engine.Core
         {
             Sketch updatedSketch = doc.GetElement(sketchId) as Sketch;
             SketchPlane sketchPlaneForArrow = updatedSketch?.SketchPlane;
-            if (sketchPlaneForArrow == null) return spanDirectionLine;
+            if (sketchPlaneForArrow == null) 
+                return spanDirectionLine;
 
             Autodesk.Revit.DB.Plane revitPlaneForArrow = sketchPlaneForArrow.GetPlane();
             BH.oM.Geometry.Plane bhomPlaneForArrow = BH.Engine.Geometry.Create.Plane(revitPlaneForArrow.Origin.PointFromRevit(), revitPlaneForArrow.Normal.VectorFromRevit());
 
             List<BH.oM.Geometry.Point> boundaryPoints = projectedBoundary.IControlPoints();
-            if (boundaryPoints == null || boundaryPoints.Count < 2) return spanDirectionLine;
+            if (boundaryPoints == null || boundaryPoints.Count < 2) 
+                return spanDirectionLine;
 
             double highestZ = double.MinValue;
             double lowestZ = double.MaxValue;
@@ -690,7 +693,8 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            if (highestPoint == null || lowestPoint == null) return spanDirectionLine;
+            if (highestPoint == null || lowestPoint == null) 
+                return spanDirectionLine;
 
             XYZ highestXYZ = highestPoint.ToRevit();
             XYZ lowestXYZ = lowestPoint.ToRevit();
@@ -723,6 +727,7 @@ namespace BH.Revit.Engine.Core
                     newFloor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, newOffset, false);
                     doc.Regenerate();
                 }
+
                 return newFloor;
             }
 
@@ -732,6 +737,7 @@ namespace BH.Revit.Engine.Core
                 newFloorWithSlope.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, newOffset, false);
                 doc.Regenerate();
             }
+
             return newFloorWithSlope;
         }
 
@@ -740,7 +746,8 @@ namespace BH.Revit.Engine.Core
         private static void VerifySlopeArrow(Document doc, Autodesk.Revit.DB.Floor newFloor, CurveLoop newOutline)
         {
             Sketch newFloorSketch = new FilteredElementCollector(doc).OfClass(typeof(Sketch)).Cast<Sketch>().FirstOrDefault(s => s.OwnerId == newFloor.Id);
-            if (newFloorSketch == null) return;
+            if (newFloorSketch == null) 
+                return;
 
             int lineCount = newFloorSketch.GetAllElements().Count(elemId =>
             {
@@ -853,6 +860,7 @@ namespace BH.Revit.Engine.Core
                                 newLocation = linkTransform.OfPoint(newLocation);
 
                             if (ir.Distance > settings.DistanceTolerance)
+
                                 BH.Engine.Base.Compute.RecordWarning($"The location point used on update of a family instance has been snapped to its host face. ElementId: {element.Id.Value()}");
                         }
                     }
@@ -883,6 +891,7 @@ namespace BH.Revit.Engine.Core
                     }
 
                     if (1 - Math.Abs(revitNormal.DotProduct(bHoMNormal)) > settings.AngleTolerance)
+
                         BH.Engine.Base.Compute.RecordWarning($"The orientation applied to the family instance on update has different normal than the original one. Only in-plane rotation has been applied, the orientation out of plane has been ignored. ElementId: {element.Id.Value()}");
 
                     double angle = transform.BasisX.AngleOnPlaneTo(newX, revitNormal);

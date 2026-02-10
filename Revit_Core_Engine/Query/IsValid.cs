@@ -35,7 +35,7 @@ namespace BH.Revit.Engine.Core
         [Description("Checks whether the given XYZ point is valid (not null and does not contain NaN or Infinity values).")]
         [Input("point", "XYZ point to be checked for validity.")]
         [Output("isValid", "True if the input XYZ point is valid (not null and all coordinates are finite numbers), otherwise false.")]
-        public static bool IsValid(XYZ point)
+        public static bool IsValid(this XYZ point)
         {
             if (point == null)
                 return false;

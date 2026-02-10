@@ -132,6 +132,7 @@ namespace BH.Revit.Adapter.Core
                 {
                     List<string> distinctNames = group.Select(x => x.Name).Distinct().ToList();
                     if (distinctNames.Count > 1)
+
                         BH.Engine.Base.Compute.RecordWarning($"BHoM objects with names {string.Join(", ", distinctNames)} correspond to the same Revit assembly that has finally been named {group.Key.AssemblyTypeName}.");
                 }
             }
@@ -219,19 +220,16 @@ namespace BH.Revit.Adapter.Core
                         }
                         catch (Exception ex)
                         {
-                            string warningMsg = $"Sketch update failed: {ex.Message}";
+                            string errorMsg = $"Sketch update failed: {ex.Message}";
                             if (ex.InnerException != null)
-                                warningMsg += $" Inner: {ex.InnerException.Message}";
-                            BH.Engine.Base.Compute.RecordWarning(warningMsg);
+                                errorMsg += $" Inner: {ex.InnerException.Message}";
+
+                            BH.Engine.Base.Compute.RecordError(errorMsg);
                         }
                     }
+                }
 
-                    tg.Assimilate();
-                }
-                else
-                {
-                    tg.Assimilate();
-                }
+                tg.Assimilate(); 
             }
 
             return pushed;
