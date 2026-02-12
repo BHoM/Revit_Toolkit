@@ -223,6 +223,19 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts BH.oM.Physical.Elements.PadFoundation to a Revit FamilyInstance.")]
+        [Input("framingElement", "BH.oM.Physical.Elements.PadFoundation to be converted.")]
+        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.PadFoundation.")]
+        public static FamilyInstance ToRevitFamilyInstance(this PadFoundation framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
+        {
+            return null;
+        }
+
+        /***************************************************/
+
         [Description("Converts BH.oM.Physical.Elements.IFramingElement to a Revit FamilyInstance.")]
         [Input("framingElement", "BH.oM.Physical.Elements.IFramingElement to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
