@@ -1,0 +1,75 @@
+/*
+ * This file is part of the Buildings and Habitats object Model (BHoM)
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
+ *
+ * Each contributor holds copyright over their respective contributions.
+ * The project versioning (Git) records all such contribution source information.
+ *                                           
+ *                                                                              
+ * The BHoM is free software: you can redistribute it and/or modify         
+ * it under the terms of the GNU Lesser General Public License as published by  
+ * the Free Software Foundation, either version 3.0 of the License, or          
+ * (at your option) any later version.                                          
+ *                                                                              
+ * The BHoM is distributed in the hope that it will be useful,              
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of               
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                 
+ * GNU Lesser General Public License for more details.                          
+ *                                                                            
+ * You should have received a copy of the GNU Lesser General Public License     
+ * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
+ */
+
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+using BH.oM.Base.Attributes;
+using BH.Revit.Engine.Core;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+
+namespace BH.Revit.Engine.Core
+{
+    public static partial class Compute
+    {
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+
+        [Description("Zooms the active view to show the specified elements.")]
+        [Input("uiDoc", "The UIDocument containing the view to zoom.")]
+        [Input("elements", "List of elements to zoom to.")]
+        public static void ZoomToElements(this UIDocument uiDoc, List<Element> elements)
+        {
+            List<BoundingBoxXYZ> bboxes = elements.Select(x => uiDoc.Document.BoundingBox(x)).Where(x => x != null).ToList();
+            BoundingBoxXYZ bbox = bboxes.Bounds();
+            bbox.Inflate(4);
+            UIView view = uiDoc.GetOpenUIViews().FirstOrDefault(x => x.ViewId.Equals(uiDoc.ActiveView.Id));
+            view.ZoomAndCenterRectangle(bbox.Min, bbox.Max);
+        }
+
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        private static BoundingBoxXYZ BoundingBox(this Document hostDoc, Element element)
+        {
+            if (element.Document.IsLinked)
+            {
+                RevitLinkInstance linkInstance = element.Document.LinkInstance();
+                BoundingBoxXYZ bbox = element.get_BoundingBox(null);
+                if (bbox == null)
+                    return null;
+
+                Transform linkTransform = linkInstance.GetTotalTransform() ?? Transform.Identity;
+                return bbox.BoundsOfTransformed(linkTransform);
+            }
+            else
+            {
+                return element.get_BoundingBox(null);
+            }
+        }
+
+        /***************************************************/
+    }
+}
