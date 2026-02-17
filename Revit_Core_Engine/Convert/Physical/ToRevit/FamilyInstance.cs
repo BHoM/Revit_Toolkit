@@ -229,141 +229,47 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.PadFoundation.")]
-        public static FamilyInstance ToRevitFamilyInstance(this PadFoundation framingElement, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
+        public static FamilyInstance ToRevitFamilyInstance(this PadFoundation padFoundation, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
-            if (framingElement == null || document == null)
+            if (padFoundation == null || document == null)
                 return null;
 
-            FamilyInstance familyInstance = refObjects.GetValue<FamilyInstance>(document, framingElement.BHoM_Guid);
+            FamilyInstance familyInstance = refObjects.GetValue<FamilyInstance>(document, padFoundation.BHoM_Guid);
             if (familyInstance != null)
                 return familyInstance;
 
             settings = settings.DefaultIfNull();
 
-            List<BH.oM.Geometry.Line> boundary = ExtractBoundary(framingElement);
-            if (boundary == null || boundary.Count == 0)
+            XYZ origin = padFoundation.GetFoundationOrigin();
+            if (origin == null)
             {
-                BH.Engine.Base.Compute.RecordError($"Failed to extract boundary from PadFoundation. BHoM_Guid: {framingElement.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordError($"PadFoundation boundary extraction failed or foundation is not rectangular. BHoM_Guid: {padFoundation.BHoM_Guid}");
                 return null;
             }
 
-            if (!IsRectangular(boundary))
-            {
-                BH.Engine.Base.Compute.RecordError($"PadFoundation must be rectangular. BHoM_Guid: {framingElement.BHoM_Guid}");
-                return null;
-            }
-
-            BH.oM.Geometry.Point centerPoint = CalculateBoundaryCenter(boundary);
-
-            BH.oM.Geometry.CoordinateSystem.Cartesian localCS = new BH.oM.Geometry.CoordinateSystem.Cartesian(
-                centerPoint,
-                BH.oM.Geometry.Vector.XAxis,
-                BH.oM.Geometry.Vector.YAxis,
-                BH.oM.Geometry.Vector.ZAxis
-            );
-
-            FamilySymbol familySymbol = framingElement.ElementType(document, settings) as FamilySymbol;
-            if (familySymbol == null)
-            {
-                Compute.ElementTypeNotFoundWarning(framingElement);
-                return null;
-            }
-
-            BH.oM.Geometry.TransformMatrix orientationMatrix = BH.Engine.Geometry.Create.OrientationMatrixGlobalToLocal(localCS);
-            Transform transform = orientationMatrix.ToRevit().TryFixIfNonConformal();
-
-            XYZ origin = transform.Origin;
-            Level level = document.LevelBelow(origin, settings);
+            Level level = document.LevelBelow(origin, settings); //LevelAbove?
             if (level == null)
                 return null;
+
+            FamilySymbol familySymbol = padFoundation.ElementType(document, settings) as FamilySymbol;
+            if (familySymbol == null)
+            {
+                Compute.ElementTypeNotFoundWarning(padFoundation);
+                return null;
+            }
 
             familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, level, StructuralType.Footing);
             document.Regenerate();
 
-            familyInstance.CheckIfNullPush(framingElement);
+            familyInstance.CheckIfNullPush(padFoundation);
             if (familyInstance == null)
                 return null;
 
-            familyInstance.CopyParameters(framingElement, settings);
-            familyInstance.SetLocation(framingElement as IFramingElement, settings);
+            familyInstance.CopyParameters(padFoundation, settings);
+            familyInstance.SetLocation(padFoundation, settings); //setlocation  padfoundation
 
-            refObjects.AddOrReplace(framingElement, familyInstance);
+            refObjects.AddOrReplace(padFoundation, familyInstance);
             return familyInstance;
-        }
-
-        private static List<BH.oM.Geometry.Line> ExtractBoundary(PadFoundation element)
-        {
-            if (element.Location == null)
-                return null;
-
-            List<BH.oM.Geometry.Line> boundary = new List<BH.oM.Geometry.Line>();
-
-            if (element.Location is BH.oM.Geometry.PlanarSurface surface && surface.ExternalBoundary != null)
-            {
-                boundary.AddRange(
-                    surface.ExternalBoundary
-                        .SelectMany(curve => curve is BH.oM.Geometry.PolyCurve polyCurve ? polyCurve.Curves : new[] { curve })
-                        .OfType<BH.oM.Geometry.Line>()
-                );
-            }
-
-            return boundary.Count > 0 ? boundary : null;
-        }
-
-        private static bool IsRectangular(List<BH.oM.Geometry.Line> edges)
-        {
-            if (edges == null || edges.Count != 4)
-                return false;
-
-            double[] lengths = new double[4];
-            for (int i = 0; i < 4; i++)
-                lengths[i] = edges[i].Length();
-
-            double tolerance = 0.001; 
-            if (Math.Abs(lengths[0] - lengths[2]) > tolerance || Math.Abs(lengths[1] - lengths[3]) > tolerance)
-                return false;
-
-            BH.oM.Geometry.Point p1 = edges[0].Start;
-            BH.oM.Geometry.Point p2 = edges[0].End;
-            BH.oM.Geometry.Point p3 = edges[1].End;
-            BH.oM.Geometry.Point p4 = edges[2].End;
-
-            var d1 = (p1 - p3).Length();
-            var d2 = (p2 - p4).Length(); 
-
-            return Math.Abs(d1 - d2) <= tolerance;
-        }
-
-        private static BH.oM.Geometry.Point CalculateBoundaryCenter(List<BH.oM.Geometry.Line> boundary)
-        {
-            if (boundary == null || boundary.Count == 0)
-                return oM.Geometry.Point.Origin;
-
-            List<BH.oM.Geometry.Point> boundaryPoints = new List<BH.oM.Geometry.Point>();
-            foreach (var line in boundary)
-            {
-                boundaryPoints.Add(line.Start);
-                boundaryPoints.Add(line.End);
-            }
-
-            if (boundaryPoints.Count > 0)
-            {
-                double sumX = 0, sumY = 0, sumZ = 0;
-                foreach (var point in boundaryPoints)
-                {
-                    sumX += point.X;
-                    sumY += point.Y;
-                    sumZ += point.Z;
-                }
-
-                return new oM.Geometry.Point(
-                    sumX / boundaryPoints.Count,
-                    sumY / boundaryPoints.Count,
-                    sumZ / boundaryPoints.Count
-                );
-            }
-
-            return BH.oM.Geometry.Point.Origin;
         }
 
         /***************************************************/
