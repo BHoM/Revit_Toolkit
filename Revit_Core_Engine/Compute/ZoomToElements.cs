@@ -23,7 +23,6 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using BH.oM.Base.Attributes;
-using BH.Revit.Engine.Core;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -39,13 +38,19 @@ namespace BH.Revit.Engine.Core
         [Description("Zooms the active view to show the specified elements.")]
         [Input("uiDoc", "The UIDocument containing the view to zoom.")]
         [Input("elements", "List of elements to zoom to.")]
-        public static void ZoomToElements(this UIDocument uiDoc, List<Element> elements)
+        [Input("view", "Optional view to set as active before zooming. If null, the current active view will be used.")]
+        public static void ZoomToElements(this UIDocument uiDoc, List<Element> elements, View view = null)
         {
             List<BoundingBoxXYZ> bboxes = elements.Select(x => uiDoc.Document.BoundingBox(x)).Where(x => x != null).ToList();
             BoundingBoxXYZ bbox = bboxes.Bounds();
             bbox.Inflate(4);
-            UIView view = uiDoc.GetOpenUIViews().FirstOrDefault(x => x.ViewId.Equals(uiDoc.ActiveView.Id));
-            view.ZoomAndCenterRectangle(bbox.Min, bbox.Max);
+
+            // If a specific view is provided, set it as active before zooming
+            if (view != null)
+                uiDoc.ActiveView = view;
+
+            UIView uiView = uiDoc.GetOpenUIViews().FirstOrDefault(x => x.ViewId.Equals(uiDoc.ActiveView.Id));
+            uiView.ZoomAndCenterRectangle(bbox.Min, bbox.Max);
         }
 
         /***************************************************/
