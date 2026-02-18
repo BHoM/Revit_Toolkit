@@ -247,7 +247,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            Level level = document.LevelBelow(origin, settings); //LevelAbove?
+            Level level = document.LevelAbove(origin, settings); //LevelAbove?
             if (level == null)
                 return null;
 
@@ -266,7 +266,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             familyInstance.CopyParameters(padFoundation, settings);
-            familyInstance.SetLocation(padFoundation, settings); //setlocation  padfoundation
+            familyInstance.SetLocation(padFoundation, settings); //setlocation -> padFoundation added - to check
 
             refObjects.AddOrReplace(padFoundation, familyInstance);
             return familyInstance;

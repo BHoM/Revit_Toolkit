@@ -24,6 +24,8 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Geometry;
+using BH.oM.Geometry.CoordinateSystem;
 using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
@@ -101,33 +103,20 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static double ComputeTransformAngle(BH.oM.Geometry.CoordinateSystem.Cartesian localCS)
+        public static double ComputeTransformAngle(Cartesian localCS)
         {
-            //basisXY?
             if (localCS == null)
                 return 0.0;
 
-            BH.oM.Geometry.Vector globalXAxis = BH.oM.Geometry.Vector.XAxis;
-            BH.oM.Geometry.Vector localXAxis = localCS.X;
+            Basis basis = (Basis)localCS;
 
-            BH.oM.Geometry.Vector globalXAxisXY = new BH.oM.Geometry.Vector 
-            {
-                X = globalXAxis.X, 
-                Y = globalXAxis.Y, 
-                Z = 0.0 
-            }.Normalise();
+            var gx = BH.oM.Geometry.Vector.XAxis; // Global X Axis
+            var lx = basis.X; // Local X Axis
 
-            BH.oM.Geometry.Vector localXAxisXY = new BH.oM.Geometry.Vector 
-            {   
-                X = localXAxis.X, 
-                Y = localXAxis.Y, 
-                Z = 0.0 
-            }.Normalise();
+            var global = new BH.oM.Geometry.Vector { X = gx.X, Y = gx.Y, Z = 0 }.Normalise();
+            var local = new BH.oM.Geometry.Vector { X = lx.X, Y = lx.Y, Z = 0 }.Normalise();
 
-            double dot = globalXAxisXY.DotProduct(localXAxisXY);
-            double cross = globalXAxisXY.CrossProduct(localXAxisXY).Z;
-
-            return Math.Atan2(cross, dot);
+            return Math.Atan2(global.CrossProduct(local).Z, global.DotProduct(local));
         }
 
         /***************************************************/

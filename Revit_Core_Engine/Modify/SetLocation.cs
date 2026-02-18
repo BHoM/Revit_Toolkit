@@ -343,6 +343,13 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        public static bool SetLocation(this FamilyInstance element, PadFoundation padFoundation, RevitSettings settings)
+        {
+            return false;
+        }
+
+        /***************************************************/
+
         [Description("Sets the location of a given Revit Space based on a given BHoM Space.")]
         [Input("revitSpace", "Revit Space to be modified.")]
         [Input("bHoMSpace", "BHoM Space acting as a source of information about the new location.")]
