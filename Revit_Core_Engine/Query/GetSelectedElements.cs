@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
         [Output("elements", "List of currently selected elements.")]
         public static List<Element> GetSelectedElements(this UIDocument uiDocument)
         {
-            if (uiDocument == null)
+            if (uiDocument?.Selection == null)
                 return new List<Element>();
 
 #if REVIT2022
@@ -77,15 +77,9 @@ namespace BH.Revit.Engine.Core
                     else
                     {
                         // Linked document element
-                        var linkInstance = uiDocument.Document.GetElement(reference.ElementId) as RevitLinkInstance;
-                        if (linkInstance != null)
-                        {
-                            var linkedDoc = linkInstance.GetLinkDocument();
-                            if (linkedDoc != null)
-                            {
-                                element = linkedDoc.GetElement(reference.LinkedElementId);
-                            }
-                        }
+                        RevitLinkInstance linkInstance = uiDocument.Document.GetElement(reference.ElementId) as RevitLinkInstance;
+                        Document linkedDoc = linkInstance?.GetLinkDocument();
+                        element = linkedDoc?.GetElement(reference.LinkedElementId);
                     }
 
                     if (element != null)

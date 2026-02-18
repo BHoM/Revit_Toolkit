@@ -40,14 +40,12 @@ namespace BH.Revit.Engine.Core
         [Input("elements", "List of elements to set as selected.")]
         public static void SetSelection(this UIDocument uiDoc, List<Element> elements)
         {
-            if (uiDoc == null || elements == null || !elements.Any())
+            if (uiDoc == null || elements == null)
                 return;
 
 #if REVIT2022
             List<Element> hostElements = elements.Where(x => !x.Document.IsLinked).ToList();
-
-            if (hostElements.Any())
-                uiDoc.Selection.SetElementIds(hostElements.Select(x => x.Id).ToList());
+            uiDoc.Selection.SetElementIds(hostElements.Select(x => x.Id).ToList());
 #else
             List<Reference> references = new List<Reference>();
 
@@ -71,10 +69,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            if (references.Any())
-            {
-                uiDoc.Selection.SetReferences(references);
-            }
+            uiDoc.Selection.SetReferences(references);
 #endif
         }
 

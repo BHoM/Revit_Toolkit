@@ -49,7 +49,10 @@ namespace BH.Revit.Engine.Core
             if (view != null)
                 uiDoc.ActiveView = view;
 
-            UIView uiView = uiDoc.GetOpenUIViews().FirstOrDefault(x => x.ViewId.Equals(uiDoc.ActiveView.Id));
+            UIView uiView = uiDoc?.GetOpenUIViews()?.FirstOrDefault(x => x.ViewId.Equals(uiDoc.ActiveView.Id));
+            if (uiView == null)
+                return;
+
             uiView.ZoomAndCenterRectangle(bbox.Min, bbox.Max);
         }
 
@@ -59,20 +62,18 @@ namespace BH.Revit.Engine.Core
 
         private static BoundingBoxXYZ BoundingBox(this Document hostDoc, Element element)
         {
+            BoundingBoxXYZ bbox = element.get_BoundingBox(null);
+            if (bbox == null)
+                return null;
+
             if (element.Document.IsLinked)
             {
                 RevitLinkInstance linkInstance = element.Document.LinkInstance();
-                BoundingBoxXYZ bbox = element.get_BoundingBox(null);
-                if (bbox == null)
-                    return null;
-
                 Transform linkTransform = linkInstance.GetTotalTransform() ?? Transform.Identity;
-                return bbox.BoundsOfTransformed(linkTransform);
+                bbox = bbox.BoundsOfTransformed(linkTransform);
             }
-            else
-            {
-                return element.get_BoundingBox(null);
-            }
+
+            return bbox;
         }
 
         /***************************************************/
