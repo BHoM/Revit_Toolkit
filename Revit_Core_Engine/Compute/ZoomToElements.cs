@@ -72,8 +72,8 @@ namespace BH.Revit.Engine.Core
             if (element.Document.IsLinked)
             {
                 RevitLinkInstance linkInstance = element.Document.LinkInstance();
-                Transform linkTransform = linkInstance.GetTotalTransform() ?? Transform.Identity;
-                bbox = bbox.BoundsOfTransformed(linkTransform);
+                Transform linkTransform = linkInstance?.GetTotalTransform() ?? Transform.Identity;
+                bbox = bbox?.BoundsOfTransformed(linkTransform);
             }
 
             return bbox;
