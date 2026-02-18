@@ -28,6 +28,7 @@ using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.Environment.Elements;
 using BH.oM.Geometry;
+using BH.oM.Geometry.CoordinateSystem;
 using BH.oM.Physical.Elements;
 using BH.oM.Physical.FramingProperties;
 using System;
@@ -345,7 +346,20 @@ namespace BH.Revit.Engine.Core
 
         public static bool SetLocation(this FamilyInstance element, PadFoundation padFoundation, RevitSettings settings)
         {
-            return false;
+            if (element == null || padFoundation == null)
+                return false;
+
+            Cartesian coordinateSystem = padFoundation.CartesianCoordinateSystem();
+
+            if (coordinateSystem == null)
+            {
+                BH.Engine.Base.Compute.RecordWarning("CoordinateSystem is invalid.");
+                return false;
+            }
+
+            double rotationAngle = coordinateSystem.ComputeRotationAngle();
+
+            return true;
         }
 
         /***************************************************/

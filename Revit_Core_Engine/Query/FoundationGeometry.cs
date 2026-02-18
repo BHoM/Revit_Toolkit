@@ -103,7 +103,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static double ComputeTransformAngle(Cartesian localCS)
+        public static double ComputeRotationAngle(this Cartesian localCS)
         {
             if (localCS == null)
                 return 0.0;
@@ -126,7 +126,10 @@ namespace BH.Revit.Engine.Core
             BH.oM.Physical.Constructions.Construction constr = element.Construction as oM.Physical.Constructions.Construction;
 
             if (constr == null || constr.Layers == null || constr.Layers.Count == 0)
-                return 0.5;
+            {
+                BH.Engine.Base.Compute.RecordError("Invalid input");
+                return double.NaN;
+            }
 
             double totalDepth = 0.0;
             foreach (var layer in constr.Layers)
@@ -209,12 +212,12 @@ namespace BH.Revit.Engine.Core
 
         public static XYZ GetFoundationOrigin(this PadFoundation element)
         {
-            List<BH.oM.Geometry.Line> boundary = ExtractBoundary(element);
+            List<oM.Geometry.Line> boundary = ExtractBoundary(element);
             if (boundary == null) return null;
 
-            BH.oM.Geometry.Point centerPoint = boundary.Centroid();
-            BH.oM.Geometry.CoordinateSystem.Cartesian localCS = new BH.oM.Geometry.CoordinateSystem.Cartesian(centerPoint, BH.oM.Geometry.Vector.XAxis, BH.oM.Geometry.Vector.YAxis, BH.oM.Geometry.Vector.ZAxis);
-            BH.oM.Geometry.TransformMatrix orientationMatrix = BH.Engine.Geometry.Create.OrientationMatrixGlobalToLocal(localCS);
+            oM.Geometry.Point centerPoint = boundary.Centroid();
+            Cartesian localCS = new(centerPoint, Vector.XAxis, Vector.YAxis, Vector.ZAxis);
+            TransformMatrix orientationMatrix = BH.Engine.Geometry.Create.OrientationMatrixGlobalToLocal(localCS);
 
             Transform transform = orientationMatrix.ToRevit().TryFixIfNonConformal();
             return transform.Origin;

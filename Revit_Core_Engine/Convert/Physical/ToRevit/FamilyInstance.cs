@@ -247,11 +247,11 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            Level level = document.LevelAbove(origin, settings); //LevelAbove?
+            Level level = document.LevelAbove(origin.Z, settings); //LevelAbove?
             if (level == null)
                 return null;
 
-            FamilySymbol familySymbol = padFoundation.ElementType(document, settings) as FamilySymbol;
+            FamilySymbol familySymbol = padFoundation.GenerateFoundationType(document, settings);
             if (familySymbol == null)
             {
                 Compute.ElementTypeNotFoundWarning(padFoundation);
