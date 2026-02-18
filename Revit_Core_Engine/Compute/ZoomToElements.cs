@@ -41,7 +41,7 @@ namespace BH.Revit.Engine.Core
         [Input("view", "Optional view to set as active before zooming. If null, the current active view will be used.")]
         public static void ZoomToElements(this UIDocument uiDoc, List<Element> elements, View view = null)
         {
-            if (uiDoc?.Selection == null || elements == null || !elements.Any())
+            if (uiDoc == null || elements == null || !elements.Any())
                 return;
 
             List<BoundingBoxXYZ> bboxes = elements.Select(x => uiDoc.Document.BoundingBox(x)).Where(x => x != null).ToList();

@@ -43,6 +43,8 @@ namespace BH.Revit.Engine.Core
             if (uiDoc?.Selection == null || elements == null)
                 return;
 
+            elements = elements.Where(x => x != null).ToList();
+
 #if REVIT2022
             List<Element> hostElements = elements.Where(x => !x.Document.IsLinked).ToList();
             uiDoc.Selection.SetElementIds(hostElements.Select(x => x.Id).ToList());
