@@ -44,7 +44,7 @@ namespace BH.Revit.Engine.Core
             if (uiDoc == null || elements == null || !elements.Any())
                 return;
 
-            List<BoundingBoxXYZ> bboxes = elements.Select(x => uiDoc.Document.BoundingBox(x)).Where(x => x != null).ToList();
+            List<BoundingBoxXYZ> bboxes = elements.Select(x => x.BoundingBox()).Where(x => x != null).ToList();
             BoundingBoxXYZ bbox = bboxes.Bounds();
             bbox.Inflate(4);
 
@@ -63,7 +63,7 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
-        private static BoundingBoxXYZ BoundingBox(this Document hostDoc, Element element)
+        private static BoundingBoxXYZ BoundingBox(this Element element)
         {
             BoundingBoxXYZ bbox = element.get_BoundingBox(null);
             if (bbox == null)
