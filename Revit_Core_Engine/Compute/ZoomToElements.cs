@@ -44,7 +44,10 @@ namespace BH.Revit.Engine.Core
             if (uiDoc == null || elements == null || !elements.Any())
                 return;
 
-            List<BoundingBoxXYZ> bboxes = elements.Select(x => x.BoundingBox()).Where(x => x != null).ToList();
+            List<BoundingBoxXYZ> bboxes = elements.Select(x => x?.BoundingBox()).Where(x => x != null).ToList();
+            if (!bboxes.Any())
+                return;
+
             BoundingBoxXYZ bbox = bboxes.Bounds();
             bbox.Inflate(4);
 
