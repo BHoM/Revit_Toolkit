@@ -112,10 +112,13 @@ namespace BH.Revit.Engine.Core
 
             var gx = BH.oM.Geometry.Vector.XAxis; // Global X Axis
             var lx = basis.X; // Local X Axis
+            //if (1 - Math.Abs(gx.DotProduct(lx)) <= Tolerance.Angle)
+            //    gx = Vector.YAxis;
 
             var global = new BH.oM.Geometry.Vector { X = gx.X, Y = gx.Y, Z = 0 }.Normalise();
             var local = new BH.oM.Geometry.Vector { X = lx.X, Y = lx.Y, Z = 0 }.Normalise();
 
+            //return Math.Atan2(Vector.ZAxis, global.DotProduct(local));
             return Math.Atan2(global.CrossProduct(local).Z, global.DotProduct(local));
         }
 
@@ -216,6 +219,8 @@ namespace BH.Revit.Engine.Core
             if (boundary == null) return null;
 
             oM.Geometry.Point centerPoint = boundary.Centroid();
+            return centerPoint.ToRevit(); //?
+
             Cartesian localCS = new(centerPoint, Vector.XAxis, Vector.YAxis, Vector.ZAxis);
             TransformMatrix orientationMatrix = BH.Engine.Geometry.Create.OrientationMatrixGlobalToLocal(localCS);
 

@@ -22,6 +22,7 @@
 
 using Autodesk.Revit.DB;
 using BH.Engine.Geometry;
+using BH.Engine.Spatial;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
@@ -343,21 +344,82 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-
+        
+        //TO DO
+        //Teset script with rectangles (create & update) for push & pull
         public static bool SetLocation(this FamilyInstance element, PadFoundation padFoundation, RevitSettings settings)
         {
             if (element == null || padFoundation == null)
                 return false;
 
-            Cartesian coordinateSystem = padFoundation.CartesianCoordinateSystem();
-
+            //CS
+            oM.Geometry.Point centerPoint = padFoundation.Centroid();
+            Cartesian coordinateSystem = BH.Engine.Geometry.Create.CartesianCoordinateSystem(centerPoint, Vector.XAxis, Vector.YAxis);
             if (coordinateSystem == null)
             {
                 BH.Engine.Base.Compute.RecordWarning("CoordinateSystem is invalid.");
                 return false;
             }
 
+            // 1) Compare padFoundation vs element
+            LocationPoint elementLocation = element.Location as LocationPoint;
+            if (elementLocation == null)
+            {
+                BH.Engine.Base.Compute.RecordError($"Element does not have a valid LocationPoint. ElementId: {element.Id.Value()}");
+                return false;
+            }
+
+            XYZ currentLocation = elementLocation.Point;                    
+            XYZ targetLocation = coordinateSystem.Origin.ToRevit();
+
+            //oM.Geometry.Point currentPoint = elementLocation.Point.PointFromRevit();
+            //oM.Geometry.Point targetPoint = coordinateSystem.Origin;
+            // 2) If locations !=, -> MoveElement()
+            XYZ translation = targetLocation.Subtract(currentLocation);
+            //oM.Geometry.Vector translationVector = targetPoint - currentPoint;
+            //XYZ translation = translationVector.ToRevit();
+            if (translation.GetLength() > settings.DistanceTolerance)        
+            {
+                using (Transaction transaction = new Transaction(element.Document, "Move Element"))
+                {
+                    transaction.Start();
+                    ElementTransformUtils.MoveElement(element.Document, element.Id, translation);
+                    transaction.Commit();
+                }
+            }
+
+            // 3) ElementTransformUtils.RotateElement();
             double rotationAngle = coordinateSystem.ComputeRotationAngle();
+            if (Math.Abs(rotationAngle) > settings.AngleTolerance)
+            {
+                using (Transaction transaction = new Transaction(element.Document, "Rotate Element"))
+                {
+                    transaction.Start();
+                    Autodesk.Revit.DB.Line rotationAxis = Autodesk.Revit.DB.Line.CreateBound(
+                        targetLocation, targetLocation.Add(XYZ.BasisZ)); // BH.Engine.Geometry.Create.Line() - check if it can be used instead
+                    /* 
+                    oM.Geometry.Line rotationAxisBhom = BH.Engine.Geometry.Create.Line(targetPoint, targetPoint + oM.Geometry.Vector.ZAxis);
+                    Autodesk.Revit.DB.Line rotationAxis = rotationAxisBhom.ToRevit();
+                    */
+                    ElementTransformUtils.RotateElement(element.Document, element.Id, rotationAxis, rotationAngle);
+                    transaction.Commit();
+                }
+            }
+
+            // 4) Handle reference level, offset
+            Level level = element.Document.GetElement(element.LevelId) as Level;
+            if (level != null)
+            {
+                double levelElevation = level.ProjectElevation.ToSI(SpecTypeId.Length);
+                double targetZ = coordinateSystem.Origin.Z;
+                double offset = targetZ - levelElevation;
+
+                Parameter baseOffsetParam = element.get_Parameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM);
+                if (baseOffsetParam != null && !baseOffsetParam.IsReadOnly)
+                {
+                    baseOffsetParam.Set(offset.FromSI(SpecTypeId.Length));
+                }
+            }
 
             return true;
         }

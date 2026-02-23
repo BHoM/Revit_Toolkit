@@ -247,7 +247,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            Level level = document.LevelAbove(origin.Z, settings); //LevelAbove?
+            Level level = document.LevelAbove(origin.Z, settings); 
             if (level == null)
                 return null;
 
