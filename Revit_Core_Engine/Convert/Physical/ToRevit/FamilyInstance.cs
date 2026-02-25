@@ -224,7 +224,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
 
         [Description("Converts BH.oM.Physical.Elements.PadFoundation to a Revit FamilyInstance.")]
-        [Input("framingElement", "BH.oM.Physical.Elements.PadFoundation to be converted.")]
+        [Input("padFoundation", "BH.oM.Physical.Elements.PadFoundation to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
@@ -251,7 +251,7 @@ namespace BH.Revit.Engine.Core
             if (level == null)
                 return null;
 
-            FamilySymbol familySymbol = padFoundation.GenerateFoundationType(document, settings);
+            FamilySymbol familySymbol = padFoundation.ElementType(document, settings);
             if (familySymbol == null)
             {
                 Compute.ElementTypeNotFoundWarning(padFoundation);
@@ -266,7 +266,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             familyInstance.CopyParameters(padFoundation, settings);
-            familyInstance.SetLocation(padFoundation, settings); //setlocation -> padFoundation added - to check
+            familyInstance.SetLocation(padFoundation, settings); 
 
             refObjects.AddOrReplace(padFoundation, familyInstance);
             return familyInstance;

@@ -352,10 +352,59 @@ namespace BH.Revit.Engine.Core
             if (element == null || padFoundation == null)
                 return false;
 
-            //CS
+            //CS 
             oM.Geometry.Point centerPoint = padFoundation.Centroid();
-            Cartesian coordinateSystem = BH.Engine.Geometry.Create.CartesianCoordinateSystem(centerPoint, Vector.XAxis, Vector.YAxis);
-            if (coordinateSystem == null)
+
+            Cartesian coordinateLocalSystem = null;
+            try
+            {
+                List<oM.Geometry.Line> boundary = padFoundation.ExtractBoundary();
+                if (boundary != null && boundary.Count >= 4)
+                {
+                    // Find the longest edge that is perpendicular to edges
+                    oM.Geometry.Line longestPerpendicularEdge = null;
+                    double maxLength = 0;
+
+                    for (int i = 0; i < boundary.Count; i++)
+                    {
+                        oM.Geometry.Line currentEdge = boundary[i];
+                        double currentLength = currentEdge.Length();
+
+                        oM.Geometry.Line prevEdge = boundary[(i - 1 + boundary.Count) % boundary.Count];
+                        oM.Geometry.Line nextEdge = boundary[(i + 1) % boundary.Count];
+
+                        Vector prevDirection = prevEdge.Direction();
+                        Vector nextDirection = nextEdge.Direction();
+                        Vector currentDirection = currentEdge.Direction();
+
+                        double prevDot = Math.Abs(prevDirection.DotProduct(currentDirection));
+                        double nextDot = Math.Abs(nextDirection.DotProduct(currentDirection));
+
+                        bool isPerpendicular = prevDot < 0.1 && nextDot < 0.1;
+
+                        if (isPerpendicular && currentLength > maxLength)
+                        {
+                            longestPerpendicularEdge = currentEdge;
+                            maxLength = currentLength;
+                        }
+                    }
+
+                    if (longestPerpendicularEdge != null)
+                    {
+                        Vector xAxis = longestPerpendicularEdge.Direction().Normalise();
+                        Vector zAxis = Vector.ZAxis;
+                        Vector yAxis = zAxis.CrossProduct(xAxis).Normalise();
+
+                        coordinateLocalSystem = BH.Engine.Geometry.Create.CartesianCoordinateSystem(centerPoint, xAxis, yAxis);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                BH.Engine.Base.Compute.RecordError($"Failed to create local coordinate system for PadFoundation.");
+            }
+
+            if (coordinateLocalSystem == null)
             {
                 BH.Engine.Base.Compute.RecordWarning("CoordinateSystem is invalid.");
                 return false;
@@ -370,10 +419,10 @@ namespace BH.Revit.Engine.Core
             }
 
             XYZ currentLocation = elementLocation.Point;                    
-            XYZ targetLocation = coordinateSystem.Origin.ToRevit();
+            XYZ targetLocation = coordinateLocalSystem.Origin.ToRevit();
 
             //oM.Geometry.Point currentPoint = elementLocation.Point.PointFromRevit();
-            //oM.Geometry.Point targetPoint = coordinateSystem.Origin;
+            //oM.Geometry.Point targetPoint = coordinateLocalSystem.Origin;
             // 2) If locations !=, -> MoveElement()
             XYZ translation = targetLocation.Subtract(currentLocation);
             //oM.Geometry.Vector translationVector = targetPoint - currentPoint;
@@ -389,8 +438,9 @@ namespace BH.Revit.Engine.Core
             }
 
             // 3) ElementTransformUtils.RotateElement();
-            double rotationAngle = coordinateSystem.ComputeRotationAngle();
-            if (Math.Abs(rotationAngle) > settings.AngleTolerance)
+            double rotationAngleNew = coordinateLocalSystem.ComputeRotationAngle(); 
+            double rotationAngleOld = element.CoordinateSystem().ComputeRotationAngle(); 
+            if (Math.Abs(rotationAngleNew) > settings.AngleTolerance)
             {
                 using (Transaction transaction = new Transaction(element.Document, "Rotate Element"))
                 {
@@ -401,7 +451,7 @@ namespace BH.Revit.Engine.Core
                     oM.Geometry.Line rotationAxisBhom = BH.Engine.Geometry.Create.Line(targetPoint, targetPoint + oM.Geometry.Vector.ZAxis);
                     Autodesk.Revit.DB.Line rotationAxis = rotationAxisBhom.ToRevit();
                     */
-                    ElementTransformUtils.RotateElement(element.Document, element.Id, rotationAxis, rotationAngle);
+                    ElementTransformUtils.RotateElement(element.Document, element.Id, rotationAxis, rotationAngleNew);
                     transaction.Commit();
                 }
             }
@@ -411,7 +461,7 @@ namespace BH.Revit.Engine.Core
             if (level != null)
             {
                 double levelElevation = level.ProjectElevation.ToSI(SpecTypeId.Length);
-                double targetZ = coordinateSystem.Origin.Z;
+                double targetZ = coordinateLocalSystem.Origin.Z;
                 double offset = targetZ - levelElevation;
 
                 Parameter baseOffsetParam = element.get_Parameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM);

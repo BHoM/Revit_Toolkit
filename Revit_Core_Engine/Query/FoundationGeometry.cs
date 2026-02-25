@@ -39,7 +39,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<oM.Geometry.Line> ExtractBoundary(PadFoundation element)
+        public static List<oM.Geometry.Line> ExtractBoundary(this PadFoundation element)
         {
             if (element.Location == null)
                 return null;
@@ -124,7 +124,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static double GetThicknessFromConstr(PadFoundation element)
+        public static double GetThicknessFromConstr(this PadFoundation element)
         {
             BH.oM.Physical.Constructions.Construction constr = element.Construction as oM.Physical.Constructions.Construction;
 
@@ -144,7 +144,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static (double width, double length) GetRectangleDimensions(List<oM.Geometry.Line> boundary)
+        public static (double width, double length) GetRectangleDimensions(this List<oM.Geometry.Line> boundary)
         {
             if (boundary == null || boundary.Count != 4)
                 return (0, 0);
@@ -219,13 +219,7 @@ namespace BH.Revit.Engine.Core
             if (boundary == null) return null;
 
             oM.Geometry.Point centerPoint = boundary.Centroid();
-            return centerPoint.ToRevit(); //?
-
-            Cartesian localCS = new(centerPoint, Vector.XAxis, Vector.YAxis, Vector.ZAxis);
-            TransformMatrix orientationMatrix = BH.Engine.Geometry.Create.OrientationMatrixGlobalToLocal(localCS);
-
-            Transform transform = orientationMatrix.ToRevit().TryFixIfNonConformal();
-            return transform.Origin;
+            return centerPoint.ToRevit();
         }
     }
 }
