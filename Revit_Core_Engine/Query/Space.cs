@@ -52,12 +52,12 @@ namespace BH.Revit.Engine.Core
             if (element is Space space)
                 return space;
 
-            // 2. Check physical location - family instances without calculation point
+            // 2a. Check physical location - space property of family without calculation point
             FamilyInstance fi = element as FamilyInstance;
             if (fi != null && !fi.HasSpatialElementCalculationPoint && fi.Space != null)
                 return fi.Space;
 
-            // 3. Check physical location - use location point of the element
+            // 2b. Check physical location - location point of the element
             XYZ locationPoint = element.LocationPoint(false);
             if (locationPoint == null) 
                 return null;
@@ -79,7 +79,7 @@ namespace BH.Revit.Engine.Core
                     return sp;
             }
 
-            // 4. Use room calculation point and check which space contains it
+            // 3. Use room calculation point and check which space contains it
             if (fi != null && fi.HasSpatialElementCalculationPoint && useRoomCalculationPoint)
             {
                 if (fi.Space != null)
@@ -102,7 +102,7 @@ namespace BH.Revit.Engine.Core
             if (!findClosestIfNotContained)
                 return null;
 
-            // 5. If not found, try find closest space in connector directions (for MEP elements)
+            // 4. If not found, try find closest space in connector directions (for MEP elements)
             var connectors = element.Connectors()?.OrderByDescending(x => x.GetMEPConnectorInfo().IsPrimary).ToList();
             if (connectors != null && connectors.Any())
             {
@@ -123,7 +123,7 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            // 6. If still not found, try find closest below (negative Z direction)
+            // 5. If still not found, try find closest below (negative Z direction)
             Space foundClosestBelow = locationPoint.FindClosestSpaceInDirection(-XYZ.BasisZ, spaces, maxDistance: 10); // 10 feet max distance
             if (foundClosestBelow != null)
                 return foundClosestBelow;
