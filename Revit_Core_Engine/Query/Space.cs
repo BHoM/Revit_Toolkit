@@ -52,25 +52,26 @@ namespace BH.Revit.Engine.Core
             if (element is Space space)
                 return space;
 
-            Transform elementTransform = element.Document.IsLinked ? element.Document.LinkInstance().GetTotalTransform() : Transform.Identity;
+            // 2. Check physical location - family instances without calculation point
+            FamilyInstance fi = element as FamilyInstance;
+            if (fi != null && !fi.HasSpatialElementCalculationPoint && fi.Space != null)
+                return fi.Space;
 
-            if (spaces == null)
-            {
-                Document doc = element.Document;
-                spaces = new FilteredElementCollector(doc).OfClass(typeof(SpatialElement)).OfType<Space>().ToList();
-            }
-            else
-            {
-                m_LinkTransforms = spaces.GroupBy(s => s.Document).Where(g => g.Key.IsLinked).ToDictionary(g => g.Key, g => g.Key.LinkInstance().GetTotalTransform());
-            }
-
-            // 2. Check against physical location point of the element
-            XYZ locationPoint = element.LocationPoint();
+            // 3. Check physical location - use location point of the element
+            XYZ locationPoint = element.LocationPoint(false);
             if (locationPoint == null) 
                 return null;
 
+            // Transform location point if element is from linked document
+            Transform elementTransform = element.Document.IsLinked ? element.Document.LinkInstance().GetTotalTransform() : Transform.Identity;
             if (!elementTransform.IsIdentity)
                 locationPoint = elementTransform.OfPoint(locationPoint);
+
+            // Collect spaces and their transforms if from linked documents
+            if (spaces == null)
+                spaces = new FilteredElementCollector(element.Document).OfClass(typeof(SpatialElement)).OfType<Space>().ToList();
+            else
+                m_LinkTransforms = spaces.GroupBy(s => s.Document).Where(g => g.Key.IsLinked).ToDictionary(g => g.Key, g => g.Key.LinkInstance().GetTotalTransform());
 
             foreach (var sp in spaces)
             {
@@ -78,13 +79,12 @@ namespace BH.Revit.Engine.Core
                     return sp;
             }
 
-            // 2. If the element is a FamilyInstance, try the .Space property
-            if (element is FamilyInstance fi && fi.Space != null)
-                return fi.Space;
-
-            // 3. Use location point with room calculation point and check which space contains it
-            if (useRoomCalculationPoint)
+            // 4. Use room calculation point and check which space contains it
+            if (fi != null && fi.HasSpatialElementCalculationPoint && useRoomCalculationPoint)
             {
+                if (fi.Space != null)
+                    return fi.Space;
+
                 XYZ roomCalcPoint = element.LocationPoint(useRoomCalculationPoint);
                 if (roomCalcPoint == null)
                     return null;
@@ -102,7 +102,7 @@ namespace BH.Revit.Engine.Core
             if (!findClosestIfNotContained)
                 return null;
 
-            // 4. If not found, try find closest space in connector directions (for MEP elements)
+            // 5. If not found, try find closest space in connector directions (for MEP elements)
             var connectors = element.Connectors()?.OrderByDescending(x => x.GetMEPConnectorInfo().IsPrimary).ToList();
             if (connectors != null && connectors.Any())
             {
@@ -123,12 +123,12 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            // 5. If still not found, try find closest below (negative Z direction)
+            // 6. If still not found, try find closest below (negative Z direction)
             Space foundClosestBelow = locationPoint.FindClosestSpaceInDirection(-XYZ.BasisZ, spaces, maxDistance: 10); // 10 feet max distance
             if (foundClosestBelow != null)
                 return foundClosestBelow;
 
-            // 6. Not found
+            // Not found
             return null;
         }
 
