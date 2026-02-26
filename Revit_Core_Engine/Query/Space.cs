@@ -52,9 +52,7 @@ namespace BH.Revit.Engine.Core
             if (element is Space space)
                 return space;
 
-            // 2. If the element is a FamilyInstance, try the .Space property
-            if (element is FamilyInstance fi && fi.Space != null)
-                return fi.Space;
+            Transform elementTransform = element.Document.IsLinked ? element.Document.LinkInstance().GetTotalTransform() : Transform.Identity;
 
             if (spaces == null)
             {
@@ -66,12 +64,11 @@ namespace BH.Revit.Engine.Core
                 m_LinkTransforms = spaces.GroupBy(s => s.Document).Where(g => g.Key.IsLinked).ToDictionary(g => g.Key, g => g.Key.LinkInstance().GetTotalTransform());
             }
 
-            // 3. Use location point and check which space contains it
-            XYZ locationPoint = element.LocationPoint(useRoomCalculationPoint);
-            if (locationPoint == null)
+            // 2. Check against physical location point of the element
+            XYZ locationPoint = element.LocationPoint();
+            if (locationPoint == null) 
                 return null;
 
-            Transform elementTransform = element.Document.IsLinked ? element.Document.LinkInstance().GetTotalTransform() : Transform.Identity;
             if (!elementTransform.IsIdentity)
                 locationPoint = elementTransform.OfPoint(locationPoint);
 
@@ -79,6 +76,27 @@ namespace BH.Revit.Engine.Core
             {
                 if (locationPoint.IsInSpace(sp))
                     return sp;
+            }
+
+            // 2. If the element is a FamilyInstance, try the .Space property
+            if (element is FamilyInstance fi && fi.Space != null)
+                return fi.Space;
+
+            // 3. Use location point with room calculation point and check which space contains it
+            if (useRoomCalculationPoint)
+            {
+                XYZ roomCalcPoint = element.LocationPoint(useRoomCalculationPoint);
+                if (roomCalcPoint == null)
+                    return null;
+
+                if (!elementTransform.IsIdentity)
+                    roomCalcPoint = elementTransform.OfPoint(roomCalcPoint);
+
+                foreach (var sp in spaces)
+                {
+                    if (roomCalcPoint.IsInSpace(sp))
+                        return sp;
+                }
             }
 
             if (!findClosestIfNotContained)
