@@ -353,7 +353,7 @@ namespace BH.Revit.Engine.Core
                 return false;
 
             //CS 
-            oM.Geometry.Point centerPoint = padFoundation.Centroid(); //error check ! (create.cs)/ physical engine
+            oM.Geometry.Point centerPoint = padFoundation.Centroid(); 
             if (centerPoint == null)
             {
                 BH.Engine.Base.Compute.RecordError($"Failed to calculate centroid for PadFoundation. BHoM_Guid: {padFoundation.BHoM_Guid}");
@@ -391,12 +391,7 @@ namespace BH.Revit.Engine.Core
             XYZ currentLocation = elementLocation.Point;
             XYZ targetLocation = coordinateLocalSystem.Origin.ToRevit();
 
-            //oM.Geometry.Point currentPoint = elementLocation.Point.PointFromRevit();
-            //oM.Geometry.Point targetPoint = coordinateLocalSystem.Origin;
-            // 2) If locations !=, -> MoveElement()
             XYZ translation = targetLocation.Subtract(currentLocation);
-            //oM.Geometry.Vector translationVector = targetPoint - currentPoint;
-            //XYZ translation = translationVector.ToRevit();
             if (translation.GetLength() > settings.DistanceTolerance)        
             {
                 using (Transaction transaction = new Transaction(element.Document, "Move Element"))

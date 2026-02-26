@@ -233,11 +233,8 @@ namespace BH.Revit.Engine.Core
         public static XYZ GetFoundationOrigin(this PadFoundation element)
         {
             Polyline outline = ExtractBoundary(element);
-            if (outline == null)
-                return null;
-
             // Validate the outline shape
-            if (outline.ControlPoints == null)
+            if (outline?.ControlPoints == null)
                 return null;
 
             var points = outline.ControlPoints;
@@ -250,30 +247,14 @@ namespace BH.Revit.Engine.Core
             }
 
             // Check if the shape is closed 
-            if (points[0].Distance(points[4]) > BH.oM.Geometry.Tolerance.Distance)
+            if (!outline.IsClosed( BH.oM.Geometry.Tolerance.Distance))
             {
                 BH.Engine.Base.Compute.RecordError("Foundation outline is not properly closed.");
                 return null;
             }
 
-            List<oM.Geometry.Line> outlineLines = new List<oM.Geometry.Line>();
-            for (int i = 0; i < 4; i++) 
-            {
-                outlineLines.Add(new oM.Geometry.Line { Start = points[i], End = points[i + 1] });
-            }
-
-            //;check
-            oM.Geometry.Point centerPoint = new oM.Geometry.Point();
-
-            try
-            {
-                centerPoint = outlineLines.Centroid();
-            }
-            catch (Exception ex)
-            {
-                BH.Engine.Base.Compute.RecordError("Error msg:" + ex.Message);
-            }
-            //oM.Geometry.Point centerPoint = outlineLines.Centroid();
+            var centerPoint = outline.Centroid();
+            
             if (centerPoint == null)
             {
                 BH.Engine.Base.Compute.RecordError("Could not calculate centroid of foundation outline.");

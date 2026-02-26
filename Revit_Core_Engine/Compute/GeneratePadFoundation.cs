@@ -121,7 +121,7 @@ namespace BH.Revit.Engine.Core
 
             try
             {
-                result = SaveAndLoadFamily(document, familyDocument, familyName, padFoundation, settings);// in GenereateProfile.cs in SaveAndLoadFamily  - IFraming changed to IBHoMObject 
+                result = SaveAndLoadFamily(document, familyDocument, familyName);
             }
             catch (Exception ex)
             {
