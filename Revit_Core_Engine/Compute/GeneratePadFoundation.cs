@@ -25,6 +25,7 @@ using Autodesk.Revit.UI;
 using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
@@ -106,58 +107,6 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
-        private static Family SaveAndLoadFamily(Document document, Document familyDocument, string familyName, PadFoundation padFoundation, RevitSettings settings) //clean duplicate IBhom ob ject etc.
-        {
-            Family result = null;
-            string tempFolder = Path.GetTempPath();
-            string tempLocation = SanitizePathPadFoundation($"{tempFolder}\\{familyName}.rfa");
-
-            try
-            {
-                if (!Directory.Exists(tempFolder))
-                    Directory.CreateDirectory(tempFolder);
-
-                SaveAsOptions saveOptions = new SaveAsOptions();
-                saveOptions.OverwriteExistingFile = true;
-                familyDocument.SaveAs(tempLocation, saveOptions);
-            }
-            catch (Exception ex)
-            {
-                BH.Engine.Base.Compute.RecordError($"Creation of a freeform Revit profile geometry failed because the family could not be temporarily saved in {tempFolder}. Please make sure the folder exists and you have access to it, then try to empty it in case the issue persists.");
-                return null;
-            }
-
-            document.LoadFamily(tempLocation, out result);
-
-            try
-            {
-                File.Delete(tempLocation);
-            }
-            catch (Exception ex)
-            {
-                BH.Engine.Base.Compute.RecordNote($"File {tempLocation} could not be deleted.");
-            }
-
-            return result;
-        }
-
-        /***************************************************/
-
-        private static string SanitizePathPadFoundation(string inputPath) //clean duplicate
-        {
-            char[] invalidPathChars = Path.GetInvalidPathChars();
-            char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
-            char[] allInvalidChars = invalidPathChars.Concat(invalidFileNameChars).Where(x => x != '\\' && x != ':').Distinct().ToArray();
-
-            foreach (char c in allInvalidChars)
-            {
-                inputPath = inputPath.Replace(c.ToString(), "");
-            }
-
-            return inputPath;
-        }
-
-        /***************************************************/
         private static Family GenerateFamilyFromTemplate(this Document document, PadFoundation padFoundation, string familyName, RevitSettings settings = null)
         {
             string templateFamilyName = padFoundation.PadFoundationFamilyName();
@@ -172,7 +121,7 @@ namespace BH.Revit.Engine.Core
 
             try
             {
-                result = SaveAndLoadFamily(document, familyDocument, familyName, padFoundation, settings);
+                result = SaveAndLoadFamily(document, familyDocument, familyName, padFoundation, settings);// in GenereateProfile.cs in SaveAndLoadFamily  - IFraming changed to IBHoMObject 
             }
             catch (Exception ex)
             {
@@ -213,15 +162,14 @@ namespace BH.Revit.Engine.Core
                 return name.Split(':')[0].Trim();
             else
             {
-                // Add pad foundation name with StructuralFoundations prefix
                 Regex pattern = new Regex(@"\d([\d\.\/\-xX ])*\d");
-                return $"StructuralFoundations_{pattern.Replace(name, "").Replace("  ", " ").Trim()}";
+                return $"BHE_StructuralFoundations_{pattern.Replace(name, "").Replace("  ", " ").Trim()}";
             }
         }
 
         /***************************************************/
 
-        private static string PadFoundationTypeName(this PadFoundation padFoundation) //clean up duplicate
+        private static string PadFoundationTypeName(this PadFoundation padFoundation)
         {
             string name = padFoundation?.Name;
             if (string.IsNullOrWhiteSpace(name))
@@ -244,25 +192,25 @@ namespace BH.Revit.Engine.Core
 
         private static void CopyFoundationDimensions(this PadFoundation padFoundation, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
-            List<BH.oM.Geometry.Line> boundary = padFoundation.ExtractBoundary();
-            if (boundary == null)
+            Polyline outline = padFoundation.ExtractBoundary();
+            if (outline == null)
             {
-                BH.Engine.Base.Compute.RecordError($"PadFoundation boundary extraction failed. BHoM_Guid: {padFoundation.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordError($"PadFoundation outline extraction failed. BHoM_Guid: {padFoundation.BHoM_Guid}");
                 return;
             }
 
-            var (width, length) = boundary.GetRectangleDimensions();
+            var (width, length) = outline.GetRectangleDimensions();
             double depth = padFoundation.GetThicknessFromConstr();
 
-            Parameter widthParam = targetSymbol.LookupParameter("Width");
+            Parameter widthParam = targetSymbol.LookupParameter("BHE_Width");
             if (widthParam != null)
                 widthParam.Set(width);
 
-            Parameter lengthParam = targetSymbol.LookupParameter("Length");
+            Parameter lengthParam = targetSymbol.LookupParameter("BHE_Length");
             if (lengthParam != null)
                 lengthParam.Set(length);
 
-            Parameter depthParam = targetSymbol.LookupParameter("Depth");
+            Parameter depthParam = targetSymbol.LookupParameter("BHE_Depth");
             if (depthParam != null)
                 depthParam.Set(depth);
         }

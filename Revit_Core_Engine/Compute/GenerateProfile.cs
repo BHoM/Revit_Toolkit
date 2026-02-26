@@ -26,6 +26,7 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.Engine.Spatial;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.Physical.Elements;
 using BH.oM.Physical.FramingProperties;
@@ -116,7 +117,7 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
-        private static Family SaveAndLoadFamily(Document document, Document familyDocument, string familyName, IFramingElement element, RevitSettings settings)
+        private static Family SaveAndLoadFamily(Document document, Document familyDocument, string familyName, IBHoMObject bHoMObject, RevitSettings settings)
         {
             Family result = null;
             string tempFolder = Path.GetTempPath();

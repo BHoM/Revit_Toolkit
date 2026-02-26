@@ -23,12 +23,14 @@
 using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
+using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Geometry;
 using BH.oM.Geometry.CoordinateSystem;
 using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -39,48 +41,44 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        public static List<oM.Geometry.Line> ExtractBoundary(this PadFoundation element)
+        public static Polyline ExtractBoundary(this PadFoundation element)
         {
             if (element.Location == null)
                 return null;
 
-            List<BH.oM.Geometry.Line> boundary = new List<BH.oM.Geometry.Line>();
-
-            if (element.Location is BH.oM.Geometry.PlanarSurface surface && surface.ExternalBoundary != null)
+            if (element.Location.InternalBoundaries.Count != 0)
             {
-                var externalCurve = surface.ExternalBoundary;
-
-                if (externalCurve is BH.oM.Geometry.PolyCurve polyCurve)
-                {
-                    foreach (var curve in polyCurve.Curves)
-                    {
-                        if (curve is BH.oM.Geometry.Line line)
-                        {
-                            boundary.Add(line);
-                        }
-                    }
-                }
-                else if (externalCurve is BH.oM.Geometry.Line line)
-                {
-                    boundary.Add(line);
-                }
+                BH.Engine.Base.Compute.RecordError("InternalBoundaries error");
             }
 
-            if (boundary.Count == 0)
-                return null;
+            List<ICurve> segments = element.Location.ExternalBoundary.ISubParts().ToList();
+            if (segments.Any(x => !(x is BH.oM.Geometry.Line)))
+            {
+                BH.Engine.Base.Compute.RecordError("");
+            }
 
-            if (!IsRectangular(boundary))
-                return null;
-
-            return boundary;
+            return BH.Engine.Geometry.Create.Polyline(segments.Cast<BH.oM.Geometry.Line>().ToList());
         }
 
         /***************************************************/
 
-        public static bool IsRectangular(List<oM.Geometry.Line> edges)
+        public static bool IsRectangular(Polyline polyline)
         {
-            if (edges == null || edges.Count != 4)
+            if (polyline == null || polyline.ControlPoints == null)
                 return false;
+
+            var points = polyline.ControlPoints;
+            int pointCount = points.Count;
+
+            //Reecrtangle check  closing point
+            if (pointCount != 5)
+                return false;
+
+            List<BH.oM.Geometry.Line> edges = new List<BH.oM.Geometry.Line>();
+            for (int i = 0; i < 4; i++)
+            {
+                edges.Add(new BH.oM.Geometry.Line { Start = points[i], End = points[(i + 1) % pointCount] });
+            }
 
             double[] lengths = new double[4];
             for (int i = 0; i < 4; i++)
@@ -144,14 +142,27 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static (double width, double length) GetRectangleDimensions(this List<oM.Geometry.Line> boundary)
+        public static (double width, double length) GetRectangleDimensions(this Polyline polyline)
         {
-            if (boundary == null || boundary.Count != 4)
-                return (0, 0);
+            if (polyline == null || polyline.ControlPoints == null)
+            {
+                BH.Engine.Base.Compute.RecordWarning("Cannot get rectangle dimensions: polyline or control points are null.");
+            }
+
+            var points = polyline.ControlPoints;
+            int pointCount = points.Count;
+
+            if (pointCount != 5)
+            {
+                BH.Engine.Base.Compute.RecordWarning("Cannot get rectangle dimensions: polyline or control points are null.");
+            }
 
             double[] lengths = new double[4];
             for (int i = 0; i < 4; i++)
-                lengths[i] = boundary[i].Length();
+            {
+                var line = new BH.oM.Geometry.Line { Start = points[i], End = points[(i + 1) % pointCount] };
+                lengths[i] = line.Length();
+            }
 
             double side1 = lengths[0];
             double side2 = lengths[1];
@@ -166,8 +177,8 @@ namespace BH.Revit.Engine.Core
 
         public static FamilySymbol LoadPadRectangleTemplate(Document document, RevitSettings settings)
         {
-            string familyName = "StructuralFoundations_RectangleProfile";
-            string typeName = "Rectangle Foundation";
+            string familyName = "BHE_StructuralFoundations_Pad-Rectangular";
+            string typeName = "1000x1000x500 DP";
 
             return settings.FamilyLoadSettings.LoadFamilySymbol(document, "Structural Foundations", familyName, typeName);
         }
@@ -195,17 +206,23 @@ namespace BH.Revit.Engine.Core
 
             foundationSymbol.Activate();
 
-            List<BH.oM.Geometry.Line> boundary = ExtractBoundary(element);
-            var (width, length) = GetRectangleDimensions(boundary);
+            Polyline outline = ExtractBoundary(element);
+            if (outline == null || !IsRectangular(outline))
+            {
+                BH.Engine.Base.Compute.RecordError("Foundation outline must be rectangular.");
+                return null;
+            }
+
+            var (width, length) = GetRectangleDimensions(outline);
             double depth = GetThicknessFromConstr(element);
 
-            Parameter widthParam = foundationSymbol.LookupParameter("Width");
+            Parameter widthParam = foundationSymbol.LookupParameter("BHE_Width");
             widthParam?.Set(width);
 
-            Parameter lengthParam = foundationSymbol.LookupParameter("Length");
+            Parameter lengthParam = foundationSymbol.LookupParameter("BHE_Length");
             lengthParam?.Set(length);
 
-            Parameter depthParam = foundationSymbol.LookupParameter("Depth");
+            Parameter depthParam = foundationSymbol.LookupParameter("BHE_Depth");
             depthParam?.Set(depth);
 
             return foundationSymbol;
@@ -215,10 +232,54 @@ namespace BH.Revit.Engine.Core
 
         public static XYZ GetFoundationOrigin(this PadFoundation element)
         {
-            List<oM.Geometry.Line> boundary = ExtractBoundary(element);
-            if (boundary == null) return null;
+            Polyline outline = ExtractBoundary(element);
+            if (outline == null)
+                return null;
 
-            oM.Geometry.Point centerPoint = boundary.Centroid();
+            // Validate the outline shape
+            if (outline.ControlPoints == null)
+                return null;
+
+            var points = outline.ControlPoints;
+            int pointCount = points.Count;
+
+            if (pointCount != 5)
+            {
+                BH.Engine.Base.Compute.RecordError($"Foundation outline should have exactly 5 points for a rectangle, but has {pointCount}.");
+                return null;
+            }
+
+            // Check if the shape is closed 
+            if (points[0].Distance(points[4]) > BH.oM.Geometry.Tolerance.Distance)
+            {
+                BH.Engine.Base.Compute.RecordError("Foundation outline is not properly closed.");
+                return null;
+            }
+
+            List<oM.Geometry.Line> outlineLines = new List<oM.Geometry.Line>();
+            for (int i = 0; i < 4; i++) 
+            {
+                outlineLines.Add(new oM.Geometry.Line { Start = points[i], End = points[i + 1] });
+            }
+
+            //;check
+            oM.Geometry.Point centerPoint = new oM.Geometry.Point();
+
+            try
+            {
+                centerPoint = outlineLines.Centroid();
+            }
+            catch (Exception ex)
+            {
+                BH.Engine.Base.Compute.RecordError("Error msg:" + ex.Message);
+            }
+            //oM.Geometry.Point centerPoint = outlineLines.Centroid();
+            if (centerPoint == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Could not calculate centroid of foundation outline.");
+                return null;
+            }
+
             return centerPoint.ToRevit();
         }
     }
