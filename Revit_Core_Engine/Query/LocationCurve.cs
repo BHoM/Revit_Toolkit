@@ -246,6 +246,27 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        [Description("Queries a FamilyInstance to find its top face boundary curve, intended usage for Pad Foundations.")]
+        [Input("familyInstance", "Revit FamilyInstance to be queried.")]
+        [Input("settings", "Optional, the RevitSettings to be used.")]
+        [Output("locationCurvePadFoundation", "BHoM curve representing the top boundary of the pad foundation.")]
+        public static BH.oM.Geometry.ICurve LocationCurvePadFoundation(this FamilyInstance familyInstance, RevitSettings settings = null)
+        {
+            settings = settings.DefaultIfNull();
+
+            BoundingBoxXYZ bbox = familyInstance.get_BoundingBox(null);
+            if (bbox == null) return null;
+
+            oM.Geometry.Point p1 = new XYZ(bbox.Min.X, bbox.Min.Y, bbox.Max.Z).PointFromRevit();
+            oM.Geometry.Point p2 = new XYZ(bbox.Max.X, bbox.Min.Y, bbox.Max.Z).PointFromRevit();
+            oM.Geometry.Point p3 = new XYZ(bbox.Max.X, bbox.Max.Y, bbox.Max.Z).PointFromRevit();
+            oM.Geometry.Point p4 = new XYZ(bbox.Min.X, bbox.Max.Y, bbox.Max.Z).PointFromRevit();
+
+            return new BH.oM.Geometry.Polyline { ControlPoints = new List<oM.Geometry.Point> { p1, p2, p3, p4, p1 } };
+        }
+
+        /***************************************************/
     }
 }
 
