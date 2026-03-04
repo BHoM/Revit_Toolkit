@@ -52,7 +52,7 @@ namespace BH.Revit.Engine.Core
             if (element is Space space)
                 return space;
 
-            // 2a. Check physical location - space property of family without calculation point
+            // 2a. Check physical location - family without room calculation point
             FamilyInstance fi = element as FamilyInstance;
             if (fi != null && !fi.HasSpatialElementCalculationPoint && fi.Space != null)
                 return fi.Space;
@@ -117,16 +117,16 @@ namespace BH.Revit.Engine.Core
                         connDirection = elementTransform.OfVector(connDirection);
                     }
 
-                    Space foundClosest = connPoint.FindClosestSpaceInDirection(connDirection, spaces, maxDistance: 3); // 3 feet max distance
-                    if (foundClosest != null)
-                        return foundClosest;
+                    Space closestToConnector = connPoint.FindClosestSpaceInDirection(connDirection, spaces, maxDistance: 3); // 3 feet max distance
+                    if (closestToConnector != null)
+                        return closestToConnector;
                 }
             }
 
             // 5. If still not found, try find closest below (negative Z direction)
-            Space foundClosestBelow = locationPoint.FindClosestSpaceInDirection(-XYZ.BasisZ, spaces, maxDistance: 10); // 10 feet max distance
-            if (foundClosestBelow != null)
-                return foundClosestBelow;
+            Space closestBelow = locationPoint.FindClosestSpaceInDirection(-XYZ.BasisZ, spaces, maxDistance: 10); // 10 feet max distance
+            if (closestBelow != null)
+                return closestBelow;
 
             // Not found
             return null;
