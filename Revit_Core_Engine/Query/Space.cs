@@ -123,7 +123,12 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            // 5. If still not found, try find closest below (negative Z direction)
+            // 5. If still not found, try find closest above (Z direction)
+            Space closestAbove = locationPoint.FindClosestSpaceInDirection(XYZ.BasisZ, spaces, maxDistance: 1); // 1 feet max distance
+            if (closestAbove != null)
+                return closestAbove;
+
+            // 6. If still not found, try find closest below (negative Z direction)
             Space closestBelow = locationPoint.FindClosestSpaceInDirection(-XYZ.BasisZ, spaces, maxDistance: 10); // 10 feet max distance
             if (closestBelow != null)
                 return closestBelow;
