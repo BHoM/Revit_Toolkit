@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
@@ -25,7 +25,6 @@ using BH.Engine.Adapters.Revit;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Physical.Elements;
-using BH.oM.Physical.FramingProperties;
 using BH.oM.Base.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -76,11 +75,17 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            BoundingBoxXYZ bbox = familyInstance.get_BoundingBox(null);
-            double depth = bbox.Max.Z - bbox.Min.Z;
-
             FamilySymbol familySymbol = familyInstance.Document.GetElement(familyInstance.GetTypeId()) as FamilySymbol;
-            oM.Physical.Constructions.IConstruction construction = familySymbol?.ConstructionFromRevit(settings, refObjects);
+            oM.Physical.Constructions.Construction construction = familySymbol?.ConstructionFromRevit(settings, refObjects);
+
+            BoundingBoxXYZ bbox = familyInstance.get_BoundingBox(null);
+            if (bbox != null && construction != null)
+            {
+                double depth = (bbox.Max.Z - bbox.Min.Z).ToSI(SpecTypeId.Length);
+                BH.oM.Physical.Materials.Material material = familyInstance.FramingMaterial(settings, refObjects);
+
+                construction.Layers.Add(new oM.Physical.Constructions.Layer { Name = construction.Name, Material = material, Thickness = depth });
+            }
 
             padFoundation = BH.Engine.Physical.Create.PadFoundation(planarSurface, construction, familyInstance.FamilyTypeFullName());
 
@@ -95,4 +100,4 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
     }
-} 
+}
