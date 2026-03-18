@@ -81,7 +81,7 @@ namespace BH.Revit.Engine.Core
                 }
                 catch
                 {
-                    continue;
+                    
                 }
 
                 if (sci == null)
