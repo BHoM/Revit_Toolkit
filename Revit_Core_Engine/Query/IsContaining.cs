@@ -74,7 +74,16 @@ namespace BH.Revit.Engine.Core
             foreach (XYZ vector in vectors)
             {
                 Line l = Line.CreateBound(point - vector, point + vector);
-                SolidCurveIntersection sci = solid.IntersectWithCurve(l, sco);
+                SolidCurveIntersection sci = null;
+                try
+                {
+                    sci = solid.IntersectWithCurve(l, sco);
+                }
+                catch
+                {
+                    continue;
+                }
+
                 if (sci == null)
                     continue;
 
