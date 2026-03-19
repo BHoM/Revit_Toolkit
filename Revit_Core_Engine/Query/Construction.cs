@@ -22,9 +22,13 @@
 
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Analysis;
+using BH.Engine.Adapters.Revit;
+using BH.Engine.Base;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Environment.MaterialFragments;
+using BH.oM.Base;
 using BH.oM.Base.Attributes;
+using BH.oM.Environment.MaterialFragments;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
@@ -53,6 +57,52 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             element.CopyTypeToFragment(construction);
+            return construction;
+        }
+
+        /***************************************************/
+
+        [Description("Extracts the construction of the given Revit FamilyInstance.")]
+        [Input("familyInstance", "Revit FamilyInstance to extract the construction from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("construction", "Construction of the input Revit FamilyInstance.")]
+        public static oM.Physical.Constructions.Construction Construction(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            if (familyInstance == null)
+                return null;
+
+            if (familyInstance.Category.Id.Value() == (int)Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFoundation)
+                return familyInstance.ConstructionPadFoundation(settings, refObjects);
+            else
+                return familyInstance.Symbol.ConstructionFromRevit(settings, refObjects);
+        }
+
+        /***************************************************/
+
+        [Description("Extracts the construction of the given Revit pad foundation.")]
+        [Input("familyInstance", "Revit pad foundation to extract the construction from.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("construction", "Construction of the input Revit pad foundation.")]
+        public static oM.Physical.Constructions.Construction ConstructionPadFoundation(this FamilyInstance familyInstance, RevitSettings settings = null, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        {
+            settings = settings.DefaultIfNull();
+
+            FamilySymbol familySymbol = familyInstance?.Symbol;
+            if (familySymbol == null)
+                return null;
+
+            oM.Physical.Constructions.Construction construction = refObjects.GetValue<oM.Physical.Constructions.Construction>(familyInstance.Id);
+            if (construction != null)
+                return construction;
+
+            construction = familySymbol.ConstructionFromRevit(settings, refObjects);
+            construction = construction.DeepClone();
+
+            BoundingBoxXYZ bbox = familyInstance.get_BoundingBox(null);
+            double thickness = (bbox.Max.Z - bbox.Min.Z).ToSI(SpecTypeId.Length);
+
+            BH.oM.Physical.Materials.Material material = familyInstance.StructuralMaterial(settings, refObjects);
+            construction.Layers.Add(new oM.Physical.Constructions.Layer { Name = construction.Name, Material = material, Thickness = thickness });
             return construction;
         }
 
