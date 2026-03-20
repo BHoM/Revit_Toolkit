@@ -37,26 +37,6 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Queries a FamilyInstance to find its location surface.")]
-        [Input("familyInstance", "Revit FamilyInstance to be queried.")]
-        [Input("settings", "Optional, settings to be used when extracting the location surface.")]
-        [Output("locationSurface", "BHoM location surface queried from the FamilyInstance.")]
-        public static ISurface LocationSurface(this FamilyInstance familyInstance, RevitSettings settings)
-        {
-            if (familyInstance == null)
-                return null;
-
-            if (familyInstance.Category.Id.Value() == (int)Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFoundation)
-                return familyInstance.LocationSurfacePadFoundation(settings);
-            else
-            {
-                BH.Engine.Base.Compute.RecordError($"Extraction of location surface from elements of type {familyInstance.GetType().FullName} not supported. ElementId: {familyInstance.Id.Value()}");
-                return null;
-            }
-        }
-
-        /***************************************************/
-
         [Description("Queries a Revit pad foundation to find its location surface.")]
         [Input("padFoundation", "Revit pad foundation to be queried.")]
         [Input("settings", "Optional, settings to be used when extracting the location surface.")]
