@@ -529,6 +529,11 @@ namespace BH.Revit.Engine.Core
             Level level = doc.GetElement(element.LevelId) as Level;
             BH.oM.Geometry.Plane slabPlane = ps.FitPlane();
 
+            double floorThickness = 0;
+            FloorType floorType = doc.GetElement(element.GetTypeId()) as FloorType;
+            if (floorType?.GetCompoundStructure() != null)
+                floorThickness = floorType.GetCompoundStructure().GetWidth();
+
             double bottomElevation = ps.IBounds().Min.Z;
             oM.Geometry.Plane sketchPlaneBhom = new oM.Geometry.Plane { Origin = new BH.oM.Geometry.Point { Z = bottomElevation }, Normal = Vector.ZAxis };
             ICurve curve = ps.ExternalBoundary.IProject(sketchPlaneBhom);
@@ -542,7 +547,7 @@ namespace BH.Revit.Engine.Core
 
             if (isFlat)
             {
-                newOffset = slabPlane.Origin.Z.FromSI(SpecTypeId.Length) - level.ProjectElevation;
+                newOffset = slabPlane.Origin.Z.FromSI(SpecTypeId.Length) + floorThickness - level.ProjectElevation;
             }
             else
             {
@@ -556,9 +561,21 @@ namespace BH.Revit.Engine.Core
                 XYZ dir = normal.Project(oM.Geometry.Plane.XY).ToRevit().Normalize();
                 BH.oM.Geometry.Line ln = slabPlane.PlaneIntersection(sketchPlaneBhom);
                 XYZ start = ln.ClosestPoint(curve.IStartPoint(), true).ToRevit();
-                slopeLineForCreate = Autodesk.Revit.DB.Line.CreateBound(start, start + dir);
 
-                newOffset = ln.Start.Z.FromSI(SpecTypeId.Length) - level.ProjectElevation;
+                CurveLoop outlineForIntersection = curve.ToRevitCurveLoop();
+                XYZ centroid = curve.ICentroid().ToRevit();
+
+                double extensionLength = 10000;
+                Autodesk.Revit.DB.Line slopeThroughCentroid = Autodesk.Revit.DB.Line.CreateBound(centroid - dir * extensionLength, centroid + dir * extensionLength);
+
+                List<XYZ> edgePoints = slopeThroughCentroid.Intersections(outlineForIntersection);
+                if (edgePoints != null && edgePoints.Count >= 2)
+                {
+                    edgePoints.Sort((a, b) => a.DotProduct(dir).CompareTo(b.DotProduct(dir)));
+                    slopeLineForCreate = Autodesk.Revit.DB.Line.CreateBound(edgePoints.First(), edgePoints.Last());
+                }
+
+                newOffset = ln.Start.Z.FromSI(SpecTypeId.Length) + floorThickness - level.ProjectElevation;
             }
 
             CurveLoop newOutline;
@@ -603,7 +620,7 @@ namespace BH.Revit.Engine.Core
                                 tSlope.Start();
                                 doc.Delete(floor.Id);
                                 doc.Regenerate();
-                                Autodesk.Revit.DB.Floor newFloor = Autodesk.Revit.DB.Floor.Create( doc, new List<CurveLoop> { getOutline }, floorTypeId, levelId, true, slopeLine, -getTan);
+                                Autodesk.Revit.DB.Floor newFloor = Autodesk.Revit.DB.Floor.Create(doc, new List<CurveLoop> { getOutline }, floorTypeId, levelId, true, slopeLine, -getTan);
                                 if (newFloor != null)
                                 {
                                     newFloor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, getOffset, false);
@@ -640,34 +657,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static (bool hasSlope, Autodesk.Revit.DB.Line spanDirectionLine, double tan) CalculateSlopeInfo(BH.oM.Geometry.Plane slabPlane, BH.oM.Geometry.Plane bhomPlane, BH.oM.Geometry.ICurve projectedBoundary, RevitSettings settings)
-        {
-            Autodesk.Revit.DB.Line spanDirectionLine = null;
-            double tan = 0.0;
-            XYZ n = slabPlane.Normal.ToRevit().Normalize();
-            double dot = Math.Abs(n.DotProduct(XYZ.BasisZ));
-            double slopeAngleRad = Math.Acos(Math.Min(1.0, Math.Max(-1.0, dot)));
-            bool hasSlope = slopeAngleRad > settings.AngleTolerance;
-
-            if (hasSlope)
-            {
-                Vector normal = slabPlane.Normal;
-                if (normal.Z < 0) 
-                    normal = -slabPlane.Normal;
-
-                double angle = normal.Angle(Vector.ZAxis);
-                tan = Math.Tan(angle);
-                Vector dir = normal.Project(oM.Geometry.Plane.XY);
-                BH.oM.Geometry.Line intersectionLine = slabPlane.PlaneIntersection(bhomPlane);
-                XYZ start = intersectionLine.ClosestPoint(projectedBoundary.IStartPoint(), true).ToRevit();
-                spanDirectionLine = Autodesk.Revit.DB.Line.CreateBound(start, start + dir.ToRevit().Normalize());
-            }
-
-            return (hasSlope, spanDirectionLine, tan);
-        }
-
-        /***************************************************/
-
         private static void UpdateSketchOutline(Document doc, ElementId sketchId, CurveLoop newOutline)
         {
             using (SketchEditScope ses = new SketchEditScope(doc, "Update floor sketch"))
@@ -696,146 +685,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static void UpdateFloorOffsetAndSlope(Document doc, Autodesk.Revit.DB.Floor floor, ElementId sketchId, bool hasSlope, Autodesk.Revit.DB.Line spanDirectionLine, double tan, CurveLoop newOutline, BH.oM.Geometry.Plane slabPlane, BH.oM.Geometry.ICurve projectedBoundary, double newOffset, ElementId floorId, RevitSettings settings)
-        {
-            using (Transaction tOffset = new Transaction(doc, "Update floor offset and slope"))
-            {
-                tOffset.Start();
-                if (hasSlope && spanDirectionLine != null)
-                {
-                    FloorType floorType = doc.GetElement(floor.GetTypeId()) as FloorType;
-                    Level floorLevel = doc.GetElement(floor.LevelId) as Level;
-                    if (floorType != null && floorLevel != null && newOutline != null && !newOutline.IsOpen() && newOutline.Count() > 0)
-                    {
-                        Autodesk.Revit.DB.Line slopeArrowLine = CalculateSlopeArrowLine(doc, sketchId, slabPlane, projectedBoundary, newOutline, spanDirectionLine, floorId, settings);
-                        doc.Delete(floor.Id);
-                        doc.Regenerate();
-                        Autodesk.Revit.DB.Floor newFloor = CreateFloorWithSlope(doc, newOutline, floorType.Id, floorLevel.Id, slopeArrowLine, tan, newOffset, settings);
-                        if (newFloor != null)
-                            VerifySlopeArrow(doc, newFloor, newOutline);
-                    }
-                    else if (floorType == null || floorLevel == null)
-                    {
-                        floor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, newOffset, false);
-                        doc.Regenerate();
-                    }
-                }
-                else
-                {
-                    floor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, newOffset, false);
-                    doc.Regenerate();
-                }
-                tOffset.Commit();
-            }
-        }
-        
-        /***************************************************/
-
-        private static Autodesk.Revit.DB.Line CalculateSlopeArrowLine(Document doc, ElementId sketchId, BH.oM.Geometry.Plane slabPlane, BH.oM.Geometry.ICurve projectedBoundary, CurveLoop newOutline, Autodesk.Revit.DB.Line spanDirectionLine, ElementId floorId, RevitSettings settings)
-        {
-            Sketch updatedSketch = doc.GetElement(sketchId) as Sketch;
-            SketchPlane sketchPlaneForArrow = updatedSketch?.SketchPlane;
-            if (sketchPlaneForArrow == null) 
-                return spanDirectionLine;
-
-            Autodesk.Revit.DB.Plane revitPlaneForArrow = sketchPlaneForArrow.GetPlane();
-            BH.oM.Geometry.Plane bhomPlaneForArrow = BH.Engine.Geometry.Create.Plane(revitPlaneForArrow.Origin.PointFromRevit(), revitPlaneForArrow.Normal.VectorFromRevit());
-
-            List<BH.oM.Geometry.Point> boundaryPoints = projectedBoundary.IControlPoints();
-            if (boundaryPoints == null || boundaryPoints.Count < 2) 
-                return spanDirectionLine;
-
-            double highestZ = double.MinValue;
-            double lowestZ = double.MaxValue;
-            BH.oM.Geometry.Point highestPoint = null;
-            BH.oM.Geometry.Point lowestPoint = null;
-
-            foreach (BH.oM.Geometry.Point pt in boundaryPoints)
-            {
-                BH.oM.Geometry.Point pointOnSlab = slabPlane.ClosestPoint(pt);
-                double z = pointOnSlab.Z;
-                if (z > highestZ)
-                {
-                    highestZ = z;
-                    highestPoint = pt;
-                }
-                if (z < lowestZ)
-                {
-                    lowestZ = z;
-                    lowestPoint = pt;
-                }
-            }
-
-            if (highestPoint == null || lowestPoint == null) 
-                return spanDirectionLine;
-
-            XYZ highestXYZ = highestPoint.ToRevit();
-            XYZ lowestXYZ = lowestPoint.ToRevit();
-
-            if (!Query.IsValid(highestXYZ) || !Query.IsValid(lowestXYZ))
-            {
-                return spanDirectionLine;
-            }
-
-            XYZ highestProjected = highestXYZ.Project(revitPlaneForArrow);
-            XYZ lowestProjected = lowestXYZ.Project(revitPlaneForArrow);
-
-            if (!Query.IsValid(highestProjected) || !Query.IsValid(lowestProjected))
-            {
-                return spanDirectionLine;
-            }
-
-            return Autodesk.Revit.DB.Line.CreateBound(highestProjected, lowestProjected);
-        }
-
-        /***************************************************/
-
-        private static Autodesk.Revit.DB.Floor CreateFloorWithSlope(Document doc, CurveLoop newOutline, ElementId floorTypeId, ElementId levelId, Autodesk.Revit.DB.Line slopeArrowLine, double tan, double newOffset, RevitSettings settings)
-        {
-            if (slopeArrowLine == null || slopeArrowLine.Length < settings.DistanceTolerance)
-            {
-                Autodesk.Revit.DB.Floor newFloor = Autodesk.Revit.DB.Floor.Create(doc, new List<CurveLoop> { newOutline }, floorTypeId, levelId);
-                if (newFloor != null)
-                {
-                    newFloor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, newOffset, false);
-                    doc.Regenerate();
-                }
-
-                return newFloor;
-            }
-
-            Autodesk.Revit.DB.Floor newFloorWithSlope = Autodesk.Revit.DB.Floor.Create(doc, new List<CurveLoop> { newOutline }, floorTypeId, levelId, true, slopeArrowLine, -tan);
-            if (newFloorWithSlope != null)
-            {
-                newFloorWithSlope.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, newOffset, false);
-                doc.Regenerate();
-            }
-
-            return newFloorWithSlope;
-        }
-
-        /***************************************************/
-
-        private static void VerifySlopeArrow(Document doc, Autodesk.Revit.DB.Floor newFloor, CurveLoop newOutline)
-        {
-            Sketch newFloorSketch = new FilteredElementCollector(doc).OfClass(typeof(Sketch)).Cast<Sketch>().FirstOrDefault(s => s.OwnerId == newFloor.Id);
-            if (newFloorSketch == null) 
-                return;
-
-            int lineCount = newFloorSketch.GetAllElements().Count(elemId =>
-            {
-                ModelCurve modelCurve = doc.GetElement(elemId) as ModelCurve;
-                return modelCurve != null && modelCurve.GeometryCurve is Autodesk.Revit.DB.Line;
-            });
-
-            if (lineCount <= newOutline.Count())
-                BH.Engine.Base.Compute.RecordWarning($"Slope arrow may not have been created properly for floor {newFloor.Id.Value()}. Expected slope arrow in sketch but found {lineCount} lines (boundary has {newOutline.Count()} curves).");
-        }
-
-        /***************************************************/
         private static bool HasFloorChanged(Autodesk.Revit.DB.Floor floor, Sketch sketch, CurveLoop newOutline, double newOffset, bool hasSlope, RevitSettings settings)
         {
-            double currentOffset = floor.LookupParameterDouble(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM);
+            // newOffset is in Revit internal units (feet), so read without SI conversion
+            double currentOffset = floor.LookupParameterDouble(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, false);
             if (Math.Abs(currentOffset - newOffset) > settings.DistanceTolerance)
                 return true;
 
