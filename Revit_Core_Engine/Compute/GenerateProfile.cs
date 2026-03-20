@@ -26,7 +26,6 @@ using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.Engine.Spatial;
 using BH.oM.Adapters.Revit.Settings;
-using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.Physical.Elements;
 using BH.oM.Physical.FramingProperties;
@@ -117,7 +116,7 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
-        private static Family SaveAndLoadFamily(Document document, Document templateDocument, string familyName)
+        private static Family SaveAndLoadFamily(Document document, Document familyDocument, string familyName, IFramingElement element, RevitSettings settings)
         {
             Family result = null;
             string tempFolder = Path.GetTempPath();
@@ -130,7 +129,7 @@ namespace BH.Revit.Engine.Core
 
                 SaveAsOptions saveOptions = new SaveAsOptions();
                 saveOptions.OverwriteExistingFile = true;
-                templateDocument.SaveAs(tempLocation, saveOptions);
+                familyDocument.SaveAs(tempLocation, saveOptions);
             }
             catch (Exception ex)
             {
@@ -175,7 +174,7 @@ namespace BH.Revit.Engine.Core
                     t.Commit();
                 }
 
-                result = SaveAndLoadFamily(document, familyDocument, familyName);
+                result = SaveAndLoadFamily(document, familyDocument, familyName, element, settings);
             }
             catch (Exception ex)
             {
@@ -274,7 +273,7 @@ namespace BH.Revit.Engine.Core
                     t.Commit();
                 }
 
-                result = SaveAndLoadFamily(document, familyDocument, familyName);
+                result = SaveAndLoadFamily(document, familyDocument, familyName, element, settings);
             }
             catch (Exception ex)
             {

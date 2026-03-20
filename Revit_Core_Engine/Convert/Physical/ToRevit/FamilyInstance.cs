@@ -223,57 +223,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Converts BH.oM.Physical.Elements.PadFoundation to a Revit FamilyInstance.")]
-        [Input("padFoundation", "BH.oM.Physical.Elements.PadFoundation to be converted.")]
-        [Input("document", "Revit document, in which the output of the convert will be created.")]
-        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
-        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
-        [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.PadFoundation.")]
-        public static FamilyInstance ToRevitFamilyInstance(this PadFoundation padFoundation, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
-        {
-            if (padFoundation == null || document == null)
-                return null;
-
-            FamilyInstance familyInstance = refObjects.GetValue<FamilyInstance>(document, padFoundation.BHoM_Guid);
-            if (familyInstance != null)
-                return familyInstance;
-
-            settings = settings.DefaultIfNull();
-
-            XYZ origin = padFoundation.GetFoundationOrigin();
-            if (origin == null)
-            {
-                BH.Engine.Base.Compute.RecordError($"PadFoundation boundary extraction failed or foundation is not rectangular. BHoM_Guid: {padFoundation.BHoM_Guid}");
-                return null;
-            }
-
-            Level level = document.LevelAbove(origin.Z, settings); 
-            if (level == null)
-                return null;
-
-            FamilySymbol familySymbol = padFoundation.ElementType(document, settings);
-            if (familySymbol == null)
-            {
-                Compute.ElementTypeNotFoundWarning(padFoundation);
-                return null;
-            }
-
-            familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, level, StructuralType.Footing);
-            document.Regenerate();
-
-            familyInstance.CheckIfNullPush(padFoundation);
-            if (familyInstance == null)
-                return null;
-
-            familyInstance.CopyParameters(padFoundation, settings);
-            familyInstance.SetLocation(padFoundation, settings); 
-
-            refObjects.AddOrReplace(padFoundation, familyInstance);
-            return familyInstance;
-        }
-
-        /***************************************************/
-
         [Description("Converts BH.oM.Physical.Elements.IFramingElement to a Revit FamilyInstance.")]
         [Input("framingElement", "BH.oM.Physical.Elements.IFramingElement to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
