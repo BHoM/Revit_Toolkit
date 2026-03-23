@@ -37,6 +37,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("9.1", "BH.Revit.Engine.Core.Query.FramingMaterial(Autodesk.Revit.DB.FamilyInstance, BH.oM.Adapters.Revit.Settings.RevitSettings, System.Collections.Generic.Dictionary<System.String, System.Collections.Generic.List<BH.oM.Base.IBHoMObject>>)")]
         [Description("Extracts a BHoM representation of material from Revit FamilyInstance representing a framing element.")]
         [Input("familyInstance", "Revit FamilyInstance to be queried.")]
         [Input("settings", "Revit adapter settings to be used while performing the query.")]
