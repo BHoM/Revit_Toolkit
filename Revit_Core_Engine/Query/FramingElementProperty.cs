@@ -54,7 +54,7 @@ namespace BH.Revit.Engine.Core
                 return framingProperty;
 
             // Convert the material to BHoM
-            BH.oM.Physical.Materials.Material material = familyInstance.FramingMaterial(settings, refObjects);
+            BH.oM.Physical.Materials.Material material = familyInstance.StructuralMaterial(settings, refObjects);
 
             // Convert the profile to BHoM and mirror it if needed
             IProfile profile = familyInstance.Symbol.ProfileFromRevit(settings, refObjects);
@@ -111,7 +111,7 @@ namespace BH.Revit.Engine.Core
                 return framingProperty;
 
             // Convert the material to BHoM
-            BH.oM.Physical.Materials.Material material = familyInstance.FramingMaterial(settings, refObjects);
+            BH.oM.Physical.Materials.Material material = familyInstance.StructuralMaterial(settings, refObjects);
 
             IProfile profile = familyInstance.Symbol.ProfileFromRevit(settings, refObjects);
 
