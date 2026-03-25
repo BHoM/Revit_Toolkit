@@ -61,15 +61,13 @@ namespace BH.Revit.Engine.Core
             double bhomVertexTolerance = BH.oM.Adapters.Revit.Tolerance.Vertex;
             double revitVertexTolerance = bhomVertexTolerance / 0.3048;
 
-            // Remove segments that are too short for Revit's tolerance
-            List<BH.oM.Geometry.ICurve> subParts = curve.SubParts()
-                .Where(x => x.ILength() > bhomLengthTolerance)
-                .ToList();
-
+            // Sort all segments first, before removing short ones, to avoid creating gaps:
+            // a short segment may bridge two otherwise-disconnected segments, and removing it
+            // first would prevent SortCurves from finding a contiguous chain.
+            List<BH.oM.Geometry.ICurve> subParts = curve.SubParts().ToList();
             if (subParts.Count == 0)
                 return null;
 
-            // Sort segments into a contiguous end-to-end chain
             BH.oM.Geometry.PolyCurve polyCurve = new BH.oM.Geometry.PolyCurve { Curves = subParts };
             try { polyCurve = polyCurve.SortCurves(bhomVertexTolerance); }
             catch
@@ -77,6 +75,7 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Base.Compute.RecordWarning("Could not sort the sub-curves of the input PolyCurve into a contiguous chain. The original segment order will be used, which may result in a non-contiguous CurveLoop.");
             }
 
+            // Remove segments that are too short for Revit's tolerance after sorting
             subParts = polyCurve.SubParts().Where(x => x.ILength() > bhomLengthTolerance).ToList();
             if (subParts.Count < 2)
                 return null;
@@ -121,7 +120,7 @@ namespace BH.Revit.Engine.Core
                     if (lastEnd != null && revitCurve is Line)
                     {
                         double gap = curveStart.DistanceTo(lastEnd);
-                        if (gap > 0 && gap <= revitVertexTolerance * 2 && lastEnd.DistanceTo(curveEnd) > revitLengthTolerance)
+                        if (gap > 0 && gap <= revitLengthTolerance && lastEnd.DistanceTo(curveEnd) > revitLengthTolerance)
                             toAppend = Line.CreateBound(lastEnd, curveEnd);
                     }
 
