@@ -71,8 +71,11 @@ namespace BH.Revit.Engine.Core
 
             // Sort segments into a contiguous end-to-end chain
             BH.oM.Geometry.PolyCurve polyCurve = new BH.oM.Geometry.PolyCurve { Curves = subParts };
-            try { polyCurve = polyCurve.SortCurves(); }
-            catch { }
+            try { polyCurve = polyCurve.SortCurves(bhomVertexTolerance); }
+            catch
+            {
+                BH.Engine.Base.Compute.RecordWarning("Could not sort the sub-curves of the input PolyCurve into a contiguous chain. The original segment order will be used, which may result in a non-contiguous CurveLoop.");
+            }
 
             subParts = polyCurve.SubParts().Where(x => x.ILength() > bhomLengthTolerance).ToList();
             if (subParts.Count < 2)
@@ -202,6 +205,10 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
+
+
+
+
 
 
 
