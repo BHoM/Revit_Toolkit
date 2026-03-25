@@ -56,7 +56,7 @@ namespace BH.Revit.Engine.Core
         [Input("plane", "Optional plane to project the curve onto before conversion. If null, a best-fit plane is computed. Returns null if no plane can be determined.")]
         [Input("forceClose", "If true, any gap between consecutive segments larger than Revit's short-curve tolerance is bridged with an explicit line. Default is false.")]
         [Output("curveLoop", "Revit CurveLoop resulting from cleaning the input BH.oM.Geometry.PolyCurve, or null if a valid loop could not be produced.")]
-        public static CurveLoop ToRevitCurveLoop(this BH.oM.Geometry.PolyCurve curve, BH.oM.Geometry.Plane plane = null, bool forceClose = false)
+        public static CurveLoop ToRevitCurveLoop(this BH.oM.Geometry.PolyCurve curve, BH.oM.Geometry.Plane plane, bool forceClose)
         {
             double bhomLengthTolerance = BH.oM.Adapters.Revit.Tolerance.ShortCurve;
             double revitLengthTolerance = bhomLengthTolerance / 0.3048;
@@ -81,8 +81,19 @@ namespace BH.Revit.Engine.Core
 
             // Remove segments that are too short for Revit's tolerance after sorting
             subParts = polyCurve.SubParts().Where(x => x.ILength() > bhomLengthTolerance).ToList();
-            if (subParts.Count < 2)
+            if (subParts.Count == 0)
                 return null;
+
+            // Special case: a single closed sub-part (e.g. a full 360° circle arc).
+            // Delegate to IToRevitCurves which splits it into the required Revit curves (e.g. two half-arcs).
+            if (subParts.Count == 1)
+            {
+                CurveLoop singleLoop = new CurveLoop();
+                foreach (Curve revitCurve in subParts[0].IToRevitCurves())
+                    singleLoop.Append(revitCurve);
+
+                return singleLoop.Count() >= 2 ? singleLoop : null;
+            }
 
             polyCurve = new BH.oM.Geometry.PolyCurve { Curves = subParts };
             BH.oM.Geometry.Plane fitPlane = plane ?? polyCurve.FitPlane();
@@ -167,8 +178,7 @@ namespace BH.Revit.Engine.Core
                         }
                     }
 
-                    bool needsSnap = gap > 0 && gap <= revitLengthTolerance;
-
+                    bool needsSnap = gap > revitLengthTolerance;
                     if (needsSnap && !(revitCurve is Line))
                     {
                         // Tessellate the non-Line curve and snap its first point to lastEnd
