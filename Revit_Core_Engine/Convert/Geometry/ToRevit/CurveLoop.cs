@@ -59,17 +59,19 @@ namespace BH.Revit.Engine.Core
             double bhomLengthTolerance = BH.oM.Adapters.Revit.Tolerance.ShortCurve;
             double revitLengthTolerance = bhomLengthTolerance / 0.3048;
             double bhomVertexTolerance = BH.oM.Adapters.Revit.Tolerance.Vertex;
-            double revitVertexTolerance = bhomVertexTolerance / 0.3048;
 
-            // Sort all segments first, before removing short ones, to avoid creating gaps:
-            // a short segment may bridge two otherwise-disconnected segments, and removing it
-            // first would prevent SortCurves from finding a contiguous chain.
             List<BH.oM.Geometry.ICurve> subParts = curve.SubParts().ToList();
             if (subParts.Count == 0)
                 return null;
 
             BH.oM.Geometry.PolyCurve polyCurve = new BH.oM.Geometry.PolyCurve { Curves = subParts };
-            try { polyCurve = polyCurve.SortCurves(bhomVertexTolerance); }
+            try
+            {
+                // Sort all segments first, before removing short ones, to avoid creating gaps:
+                // a short segment may bridge two otherwise-disconnected segments, and removing it
+                // first would prevent SortCurves from finding a contiguous chain.
+                polyCurve = polyCurve.SortCurves(bhomVertexTolerance);
+            }
             catch
             {
                 BH.Engine.Base.Compute.RecordWarning("Could not sort the sub-curves of the input PolyCurve into a contiguous chain. The original segment order will be used, which may result in a non-contiguous CurveLoop.");
@@ -80,9 +82,10 @@ namespace BH.Revit.Engine.Core
             if (subParts.Count < 2)
                 return null;
 
-            // Project all segments onto a best-fit plane to ensure planarity
             polyCurve = new BH.oM.Geometry.PolyCurve { Curves = subParts };
             BH.oM.Geometry.Plane fitPlane = polyCurve.FitPlane();
+
+            // Project all segments onto a best-fit plane to ensure planarity
             if (fitPlane != null)
             {
                 polyCurve = polyCurve.Project(fitPlane);
@@ -92,17 +95,43 @@ namespace BH.Revit.Engine.Core
             if (subParts.Count < 2)
                 return null;
 
-            // Close the loop with an explicit line segment if the gap exceeds vertex tolerance
+            // Handle self-intersecting curves: collapse to a polyline, split at intersections,
+            // and keep only the largest resulting loop
+            polyCurve = new BH.oM.Geometry.PolyCurve { Curves = subParts };
+            if (polyCurve.IsSelfIntersecting(bhomLengthTolerance))
+            {
+                BH.oM.Geometry.Polyline collapsed = polyCurve.CollapseToPolyline(BH.oM.Geometry.Tolerance.Angle);
+                if (collapsed != null)
+                {
+                    if (!collapsed.IsClosed(bhomLengthTolerance))
+                        collapsed.Close();
+
+                    List<BH.oM.Geometry.Polyline> parts = collapsed.SplitAtSelfIntersections(bhomLengthTolerance);
+                    if (parts != null && parts.Count > 0)
+                    {
+                        BH.oM.Geometry.Polyline largest = parts.OrderByDescending(x => x.Bounds().DiagonalLength()).First();
+
+                        subParts = largest.SubParts().Cast<BH.oM.Geometry.ICurve>()
+                            .Where(x => x.ILength() > bhomLengthTolerance).ToList();
+
+                        if (subParts.Count < 2)
+                            return null;
+                    }
+                }
+            }
+
+            // Close the loop with an explicit line segment if the gap exceeds short-curve tolerance
             BH.oM.Geometry.Point loopStart = subParts.First().IStartPoint();
             BH.oM.Geometry.Point loopEnd = subParts.Last().IEndPoint();
             double closingGap = loopStart.Distance(loopEnd);
 
-            if (closingGap > bhomVertexTolerance && closingGap > bhomLengthTolerance)
+            if (closingGap > bhomLengthTolerance)
                 subParts.Add(new BH.oM.Geometry.Line { Start = loopEnd, End = loopStart });
 
-            // Build the CurveLoop, snapping Line start points to the previous end for exact contiguity
-            CurveLoop loop = new CurveLoop();
             XYZ lastEnd = null;
+            CurveLoop loop = new CurveLoop();
+
+            // Build the CurveLoop, snapping Line start points to the previous end for exact contiguity
             foreach (BH.oM.Geometry.ICurve seg in subParts)
             {
                 foreach (Curve revitCurve in seg.IToRevitCurves())
@@ -173,6 +202,16 @@ namespace BH.Revit.Engine.Core
             {
                 pts.Add(pts.First());
                 polyline = new BH.oM.Geometry.Polyline { ControlPoints = pts };
+            }
+
+            // Handle self-intersecting polylines: the polyline is already planar and closed,
+            // so split directly and keep only the largest resulting loop
+            if (polyline.IsSelfIntersecting(bhomLengthTolerance))
+            {
+                List<BH.oM.Geometry.Polyline> parts = polyline.SplitAtSelfIntersections(bhomLengthTolerance);
+                if (parts == null || parts.Count == 0)
+                    return null;
+                polyline = parts.OrderByDescending(x => x.Bounds().DiagonalLength()).First();
             }
 
             // Build the CurveLoop from line segments with endpoint snapping for exact contiguity
