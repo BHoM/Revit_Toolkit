@@ -145,13 +145,35 @@ namespace BH.Revit.Engine.Core
                     if (curveStart.DistanceTo(curveEnd) <= revitLengthTolerance)
                         continue;
 
-                    Curve toAppend = revitCurve;
-                    if (lastEnd != null && revitCurve is Line)
+                    double gap = lastEnd != null ? curveStart.DistanceTo(lastEnd) : 0;
+                    bool needsSnap = gap > 0 && gap <= revitLengthTolerance;
+
+                    if (needsSnap && !(revitCurve is Line))
                     {
-                        double gap = curveStart.DistanceTo(lastEnd);
-                        if (gap > 0 && gap <= revitLengthTolerance && lastEnd.DistanceTo(curveEnd) > revitLengthTolerance)
-                            toAppend = Line.CreateBound(lastEnd, curveEnd);
+                        // Tessellate the non-Line curve and snap its first point to lastEnd
+                        List<XYZ> tessellatedPts = revitCurve.Tessellate().ToList();
+                        if (tessellatedPts.Count >= 2)
+                        {
+                            tessellatedPts[0] = lastEnd;
+                            for (int i = 1; i < tessellatedPts.Count; i++)
+                            {
+                                if (tessellatedPts[i - 1].DistanceTo(tessellatedPts[i]) > revitLengthTolerance)
+                                {
+                                    try
+                                    {
+                                        loop.Append(Line.CreateBound(tessellatedPts[i - 1], tessellatedPts[i]));
+                                        lastEnd = tessellatedPts[i];
+                                    }
+                                    catch { }
+                                }
+                            }
+                            continue;
+                        }
                     }
+
+                    Curve toAppend = revitCurve;
+                    if (needsSnap && revitCurve is Line && lastEnd.DistanceTo(curveEnd) > revitLengthTolerance)
+                        toAppend = Line.CreateBound(lastEnd, curveEnd);
 
                     try
                     {
@@ -176,8 +198,14 @@ namespace BH.Revit.Engine.Core
             double revitLengthTolerance = bhomLengthTolerance / 0.3048;
             double revitVertexTolerance = BH.oM.Adapters.Revit.Tolerance.Vertex / 0.3048;
 
+            // Sort segments first so that CollapseToPolyline produces a connected polyline;
+            // out-of-order subparts would otherwise produce jumps in the tessellation
+            BH.oM.Geometry.PolyCurve sortedCurve = new BH.oM.Geometry.PolyCurve { Curves = curve.SubParts().ToList() };
+            try { sortedCurve = sortedCurve.SortCurves(BH.oM.Adapters.Revit.Tolerance.Vertex); }
+            catch { }
+
             // Tessellate all sub-curves into a single polyline approximation
-            BH.oM.Geometry.Polyline polyline = curve.CollapseToPolyline(BH.oM.Geometry.Tolerance.Angle);
+            BH.oM.Geometry.Polyline polyline = sortedCurve.CollapseToPolyline(BH.oM.Geometry.Tolerance.Angle);
             if (polyline == null || polyline.ControlPoints.Count < 3)
                 return null;
 
