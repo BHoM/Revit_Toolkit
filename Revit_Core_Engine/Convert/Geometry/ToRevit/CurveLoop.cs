@@ -53,8 +53,10 @@ namespace BH.Revit.Engine.Core
 
         [Description("Converts BH.oM.Geometry.PolyCurve to a Revit CurveLoop by cleaning it: removing short segments, sorting for contiguity, projecting to a best-fit plane, and closing the loop.")]
         [Input("curve", "BH.oM.Geometry.PolyCurve to be cleaned and converted.")]
+        [Input("plane", "Optional plane to project the curve onto before conversion. If null, a best-fit plane is computed. Returns null if no plane can be determined.")]
+        [Input("forceClose", "If true, any gap between consecutive segments larger than Revit's short-curve tolerance is bridged with an explicit line. Default is false.")]
         [Output("curveLoop", "Revit CurveLoop resulting from cleaning the input BH.oM.Geometry.PolyCurve, or null if a valid loop could not be produced.")]
-        public static CurveLoop ToValidCurveLoop(this BH.oM.Geometry.PolyCurve curve)
+        public static CurveLoop ToRevitCurveLoop(this BH.oM.Geometry.PolyCurve curve, BH.oM.Geometry.Plane plane = null, bool forceClose = false)
         {
             double bhomLengthTolerance = BH.oM.Adapters.Revit.Tolerance.ShortCurve;
             double revitLengthTolerance = bhomLengthTolerance / 0.3048;
@@ -83,14 +85,17 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             polyCurve = new BH.oM.Geometry.PolyCurve { Curves = subParts };
-            BH.oM.Geometry.Plane fitPlane = polyCurve.FitPlane();
+            BH.oM.Geometry.Plane fitPlane = plane ?? polyCurve.FitPlane();
 
             // Project all segments onto a best-fit plane to ensure planarity
-            if (fitPlane != null)
+            if (fitPlane == null)
             {
-                polyCurve = polyCurve.Project(fitPlane);
-                subParts = polyCurve.SubParts().Where(x => x.ILength() > bhomLengthTolerance).ToList();
+                BH.Engine.Base.Compute.RecordWarning("Could not determine a fit plane for the input PolyCurve. The curve loop cannot be created.");
+                return null;
             }
+
+            polyCurve = polyCurve.Project(fitPlane);
+            subParts = polyCurve.SubParts().Where(x => x.ILength() > bhomLengthTolerance).ToList();
 
             if (subParts.Count < 2)
                 return null;
@@ -104,7 +109,7 @@ namespace BH.Revit.Engine.Core
                 if (collapsed != null)
                 {
                     if (!collapsed.IsClosed(bhomLengthTolerance))
-                        collapsed.Close();
+                        collapsed = collapsed.Close(bhomLengthTolerance);
 
                     List<BH.oM.Geometry.Polyline> parts = collapsed.SplitAtSelfIntersections(bhomLengthTolerance);
                     if (parts != null && parts.Count > 0)
@@ -146,6 +151,22 @@ namespace BH.Revit.Engine.Core
                         continue;
 
                     double gap = lastEnd != null ? curveStart.DistanceTo(lastEnd) : 0;
+
+                    if (forceClose && lastEnd != null && gap > revitLengthTolerance)
+                    {
+                        try
+                        {
+                            loop.Append(Line.CreateBound(lastEnd, curveStart));
+                            lastEnd = curveStart;
+                            gap = 0;
+                        }
+                        catch
+                        {
+                            BH.Engine.Base.Compute.RecordWarning("Failed to append a bridging line to the CurveLoop. The curve loop cannot be created.");
+                            return null;
+                        }
+                    }
+
                     bool needsSnap = gap > 0 && gap <= revitLengthTolerance;
 
                     if (needsSnap && !(revitCurve is Line))
@@ -164,7 +185,11 @@ namespace BH.Revit.Engine.Core
                                         loop.Append(Line.CreateBound(tessellatedPts[i - 1], tessellatedPts[i]));
                                         lastEnd = tessellatedPts[i];
                                     }
-                                    catch { }
+                                    catch
+                                    {
+                                        BH.Engine.Base.Compute.RecordWarning("Failed to append a tessellated curve segment to the CurveLoop. The curve loop cannot be created.");
+                                        return null;
+                                    }
                                 }
                             }
                             continue;
@@ -180,7 +205,11 @@ namespace BH.Revit.Engine.Core
                         loop.Append(toAppend);
                         lastEnd = toAppend.GetEndPoint(1);
                     }
-                    catch { }
+                    catch
+                    {
+                        BH.Engine.Base.Compute.RecordWarning("Failed to append a curve segment to the CurveLoop. The curve loop cannot be created.");
+                        return null;
+                    }
                 }
             }
 
@@ -191,8 +220,9 @@ namespace BH.Revit.Engine.Core
 
         [Description("Converts BH.oM.Geometry.PolyCurve to a Revit CurveLoop made entirely of line segments by tessellating all sub-curves. Serves as a last resort to produce a valid Revit boundary when other conversions fail.")]
         [Input("curve", "BH.oM.Geometry.PolyCurve to be tessellated and converted.")]
+        [Input("plane", "Optional plane to project the curve onto before conversion. If null, a best-fit plane is computed. Returns null if no plane can be determined.")]
         [Output("curveLoop", "Revit CurveLoop of line segments resulting from tessellating the input BH.oM.Geometry.PolyCurve, or null if a valid loop could not be produced.")]
-        public static CurveLoop ToTessellatedCurveLoop(this BH.oM.Geometry.PolyCurve curve)
+        public static CurveLoop ToTessellatedRevitCurveLoop(this BH.oM.Geometry.PolyCurve curve, BH.oM.Geometry.Plane plane = null)
         {
             double bhomLengthTolerance = BH.oM.Adapters.Revit.Tolerance.ShortCurve;
             double revitLengthTolerance = bhomLengthTolerance / 0.3048;
@@ -202,7 +232,11 @@ namespace BH.Revit.Engine.Core
             // out-of-order subparts would otherwise produce jumps in the tessellation
             BH.oM.Geometry.PolyCurve sortedCurve = new BH.oM.Geometry.PolyCurve { Curves = curve.SubParts().ToList() };
             try { sortedCurve = sortedCurve.SortCurves(BH.oM.Adapters.Revit.Tolerance.Vertex); }
-            catch { }
+            catch
+            {
+                BH.Engine.Base.Compute.RecordWarning("Could not sort the sub-curves of the input PolyCurve into a contiguous chain. The tessellated curve loop cannot be created.");
+                return null;
+            }
 
             // Tessellate all sub-curves into a single polyline approximation
             BH.oM.Geometry.Polyline polyline = sortedCurve.CollapseToPolyline(BH.oM.Geometry.Tolerance.Angle);
@@ -215,14 +249,17 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             // Project to a best-fit plane to enforce planarity
-            BH.oM.Geometry.Plane fitPlane = polyline.FitPlane();
-            if (fitPlane != null)
+            BH.oM.Geometry.Plane fitPlane = plane ?? polyline.FitPlane();
+            if (fitPlane == null)
             {
-                polyline = polyline.Project(fitPlane);
-                polyline = polyline.CleanPolyline(BH.oM.Geometry.Tolerance.Angle, bhomLengthTolerance);
-                if (polyline == null || polyline.ControlPoints.Count < 3)
-                    return null;
+                BH.Engine.Base.Compute.RecordWarning("Could not determine a fit plane for the input PolyCurve. The tessellated curve loop cannot be created.");
+                return null;
             }
+
+            polyline = polyline.Project(fitPlane);
+            polyline = polyline.CleanPolyline(BH.oM.Geometry.Tolerance.Angle, bhomLengthTolerance);
+            if (polyline == null || polyline.ControlPoints.Count < 3)
+                return null;
 
             // Ensure the polyline is closed
             List<BH.oM.Geometry.Point> pts = polyline.ControlPoints.ToList();
@@ -240,6 +277,9 @@ namespace BH.Revit.Engine.Core
                 if (parts == null || parts.Count == 0)
                     return null;
                 polyline = parts.OrderByDescending(x => x.Bounds().DiagonalLength()).First();
+                polyline = polyline.CleanPolyline(BH.oM.Geometry.Tolerance.Angle, bhomLengthTolerance);
+                if (polyline == null || polyline.ControlPoints.Count < 3)
+                    return null;
             }
 
             // Build the CurveLoop from line segments with endpoint snapping for exact contiguity
@@ -250,7 +290,7 @@ namespace BH.Revit.Engine.Core
                 XYZ start = seg.Start.ToRevit();
                 XYZ end = seg.End.ToRevit();
 
-                if (lastEnd != null && start.DistanceTo(lastEnd) > 0 && start.DistanceTo(lastEnd) <= revitVertexTolerance * 2)
+                if (lastEnd != null && start.DistanceTo(lastEnd) > 0 && start.DistanceTo(lastEnd) <= revitVertexTolerance)
                     start = lastEnd;
 
                 if (start.DistanceTo(end) <= revitLengthTolerance)
@@ -262,7 +302,11 @@ namespace BH.Revit.Engine.Core
                     loop.Append(revitLine);
                     lastEnd = end;
                 }
-                catch { }
+                catch
+                {
+                    BH.Engine.Base.Compute.RecordWarning("Failed to append a line segment to the CurveLoop. The curve loop cannot be created.");
+                    return null;
+                }
             }
 
             return loop.Count() >= 3 ? loop : null;
