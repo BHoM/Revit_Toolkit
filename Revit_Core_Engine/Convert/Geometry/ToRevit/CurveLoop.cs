@@ -47,6 +47,20 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
+        public static CurveLoop ToValidCurveLoop(this BH.oM.Geometry.PolyCurve curve)
+        {
+
+        }
+
+        /***************************************************/
+
+        public static CurveLoop ToTessellatedCurveLoop(this BH.oM.Geometry.PolyCurve curve)
+        {
+
+        }
+
+        /***************************************************/
     }
 }
 
