@@ -547,7 +547,7 @@ namespace BH.Revit.Engine.Core
 
             if (isFlat)
             {
-                newOffset = slabPlane.Origin.Z.FromSI(SpecTypeId.Length) + floorThickness - level.ProjectElevation;
+                newOffset = slabPlane.Origin.Z.FromSI(SpecTypeId.Length) - level.ProjectElevation;
             }
             else
             {
