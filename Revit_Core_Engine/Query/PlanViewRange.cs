@@ -22,8 +22,10 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Revit.Engine.Core
 {
@@ -33,6 +35,10 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Returns the bottom and top Z coordinates of a plan view's vertical range.")]
+        [Input("view", "Revit floor plan or ceiling plan view to query.")]
+        [MultiOutput(0, "bottomZ", "Bottom Z of the view range (view depth plane for floor plans, cut plane for ceiling plans).")]
+        [MultiOutput(1, "topZ", "Top Z of the view range (top clip plane).")]
         public static Output<double, double> PlanViewRange(this ViewPlan view)
         {
             Document doc = view.Document;
