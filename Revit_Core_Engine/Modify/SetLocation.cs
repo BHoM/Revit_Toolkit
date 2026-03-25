@@ -575,7 +575,16 @@ namespace BH.Revit.Engine.Core
                     slopeLineForCreate = Autodesk.Revit.DB.Line.CreateBound(edgePoints.First(), edgePoints.Last());
                 }
 
-                newOffset = ln.Start.Z.FromSI(SpecTypeId.Length) + floorThickness - level.ProjectElevation;
+                double baseOffset = ln.Start.Z.FromSI(SpecTypeId.Length) - level.ProjectElevation;
+
+                if (slopeLineForCreate != null)
+                {
+                    XYZ slopeTail = slopeLineForCreate.GetEndPoint(0);
+                    double signedDistFromLn = (slopeTail - start).DotProduct(dir);
+                    baseOffset -= signedDistFromLn * tan;
+                }
+
+                newOffset = baseOffset;
             }
 
             CurveLoop newOutline;
