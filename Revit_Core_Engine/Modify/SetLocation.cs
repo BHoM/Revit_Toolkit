@@ -541,7 +541,6 @@ namespace BH.Revit.Engine.Core
             bool isFlat = 1 - Math.Abs(Vector.ZAxis.DotProduct(slabPlane.Normal)) <= settings.AngleTolerance;
 
             double newOffset;
-            bool hasSlope = !isFlat;
             double tan = 0;
             Autodesk.Revit.DB.Line slopeLineForCreate = null;
 
@@ -602,7 +601,7 @@ namespace BH.Revit.Engine.Core
                 newOutline = curve.ToRevitCurveLoop();
             }
 
-            if (HasFloorChanged(element, sketch, newOutline, newOffset, hasSlope, settings))
+            if (HasFloorChanged(element, sketch, newOutline, newOffset, settings))
             {
                 ElementId sketchId = sketch.Id;
                 ElementId floorTypeId = element.GetTypeId();
@@ -621,7 +620,7 @@ namespace BH.Revit.Engine.Core
 
                     try
                     {
-                        if (hasSlope)
+                        if (!isFlat)
                         {
                             // recreate floor
                             using (Transaction tSlope = new Transaction(doc, "Recreate sloped floor"))
@@ -694,7 +693,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static bool HasFloorChanged(Autodesk.Revit.DB.Floor floor, Sketch sketch, CurveLoop newOutline, double newOffset, bool hasSlope, RevitSettings settings)
+        private static bool HasFloorChanged(Autodesk.Revit.DB.Floor floor, Sketch sketch, CurveLoop newOutline, double newOffset, RevitSettings settings)
         {
             // newOffset is in Revit internal units (feet), so read without SI conversion
             double currentOffset = floor.LookupParameterDouble(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, false);
