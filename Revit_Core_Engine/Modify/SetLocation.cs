@@ -534,7 +534,7 @@ namespace BH.Revit.Engine.Core
             if (floorType?.GetCompoundStructure() != null)
                 floorThickness = floorType.GetCompoundStructure().GetWidth();
 
-            double bottomElevation = ps.IBounds().Min.Z;
+            double bottomElevation = BH.Engine.Geometry.Query.IBounds(ps).Min.Z;
             oM.Geometry.Plane sketchPlaneBhom = new oM.Geometry.Plane { Origin = new BH.oM.Geometry.Point { Z = bottomElevation }, Normal = Vector.ZAxis };
             ICurve curve = ps.ExternalBoundary.IProject(sketchPlaneBhom);
 
