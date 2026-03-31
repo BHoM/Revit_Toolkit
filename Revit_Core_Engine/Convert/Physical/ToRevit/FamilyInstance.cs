@@ -240,18 +240,20 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            XYZ origin = padFoundation.GetFoundationOrigin();
-            if (origin == null)
+            BH.oM.Geometry.Point originPt = padFoundation.GetFoundationOrigin();
+            if (originPt == null)
             {
                 BH.Engine.Base.Compute.RecordError($"PadFoundation boundary extraction failed or foundation is not rectangular. BHoM_Guid: {padFoundation.BHoM_Guid}");
                 return null;
             }
 
+            XYZ origin = originPt.ToRevit();
+
             Level level = document.LevelAbove(origin.Z, settings);
             if (level == null)
                 return null;
 
-            FamilySymbol familySymbol = padFoundation.ElementType(document, settings);
+            FamilySymbol familySymbol = padFoundation.GenerateFoundationType(document, settings);
             if (familySymbol == null)
             {
                 Compute.ElementTypeNotFoundWarning(padFoundation);
@@ -265,9 +267,23 @@ namespace BH.Revit.Engine.Core
             if (familyInstance == null)
                 return null;
 
+            //Rotation
+            BH.oM.Geometry.Polyline outline = Query.ExtractBoundary(padFoundation);
+            if (outline != null && outline.ControlPoints.Count >= 2)
+            {
+                BH.oM.Geometry.Vector edgeDir = outline.ControlPoints[1] - outline.ControlPoints[0];
+                double angle = Math.Atan2(edgeDir.Y, edgeDir.X);
+
+                if (Math.Abs(angle) > settings.AngleTolerance)
+                {
+                    Line rotationAxis = Line.CreateBound(origin, origin + XYZ.BasisZ);
+                    ElementTransformUtils.RotateElement(document, familyInstance.Id, rotationAxis, angle);
+                    document.Regenerate();
+                }
+            }
+
             familyInstance.CopyParameters(padFoundation, settings);
             familyInstance.SetLocation(padFoundation, settings);
-
             refObjects.AddOrReplace(padFoundation, familyInstance);
             return familyInstance;
         }

@@ -344,6 +344,25 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets the location of a given Revit FamilyInstance based on a given BHoM PadFoundation.")]
+        [Input("element", "Revit FamilyInstance to be modified.")]
+        [Input("padFoundation", "BHoM PadFoundation acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit FamilyInstance has been successfully set.")]
+        public static bool SetLocation(this FamilyInstance element, PadFoundation padFoundation, RevitSettings settings)
+        {
+            if (element == null || padFoundation == null)
+                return false;
+
+            BH.oM.Geometry.Point centerPoint = padFoundation.GetFoundationOrigin();
+            if (centerPoint == null)
+                return false;
+
+            return element.SetLocation(centerPoint, settings);
+        }
+
+        /***************************************************/
+
         [Description("Sets the location of a given Revit Space based on a given BHoM Space.")]
         [Input("revitSpace", "Revit Space to be modified.")]
         [Input("bHoMSpace", "BHoM Space acting as a source of information about the new location.")]
