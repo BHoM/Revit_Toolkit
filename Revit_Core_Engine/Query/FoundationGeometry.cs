@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
@@ -24,11 +24,13 @@ using Autodesk.Revit.DB;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Settings;
+using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using BH.oM.Geometry.CoordinateSystem;
 using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BH.Revit.Engine.Core
@@ -40,6 +42,9 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [Description("Extracts the outer rectangular boundary of a PadFoundation as a Polyline.")]
+        [Input("element", "PadFoundation element whose boundary should be extracted.")]
+        [Output("outline", "Polyline representing the PadFoundation external boundary.")]
         public static Polyline ExtractBoundary(this PadFoundation element)
         {
             if (element.Location == null)
@@ -61,7 +66,10 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static bool IsRectangular(Polyline polyline)
+        [Description("Checks whether a Polyline represents a rectangle.")]
+        [Input("polyline", "Polyline to check.")]
+        [Output("isRectangular", "True if the polyline represents a rectangle; otherwise false.")]
+        public static bool IsRectangular(this Polyline polyline)
         {
             if (polyline == null || polyline.ControlPoints == null)
                 return false;
@@ -100,6 +108,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Computes the rotation angle of a local coordinate system in the XY plane.")]
+        [Input("localCS", "Local coordinate system to compute the rotation angle for.")]
+        [Output("angle", "Rotation angle in radians.")]
         public static double ComputeRotationAngle(this Cartesian localCS)
         {
             if (localCS == null)
@@ -109,7 +120,7 @@ namespace BH.Revit.Engine.Core
 
             var gx = BH.oM.Geometry.Vector.XAxis; // Global X Axis
             var lx = basis.X; // Local X Axis
-           
+
             var global = new BH.oM.Geometry.Vector { X = gx.X, Y = gx.Y, Z = 0 }.Normalise();
             var local = new BH.oM.Geometry.Vector { X = lx.X, Y = lx.Y, Z = 0 }.Normalise();
 
@@ -118,6 +129,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Computes the total thickness (sum of construction layers) of a PadFoundation.")]
+        [Input("element", "PadFoundation element whose thickness should be computed.")]
+        [Output("thickness", "Total thickness of all construction layers.")]
         public static double GetThicknessFromConstr(this PadFoundation element)
         {
             BH.oM.Physical.Constructions.Construction constr = element.Construction as oM.Physical.Constructions.Construction;
@@ -138,6 +152,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Gets width and length dimensions of a rectangular Polyline.")]
+        [Input("polyline", "Polyline representing a rectangle.")]
+        [Output("dimensions", "Tuple containing (width, length) in the same units as the input polyline.")]
         public static (double width, double length) GetRectangleDimensions(this Polyline polyline)
         {
             if (polyline == null || polyline.ControlPoints == null)
@@ -171,7 +188,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static FamilySymbol LoadPadRectangleTemplate(Document document, RevitSettings settings)
+        [Description("Loads the PadFoundation rectangular family symbol template (or activates an existing one).")]
+        [Input("document", "Revit document where the family symbol should be loaded/activated.")]
+        [Input("settings", "Revit adapter settings used for loading the family symbol.")]
+        [Output("symbol", "FamilySymbol for the rectangular PadFoundation template, or null if not found.")]
+        public static FamilySymbol LoadPadRectangleTemplate(this Document document, RevitSettings settings)
         {
             string familyName = "BHE_StructuralFoundations_Pad-Rectangular";
             string typeName = "1000x1000x500 DP";
@@ -227,6 +248,11 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Generates (duplicates and configures) a PadFoundation FamilySymbol type based on foundation dimensions.")]
+        [Input("element", "PadFoundation element whose dimensions will drive the generated FamilySymbol type parameters.")]
+        [Input("document", "Revit document where the symbol type will be created/duplicated.")]
+        [Input("settings", "Revit adapter settings used while generating the symbol type.")]
+        [Output("symbol", "Generated FamilySymbol with parameters matching the foundation dimensions, or null on failure.")]
         public static FamilySymbol GenerateFoundationType(this PadFoundation element, Document document, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
@@ -272,6 +298,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Gets the origin point (centroid) of a PadFoundation.")]
+        [Input("element", "PadFoundation element whose origin should be computed.")]
+        [Output("origin", "Origin point (centroid) of the foundation external boundary, or null if invalid.")]
         public static BH.oM.Geometry.Point GetFoundationOrigin(this PadFoundation element)
         {
             Polyline outline = ExtractBoundary(element);
