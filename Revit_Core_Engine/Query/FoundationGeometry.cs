@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
         [Description("Extracts the outer rectangular boundary of a PadFoundation as a Polyline.")]
         [Input("element", "PadFoundation element whose boundary should be extracted.")]
         [Output("outline", "Polyline representing the PadFoundation external boundary.")]
-        public static Polyline ExtractBoundary(this PadFoundation element)
+        public static Polyline ExtractBoundaryFoundationGeometry(this PadFoundation element)
         {
             if (element.Location == null)
                 return null;
@@ -69,7 +69,7 @@ namespace BH.Revit.Engine.Core
         [Description("Checks whether a Polyline represents a rectangle.")]
         [Input("polyline", "Polyline to check.")]
         [Output("isRectangular", "True if the polyline represents a rectangle; otherwise false.")]
-        public static bool IsRectangular(this Polyline polyline)
+        public static bool IsRectangularFoundationGeometry(this Polyline polyline)
         {
             if (polyline == null || polyline.ControlPoints == null)
                 return false;
@@ -111,7 +111,7 @@ namespace BH.Revit.Engine.Core
         [Description("Computes the rotation angle of a local coordinate system in the XY plane.")]
         [Input("localCS", "Local coordinate system to compute the rotation angle for.")]
         [Output("angle", "Rotation angle in radians.")]
-        public static double ComputeRotationAngle(this Cartesian localCS)
+        public static double ComputeRotationAngleFoundationGeometry(this Cartesian localCS)
         {
             if (localCS == null)
                 return 0.0;
@@ -132,7 +132,7 @@ namespace BH.Revit.Engine.Core
         [Description("Computes the total thickness (sum of construction layers) of a PadFoundation.")]
         [Input("element", "PadFoundation element whose thickness should be computed.")]
         [Output("thickness", "Total thickness of all construction layers.")]
-        public static double GetThicknessFromConstr(this PadFoundation element)
+        public static double GetThicknessFromConstrFoundationGeometry(this PadFoundation element)
         {
             BH.oM.Physical.Constructions.Construction constr = element.Construction as oM.Physical.Constructions.Construction;
 
@@ -155,7 +155,7 @@ namespace BH.Revit.Engine.Core
         [Description("Gets width and length dimensions of a rectangular Polyline.")]
         [Input("polyline", "Polyline representing a rectangle.")]
         [Output("dimensions", "Tuple containing (width, length) in the same units as the input polyline.")]
-        public static (double width, double length) GetRectangleDimensions(this Polyline polyline)
+        public static (double width, double length) GetRectangleDimensionsFoundationGeometry(this Polyline polyline)
         {
             if (polyline == null || polyline.ControlPoints == null)
             {
@@ -192,7 +192,7 @@ namespace BH.Revit.Engine.Core
         [Input("document", "Revit document where the family symbol should be loaded/activated.")]
         [Input("settings", "Revit adapter settings used for loading the family symbol.")]
         [Output("symbol", "FamilySymbol for the rectangular PadFoundation template, or null if not found.")]
-        public static FamilySymbol LoadPadRectangleTemplate(this Document document, RevitSettings settings)
+        public static FamilySymbol LoadPadRectangleTemplateFoundationGeometry(this Document document, RevitSettings settings)
         {
             string familyName = "BHE_StructuralFoundations_Pad-Rectangular";
             string typeName = "1000x1000x500 DP";
@@ -253,11 +253,11 @@ namespace BH.Revit.Engine.Core
         [Input("document", "Revit document where the symbol type will be created/duplicated.")]
         [Input("settings", "Revit adapter settings used while generating the symbol type.")]
         [Output("symbol", "Generated FamilySymbol with parameters matching the foundation dimensions, or null on failure.")]
-        public static FamilySymbol GenerateFoundationType(this PadFoundation element, Document document, RevitSettings settings = null)
+        public static FamilySymbol GenerateFoundationTypeFoundationGeometry(this PadFoundation element, Document document, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
 
-            FamilySymbol baseSymbol = LoadPadRectangleTemplate(document, settings);
+            FamilySymbol baseSymbol = LoadPadRectangleTemplateFoundationGeometry(document, settings);
             if (baseSymbol == null)
             {
                 BH.Engine.Base.Compute.RecordError("Could not load rectangular foundation template.");
@@ -274,15 +274,15 @@ namespace BH.Revit.Engine.Core
 
             foundationSymbol.Activate();
 
-            Polyline outline = ExtractBoundary(element);
-            if (outline == null || !IsRectangular(outline))
+            Polyline outline = ExtractBoundaryFoundationGeometry(element);
+            if (outline == null || !IsRectangularFoundationGeometry(outline))
             {
                 BH.Engine.Base.Compute.RecordError("Foundation outline must be rectangular.");
                 return null;
             }
 
-            var (width, length) = GetRectangleDimensions(outline);
-            double depth = GetThicknessFromConstr(element);
+            var (width, length) = GetRectangleDimensionsFoundationGeometry(outline);
+            double depth = GetThicknessFromConstrFoundationGeometry(element);
 
             Parameter widthParam = foundationSymbol.LookupParameter("BHE_Width");
             widthParam?.Set(width.FromSI(SpecTypeId.Length));
@@ -301,9 +301,9 @@ namespace BH.Revit.Engine.Core
         [Description("Gets the origin point (centroid) of a PadFoundation.")]
         [Input("element", "PadFoundation element whose origin should be computed.")]
         [Output("origin", "Origin point (centroid) of the foundation external boundary, or null if invalid.")]
-        public static BH.oM.Geometry.Point GetFoundationOrigin(this PadFoundation element)
+        public static BH.oM.Geometry.Point GetFoundationOriginFoundationGeometry(this PadFoundation element)
         {
-            Polyline outline = ExtractBoundary(element);
+            Polyline outline = ExtractBoundaryFoundationGeometry(element);
             // Validate the outline shape
             if (outline?.ControlPoints == null)
                 return null;
