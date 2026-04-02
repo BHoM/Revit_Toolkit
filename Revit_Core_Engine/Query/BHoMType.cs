@@ -98,10 +98,10 @@ namespace BH.Revit.Engine.Core
                         if (height < width)
                             return typeof(BH.oM.Physical.Elements.PadFoundation);
                         else if (familyInstance.GetSubComponentIds().Count != 0)
-                            //return typeof(BH.oM.Physical.Elements.PileFoundation);
-                            return null; // Temporarily disabled until PileFoundation is properly implemented in the Revit adapter.
-                        else
-                            return typeof(BH.oM.Physical.Elements.Pile);
+                            return typeof(BH.oM.Physical.Elements.PileFoundation);
+                        return null; // Temporarily disabled until PileFoundation is properly implemented in the Revit adapter.
+                        //else
+                        //    return typeof(BH.oM.Physical.Elements.Pile);
                     }
                     if (typeof(BH.oM.Physical.Elements.Window).BuiltInCategories().Contains(category))
                         return typeof(BH.oM.Physical.Elements.Window);

@@ -223,6 +223,70 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts BH.oM.Physical.Elements.PileFoundation to Revit FamilyInstances.")]
+        [Input("pileFoundation", "BH.oM.Physical.Elements.PileFoundation to be converted.")]
+        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("instance", "Revit FamilyInstance of the pile cap resulting from converting the input BH.oM.Physical.Elements.PileFoundation.")]
+        public static FamilyInstance ToRevitFamilyInstance(this PileFoundation pileFoundation, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
+        {
+            if (pileFoundation == null || document == null)
+                return null;
+
+            FamilyInstance familyInstance = refObjects.GetValue<FamilyInstance>(document, pileFoundation.BHoM_Guid);
+            if (familyInstance != null)
+                return familyInstance;
+
+            settings = settings.DefaultIfNull();
+
+            if (pileFoundation.PileCap == null)
+            {
+                BH.Engine.Base.Compute.RecordError($"PileFoundation has no PileCap assigned. BHoM_Guid: {pileFoundation.BHoM_Guid}");
+                return null;
+            }
+
+            if (pileFoundation.PileCap.Location == null)
+            {
+                BH.Engine.Base.Compute.RecordError($"PileFoundation PileCap has no Location assigned. BHoM_Guid: {pileFoundation.BHoM_Guid}");
+                return null;
+            }
+
+            familyInstance = pileFoundation.PileCap.ToRevitFamilyInstance(document, settings, refObjects);
+            if (familyInstance == null)
+            {
+                BH.Engine.Base.Compute.RecordError($"Failed to create pile cap for PileFoundation. Check that the PileCap has a valid rectangular boundary and the required foundation template family is loaded. BHoM_Guid: {pileFoundation.BHoM_Guid}");
+                return null;
+            }
+
+            if (pileFoundation.Piles != null)
+            {
+                foreach (Pile pile in pileFoundation.Piles)
+                {
+                    if (pile == null)
+                        continue;
+
+                    if (pile.Location == null)
+                    {
+                        BH.Engine.Base.Compute.RecordWarning($"Pile has no Location assigned, skipping. Pile BHoM_Guid: {pile.BHoM_Guid}, PileFoundation BHoM_Guid: {pileFoundation.BHoM_Guid}");
+                        continue;
+                    }
+
+                    FamilyInstance pileInstance = pile.ToRevitFamilyInstance(document, settings, refObjects);
+                    if (pileInstance == null)
+                        BH.Engine.Base.Compute.RecordWarning($"Failed to create a pile within PileFoundation. Pile BHoM_Guid: {pile.BHoM_Guid}, PileFoundation BHoM_Guid: {pileFoundation.BHoM_Guid}");
+                }
+            }
+
+            familyInstance.CopyParameters(pileFoundation, settings);
+            familyInstance.SetLocation(pileFoundation, settings);
+
+            refObjects.AddOrReplace(pileFoundation, familyInstance);
+            return familyInstance;
+        }
+
+        /******************************/
+
         [Description("Converts BH.oM.Physical.Elements.PadFoundation to a Revit FamilyInstance.")]
         [Input("padFoundation", "BH.oM.Physical.Elements.PadFoundation to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]

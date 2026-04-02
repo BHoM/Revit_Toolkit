@@ -286,6 +286,19 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts BH.oM.Physical.Elements.PileFoundation to a Revit FamilyInstance.")]
+        [Input("pileFoundation", "BH.oM.Physical.Elements.PileFoundation to be converted.")]
+        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.PileFoundation.")]
+        public static Element ToRevit(this BH.oM.Physical.Elements.PileFoundation pileFoundation, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
+        {
+            return pileFoundation.ToRevitFamilyInstance(document, settings, refObjects);
+        }
+
+        /***************************************************/
+
         [Description("Converts BH.oM.MEP.System.MaterialFragments.PipeMaterial to a Revit PipeSegment.")]
         [Input("pipeMaterial", "BH.oM.MEP.System.MaterialFragments.PipeMaterial to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
