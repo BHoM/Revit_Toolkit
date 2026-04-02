@@ -1,6 +1,6 @@
 ﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,13 +20,16 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
+using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
@@ -34,17 +37,34 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Filters the given collection of BHoM objects to return only unique Revit elements based on their UniqueId.")]
-        [Input("bHoMObjects", "The collection of BHoM objects to filter.")]
-        [Output("A list of unique BHoM objects.")]
-        public static List<IBHoMObject> FilterUniqueRevitElements(this IEnumerable<IBHoMObject> bHoMObjects)
+        [Description("Queries a Revit pad foundation to find its location surface.")]
+        [Input("padFoundation", "Revit pad foundation to be queried.")]
+        [Input("settings", "Optional, settings to be used when extracting the location surface.")]
+        [Output("locationSurface", "BHoM location surface queried from the input pad foundation.")]
+        public static PlanarSurface LocationSurfacePadFoundation(this FamilyInstance padFoundation, RevitSettings settings)
         {
-            return bHoMObjects
-                .GroupBy(x => x.UniqueId())
-                .Select(g => g.First())
-                .ToList();
-        }
+            settings = settings.DefaultIfNull();
 
-        /***************************************************/
+            List<PlanarFace> topFaces = new List<PlanarFace>();
+            foreach (Autodesk.Revit.DB.Face f in padFoundation.Faces(new Options(), settings))
+            {
+                PlanarFace pf = f as PlanarFace;
+                if (pf == null)
+                    continue;
+
+                if (Math.Abs(1 - pf.FaceNormal.DotProduct(XYZ.BasisZ)) <= BH.oM.Adapters.Revit.Tolerance.Angle)
+                    topFaces.Add(pf);
+            }
+
+            if (topFaces.Count == 1)
+                return topFaces[0].FromRevit();
+            else
+            {
+                BH.Engine.Base.Compute.RecordError($"Failed to extract geometry from pad foundation. ElementId: {padFoundation.Id.Value()}");
+                return null;
+            }
+
+            /***************************************************/
+        }
     }
 }

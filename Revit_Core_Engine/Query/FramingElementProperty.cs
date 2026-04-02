@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -54,7 +54,7 @@ namespace BH.Revit.Engine.Core
                 return framingProperty;
 
             // Convert the material to BHoM
-            BH.oM.Physical.Materials.Material material = familyInstance.FramingMaterial(settings, refObjects);
+            BH.oM.Physical.Materials.Material material = familyInstance.StructuralMaterial(settings, refObjects);
 
             // Convert the profile to BHoM and mirror it if needed
             IProfile profile = familyInstance.Symbol.ProfileFromRevit(settings, refObjects);
@@ -111,7 +111,7 @@ namespace BH.Revit.Engine.Core
                 return framingProperty;
 
             // Convert the material to BHoM
-            BH.oM.Physical.Materials.Material material = familyInstance.FramingMaterial(settings, refObjects);
+            BH.oM.Physical.Materials.Material material = familyInstance.StructuralMaterial(settings, refObjects);
 
             IProfile profile = familyInstance.Symbol.ProfileFromRevit(settings, refObjects);
 
@@ -151,3 +151,4 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
+

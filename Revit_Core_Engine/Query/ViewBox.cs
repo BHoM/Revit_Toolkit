@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -105,7 +105,7 @@ namespace BH.Revit.Engine.Core
             Plane plane = Plane.CreateByOriginAndBasis(XYZ.Zero, rightDirection, upDirection);
             Cartesian coordinateSystem = plane.FromRevit();
             BH.oM.Geometry.TransformMatrix orientationMatrix = BH.Engine.Geometry.Create.OrientationMatrixGlobalToLocal(coordinateSystem);
-            Transform transform = orientationMatrix.ToRevit();
+            Transform transform = orientationMatrix.ToRevit().TryFixIfNonConformal();
 
             // Bounds of the element in the provided coordinate system
             BoundingBoxXYZ boundingBox = elements.PhysicalBounds(transform.Inverse);
@@ -125,6 +125,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
+
 
 
 

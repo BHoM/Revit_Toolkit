@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -222,6 +222,9 @@ namespace BH.Revit.Engine.Core
             XYZ point1 = current;
             XYZ point2 = current;
 
+            int maxIterations = 100;
+            int iteration = 0;
+
             do
             {
                 (double, XYZ) prox = face.Proximity(current, tolerance);
@@ -242,8 +245,14 @@ namespace BH.Revit.Engine.Core
 
                 difference = Math.Abs(prox.Item1 - distance);
                 distance = prox.Item1;
+                iteration++;
+                if (iteration >= maxIterations)
+                    break;
             }
             while (difference > tolerance);
+
+            if (difference > tolerance)
+                BH.Engine.Base.Compute.RecordWarning("Proximity iteration did not converge within maximum iterations.");
 
             return new Output<XYZ, XYZ, double> { Item1 = point1, Item2 = point2, Item3 = distance };
         }
@@ -297,3 +306,4 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
+

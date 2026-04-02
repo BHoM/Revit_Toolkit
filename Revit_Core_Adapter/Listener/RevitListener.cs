@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -166,9 +166,6 @@ namespace BH.Revit.Adapter.Core
             BH.Revit.Engine.Core.Compute.LoadSensitiveDynamoAssemblies();
 
             UIControlledApplication = uIControlledApplication;
-
-            //Make sure all BHoM assemblies and methods are loaded
-            BH.Engine.Base.Compute.LoadAllAssemblies();
 
             //Add buttons to manage the adapter
             AddAdapterButtons(uIControlledApplication);
@@ -523,6 +520,7 @@ namespace BH.Revit.Adapter.Core
         /***************************************************/
     }
 }
+
 
 
 
