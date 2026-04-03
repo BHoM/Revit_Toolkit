@@ -192,15 +192,15 @@ namespace BH.Revit.Engine.Core
 
         private static void CopyFoundationDimensions(this PadFoundation padFoundation, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
-            Polyline outline = padFoundation.ExtractBoundary();
+            Polyline outline = padFoundation.ExtractBoundaryFoundationGeometry();
             if (outline == null)
             {
                 BH.Engine.Base.Compute.RecordError($"PadFoundation outline extraction failed. BHoM_Guid: {padFoundation.BHoM_Guid}");
                 return;
             }
 
-            var (width, length) = outline.GetRectangleDimensions();
-            double depth = padFoundation.GetThicknessFromConstr();
+            var (width, length) = outline.GetRectangleDimensionsFoundationGeometry();
+            double depth = padFoundation.GetThicknessFromConstrFoundationGeometry();
 
             Parameter widthParam = targetSymbol.LookupParameter("BHE_Width");
             if (widthParam != null)

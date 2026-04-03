@@ -354,7 +354,7 @@ namespace BH.Revit.Engine.Core
             if (element == null || padFoundation == null)
                 return false;
 
-            BH.oM.Geometry.Point centerPoint = padFoundation.GetFoundationOrigin();
+            BH.oM.Geometry.Point centerPoint = padFoundation.GetFoundationOriginFoundationGeometry();
             if (centerPoint == null)
                 return false;
 

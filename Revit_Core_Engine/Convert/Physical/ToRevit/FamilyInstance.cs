@@ -240,7 +240,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            BH.oM.Geometry.Point originPt = padFoundation.GetFoundationOrigin();
+            BH.oM.Geometry.Point originPt = padFoundation.GetFoundationOriginFoundationGeometry();
             if (originPt == null)
             {
                 BH.Engine.Base.Compute.RecordError($"PadFoundation boundary extraction failed or foundation is not rectangular. BHoM_Guid: {padFoundation.BHoM_Guid}");
@@ -253,7 +253,7 @@ namespace BH.Revit.Engine.Core
             if (level == null)
                 return null;
 
-            FamilySymbol familySymbol = padFoundation.GenerateFoundationType(document, settings);
+            FamilySymbol familySymbol = padFoundation.GenerateFoundationTypeFoundationGeometry(document, settings);
             if (familySymbol == null)
             {
                 Compute.ElementTypeNotFoundWarning(padFoundation);
@@ -268,7 +268,7 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             //Rotation
-            BH.oM.Geometry.Polyline outline = Query.ExtractBoundary(padFoundation);
+            BH.oM.Geometry.Polyline outline = Query.ExtractBoundaryFoundationGeometry(padFoundation);
             if (outline != null && outline.ControlPoints.Count >= 2)
             {
                 BH.oM.Geometry.Vector edgeDir = outline.ControlPoints[1] - outline.ControlPoints[0];
