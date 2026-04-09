@@ -36,7 +36,6 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("9.1", "BH.Revit.Engine.Core.Query.Space(Autodesk.Revit.DB.Element, System.Collections.Generic.IEnumerable<Autodesk.Revit.DB.Mechanical.Space>, System.Boolean)")]
         [Description("Returns the Revit Space that contains the given element.")]
         [Input("element", "The Revit element for which to find the containing Space.")]
         [Input("spaces", "An optional collection of Revit Spaces to search. If not provided, all Spaces in the element's document will be used.")]
