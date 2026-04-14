@@ -354,11 +354,57 @@ namespace BH.Revit.Engine.Core
             if (element == null || padFoundation == null)
                 return false;
 
-            BH.oM.Geometry.Point centerPoint = padFoundation.GetFoundationOriginFoundationGeometry();
+            BH.oM.Geometry.Point centerPoint = padFoundation.Origin();
             if (centerPoint == null)
                 return false;
 
-            return element.SetLocation(centerPoint, settings);
+            Polyline outline = padFoundation.Boundary();
+            if (outline == null)
+                return false;
+
+            bool updated = element.SetLocation(centerPoint, settings);
+
+            LocationPoint locationPoint = element.Location as LocationPoint;
+            if (locationPoint != null)
+            {
+                double currentRotation = locationPoint.Rotation;
+
+                if (Math.Abs(currentRotation) > settings.AngleTolerance)
+                {
+                    XYZ origin = locationPoint.Point;
+                    Autodesk.Revit.DB.Line axis = Autodesk.Revit.DB.Line.CreateBound(origin, origin + XYZ.BasisZ);
+                    ElementTransformUtils.RotateElement(element.Document, element.Id, axis, -currentRotation);
+                    updated = true;
+                }
+
+                Vector edgeVector = outline.ControlPoints[1] - outline.ControlPoints[0];
+                double targetRotation = Math.Atan2(edgeVector.Y, edgeVector.X);
+
+                if (Math.Abs(targetRotation) > settings.AngleTolerance)
+                {
+                    XYZ origin = locationPoint.Point;
+                    Autodesk.Revit.DB.Line axis = Autodesk.Revit.DB.Line.CreateBound(origin, origin + XYZ.BasisZ);
+                    ElementTransformUtils.RotateElement(element.Document, element.Id, axis, targetRotation);
+                    updated = true;
+                }
+            }
+
+            if (updated)
+                element.Document.Regenerate();
+
+            double width, length;
+            if (outline.IsRectangular())
+                (width, length) = outline.RectangleDimensions();
+            else
+                (width, length) = outline.NonRectangleDimensions();
+
+            double depth = padFoundation.Thickness();
+
+            updated |= element.SetParameter("BHE_Width", width);
+            updated |= element.SetParameter("BHE_Length", length);
+            updated |= element.SetParameter("BHE_Depth", depth);
+
+            return updated;
         }
 
         /***************************************************/

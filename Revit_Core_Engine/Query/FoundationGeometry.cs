@@ -20,10 +20,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using Autodesk.Revit.DB;
-using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
-using BH.oM.Adapters.Revit.Settings;
+using BH.Engine.Physical;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using BH.oM.Geometry.CoordinateSystem;
@@ -45,20 +43,20 @@ namespace BH.Revit.Engine.Core
         [Description("Extracts the outer rectangular boundary of a PadFoundation as a Polyline.")]
         [Input("element", "PadFoundation element whose boundary should be extracted.")]
         [Output("outline", "Polyline representing the PadFoundation external boundary.")]
-        public static Polyline ExtractBoundaryFoundationGeometry(this PadFoundation element)
+        public static Polyline Boundary(this PadFoundation element)
         {
             if (element.Location == null)
                 return null;
 
             if (element.Location.InternalBoundaries.Count != 0)
             {
-                BH.Engine.Base.Compute.RecordError("InternalBoundaries error");
+                BH.Engine.Base.Compute.RecordError($"PadFoundation with internal boundaries are currently not supported. BHoM_Guid: {element.BHoM_Guid}");
             }
 
             List<ICurve> segments = element.Location.ExternalBoundary.ISubParts().ToList();
             if (segments.Any(x => !(x is BH.oM.Geometry.Line)))
             {
-                BH.Engine.Base.Compute.RecordError("");
+                BH.Engine.Base.Compute.RecordError($"PadFoundation boundary contains non-linear curve segments. Only linear segments are currently supported. BHoM_Guid: {element.BHoM_Guid}");
             }
 
             return BH.Engine.Geometry.Create.Polyline(segments.Cast<BH.oM.Geometry.Line>().ToList());
@@ -69,62 +67,37 @@ namespace BH.Revit.Engine.Core
         [Description("Checks whether a Polyline represents a rectangle.")]
         [Input("polyline", "Polyline to check.")]
         [Output("isRectangular", "True if the polyline represents a rectangle; otherwise false.")]
-        public static bool IsRectangularFoundationGeometry(this Polyline polyline)
+        public static bool IsRectangular(this Polyline polyline)
         {
             if (polyline == null || polyline.ControlPoints == null)
                 return false;
 
-            var points = polyline.ControlPoints;
-            int pointCount = points.Count;
-
-            //Reecrtangle check  closing point
-            if (pointCount != 5)
+            if (polyline.ControlPoints.Count != 5)
                 return false;
 
-            List<BH.oM.Geometry.Line> edges = new List<BH.oM.Geometry.Line>();
-            for (int i = 0; i < 4; i++)
-            {
-                edges.Add(new BH.oM.Geometry.Line { Start = points[i], End = points[(i + 1) % pointCount] });
-            }
+            // Rectangular shape check
+            double diagonal1 = (polyline.ControlPoints[2] - polyline.ControlPoints[0]).Length();
+            double diagonal2 = (polyline.ControlPoints[3] - polyline.ControlPoints[1]).Length();
 
-            double[] lengths = new double[4];
-            for (int i = 0; i < 4; i++)
-                lengths[i] = edges[i].Length();
-
-            double tolerance = 0.001;
-            if (Math.Abs(lengths[0] - lengths[2]) > tolerance || Math.Abs(lengths[1] - lengths[3]) > tolerance)
-                return false;
-
-            BH.oM.Geometry.Point p1 = edges[0].Start;
-            BH.oM.Geometry.Point p2 = edges[0].End;
-            BH.oM.Geometry.Point p3 = edges[1].End;
-            BH.oM.Geometry.Point p4 = edges[2].End;
-
-            var d1 = (p1 - p3).Length();
-            var d2 = (p2 - p4).Length();
-
-            return Math.Abs(d1 - d2) <= tolerance;
+            return Math.Abs(diagonal1 - diagonal2) <= BH.oM.Geometry.Tolerance.Distance;
         }
 
         /***************************************************/
 
         [Description("Computes the rotation angle of a local coordinate system in the XY plane.")]
         [Input("localCS", "Local coordinate system to compute the rotation angle for.")]
-        [Output("angle", "Rotation angle in radians.")]
-        public static double ComputeRotationAngleFoundationGeometry(this Cartesian localCS)
+        [Output("angle", "Rotation angle in radians measured counter-clockwise from the global X-axis.")]
+        public static double RotationAngleInXY(this Cartesian localCS)
         {
             if (localCS == null)
                 return 0.0;
 
-            Basis basis = (Basis)localCS;
+            if (Math.Abs(Math.Abs(localCS.Z.DotProduct(BH.oM.Geometry.Vector.ZAxis)) - 1) > BH.oM.Geometry.Tolerance.Angle)
+            {
+                BH.Engine.Base.Compute.RecordWarning("Local Z-axis is not parallel to global Z-axis. Rotation angle may not be accurate.");
+            }
 
-            var gx = BH.oM.Geometry.Vector.XAxis; // Global X Axis
-            var lx = basis.X; // Local X Axis
-
-            var global = new BH.oM.Geometry.Vector { X = gx.X, Y = gx.Y, Z = 0 }.Normalise();
-            var local = new BH.oM.Geometry.Vector { X = lx.X, Y = lx.Y, Z = 0 }.Normalise();
-
-            return Math.Atan2(global.CrossProduct(local).Z, global.DotProduct(local));
+            return Math.Atan2(localCS.X.Y, localCS.X.X);
         }
 
         /***************************************************/
@@ -132,22 +105,13 @@ namespace BH.Revit.Engine.Core
         [Description("Computes the total thickness (sum of construction layers) of a PadFoundation.")]
         [Input("element", "PadFoundation element whose thickness should be computed.")]
         [Output("thickness", "Total thickness of all construction layers.")]
-        public static double GetThicknessFromConstrFoundationGeometry(this PadFoundation element)
+        public static double Thickness(this PadFoundation element)
         {
-            BH.oM.Physical.Constructions.Construction constr = element.Construction as oM.Physical.Constructions.Construction;
-
-            if (constr == null || constr.Layers == null || constr.Layers.Count == 0)
-            {
-                BH.Engine.Base.Compute.RecordError("Invalid input");
+            oM.Physical.Constructions.Construction construction = element?.Construction as oM.Physical.Constructions.Construction;
+            if (construction?.Layers == null)
                 return double.NaN;
-            }
 
-            double totalDepth = 0.0;
-            foreach (var layer in constr.Layers)
-            {
-                totalDepth += layer.Thickness;
-            }
-            return totalDepth;
+            return construction.Layers.Sum(layer => layer.Thickness);
         }
 
         /***************************************************/
@@ -155,30 +119,16 @@ namespace BH.Revit.Engine.Core
         [Description("Gets width and length dimensions of a rectangular Polyline.")]
         [Input("polyline", "Polyline representing a rectangle.")]
         [Output("dimensions", "Tuple containing (width, length) in the same units as the input polyline.")]
-        public static (double width, double length) GetRectangleDimensionsFoundationGeometry(this Polyline polyline)
+        public static (double width, double length) RectangleDimensions(this Polyline polyline)
         {
-            if (polyline == null || polyline.ControlPoints == null)
+            if (!IsRectangular(polyline))
             {
-                BH.Engine.Base.Compute.RecordWarning("Cannot get rectangle dimensions: polyline or control points are null.");
+                BH.Engine.Base.Compute.RecordWarning("Cannot get rectangle dimensions: polyline does not represent a rectangle.");
+                return (double.NaN, double.NaN);
             }
 
-            var points = polyline.ControlPoints;
-            int pointCount = points.Count;
-
-            if (pointCount != 5)
-            {
-                BH.Engine.Base.Compute.RecordWarning("Cannot get rectangle dimensions: polyline or control points are null.");
-            }
-
-            double[] lengths = new double[4];
-            for (int i = 0; i < 4; i++)
-            {
-                var line = new BH.oM.Geometry.Line { Start = points[i], End = points[(i + 1) % pointCount] };
-                lengths[i] = line.Length();
-            }
-
-            double side1 = lengths[0];
-            double side2 = lengths[1];
+            double side1 = (polyline.ControlPoints[1] - polyline.ControlPoints[0]).Length();
+            double side2 = (polyline.ControlPoints[2] - polyline.ControlPoints[1]).Length();
 
             double width = Math.Min(side1, side2);
             double length = Math.Max(side1, side2);
@@ -188,136 +138,15 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Loads the PadFoundation rectangular family symbol template (or activates an existing one).")]
-        [Input("document", "Revit document where the family symbol should be loaded/activated.")]
-        [Input("settings", "Revit adapter settings used for loading the family symbol.")]
-        [Output("symbol", "FamilySymbol for the rectangular PadFoundation template, or null if not found.")]
-        public static FamilySymbol LoadPadRectangleTemplateFoundationGeometry(this Document document, RevitSettings settings)
-        {
-            string familyName = "BHE_StructuralFoundations_Pad-Rectangular";
-            string typeName = "1000x1000x500 DP";
-
-            //check if family is already loaded 
-            Family existingFamily = new FilteredElementCollector(document)
-                .OfClass(typeof(Family))
-                .FirstOrDefault(x => x.Name == familyName) as Family;
-
-            if (existingFamily != null)
-            {
-                FamilySymbol symbol = existingFamily.GetFamilySymbolIds()
-                    .Select(id => document.GetElement(id) as FamilySymbol)
-                    .FirstOrDefault(x => x != null && x.Name == typeName);
-
-                if (symbol != null)
-                {
-                    if (!symbol.IsActive)
-                        symbol.Activate();
-
-                    return symbol;
-                }
-            }
-
-            //try loading from  library 
-            FamilySymbol loadedFamily = settings.FamilyLoadSettings?.LoadFamilySymbol(document, "Structural Foundations", familyName, typeName);
-            if (loadedFamily != null)
-                return loadedFamily;
-
-            // load from the default resource path
-            string path = System.IO.Path.Combine(@"C:\ProgramData\BHoM\Resources\Revit\Families", $"{familyName}.rfa");
-            if (System.IO.File.Exists(path))
-            {
-                Family family;
-                if (document.LoadFamily(path, out family) && family != null)
-                {
-                    FamilySymbol symbol = family.GetFamilySymbolIds()
-                        .Select(id => document.GetElement(id) as FamilySymbol)
-                        .FirstOrDefault(x => x != null && x.Name == typeName);
-
-                    if (symbol != null)
-                    {
-                        if (!symbol.IsActive)
-                            symbol.Activate();
-
-                        return symbol;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        /***************************************************/
-
-        [Description("Generates (duplicates and configures) a PadFoundation FamilySymbol type based on foundation dimensions.")]
-        [Input("element", "PadFoundation element whose dimensions will drive the generated FamilySymbol type parameters.")]
-        [Input("document", "Revit document where the symbol type will be created/duplicated.")]
-        [Input("settings", "Revit adapter settings used while generating the symbol type.")]
-        [Output("symbol", "Generated FamilySymbol with parameters matching the foundation dimensions, or null on failure.")]
-        public static FamilySymbol GenerateFoundationTypeFoundationGeometry(this PadFoundation element, Document document, RevitSettings settings = null)
-        {
-            settings = settings.DefaultIfNull();
-
-            FamilySymbol baseSymbol = LoadPadRectangleTemplateFoundationGeometry(document, settings);
-            if (baseSymbol == null)
-            {
-                BH.Engine.Base.Compute.RecordError("Could not load rectangular foundation template.");
-                return null;
-            }
-
-            string newTypeName = $"PadFoundation_{Guid.NewGuid().ToString().Substring(0, 8)}";
-            FamilySymbol foundationSymbol = baseSymbol.Duplicate(newTypeName) as FamilySymbol;
-            if (foundationSymbol == null)
-            {
-                BH.Engine.Base.Compute.RecordError("Could not duplicate foundation family symbol.");
-                return null;
-            }
-
-            foundationSymbol.Activate();
-
-            Polyline outline = ExtractBoundaryFoundationGeometry(element);
-            if (outline == null || !IsRectangularFoundationGeometry(outline))
-            {
-                BH.Engine.Base.Compute.RecordError("Foundation outline must be rectangular.");
-                return null;
-            }
-
-            var (width, length) = GetRectangleDimensionsFoundationGeometry(outline);
-            double depth = GetThicknessFromConstrFoundationGeometry(element);
-
-            Parameter widthParam = foundationSymbol.LookupParameter("BHE_Width");
-            widthParam?.Set(width.FromSI(SpecTypeId.Length));
-
-            Parameter lengthParam = foundationSymbol.LookupParameter("BHE_Length");
-            lengthParam?.Set(length.FromSI(SpecTypeId.Length));
-
-            Parameter depthParam = foundationSymbol.LookupParameter("BHE_Depth");
-            depthParam?.Set(depth.FromSI(SpecTypeId.Length));
-
-            return foundationSymbol;
-        }
-
-        /***************************************************/
-
         [Description("Gets the origin point (centroid) of a PadFoundation.")]
         [Input("element", "PadFoundation element whose origin should be computed.")]
         [Output("origin", "Origin point (centroid) of the foundation external boundary, or null if invalid.")]
-        public static BH.oM.Geometry.Point GetFoundationOriginFoundationGeometry(this PadFoundation element)
+        public static BH.oM.Geometry.Point Origin(this PadFoundation element)
         {
-            Polyline outline = ExtractBoundaryFoundationGeometry(element);
-            // Validate the outline shape
+            Polyline outline = Boundary(element);
             if (outline?.ControlPoints == null)
                 return null;
 
-            var points = outline.ControlPoints;
-            int pointCount = points.Count;
-
-            if (pointCount != 5)
-            {
-                BH.Engine.Base.Compute.RecordError($"Foundation outline should have exactly 5 points for a rectangle, but has {pointCount}.");
-                return null;
-            }
-
-            // Check if the shape is closed 
             if (!outline.IsClosed(BH.oM.Geometry.Tolerance.Distance))
             {
                 BH.Engine.Base.Compute.RecordError("Foundation outline is not properly closed.");
@@ -333,6 +162,42 @@ namespace BH.Revit.Engine.Core
             }
 
             return centerPoint;
+        }
+
+        /***************************************************/
+
+        [Description("Gets oriented bounding box dimensions for any Polyline based on its first edge orientation.")]
+        [Input("polyline", "Polyline to compute oriented bounding box dimensions for.")]
+        [Output("dimensions", "Tuple containing (width, length) along the shape's local axes.")]
+        public static (double width, double length) NonRectangleDimensions(this Polyline polyline)
+        {
+            if (polyline?.ControlPoints == null || polyline.ControlPoints.Count < 3)
+                return (double.NaN, double.NaN);
+
+            Vector edgeVector = polyline.ControlPoints[1] - polyline.ControlPoints[0];
+            Vector xAxis = new Vector { X = edgeVector.X, Y = edgeVector.Y, Z = 0 }.Normalise();
+            Vector yAxis = new Vector { X = -xAxis.Y, Y = xAxis.X, Z = 0 };
+
+            double minX = double.MaxValue;
+            double maxX = double.MinValue;
+            double minY = double.MaxValue;
+            double maxY = double.MinValue;
+
+            foreach (var point in polyline.ControlPoints)
+            {
+                double localX = point.X * xAxis.X + point.Y * xAxis.Y;
+                double localY = point.X * yAxis.X + point.Y * yAxis.Y;
+
+                if (localX < minX) minX = localX;
+                if (localX > maxX) maxX = localX;
+                if (localY < minY) minY = localY;
+                if (localY > maxY) maxY = localY;
+            }
+
+            double width = Math.Min(maxX - minX, maxY - minY);
+            double length = Math.Max(maxX - minX, maxY - minY);
+
+            return (width, length);
         }
     }
 }

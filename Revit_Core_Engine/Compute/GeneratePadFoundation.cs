@@ -42,13 +42,12 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Generates a Revit family type (and its parent family, if not loaded yet) that represents the profile of a given BHoM pad foundation." +
-                     "\nThe profile is created based on the template families stored in C:\\ProgramData\\Resources\\Revit.")]
+        [Description("Generates a Revit FamilySymbol for a BHoM PadFoundation by querying existing families in the document or creating a new one from a template file with parametric dimensions.")]
         [Input("padFoundation", "BHoM pad foundation to generate the Revit profile for.")]
         [Input("document", "Revit document, in which the family type will be created.")]
         [Input("settings", "Settings to be used when generating the family type.")]
-        [Output("symbol", "Created Revit family type that represents the profile of the input BHoM pad foundation.")]
-        public static FamilySymbol GeneratePadFoundation(this PadFoundation padFoundation, Document document, RevitSettings settings = null)
+        [Output("symbol", "Created Revit family type that represents the outline of the input BHoM pad foundation.")]
+        public static FamilySymbol GeneratePadFoundationType(this PadFoundation padFoundation, Document document, RevitSettings settings = null)
         {
             if (padFoundation == null)
             {
@@ -74,7 +73,7 @@ namespace BH.Revit.Engine.Core
                 {
                     result = symbols[0].Duplicate(padFoundation.Name) as FamilySymbol;
                     result.Activate();
-                    padFoundation.ICopyFoundationDimensions(result, settings);
+                    padFoundation.CopyFoundationDimensions(result, settings);
                 }
 
                 return result;
@@ -84,9 +83,7 @@ namespace BH.Revit.Engine.Core
                 family = document.GenerateFamilyFromTemplate(padFoundation, familyName, settings);
                 if (family == null)
                 {
-                    family = document.GenerateFreeformPadFoundation(padFoundation, familyName, settings);
-                    if (family == null)
-                        return null;
+                    return null;
                 }
 
                 FamilySymbol result = document.GetElement(family.GetFamilySymbolIds().FirstOrDefault()) as FamilySymbol;
@@ -100,6 +97,67 @@ namespace BH.Revit.Engine.Core
                 result.Name = padFoundation.PadFoundationTypeName() + " " + padFoundation.PadFoundationFamilyName();
                 return result;
             }
+        }
+
+        /***************************************************/
+
+        [Description("Loads or activates the rectangular PadFoundation family template in the document.")]
+        [Input("document", "Revit document where the family symbol should be loaded/activated.")]
+        [Input("settings", "Revit adapter settings used for loading the family symbol.")]
+        [Output("symbol", "FamilySymbol for the rectangular PadFoundation template, or null if not found.")]
+        public static FamilySymbol LoadPadRectangleTemplate(this Document document, RevitSettings settings)
+        {
+            string familyName = "BHE_StructuralFoundations_Pad-Rectangular";
+            string typeName = "1000x1000x500 DP";
+
+            // Check if family is already loaded
+            Family existingFamily = new FilteredElementCollector(document)
+                .OfClass(typeof(Family))
+                .FirstOrDefault(x => x.Name == familyName) as Family;
+
+            if (existingFamily != null)
+            {
+                FamilySymbol symbol = existingFamily.GetFamilySymbolIds()
+                    .Select(id => document.GetElement(id) as FamilySymbol)
+                    .FirstOrDefault(x => x != null && x.Name == typeName);
+
+                if (symbol != null)
+                {
+                    if (!symbol.IsActive)
+                        symbol.Activate();
+
+                    return symbol;
+                }
+            }
+
+            // Try loading from library
+            FamilySymbol loadedFamily = settings.FamilyLoadSettings?.LoadFamilySymbol(document, "Structural Foundations", familyName, typeName);
+            if (loadedFamily != null)
+                return loadedFamily;
+
+            // Load from the default resource path
+            string path = Path.Combine(m_FamilyDirectory, $"{familyName}.rfa");
+            if (File.Exists(path))
+            {
+                Family family;
+                if (document.LoadFamily(path, out family) && family != null)
+                {
+                    FamilySymbol symbol = family.GetFamilySymbolIds()
+                        .Select(id => document.GetElement(id) as FamilySymbol)
+                        .FirstOrDefault(x => x != null && x.Name == typeName);
+
+                    if (symbol != null)
+                    {
+                        if (!symbol.IsActive)
+                            symbol.Activate();
+
+                        return symbol;
+                    }
+                }
+            }
+
+            BH.Engine.Base.Compute.RecordError($"Could not load rectangular pad foundation template family '{familyName}' from any source.");
+            return null;
         }
 
 
@@ -136,21 +194,13 @@ namespace BH.Revit.Engine.Core
             {
                 FamilySymbol symbol = document.GetElement(result?.GetFamilySymbolIds().FirstOrDefault()) as FamilySymbol;
                 if (symbol != null)
-                    padFoundation.ICopyFoundationDimensions(symbol, settings);
+                    padFoundation.CopyFoundationDimensions(symbol, settings);
             }
 
             return result;
         }
 
         /***************************************************/
-
-        private static Family GenerateFreeformPadFoundation(this Document document, PadFoundation padFoundation, string familyName, RevitSettings settings = null)
-        {
-            throw new NotImplementedException("GenerateFreeformPadFoundation is not implemented.");
-        }
-
-        /**************************************************/
-
 
         private static string PadFoundationFamilyName(this PadFoundation padFoundation)
         {
@@ -183,24 +233,24 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static void ICopyFoundationDimensions(this PadFoundation padFoundation, FamilySymbol targetSymbol, RevitSettings settings = null)
-        {
-            CopyFoundationDimensions(padFoundation as dynamic, targetSymbol, settings);
-        }
-
-        /***************************************************/
-
         private static void CopyFoundationDimensions(this PadFoundation padFoundation, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
-            Polyline outline = padFoundation.ExtractBoundaryFoundationGeometry();
+            Polyline outline = padFoundation.Boundary();
             if (outline == null)
             {
                 BH.Engine.Base.Compute.RecordError($"PadFoundation outline extraction failed. BHoM_Guid: {padFoundation.BHoM_Guid}");
                 return;
             }
 
-            var (width, length) = outline.GetRectangleDimensionsFoundationGeometry();
-            double depth = padFoundation.GetThicknessFromConstrFoundationGeometry();
+            double width;
+            double length;
+
+            if (outline.IsRectangular())
+                (width, length) = outline.RectangleDimensions();
+            else
+                (width, length) = outline.NonRectangleDimensions();
+
+            double depth = padFoundation.Thickness();
 
             Parameter widthParam = targetSymbol.LookupParameter("BHE_Width");
             if (widthParam != null)
@@ -216,6 +266,7 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+
     }
 }
 
