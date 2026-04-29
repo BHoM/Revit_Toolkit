@@ -101,7 +101,17 @@ namespace BH.Revit.Engine.Core
             if (!findClosestIfNotContained)
                 return null;
 
-            // 4. If not found, try find closest space in connector directions (for MEP elements)
+            // 4. If still not found, try find closest above (Z direction)
+            Space closestAbove = locationPoint.FindClosestSpaceInDirection(XYZ.BasisZ, spaces, maxDistance: 1); // 1 feet max distance
+            if (closestAbove != null)
+                return closestAbove;
+
+            // 5. If still not found, try find closest below (negative Z direction)
+            Space closestBelow = locationPoint.FindClosestSpaceInDirection(-XYZ.BasisZ, spaces, maxDistance: 10); // 10 feet max distance
+            if (closestBelow != null)
+                return closestBelow;
+
+            // 6. If not found, try find closest space in connector directions (for MEP elements)
             var connectors = element.Connectors()?.OrderByDescending(x => x.GetMEPConnectorInfo().IsPrimary).ToList();
             if (connectors != null && connectors.Any())
             {
@@ -121,16 +131,6 @@ namespace BH.Revit.Engine.Core
                         return closestToConnector;
                 }
             }
-
-            // 5. If still not found, try find closest above (Z direction)
-            Space closestAbove = locationPoint.FindClosestSpaceInDirection(XYZ.BasisZ, spaces, maxDistance: 1); // 1 feet max distance
-            if (closestAbove != null)
-                return closestAbove;
-
-            // 6. If still not found, try find closest below (negative Z direction)
-            Space closestBelow = locationPoint.FindClosestSpaceInDirection(-XYZ.BasisZ, spaces, maxDistance: 10); // 10 feet max distance
-            if (closestBelow != null)
-                return closestBelow;
 
             // Not found
             return null;
