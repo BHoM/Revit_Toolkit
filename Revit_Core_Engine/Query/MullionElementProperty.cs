@@ -54,7 +54,7 @@ namespace BH.Revit.Engine.Core
                 return frameEdgeProperty;
 
             // Convert the material to BHoM
-            BH.oM.Physical.Materials.Material material = mullion.FramingMaterial(settings, refObjects);
+            BH.oM.Physical.Materials.Material material = mullion.StructuralMaterial(settings, refObjects);
 
             // Convert the profile to BHoM
             IProfile profile = mullion.MullionType.ProfileFromRevit(settings, refObjects);

@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the query.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("material", "BHoM representation of material extracted from Revit FamilyInstance representing a framing element.")]
-        public static BH.oM.Physical.Materials.Material FramingMaterial(this FamilyInstance familyInstance, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects = null)
+        public static BH.oM.Physical.Materials.Material StructuralMaterial(this FamilyInstance familyInstance, RevitSettings settings, Dictionary<string, List<IBHoMObject>> refObjects = null)
         {
             settings = settings.DefaultIfNull();
 

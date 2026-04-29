@@ -119,6 +119,12 @@ namespace BH.Revit.Engine.Core
                 }
             },
             {
+                typeof (BH.oM.Physical.Elements.PadFoundation), new BuiltInCategory[]
+                {
+                    Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFoundation,
+                }
+            },
+            {
                 typeof (Column), new BuiltInCategory[]
                 {
                     Autodesk.Revit.DB.BuiltInCategory.OST_StructuralColumns,

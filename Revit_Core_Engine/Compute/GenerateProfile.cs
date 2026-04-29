@@ -77,6 +77,7 @@ namespace BH.Revit.Engine.Core
                 if (result == null && symbols.Count != 0)
                 {
                     result = symbols[0].Duplicate(element.Property.Name) as FamilySymbol;
+                    result.Activate();
                     property.Profile.ICopyDimensions(result, settings);
                 }
 
@@ -84,21 +85,15 @@ namespace BH.Revit.Engine.Core
             }
             else
             {
-                bool freeform = false;
-
-                family = document.LoadTemplateProfileFamily(element);
-                if (family != null)
-                    family.Name = familyName;
-                else
+                family = document.GenerateFamilyFromTemplate(element, familyName, settings);
+                if (family == null)
                 {
-                    family = GenerateFreeformFamily(document, element, settings);
+                    family = document.GenerateFreeformFamily(element, familyName, settings);
                     if (family == null)
                         return null;
 
                     if (!(property.Profile is FreeFormProfile))
                         BH.Engine.Base.Compute.RecordWarning($"Generation of profiles with shape {property.Profile.GetType().Name} is currently not fully supported - a freeform, dimensionless profile with a dedicated family has been created.");
-
-                    freeform = true;
                 }
 
                 family.SetMaterialForModelBehaviour(property?.Material);
@@ -112,10 +107,6 @@ namespace BH.Revit.Engine.Core
 
                 result.Activate();
                 result.Name = element.ProfileTypeName();
-
-                if (!freeform)
-                    element.ICopyProfileDimensions(result, settings);
-
                 return result;
             }
         }
@@ -125,24 +116,88 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
-        private static Family LoadTemplateProfileFamily(this Document document, IFramingElement element)
+        private static Family SaveAndLoadFamily(Document document, Document familyDocument, string familyName, IFramingElement element, RevitSettings settings)
+        {
+            Family result = null;
+            string tempFolder = Path.GetTempPath();
+            string tempLocation = SanitizePath($"{tempFolder}\\{familyName}.rfa");
+
+            try
+            {
+                if (!Directory.Exists(tempFolder))
+                    Directory.CreateDirectory(tempFolder);
+
+                SaveAsOptions saveOptions = new SaveAsOptions();
+                saveOptions.OverwriteExistingFile = true;
+                familyDocument.SaveAs(tempLocation, saveOptions);
+            }
+            catch (Exception ex)
+            {
+                BH.Engine.Base.Compute.RecordError($"Creation of a freeform Revit profile geometry failed because the family could not be temporarily saved in {tempFolder}. Please make sure the folder exists and you have access to it, then try to empty it in case the issue persists.");
+                return null;
+            }
+
+            document.LoadFamily(tempLocation, out result);
+
+            try
+            {
+                File.Delete(tempLocation);
+            }
+            catch (Exception ex)
+            {
+                BH.Engine.Base.Compute.RecordNote($"File {tempLocation} could not be deleted.");
+            }
+
+            return result;
+        }
+
+        /***************************************************/
+
+        private static Family GenerateFamilyFromTemplate(this Document document, IFramingElement element, string familyName, RevitSettings settings = null)
         {
             string templateFamilyName = element.TemplateProfileFamilyName();
             if (string.IsNullOrWhiteSpace(templateFamilyName))
                 return null;
 
-            string path = $"{m_FamilyDirectory}\\{templateFamilyName}.rfa";
-            if (!System.IO.File.Exists(path))
-                return null;
+            string path = Path.Combine(m_FamilyDirectory, $"{templateFamilyName}.rfa");
 
-            Family family;
-            document.LoadFamily(path, out family);
-            return family;
+            Family result = null;
+            UIDocument uidoc = new UIDocument(document);
+            Document familyDocument = uidoc.Application.Application.OpenDocumentFile(path);
+
+            try
+            {
+                using (Transaction t = new Transaction(familyDocument, "Update Subcategory"))
+                {
+                    t.Start();
+                    SetMaterialSubcategory(familyDocument, (element?.Property as ConstantFramingProperty)?.Material);
+                    t.Commit();
+                }
+
+                result = SaveAndLoadFamily(document, familyDocument, familyName, element, settings);
+            }
+            catch (Exception ex)
+            {
+                BH.Engine.Base.Compute.RecordError($"Creation of a freeform Revit profile geometry failed with the following error: {ex.Message}");
+            }
+            finally
+            {
+                familyDocument.Close(false);
+            }
+
+            if (result != null)
+            {
+                FamilySymbol symbol = document.GetElement(result?.GetFamilySymbolIds().FirstOrDefault()) as FamilySymbol;
+                if (symbol != null)
+                    element.ICopyProfileDimensions(symbol, settings);
+            }
+
+            return result;
         }
 
         /***************************************************/
 
-        private static Family GenerateFreeformFamily(this Document document, IFramingElement element, RevitSettings settings = null)
+        private static Family GenerateFreeformFamily(this Document document, IFramingElement element, string familyName, RevitSettings settings = null)
         {
             ConstantFramingProperty property = element?.Property as ConstantFramingProperty;
 
@@ -211,34 +266,14 @@ namespace BH.Revit.Engine.Core
                     t.Commit();
                 }
 
-                string tempFolder = Path.GetTempPath();
-                string tempLocation = SanitizePath($"{tempFolder}\\{element.ProfileFamilyName()}.rfa");
-                try
+                using (Transaction t = new Transaction(familyDocument, "Update Subcategory"))
                 {
-                    if (!Directory.Exists(tempFolder))
-                        Directory.CreateDirectory(tempFolder);
-
-                    SaveAsOptions saveOptions = new SaveAsOptions();
-                    saveOptions.OverwriteExistingFile = true;
-                    familyDocument.SaveAs(tempLocation, saveOptions);
-                }
-                catch (Exception ex)
-                {
-                    BH.Engine.Base.Compute.RecordError($"Creation of a freeform Revit profile geometry failed because the family could not be temporarily saved in {tempFolder}. Please make sure the folder exists and you have access to it, then try to empty it in case the issue persists.");
-                    familyDocument.Close(false);
-                    return null;
+                    t.Start();
+                    SetMaterialSubcategory(familyDocument, property?.Material);
+                    t.Commit();
                 }
 
-                document.LoadFamily(tempLocation, out result);
-
-                try
-                {
-                    File.Delete(tempLocation);
-                }
-                catch (Exception ex)
-                {
-                    BH.Engine.Base.Compute.RecordNote($"File {tempLocation} could not be deleted.");
-                }
+                result = SaveAndLoadFamily(document, familyDocument, familyName, element, settings);
             }
             catch (Exception ex)
             {
@@ -250,6 +285,41 @@ namespace BH.Revit.Engine.Core
             }
 
             return result;
+        }
+
+        /***************************************************/
+
+        private static bool SetMaterialSubcategory(this Document familyDocument, BH.oM.Physical.Materials.Material material)
+        {
+            List<BH.oM.Physical.Materials.IMaterialProperties> structuralProperties = material?.Properties?.Where(x => x is BH.oM.Structure.MaterialFragments.IMaterialFragment)?.ToList();
+            if (structuralProperties == null || structuralProperties.Count == 0)
+                return false;
+            else if (structuralProperties.Select(x => x.GetType().FullName).Distinct().Count() > 1)
+                return false;
+
+            string keyword;
+            Type materialType = structuralProperties[0].GetType();
+            if (materialType == typeof(BH.oM.Structure.MaterialFragments.Steel))
+                keyword = "Steel";
+            else if (materialType == typeof(BH.oM.Structure.MaterialFragments.Concrete))
+                keyword = "Concrete In-Place";
+            else if (materialType == typeof(BH.oM.Structure.MaterialFragments.Timber) || materialType == typeof(BH.oM.Structure.MaterialFragments.SawnTimber) || materialType == typeof(BH.oM.Structure.MaterialFragments.Glulam))
+                keyword = "Timber";
+            else
+                return false;
+
+            Category subCategory = familyDocument.OwnerFamily.FamilyCategory.SubCategories.Cast<Category>().FirstOrDefault(x => x.Name.EndsWith(keyword));
+            if (subCategory != null)
+            {
+                foreach (GenericForm gf in new FilteredElementCollector(familyDocument).OfClass(typeof(GenericForm)))
+                {
+                    gf.Subcategory = subCategory;
+                }
+
+                return true;
+            }
+            else
+                return false;
         }
 
         /***************************************************/
@@ -546,7 +616,10 @@ namespace BH.Revit.Engine.Core
                 return name.Split(':')[0].Trim();
             else
             {
-                string prefix = element.TemplateProfileFamilyName();
+                // Take template fam name and remove last section after underscore
+                string prefix = Regex.Replace(element.TemplateProfileFamilyName(), "_[^_]*$", "");
+
+                // Add profile name
                 Regex pattern = new Regex(@"\d([\d\.\/\-xX ])*\d");
                 return $"{prefix}_{pattern.Replace(name, "").Replace("  ", " ").Trim()}";
             }
@@ -576,7 +649,12 @@ namespace BH.Revit.Engine.Core
             if (!m_FamilyFileNames.ContainsKey(profileType))
                 return null;
 
-            return element.IProfileFamilyNamePrefix() + m_FamilyFileNames[profileType];
+            string name = element.IProfileFamilyNamePrefix() + m_FamilyFileNames[profileType];
+            string path = Directory.GetFiles(m_FamilyDirectory, $"*{name}.rfa").FirstOrDefault();
+            if (!string.IsNullOrEmpty(path))
+                return Path.GetFileNameWithoutExtension(path);
+            else
+                return null;
         }
 
         /***************************************************/
@@ -725,6 +803,7 @@ namespace BH.Revit.Engine.Core
             { typeof(TubeProfile), "TubeProfile" },
             { typeof(FabricatedBoxProfile), "FabricatedBoxProfile" },
             { typeof(GeneralisedFabricatedBoxProfile), "FabricatedBoxProfile" },
+            { typeof(FreeFormProfile), "FreeformProfile" },
         };
 
         /***************************************************/

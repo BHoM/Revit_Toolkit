@@ -96,8 +96,7 @@ namespace BH.Revit.Engine.Core
                         double width = Math.Max(bbox.Max.X - bbox.Min.X, bbox.Max.Y - bbox.Min.Y);
                         double height = bbox.Max.Z - bbox.Min.Z;
                         if (height < width)
-                            //return typeof(BH.oM.Physical.Elements.PadFoundation);
-                            return null; // Temporarily disabled until PadFoundation is properly implemented in the Revit adapter.
+                            return typeof(BH.oM.Physical.Elements.PadFoundation);
                         else if (familyInstance.GetSubComponentIds().Count != 0)
                             //return typeof(BH.oM.Physical.Elements.PileFoundation);
                             return null; // Temporarily disabled until PileFoundation is properly implemented in the Revit adapter.
