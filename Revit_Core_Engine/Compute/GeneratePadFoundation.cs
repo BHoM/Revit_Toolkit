@@ -108,6 +108,7 @@ namespace BH.Revit.Engine.Core
         public static FamilySymbol LoadPadRectangleTemplate(this Document document, RevitSettings settings)
         {
             string familyName = "BHE_StructuralFoundations_Pad-Rectangular";
+            string familyName = "BHE_StructuralFoundations_Pad-Freeform";
             string typeName = "1000x1000x500 DP";
 
             // Check if family is already loaded
@@ -233,6 +234,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        //TODO: rename to copy foundation outline or ismilar
         private static void CopyFoundationDimensions(this PadFoundation padFoundation, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
             Polyline outline = padFoundation.Boundary();
@@ -240,8 +242,12 @@ namespace BH.Revit.Engine.Core
                 return;
 
             double depth = padFoundation.Thickness();
+
+            // if rectangular, just set params
+            // else set the actual outline
             targetSymbol.LookupParameter("BHE_Width")?.Set(width);
             targetSymbol.LookupParameter("BHE_Length")?.Set(length);
+
             targetSymbol.LookupParameter("BHE_Depth")?.Set(depth);
         }
 

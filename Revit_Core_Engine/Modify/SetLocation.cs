@@ -371,27 +371,27 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            if (element.Location is LocationPoint lp)
-            {
-                XYZ rc = element.Centroid(new Options());
-                XYZ want = centerPoint.ToRevit();
-                if (rc != null)
-                {
-                    XYZ dxy = new XYZ(want.X - rc.X, want.Y - rc.Y, 0);
-                    if (dxy.GetLength() > settings.DistanceTolerance)
-                    {
-                        lp.Point = lp.Point + dxy;
-                        updated = true;
-                    }
-                }
-            }
+            //if (element.Location is LocationPoint lp)
+            //{
+            //    XYZ rc = element.Centroid(new Options());
+            //    XYZ want = centerPoint.ToRevit();
+            //    if (rc != null)
+            //    {
+            //        XYZ dxy = new XYZ(want.X - rc.X, want.Y - rc.Y, 0);
+            //        if (dxy.GetLength() > settings.DistanceTolerance)
+            //        {
+            //            lp.Point = lp.Point + dxy;
+            //            updated = true;
+            //        }
+            //    }
+            //}
 
             if (updated)
                 element.Document.Regenerate();
 
-            updated |= element.SetParameter("BHE_Width", extY);
-            updated |= element.SetParameter("BHE_Length", extX);
-            updated |= element.SetParameter("BHE_Depth", padFoundation.Thickness());
+            //updated |= element.SetParameter("BHE_Width", extY);
+            //updated |= element.SetParameter("BHE_Length", extX);
+            //updated |= element.SetParameter("BHE_Depth", padFoundation.Thickness());
 
             return updated;
         }
