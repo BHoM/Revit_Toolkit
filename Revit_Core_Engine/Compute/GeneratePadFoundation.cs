@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
@@ -236,33 +236,13 @@ namespace BH.Revit.Engine.Core
         private static void CopyFoundationDimensions(this PadFoundation padFoundation, FamilySymbol targetSymbol, RevitSettings settings = null)
         {
             Polyline outline = padFoundation.Boundary();
-            if (outline == null)
-            {
-                BH.Engine.Base.Compute.RecordError($"PadFoundation outline extraction failed. BHoM_Guid: {padFoundation.BHoM_Guid}");
+            if (outline == null || !outline.TryPadOutlinePlacementInXY(out _, out _, out double length, out double width))
                 return;
-            }
-
-            double width;
-            double length;
-
-            if (outline.IsRectangular())
-                (width, length) = outline.RectangleDimensions();
-            else
-                (width, length) = outline.NonRectangleDimensions();
 
             double depth = padFoundation.Thickness();
-
-            Parameter widthParam = targetSymbol.LookupParameter("BHE_Width");
-            if (widthParam != null)
-                widthParam.Set(width);
-
-            Parameter lengthParam = targetSymbol.LookupParameter("BHE_Length");
-            if (lengthParam != null)
-                lengthParam.Set(length);
-
-            Parameter depthParam = targetSymbol.LookupParameter("BHE_Depth");
-            if (depthParam != null)
-                depthParam.Set(depth);
+            targetSymbol.LookupParameter("BHE_Width")?.Set(width);
+            targetSymbol.LookupParameter("BHE_Length")?.Set(length);
+            targetSymbol.LookupParameter("BHE_Depth")?.Set(depth);
         }
 
         /***************************************************/

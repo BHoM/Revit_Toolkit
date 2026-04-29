@@ -354,55 +354,44 @@ namespace BH.Revit.Engine.Core
             if (element == null || padFoundation == null)
                 return false;
 
-            BH.oM.Geometry.Point centerPoint = padFoundation.Origin();
-            if (centerPoint == null)
-                return false;
-
             Polyline outline = padFoundation.Boundary();
-            if (outline == null)
+            if (outline == null || !outline.TryPadOutlinePlacementInXY(out BH.oM.Geometry.Point centerPoint, out double targetRotation, out double extX, out double extY))
                 return false;
 
             bool updated = element.SetLocation(centerPoint, settings);
 
-            LocationPoint locationPoint = element.Location as LocationPoint;
-            if (locationPoint != null)
+            if (element.Location is LocationPoint lpRot)
             {
-                double currentRotation = locationPoint.Rotation;
-
-                if (Math.Abs(currentRotation) > settings.AngleTolerance)
+                double dRot = (targetRotation - lpRot.Rotation.NormalizeAngleDomain());
+                if (Math.Abs(dRot) > settings.AngleTolerance)
                 {
-                    XYZ origin = locationPoint.Point;
-                    Autodesk.Revit.DB.Line axis = Autodesk.Revit.DB.Line.CreateBound(origin, origin + XYZ.BasisZ);
-                    ElementTransformUtils.RotateElement(element.Document, element.Id, axis, -currentRotation);
+                    XYZ o = lpRot.Point;
+                    ElementTransformUtils.RotateElement(element.Document, element.Id, Autodesk.Revit.DB.Line.CreateBound(o, o + XYZ.BasisZ), dRot);
                     updated = true;
                 }
+            }
 
-                Vector edgeVector = outline.ControlPoints[1] - outline.ControlPoints[0];
-                double targetRotation = Math.Atan2(edgeVector.Y, edgeVector.X);
-
-                if (Math.Abs(targetRotation) > settings.AngleTolerance)
+            if (element.Location is LocationPoint lp)
+            {
+                XYZ rc = element.Centroid(new Options());
+                XYZ want = centerPoint.ToRevit();
+                if (rc != null)
                 {
-                    XYZ origin = locationPoint.Point;
-                    Autodesk.Revit.DB.Line axis = Autodesk.Revit.DB.Line.CreateBound(origin, origin + XYZ.BasisZ);
-                    ElementTransformUtils.RotateElement(element.Document, element.Id, axis, targetRotation);
-                    updated = true;
+                    XYZ dxy = new XYZ(want.X - rc.X, want.Y - rc.Y, 0);
+                    if (dxy.GetLength() > settings.DistanceTolerance)
+                    {
+                        lp.Point = lp.Point + dxy;
+                        updated = true;
+                    }
                 }
             }
 
             if (updated)
                 element.Document.Regenerate();
 
-            double width, length;
-            if (outline.IsRectangular())
-                (width, length) = outline.RectangleDimensions();
-            else
-                (width, length) = outline.NonRectangleDimensions();
-
-            double depth = padFoundation.Thickness();
-
-            updated |= element.SetParameter("BHE_Width", width);
-            updated |= element.SetParameter("BHE_Length", length);
-            updated |= element.SetParameter("BHE_Depth", depth);
+            updated |= element.SetParameter("BHE_Width", extY);
+            updated |= element.SetParameter("BHE_Length", extX);
+            updated |= element.SetParameter("BHE_Depth", padFoundation.Thickness());
 
             return updated;
         }
