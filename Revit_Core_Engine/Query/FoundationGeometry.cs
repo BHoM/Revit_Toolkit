@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
@@ -22,6 +22,7 @@
 
 using BH.Engine.Geometry;
 using BH.Engine.Physical;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
@@ -77,15 +78,41 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Finds the longest polyline edge in the XY plane (closed boundary), with deterministic tie-break by lowest vertex index.")]
+        [Description("Classifies a closed linear pad outline in XY as Rectangle (four vertices after dropping closure duplicate) or Freeform.")]
+        [Input("outline", "Closed polyline of line segments in plan.")]
+        [Output("shape", "Rectangle or Freeform; on failure (invalid outline) Freeform is set and the method returns false.")]
+        public static bool TryClassifyPadOutline(this Polyline outline, out PadFoundationOutlineShape shape)
+        {
+            List<BH.oM.Geometry.Point> pts = outline?.ControlPoints;
+            if (pts == null || pts.Count < 3)
+            {
+                shape = PadFoundationOutlineShape.Freeform;
+                return false;
+            }
+
+            int n = pts.Count;
+            if (n >= 3 && (pts[n - 1] - pts[0]).Length() <= BH.oM.Geometry.Tolerance.Distance)
+                n--;
+
+            if (n == 4)
+            {
+                shape = PadFoundationOutlineShape.Rectangle;
+                return true;
+            }
+
+            shape = PadFoundationOutlineShape.Freeform;
+            return true;
+        }
+
+        /***************************************************/
+
+        [Description("Finds the longest polyline edge in the XY plane (closed boundary). When several edges tie for length (e.g. squares), picks the edge whose direction has the smallest azimuth in [0, 2π) so pad rotation is stable.")]
         [Input("polyline", "Closed polyline boundary.")]
         [Output("success", "True if a non-degenerate longest edge was found.")]
         public static bool TryLongestEdgeInXY(this Polyline polyline, out Vector longestEdge)
         {
-
             longestEdge = null;
-
-            var pts = polyline?.ControlPoints;
+            List<BH.oM.Geometry.Point> pts = polyline?.ControlPoints;
             if (pts == null || pts.Count < 2)
                 return false;
 
@@ -93,50 +120,80 @@ namespace BH.Revit.Engine.Core
             if (n > 2 && (pts[n - 1] - pts[0]).Length() <= BH.oM.Geometry.Tolerance.Distance)
                 n--;
 
+            double tol = BH.oM.Geometry.Tolerance.Distance;
+
+            bool Edge(int i, out Vector e, out double len)
+            {
+                e = pts[(i + 1) % n] - pts[i];
+                e.Z = 0;
+                len = e.Length();
+                return len > tol;
+            }
+
             double maxLen = 0;
+            for (int i = 0; i < n; i++)
+            {
+                if (Edge(i, out _, out double len) && len > maxLen)
+                    maxLen = len;
+            }
+
+            if (maxLen <= tol)
+                return false;
+
+            double tieTol = Math.Max(tol, 1e-9 * maxLen);
+            double bestAz = double.MaxValue;
 
             for (int i = 0; i < n; i++)
             {
-                int j = (i + 1) % n;
-
-                Vector e = pts[j] - pts[i];
-                e.Z = 0;
-
-                double len = e.Length();
-                if (len <= BH.oM.Geometry.Tolerance.Distance)
+                if (!Edge(i, out Vector e, out double len) || len < maxLen - tieTol)
                     continue;
 
-                if (len > maxLen)
+                double az = Math.Atan2(e.Y, e.X);
+                if (az < 0)
+                    az += 2 * Math.PI;
+
+                if (longestEdge == null || az < bestAz - 1e-12)
                 {
-                    maxLen = len;
+                    bestAz = az;
                     longestEdge = e;
                 }
             }
 
             return longestEdge != null;
-
         }
 
         /***************************************************/
 
-        [Description("Placement data for a pad footprint: centroid, CCW-normalized rotation about +Z aligning the longest edge with global +X, and extents along family X/Y after that rotation (no scaling).")]
+        [Description("Plan rotation (radians, same convention as Revit plan rotation) from the longest boundary edge direction in XY: aligns that edge with family +X after folding to (-π/2, π/2].")]
+        [Input("longestEdge", "Longest edge direction in the XY plane (non-zero).")]
+        [Output("rotationAboutZ", "Rotation about world Z consistent with TryPadOutlinePlacementInXY.")]
+        public static double PlanRotationAboutZFromLongestEdgeXY(Vector longestEdge)
+        {
+            double theta = Math.Atan2(longestEdge.Y, longestEdge.X).NormalizeAngleDomain();
+            if (theta > Math.PI / 2)
+                theta -= Math.PI;
+            else if (theta < -Math.PI / 2)
+                theta += Math.PI;
+
+            return theta;
+        }
+
+        /***************************************************/
+
+        [Description("Single source of truth for pad plan placement: centroid of the BHoM outline (top face boundary), rotationAboutZ (radians) from the longest boundary edge in XY (same rule as Revit top-face longest edge in SetLocation(PadFoundation)), and extents in that frame for BHE_Length/BHE_Width.")]
         [Input("outline", "Closed polyline in model XY.")]
         [Output("success", "False if outline is invalid or degenerate.")]
         public static bool TryPadOutlinePlacementInXY(this Polyline outline, out BH.oM.Geometry.Point centroid, out double rotationAboutZ, out double extentAlongFamilyX, out double extentAlongFamilyY)
         {
-            centroid = null;
             rotationAboutZ = double.NaN;
             extentAlongFamilyX = double.NaN;
             extentAlongFamilyY = double.NaN;
+            centroid = null;
 
-            centroid = outline.Centroid();
-
-            if (!outline.TryLongestEdgeInXY(out Vector longestEdge))
+            List<BH.oM.Geometry.Point> pts = outline?.ControlPoints;
+            if (pts == null || pts.Count < 3)
                 return false;
 
-            double theta = Math.Atan2(longestEdge.Y, longestEdge.X);
-
-            List<BH.oM.Geometry.Point> pts = outline.ControlPoints;
             int n = pts.Count;
             if (n >= 3 && (pts[n - 1] - pts[0]).Length() <= BH.oM.Geometry.Tolerance.Distance)
                 n--;
@@ -144,11 +201,14 @@ namespace BH.Revit.Engine.Core
             if (n < 3)
                 return false;
 
-            double signedArea = FoundationSignedAreaXY(pts, n, centroid, theta);
-            if (signedArea < 0)
-                theta += Math.PI;
+            centroid = outline.Centroid();
+            if (centroid == null)
+                return false;
 
-            rotationAboutZ = FoundationWrapAngle(theta);
+            if (!outline.TryLongestEdgeInXY(out Vector longestEdge))
+                return false;
+
+            rotationAboutZ = PlanRotationAboutZFromLongestEdgeXY(longestEdge);
 
             double cosT = Math.Cos(rotationAboutZ);
             double sinT = Math.Sin(rotationAboutZ);
@@ -156,68 +216,20 @@ namespace BH.Revit.Engine.Core
 
             for (int i = 0; i < n; i++)
             {
-                double offsetXFromCentroid = pts[i].X - centroid.X;
-                double offsetYFromCentroid = pts[i].Y - centroid.Y;
-                double localXInRotatedFrame = offsetXFromCentroid * cosT + offsetYFromCentroid * sinT;
-                double localYInRotatedFrame = -offsetXFromCentroid * sinT + offsetYFromCentroid * cosT;
-                if (localXInRotatedFrame < minX) minX = localXInRotatedFrame;
-                if (localXInRotatedFrame > maxX) maxX = localXInRotatedFrame;
-                if (localYInRotatedFrame < minY) minY = localYInRotatedFrame;
-                if (localYInRotatedFrame > maxY) maxY = localYInRotatedFrame;
+                double dx = pts[i].X - centroid.X;
+                double dy = pts[i].Y - centroid.Y;
+                double lx = dx * cosT + dy * sinT;
+                double ly = -dx * sinT + dy * cosT;
+                if (lx < minX) minX = lx;
+                if (lx > maxX) maxX = lx;
+                if (ly < minY) minY = ly;
+                if (ly > maxY) maxY = ly;
             }
 
             extentAlongFamilyX = maxX - minX;
             extentAlongFamilyY = maxY - minY;
 
             return true;
-        }
-
-        /***************************************************/
-
-        [Description("Signed shoelace area in XY after translating vertices to origin and rotating by angle about Z (foundation footprint winding).")]
-        [Input("vertices", "Polygon vertices in order.")]
-        [Input("vertexCount", "Number of vertices (closed ring without duplicate closing point).")]
-        [Input("origin", "Translation subtracted from each vertex before rotation.")]
-        [Input("angleRadiansZ", "Rotation about global Z in radians.")]
-        [Output("signedArea", "Twice the usual shoelace sum / 2; sign indicates winding after transform.")]
-        public static double FoundationSignedAreaXY(List<BH.oM.Geometry.Point> vertices, int vertexCount, BH.oM.Geometry.Point origin, double angleRadiansZ)
-        {
-            double cosT = Math.Cos(angleRadiansZ);
-            double sinT = Math.Sin(angleRadiansZ);
-            double sum = 0;
-
-            for (int i = 0; i < vertexCount; i++)
-            {
-                int j = (i + 1) % vertexCount;
-                double dxI = vertices[i].X - origin.X;
-                double dyI = vertices[i].Y - origin.Y;
-                double dxJ = vertices[j].X - origin.X;
-                double dyJ = vertices[j].Y - origin.Y;
-                double qix = dxI * cosT + dyI * sinT;
-                double qiy = -dxI * sinT + dyI * cosT;
-                double qjx = dxJ * cosT + dyJ * sinT;
-                double qjy = -dxJ * sinT + dyJ * cosT;
-                sum += qix * qjy - qjx * qiy;
-            }
-
-            return 0.5 * sum;
-        }
-
-        /***************************************************/
-
-        [Description("Wraps radians to (-π, π] for foundation placement angles.")]
-        [Input("radians", "Angle in radians.")]
-        [Output("wrapped", "Equivalent angle in (-π, π].")]
-        public static double FoundationWrapAngle(double radians)
-        {
-            radians = radians % (2 * Math.PI);
-
-            if (radians < -Math.PI)
-                radians += Math.PI * 2;
-            else if (radians > Math.PI)
-                radians -= Math.PI * 2;
-
-            return radians;
         }
 
         /***************************************************/
@@ -247,6 +259,8 @@ namespace BH.Revit.Engine.Core
 
             return centerPoint;
         }
+
+        /***************************************************/
     }
 }
 

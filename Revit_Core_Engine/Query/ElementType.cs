@@ -23,9 +23,11 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
+using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
@@ -78,18 +80,22 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //[Description("Returns the Revit element type to be used when converting a given BHoM framing element to Revit.")]
-        //[Input("framingElement", "BHoM framing element to find a correspondent Revit element type for.")]
-        //[Input("document", "Revit document to parse in search for the element type.")]
-        //[Input("settings", "Revit adapter settings to be used while performing the query.")]
-        //[Output("framingType", "Revit element type to be used when converting the input BHoM object to Revit.")]
+        [Description("Returns the Revit FamilySymbol to use when converting a BHoM PadFoundation. Orthogonal rectangular plans resolve by BHoM family/type name (document or library), then fall back to generation; non-rectangular plans use generation from geometry.")]
+        [Input("padFoundation", "BHoM pad foundation to find or generate a correspondent Revit family type for.")]
+        [Input("document", "Revit document to search for the element type or host generated types.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("familySymbol", "Revit FamilySymbol to be used when converting the input pad foundation to Revit.")]
         public static FamilySymbol ElementType(this BH.oM.Physical.Elements.PadFoundation padFoundation, Document document, RevitSettings settings = null)
         {
             HashSet<BuiltInCategory> categories = padFoundation.BuiltInCategories();
 
-            //TODO: may need dedicated element type query to take actual dimensions (shape, height/width, thk) into acccount
-            FamilySymbol result = padFoundation.ElementType(document, categories, settings) as FamilySymbol;
+            Polyline outline = padFoundation.Boundary();
+            bool isRectangle = outline != null && outline.TryClassifyPadOutline(out PadFoundationOutlineShape outlineShape) && outlineShape == PadFoundationOutlineShape.Rectangle;
 
+            if (!isRectangle)
+                return padFoundation.GeneratePadFoundationType(document, settings);
+
+            FamilySymbol result = padFoundation.ElementType(document, categories, settings) as FamilySymbol;
             if (result == null)
                 result = padFoundation.GeneratePadFoundationType(document, settings);
 
