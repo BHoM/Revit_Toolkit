@@ -89,15 +89,15 @@ namespace BH.Revit.Engine.Core
         {
             HashSet<BuiltInCategory> categories = padFoundation.BuiltInCategories();
 
-            Polyline outline = padFoundation.Boundary();
-            bool isRectangle = outline != null && outline.TryClassifyPadOutline(out PadFoundationOutlineShape outlineShape) && outlineShape == PadFoundationOutlineShape.Rectangle;
+            Polyline outline = padFoundation.FoundationBoundary();
+            bool isRectangle = outline != null && outline.FoundationClassifyOutline(out PadFoundationOutlineShape outlineShape) && outlineShape == PadFoundationOutlineShape.Rectangle;
 
             if (!isRectangle)
-                return padFoundation.GeneratePadFoundationType(document, settings);
+                return padFoundation.PadFoundationGenerateType(document, settings);
 
             FamilySymbol result = padFoundation.ElementType(document, categories, settings) as FamilySymbol;
             if (result == null)
-                result = padFoundation.GeneratePadFoundationType(document, settings);
+                result = padFoundation.PadFoundationGenerateType(document, settings);
 
             return result;
         }

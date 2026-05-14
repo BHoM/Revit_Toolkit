@@ -43,7 +43,7 @@ namespace BH.Revit.Engine.Core
         [Description("Extracts the outer rectangular boundary of a PadFoundation as a Polyline.")]
         [Input("element", "PadFoundation element whose boundary should be extracted.")]
         [Output("outline", "Polyline representing the PadFoundation external boundary.")]
-        public static Polyline Boundary(this PadFoundation element)
+        public static Polyline FoundationBoundary(this PadFoundation element)
         {
             if (element.Location == null)
                 return null;
@@ -81,7 +81,7 @@ namespace BH.Revit.Engine.Core
         [Description("Classifies a closed linear pad outline in XY as Rectangle (four vertices after dropping closure duplicate) or Freeform.")]
         [Input("outline", "Closed polyline of line segments in plan.")]
         [Output("shape", "Rectangle or Freeform; on failure (invalid outline) Freeform is set and the method returns false.")]
-        public static bool TryClassifyPadOutline(this Polyline outline, out PadFoundationOutlineShape shape)
+        public static bool FoundationClassifyOutline(this Polyline outline, out PadFoundationOutlineShape shape)
         {
             List<BH.oM.Geometry.Point> pts = outline?.ControlPoints;
             if (pts == null || pts.Count < 3)
@@ -239,7 +239,7 @@ namespace BH.Revit.Engine.Core
         [Output("origin", "Origin point (centroid) of the foundation external boundary, or null if invalid.")]
         public static BH.oM.Geometry.Point Origin(this PadFoundation element)
         {
-            Polyline outline = Boundary(element);
+            Polyline outline = FoundationBoundary(element);
             if (outline?.ControlPoints == null)
                 return null;
 

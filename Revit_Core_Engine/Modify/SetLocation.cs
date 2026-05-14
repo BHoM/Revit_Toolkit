@@ -357,7 +357,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            Polyline outline = padFoundation.Boundary();
+            Polyline outline = padFoundation.FoundationBoundary();
             if (outline == null ||
                 !outline.TryPadOutlinePlacementInXY(out BH.oM.Geometry.Point bhomTopCentroid, out double thetaBhom, out _, out _))
                 return false;
@@ -372,13 +372,12 @@ namespace BH.Revit.Engine.Core
             XYZ revitTopCentroidBefore = topFace.Centroid();
             double thetaRevit;
             Polyline revitOutline = topFace.ExternalCurveLoop()?.ToClosedPlanPolyline();
-
-            if (!TryPadPlanRotationFromTopFace(topFace, out thetaRevit))
-            {
-                if (revitOutline == null ||
-                    !revitOutline.TryPadOutlinePlacementInXY(out _, out thetaRevit, out _, out _))
-                    return false;
-            }
+            if (revitOutline != null && revitOutline.TryLongestEdgeInXY(out Vector longestEdge))
+                thetaRevit = Query.PlanRotationAboutZFromLongestEdgeXY(longestEdge);
+            else if (element.Location is LocationPoint lpRot)
+                thetaRevit = lpRot.Rotation;
+            else
+                return false;
 
             XYZ targetTop = bhomTopCentroid.ToRevit();
             XYZ deltaXY = new XYZ(targetTop.X - revitTopCentroidBefore.X, targetTop.Y - revitTopCentroidBefore.Y, 0);
@@ -589,23 +588,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
         /****              Private Methods              ****/
-        /***************************************************/
-
-        private static bool TryPadPlanRotationFromTopFace(PlanarFace topFace, out double rotationAboutZ)
-        {
-            rotationAboutZ = double.NaN;
-            if (topFace == null)
-                return false;
-
-            CurveLoop loop = topFace.ExternalCurveLoop();
-            Polyline outline = loop?.ToClosedPlanPolyline();
-            if (outline == null || !outline.TryLongestEdgeInXY(out Vector longestEdge))
-                return false;
-
-            rotationAboutZ = Query.PlanRotationAboutZFromLongestEdgeXY(longestEdge);
-            return true;
-        }
-
         /***************************************************/
 
         private static bool SetLocation(this FamilyInstance element, BH.oM.Geometry.Point location, Basis orientation, RevitSettings settings)
