@@ -114,6 +114,14 @@ namespace BH.Revit.Engine.Core
             return true;
         }
 
+        /***************************************************/
+
+        [Description("Updates a Revit pad foundation FamilyInstance from the BHoM PadFoundation using the standard element update.")]
+        [Input("element", "Revit FamilyInstance representing the pad foundation to update.")]
+        [Input("bHoMObject", "BHoM PadFoundation whose properties (and optionally location) should be applied to the Revit instance.")]
+        [Input("settings", "Revit adapter settings used for the underlying element update.")]
+        [Input("setLocationOnUpdate", "If false, only parameters and properties are updated; if true, the instance location is updated as well.")]
+        [Output("success", "True if the underlying Element.Update succeeded; dimension mismatch checks only emit warnings and do not change this value.")]
         public static bool Update(this FamilyInstance element, PadFoundation bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
         {
             var result = ((Element)element).Update((IBHoMObject)bHoMObject, settings, setLocationOnUpdate);
