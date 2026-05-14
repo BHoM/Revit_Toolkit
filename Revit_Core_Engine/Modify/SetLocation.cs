@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.Engine.Spatial;
 using BH.oM.Adapters.Revit.Elements;
@@ -354,47 +355,88 @@ namespace BH.Revit.Engine.Core
             if (element == null || padFoundation == null)
                 return false;
 
-            Polyline outline = padFoundation.Boundary();
-            if (outline == null || !outline.TryPadOutlinePlacementInXY(out BH.oM.Geometry.Point centerPoint, out double targetRotation, out double extX, out double extY))
+            settings = settings.DefaultIfNull();
+
+            Polyline outline = padFoundation.FoundationBoundary();
+            if (outline == null ||
+                !outline.TryPadOutlinePlacementInXY(out BH.oM.Geometry.Point bhomTopCentroid, out double thetaBhom, out _, out _))
                 return false;
 
-            bool updated = element.SetLocation(centerPoint, settings);
+            PlanarFace topFace = element.Faces(new Options(), settings)
+                .OfType<PlanarFace>()
+                .FirstOrDefault(pf => Math.Abs(1 - pf.FaceNormal.DotProduct(XYZ.BasisZ)) <= BH.oM.Adapters.Revit.Tolerance.Angle);
 
-            if (element.Location is LocationPoint lpRot)
+            if (topFace == null)
+                return false;
+
+            XYZ revitTopCentroidBefore = topFace.Centroid();
+            double thetaRevit;
+            Polyline revitOutline = topFace.ExternalCurveLoop()?.ToClosedPlanPolyline();
+            if (revitOutline != null && revitOutline.TryLongestEdgeInXY(out Vector longestEdge))
+                thetaRevit = Query.PlanRotationAboutZFromLongestEdgeXY(longestEdge);
+            else if (element.Location is LocationPoint lpRot)
+                thetaRevit = lpRot.Rotation;
+            else
+                return false;
+
+            XYZ targetTop = bhomTopCentroid.ToRevit();
+            XYZ deltaXY = new XYZ(targetTop.X - revitTopCentroidBefore.X, targetTop.Y - revitTopCentroidBefore.Y, 0);
+
+            bool updated = false;
+
+            if (deltaXY.GetLength() > settings.DistanceTolerance)
             {
-                double dRot = (targetRotation - lpRot.Rotation.NormalizeAngleDomain());
-                if (Math.Abs(dRot) > settings.AngleTolerance)
-                {
-                    XYZ o = lpRot.Point;
-                    ElementTransformUtils.RotateElement(element.Document, element.Id, Autodesk.Revit.DB.Line.CreateBound(o, o + XYZ.BasisZ), dRot);
-                    updated = true;
-                }
+                ElementTransformUtils.MoveElement(element.Document, element.Id, deltaXY);
+                updated = true;
+                element.Document.Regenerate();
             }
 
-            if (element.Location is LocationPoint lp)
+            double dRot = (thetaBhom - thetaRevit).NormalizeAngleDomain();
+            if (Math.Abs(dRot) > settings.AngleTolerance)
             {
-                XYZ rc = element.Centroid(new Options());
-                XYZ want = centerPoint.ToRevit();
-                if (rc != null)
+                XYZ pivot = new XYZ(targetTop.X, targetTop.Y, targetTop.Z);
+                Autodesk.Revit.DB.Line axis = Autodesk.Revit.DB.Line.CreateBound(pivot, pivot + XYZ.BasisZ);
+                ElementTransformUtils.RotateElement(element.Document, element.Id, axis, dRot);
+                updated = true;
+                element.Document.Regenerate();
+            }
+
+            topFace = element.Faces(new Options(), settings)
+                .OfType<PlanarFace>()
+                .FirstOrDefault(pf => Math.Abs(1 - pf.FaceNormal.DotProduct(XYZ.BasisZ)) <= BH.oM.Adapters.Revit.Tolerance.Angle);
+
+            if (topFace != null)
+            {
+                double dz = targetTop.Z - topFace.Centroid().Z;
+                if (Math.Abs(dz) > settings.DistanceTolerance)
                 {
-                    XYZ dxy = new XYZ(want.X - rc.X, want.Y - rc.Y, 0);
-                    if (dxy.GetLength() > settings.DistanceTolerance)
+                    Parameter offParam = element.get_Parameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM);
+                    if (offParam != null && offParam.HasValue && !offParam.IsReadOnly)
                     {
-                        lp.Point = lp.Point + dxy;
+                        offParam.Set(offParam.AsDouble() + dz);
                         updated = true;
+                        element.Document.Regenerate();
+                    }
+                    else if (element.Location is LocationPoint lpZ)
+                    {
+                        try
+                        {
+                            XYZ p = lpZ.Point;
+                            lpZ.Point = new XYZ(p.X, p.Y, p.Z + dz);
+                            updated = true;
+                            element.Document.Regenerate();
+                        }
+                        catch (Exception)
+                        {
+                            BH.Engine.Base.Compute.RecordWarning($"Pad foundation vertical placement could not be adjusted (offset parameter missing or location read-only). ElementId: {element.Id.Value()}");
+                        }
                     }
                 }
             }
 
-            if (updated)
-                element.Document.Regenerate();
-
-            updated |= element.SetParameter("BHE_Width", extY);
-            updated |= element.SetParameter("BHE_Length", extX);
-            updated |= element.SetParameter("BHE_Depth", padFoundation.Thickness());
-
             return updated;
         }
+
 
         /***************************************************/
 

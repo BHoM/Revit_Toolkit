@@ -25,11 +25,13 @@ using Autodesk.Revit.DB.Plumbing;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Base;
 using BH.oM.Adapters.Revit.Elements;
+using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using BH.oM.MEP.System.MaterialFragments;
+using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -110,6 +112,58 @@ namespace BH.Revit.Engine.Core
                 element.ISetLocation(bHoMObject, settings);
 
             return true;
+        }
+
+        /***************************************************/
+
+        [Description("Updates a Revit pad foundation FamilyInstance from the BHoM PadFoundation using the standard element update.")]
+        [Input("element", "Revit FamilyInstance representing the pad foundation to update.")]
+        [Input("bHoMObject", "BHoM PadFoundation whose properties (and optionally location) should be applied to the Revit instance.")]
+        [Input("settings", "Revit adapter settings used for the underlying element update.")]
+        [Input("setLocationOnUpdate", "If false, only parameters and properties are updated; if true, the instance location is updated as well.")]
+        [Output("success", "True if the underlying Element.Update succeeded; dimension mismatch checks only emit warnings and do not change this value.")]
+        public static bool Update(this FamilyInstance element, PadFoundation bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            var result = ((Element)element).Update((IBHoMObject)bHoMObject, settings, setLocationOnUpdate);
+
+            Polyline outline = bHoMObject.FoundationBoundary();
+            outline.FoundationClassifyOutline(out PadFoundationOutlineShape padShape);
+
+            FamilySymbol sym = element.Document.GetElement(element.GetTypeId()) as FamilySymbol;
+            double tol = Tolerance.Distance;
+
+            if (padShape == PadFoundationOutlineShape.Rectangle)
+            {
+                if (!result || bHoMObject.FoundationBoundary() == null || !(bHoMObject.FoundationBoundary() is Polyline bhomOutline) || !bhomOutline.TryPadOutlinePlacementInXY(out _, out _, out double bhomExtentAlongLongest, out double bhomExtentPerpendicular))
+                    return result;
+                double bhomMax = Math.Max(bhomExtentAlongLongest, bhomExtentPerpendicular);
+                double bhomMin = Math.Min(bhomExtentAlongLongest, bhomExtentPerpendicular);
+
+                Parameter pLength = sym?.LookupParameter("BHE_Length");
+                Parameter pWidth = sym?.LookupParameter("BHE_Width");
+
+                double revitLength = pLength.AsDouble().ToSI(pLength.Definition.GetDataType());
+                double revitWidth = pWidth.AsDouble().ToSI(pWidth.Definition.GetDataType());
+                double revitMax = Math.Max(revitLength, revitWidth);
+                double revitMin = Math.Min(revitLength, revitWidth);
+
+                if (Math.Abs(bhomMax - revitMax) > tol || Math.Abs(bhomMin - revitMin) > tol)
+                    BH.Engine.Base.Compute.RecordWarning($"Pad plan size differs from BHoM ({bhomMax:0.###}×{bhomMin:0.###} vs type {revitMax:0.###}×{revitMin:0.###}). ElementId {element.Id.Value()}");
+            }
+            else
+            {
+                double bhomDepth = bHoMObject.Thickness();
+                if (double.IsNaN(bhomDepth))
+                    return result;
+                Parameter pDepth = sym?.LookupParameter("BHE_Depth");
+                if (pDepth == null || !pDepth.HasValue)
+                    return result;
+                double revitDepth = pDepth.AsDouble().ToSI(pDepth.Definition.GetDataType());
+                if (Math.Abs(bhomDepth - revitDepth) > tol)
+                    BH.Engine.Base.Compute.RecordWarning($"Pad thickness differs from BHoM ({bhomDepth:0.###} vs type BHE_Depth/Depth {revitDepth:0.###}). ElementId {element.Id.Value()}");
+            }
+
+            return result;
         }
 
         /***************************************************/

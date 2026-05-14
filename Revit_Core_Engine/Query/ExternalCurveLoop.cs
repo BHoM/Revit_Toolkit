@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
@@ -66,6 +67,59 @@ namespace BH.Revit.Engine.Core
             }
 
             return externalLoop;
+        }
+
+        /***************************************************/
+
+        [Description("Converts a closed Revit curve loop to a BHoM Polyline of straight segments (tessellated), for XY footprint queries such as pad longest-edge alignment.")]
+        [Input("curveLoop", "Closed curve loop, typically the external boundary of a horizontal face.")]
+        [Output("polyline", "Closed polyline in model coordinates, or null if the loop is invalid or degenerate.")]
+        public static Polyline ToClosedPlanPolyline(this CurveLoop curveLoop)
+        {
+            if (curveLoop == null || curveLoop.IsOpen())
+                return null;
+
+            double tol = BH.oM.Geometry.Tolerance.Distance;
+            List<BH.oM.Geometry.Point> pts = new List<BH.oM.Geometry.Point>();
+
+            foreach (Curve curve in curveLoop)
+            {
+                IList<XYZ> tess = curve.Tessellate();
+                if (tess == null || tess.Count == 0)
+                    continue;
+
+                for (int i = 0; i < tess.Count; i++)
+                {
+                    if (pts.Count > 0 && i == 0)
+                        continue;
+
+                    pts.Add(tess[i].PointFromRevit());
+                }
+            }
+
+            if (pts.Count < 3)
+                return null;
+
+            if ((pts[pts.Count - 1] - pts[0]).Length() <= tol)
+                pts.RemoveAt(pts.Count - 1);
+
+            if (pts.Count < 3)
+                return null;
+
+            List<BH.oM.Geometry.Line> lines = new List<BH.oM.Geometry.Line>();
+            int n = pts.Count;
+            for (int i = 0; i < n; i++)
+            {
+                BH.oM.Geometry.Point a = pts[i];
+                BH.oM.Geometry.Point b = pts[(i + 1) % n];
+                if ((a - b).Length() > tol)
+                    lines.Add(BH.Engine.Geometry.Create.Line(a, b));
+            }
+
+            if (lines.Count < 3)
+                return null;
+
+            return BH.Engine.Geometry.Create.Polyline(lines);
         }
 
         /***************************************************/

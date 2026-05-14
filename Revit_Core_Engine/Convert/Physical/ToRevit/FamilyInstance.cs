@@ -256,12 +256,8 @@ namespace BH.Revit.Engine.Core
             FamilySymbol familySymbol = padFoundation.ElementType(document, settings) as FamilySymbol;
             if (familySymbol == null)
             {
-                familySymbol = document.LoadPadRectangleTemplate(settings);
-                if (familySymbol == null)
-                {
-                    Compute.ElementTypeNotFoundWarning(padFoundation);
-                    return null;
-                }
+                Compute.ElementTypeNotFoundWarning(padFoundation);
+                return null;
             }
 
             familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, level, StructuralType.Footing);
