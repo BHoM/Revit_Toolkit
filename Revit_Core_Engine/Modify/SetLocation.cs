@@ -357,6 +357,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
+            // Revit location point including coordinates and rotation
             LocationPoint revitLocation = element.Location as LocationPoint;
             if (revitLocation == null)
                 return false;
@@ -365,13 +366,16 @@ namespace BH.Revit.Engine.Core
             if (bhomOutline == null)
                 return false;
 
+            // Transformation needed to bring BHoM outline to global XY
             (Vector, double) bhomTransform = bhomOutline.TransformToOriginInXY();
             if (bhomTransform.Item1 == null || double.IsNaN(bhomTransform.Item2))
                 return false;
 
+            // Translation between the current location and BHoM centroid
             XYZ bhomXY = (new BH.oM.Geometry.Point() - bhomTransform.Item1).ToRevit();
             XYZ deltaXY = new XYZ(bhomXY.X - revitLocation.Point.X, bhomXY.Y - revitLocation.Point.Y, 0);
 
+            // Translate if needed
             bool updated = false;
             if (deltaXY.GetLength() > settings.DistanceTolerance)
             {
@@ -380,6 +384,7 @@ namespace BH.Revit.Engine.Core
                 element.Document.Regenerate();
             }
 
+            // Rotate if needed
             double dRot = (bhomTransform.Item2 - revitLocation.Rotation).NormalizeAngleDomain();
             if (Math.Abs(dRot) > settings.AngleTolerance)
             {
@@ -389,10 +394,12 @@ namespace BH.Revit.Engine.Core
                 element.Document.Regenerate();
             }
 
+            // Find top Z
             BoundingBoxXYZ bbox = element.get_BoundingBox(null);
             double topZ = bbox.Max.Z;
             double dz = bhomOutline.ControlPoints[0].Z.FromSI(SpecTypeId.Length) - topZ;
 
+            // Move vertically if needed
             if (Math.Abs(dz) > settings.DistanceTolerance)
             {
                 Parameter offParam = element.get_Parameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM);

@@ -34,7 +34,6 @@ namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
-
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
@@ -76,6 +75,14 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        public static Point Centroid(this PadFoundation element)
+        {
+            return element?.Outline()?.Centroid();
+        }
+
+        /***************************************************/
+
+        //THIS IS MODIFY METHOD
         public static Polyline OrientToOrigin(this Polyline outline)
         {
             (Vector translation, double rotation) = outline.TransformToOriginInXY();
@@ -87,17 +94,52 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static Vector LongestEdgeInXY(this Polyline polyline)
+        //THIS IS QUERY METHOD
+        public static (Vector, double) TransformToOriginInXY(this Polyline outline)
         {
-            List<BH.oM.Geometry.Point> pts = polyline?.ControlPoints;
+            Vector translation = null;
+            double rotation = double.NaN;
+
+            List<Point> pts = outline?.ControlPoints;
+            if (pts == null || pts.Count < 3)
+                return (translation, rotation);
+
+            int n = pts.Count;
+            if (n >= 3 && (pts[n - 1] - pts[0]).Length() <= BH.oM.Geometry.Tolerance.Distance)
+                n--;
+
+            if (n < 3)
+                return (translation, rotation);
+
+            Point centroid = outline.Centroid();
+            if (centroid == null)
+                return (translation, rotation);
+
+            translation = (centroid - new Point()).ProjectToXY();
+
+            Vector longestEdge = outline.LongestEdgeInXY();
+            if (longestEdge != null)
+                rotation = RotationToGlobalX(longestEdge);
+
+            return (translation, rotation);
+        }
+
+
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        private static Vector LongestEdgeInXY(this Polyline polyline)
+        {
+            List<Point> pts = polyline?.ControlPoints;
             if (pts == null || pts.Count < 2)
                 return null;
 
             int n = pts.Count;
-            if (n > 2 && (pts[n - 1] - pts[0]).Length() <= BH.oM.Geometry.Tolerance.Distance)
+            if (n > 2 && (pts[n - 1] - pts[0]).Length() <= Tolerance.Distance)
                 n--;
 
-            double tol = BH.oM.Geometry.Tolerance.Distance;
+            double tol = Tolerance.Distance;
 
             bool Edge(int i, out Vector e, out double len)
             {
@@ -142,7 +184,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static double RotationToGlobalX(Vector longestEdge)
+        private static double RotationToGlobalX(Vector longestEdge)
         {
             double theta = Math.Atan2(longestEdge.Y, longestEdge.X).NormalizeAngleDomain();
             if (theta > Math.PI / 2)
@@ -151,44 +193,6 @@ namespace BH.Revit.Engine.Core
                 theta += Math.PI;
 
             return theta;
-        }
-
-        /***************************************************/
-
-        public static (Vector, double) TransformToOriginInXY(this Polyline outline)
-        {
-            Vector translation = null;
-            double rotation = double.NaN;
-
-            List<Point> pts = outline?.ControlPoints;
-            if (pts == null || pts.Count < 3)
-                return (translation, rotation);
-
-            int n = pts.Count;
-            if (n >= 3 && (pts[n - 1] - pts[0]).Length() <= BH.oM.Geometry.Tolerance.Distance)
-                n--;
-
-            if (n < 3)
-                return (translation, rotation);
-
-            Point centroid = outline.Centroid();
-            if (centroid == null)
-                return (translation, rotation);
-
-            translation = (centroid - new Point()).ProjectToXY();
-
-            Vector longestEdge = outline.LongestEdgeInXY();
-            if (longestEdge != null)
-                rotation = RotationToGlobalX(longestEdge);
-
-            return (translation, rotation);
-        }
-
-        /***************************************************/
-
-        public static Point Centroid(this PadFoundation element)
-        {
-            return element?.Outline()?.Centroid();
         }
 
         /***************************************************/

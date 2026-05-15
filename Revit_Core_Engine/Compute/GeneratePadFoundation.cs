@@ -68,100 +68,8 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-        /****              Private methods              ****/
-        /***************************************************/
 
-        private static FamilySymbol GenerateRectangularType(PadFoundation padFoundation, Document document, RevitSettings settings)
-        {
-            string familyName = "BHE_StructuralFoundations_Pad-Rectangular";
-            Family family = new FilteredElementCollector(document).OfClass(typeof(Family)).FirstOrDefault(x => x.Name == familyName) as Family;
-            if (family == null)
-            {
-                string path = Path.Combine(m_FamilyDirectory, $"{familyName}.rfa");
-                if (!File.Exists(path))
-                    return null;
-
-                if (!document.LoadFamily(path, out family) || family == null)
-                    return null;
-            }
-
-            (double, double, double) dimensions = padFoundation.RectangularDimensions();
-            if (double.IsNaN(dimensions.Item1) || double.IsNaN(dimensions.Item2) || double.IsNaN(dimensions.Item3))
-                return null;
-
-            int minMm = (int)Math.Round(dimensions.Item1 * 1000.0);
-            int maxMm = (int)Math.Round(dimensions.Item2 * 1000.0);
-            int depthMm = (int)Math.Round(dimensions.Item3 * 1000.0);
-            string typeName = $"{minMm}x{maxMm}x{depthMm}";
-
-            List<FamilySymbol> symbols = family.GetFamilySymbolIds().Select(x => document.GetElement(x) as FamilySymbol).Where(x => x != null).ToList();
-            FamilySymbol result = symbols.FirstOrDefault(x => x?.Name == typeName);
-            if (result != null)
-                result.Activate();
-            else if (symbols.Count != 0)
-            {
-                result = symbols[0].Duplicate(typeName) as FamilySymbol;
-                result.Activate();
-                result.SetParameter("BHE_Width", dimensions.Item1);
-                result.SetParameter("BHE_Length", dimensions.Item2);
-                result.SetParameter("BHE_Depth", dimensions.Item3);
-            }
-
-            return result;
-        }
-
-        /***************************************************/
-
-        private static (double, double, double) RectangularDimensions(this PadFoundation padFoundation)
-        {
-            Polyline outline = padFoundation.Outline();
-            double len1 = outline.ControlPoints[0].Distance(outline.ControlPoints[1]);
-            double len2 = outline.ControlPoints[1].Distance(outline.ControlPoints[2]);
-            double bhomLength = Math.Max(len1, len2);
-            double bhomWidth = Math.Min(len1, len2);
-
-            return (bhomLength, bhomWidth, padFoundation.Thickness());
-        }
-
-        /***************************************************/
-
-        private static FamilySymbol GenerateFreeformType(PadFoundation padFoundation, Document document, RevitSettings settings)
-        {
-            const string prefix = "BHE_StructuralFoundations_FreeForm_";
-            Polyline outline = padFoundation.Outline();
-            if (outline?.IIsClosed() != true)
-            {
-                BH.Engine.Base.Compute.RecordError($"Pad foundation outline is invalid. BHoM_Guid: {padFoundation.BHoM_Guid}");
-                return null;
-            }
-
-            double thickness = padFoundation.Thickness();
-            if (double.IsNaN(thickness))
-                return null;
-
-            Polyline orientedOutline = outline.OrientToOrigin();
-            if (orientedOutline == null)
-                return null;
-
-            List<Family> freeformFamilies = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>()
-                .Where(x => Regex.IsMatch(x.Name, $"^{prefix}\\d+$")).ToList();
-
-            Family family = freeformFamilies.FirstOrDefault(x => x.IsMatchingOutline(orientedOutline, settings));
-            if (family == null)
-            {
-                List<int> takenIndices = freeformFamilies.Select(x => int.Parse(x.Name.Substring(prefix.Length))).ToList();
-                int newIndex = takenIndices.Count > 0 ? takenIndices.Max() + 1 : 1;
-                family = GenerateFreeFormPadFamilyFromTemplate(document, orientedOutline, $"{prefix}_{newIndex}", settings);
-            }
-
-            if (family == null)
-                return null;
-
-            return family.FindOrCreateSymbol(thickness);
-        }
-
-        /***************************************************/
-
+        //TODO: this is a query method
         public static bool IsMatchingOutline(this Family family, Polyline orientedOutline, RevitSettings settings)
         {
             Document document = family.Document;
@@ -219,6 +127,110 @@ namespace BH.Revit.Engine.Core
                 if (famDoc != null && famDoc.IsValidObject)
                     famDoc.Close(false);
             }
+        }
+
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        private static FamilySymbol GenerateRectangularType(PadFoundation padFoundation, Document document, RevitSettings settings)
+        {
+            // Check if family loaded to the document, if not, load it from resources path
+            string familyName = "BHE_StructuralFoundations_Pad-Rectangular";
+            Family family = new FilteredElementCollector(document).OfClass(typeof(Family)).FirstOrDefault(x => x.Name == familyName) as Family;
+            if (family == null)
+            {
+                string path = Path.Combine(m_FamilyDirectory, $"{familyName}.rfa");
+                if (!File.Exists(path))
+                    return null;
+
+                if (!document.LoadFamily(path, out family) || family == null)
+                    return null;
+            }
+
+            // Get dimensions of the pad foundation
+            (double, double, double) dimensions = padFoundation.RectangularDimensions();
+            if (double.IsNaN(dimensions.Item1) || double.IsNaN(dimensions.Item2) || double.IsNaN(dimensions.Item3))
+                return null;
+
+            // Create type name based on dimensions
+            int minMm = (int)Math.Round(dimensions.Item1 * 1000.0);
+            int maxMm = (int)Math.Round(dimensions.Item2 * 1000.0);
+            int depthMm = (int)Math.Round(dimensions.Item3 * 1000.0);
+            string typeName = $"{minMm}x{maxMm}x{depthMm}";
+
+            // Try get the type with matching name, otherwise create it by duplicating an existing one and setting the dimensions parameters
+            List<FamilySymbol> symbols = family.GetFamilySymbolIds().Select(x => document.GetElement(x) as FamilySymbol).Where(x => x != null).ToList();
+            FamilySymbol result = symbols.FirstOrDefault(x => x?.Name == typeName);
+            if (result != null)
+                result.Activate();
+            else if (symbols.Count != 0)
+            {
+                result = symbols[0].Duplicate(typeName) as FamilySymbol;
+                result.Activate();
+                result.SetParameter("BHE_Width", dimensions.Item1);
+                result.SetParameter("BHE_Length", dimensions.Item2);
+                result.SetParameter("BHE_Depth", dimensions.Item3);
+            }
+
+            return result;
+        }
+
+        /***************************************************/
+
+        private static (double, double, double) RectangularDimensions(this PadFoundation padFoundation)
+        {
+            Polyline outline = padFoundation.Outline();
+            double len1 = outline.ControlPoints[0].Distance(outline.ControlPoints[1]);
+            double len2 = outline.ControlPoints[1].Distance(outline.ControlPoints[2]);
+            double bhomLength = Math.Max(len1, len2);
+            double bhomWidth = Math.Min(len1, len2);
+
+            return (bhomLength, bhomWidth, padFoundation.Thickness());
+        }
+
+        /***************************************************/
+
+        private static FamilySymbol GenerateFreeformType(PadFoundation padFoundation, Document document, RevitSettings settings)
+        {
+            string prefix = "BHE_StructuralFoundations_FreeForm_";
+
+            // Get the outline and check if valid
+            Polyline outline = padFoundation.Outline();
+            if (outline?.IIsClosed() != true)
+            {
+                BH.Engine.Base.Compute.RecordError($"Pad foundation outline is invalid. BHoM_Guid: {padFoundation.BHoM_Guid}");
+                return null;
+            }
+
+            // Get the thickness and check if valid
+            double thickness = padFoundation.Thickness();
+            if (double.IsNaN(thickness))
+                return null;
+
+            // Orient the outline to origin
+            Polyline orientedOutline = outline.OrientToOrigin();
+            if (orientedOutline == null)
+                return null;
+
+            // Get all BHoM-generated freeform families in the document
+            List<Family> freeformFamilies = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>()
+                .Where(x => Regex.IsMatch(x.Name, $"^{prefix}\\d+$")).ToList();
+
+            // Try to find a family with matching outline, otherwise create a new one from template
+            Family family = freeformFamilies.FirstOrDefault(x => x.IsMatchingOutline(orientedOutline, settings));
+            if (family == null)
+            {
+                List<int> takenIndices = freeformFamilies.Select(x => int.Parse(x.Name.Substring(prefix.Length))).ToList();
+                int newIndex = takenIndices.Count > 0 ? takenIndices.Max() + 1 : 1;
+                family = GenerateFreeFormPadFamilyFromTemplate(document, orientedOutline, $"{prefix}_{newIndex}", settings);
+            }
+
+            if (family == null)
+                return null;
+
+            // Find or create the type with matching thickness
+            return family.FindOrCreateTypeWithThickness(thickness);
         }
 
         /***************************************************/
@@ -297,7 +309,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static FamilySymbol FindOrCreateSymbol(this Family family, double thickness)
+        private static FamilySymbol FindOrCreateTypeWithThickness(this Family family, double thickness)
         {
             List<FamilySymbol> symbols = family.GetFamilySymbolIds().Select(id => family.Document.GetElement(id) as FamilySymbol).Where(s => s != null).ToList();
             if (symbols.Count == 0)

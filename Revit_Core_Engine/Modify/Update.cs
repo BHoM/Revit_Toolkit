@@ -124,10 +124,12 @@ namespace BH.Revit.Engine.Core
         [Output("success", "True if the underlying Element.Update succeeded; dimension mismatch checks only emit warnings and do not change this value.")]
         public static bool Update(this FamilyInstance element, PadFoundation bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
         {
+            // Base update
             bool result = ((Element)element).Update((IBHoMObject)bHoMObject, settings, setLocationOnUpdate);
 
             FamilySymbol symbol = element.Document.GetElement(element.GetTypeId()) as FamilySymbol;
 
+            // Check if outlines match after setting the type (location & orientation irrelevant)
             Polyline outline = bHoMObject.Outline();
             bool isRectangle = outline.IsRectangle(settings);
             bool matchingOutline;
@@ -150,13 +152,19 @@ namespace BH.Revit.Engine.Core
             if (!matchingOutline)
                 BH.Engine.Base.Compute.RecordWarning($"Pad outline had not been updated successfully, there is a mismatch between BHoM and Revit. ElementId {element.Id.Value()}");
 
+            // Check if thickness matches after setting the type
+            bool matchingThickness;
             double bhomThickness = bHoMObject.Thickness();
             if (!double.IsNaN(bhomThickness))
             {
                 double revitThickness = element.LookupParameterDouble("BHE_Thickness");
-                if (Math.Abs(bhomThickness - revitThickness) > settings.DistanceTolerance)
-                    BH.Engine.Base.Compute.RecordWarning($"Pad thickness had not been updated successfully, there is a mismatch between BHoM and Revit. ElementId {element.Id.Value()}");
+                matchingThickness = Math.Abs(bhomThickness - revitThickness) <= settings.DistanceTolerance;
             }
+            else
+                matchingThickness = false;
+
+            if (!matchingThickness)
+                BH.Engine.Base.Compute.RecordWarning($"Pad thickness had not been updated successfully, there is a mismatch between BHoM and Revit. ElementId {element.Id.Value()}");
 
             return result;
         }
