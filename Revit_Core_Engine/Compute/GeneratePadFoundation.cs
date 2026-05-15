@@ -56,7 +56,7 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             PadFoundationOutlineShape shape;
-            Polyline outline = padFoundation?.FoundationBoundary();
+            Polyline outline = padFoundation?.Outline();
             if (outline != null)
                 outline.FoundationClassifyOutline(out shape);
             else
@@ -115,7 +115,7 @@ namespace BH.Revit.Engine.Core
 
         private static (double, double, double) RectangularPadDimensions(PadFoundation padFoundation)
         {
-            Polyline outline = padFoundation?.FoundationBoundary();
+            Polyline outline = padFoundation?.Outline();
             if (outline == null || !outline.TryPadOutlinePlacementInXY(out _, out _, out double extentAlongLongest, out double extentPerpendicular))
                 return (double.NaN, double.NaN, double.NaN);
 
@@ -133,10 +133,10 @@ namespace BH.Revit.Engine.Core
         private static FamilySymbol GenerateFreeformType(PadFoundation padFoundation, Document document, RevitSettings settings)
         {
             const string prefix = "BHE_StructuralFoundations_FreeForm_";
-            Polyline outline = padFoundation?.Location?.ExternalBoundary?.IToPolyline();
+            Polyline outline = padFoundation.Outline();
             if (outline?.IIsClosed() != true)
             {
-                BH.Engine.Base.Compute.RecordError($"Freeform pad foundation outline is invalid. BHoM_Guid: {padFoundation.BHoM_Guid}");
+                BH.Engine.Base.Compute.RecordError($"Pad foundation outline is invalid. BHoM_Guid: {padFoundation.BHoM_Guid}");
                 return null;
             }
 
@@ -147,9 +147,7 @@ namespace BH.Revit.Engine.Core
             if (!outline.TryPadOutlinePlacementInXY(out BH.oM.Geometry.Point centroid, out double rotation, out double length, out double width))
                 return null;
 
-            oM.Geometry.Point origin = new BH.oM.Geometry.Point();
-            Polyline orientedOutline = outline.Translate(origin - centroid).Rotate(origin, Vector.ZAxis, rotation);
-
+            Polyline orientedOutline = outline.OrientToOrigin();
             List<Family> freeformFamilies = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>()
                 .Where(x => Regex.IsMatch(x.Name, $"^{prefix}\\d+$")).ToList();
 
@@ -169,7 +167,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static bool IsMatchingOutline(this Family family, Polyline bhomOutline, RevitSettings settings)
+        public static bool IsMatchingOutline(this Family family, Polyline bhomOutline, RevitSettings settings)
         {
             Document document = family.Document;
             Document famDoc = null;

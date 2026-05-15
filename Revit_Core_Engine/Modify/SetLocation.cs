@@ -357,7 +357,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            Polyline outline = padFoundation.FoundationBoundary();
+            Polyline outline = padFoundation.Outline();
             if (outline == null ||
                 !outline.TryPadOutlinePlacementInXY(out BH.oM.Geometry.Point bhomTopCentroid, out double thetaBhom, out _, out _))
                 return false;

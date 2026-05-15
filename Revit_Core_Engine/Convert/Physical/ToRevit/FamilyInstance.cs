@@ -240,16 +240,16 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            BH.oM.Geometry.Point originPt = padFoundation.Origin();
-            if (originPt == null)
+            BH.oM.Geometry.Point origin = padFoundation.Origin();
+            if (origin == null)
             {
                 BH.Engine.Base.Compute.RecordError($"PadFoundation boundary extraction failed or foundation is not rectangular. BHoM_Guid: {padFoundation.BHoM_Guid}");
                 return null;
             }
 
-            XYZ origin = originPt.ToRevit();
+            XYZ placementPoint = origin.ToRevit();
 
-            Level level = document.LevelAbove(origin.Z, settings);
+            Level level = document.LevelAbove(placementPoint.Z, settings);
             if (level == null)
                 return null;
 
@@ -260,7 +260,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            familyInstance = document.Create.NewFamilyInstance(origin, familySymbol, level, StructuralType.Footing);
+            familyInstance = document.Create.NewFamilyInstance(placementPoint, familySymbol, level, StructuralType.Footing);
             document.Regenerate();
 
             familyInstance.CopyParameters(padFoundation, settings);

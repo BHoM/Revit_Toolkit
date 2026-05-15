@@ -24,8 +24,8 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Plumbing;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Base;
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Elements;
-using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
@@ -124,43 +124,38 @@ namespace BH.Revit.Engine.Core
         [Output("success", "True if the underlying Element.Update succeeded; dimension mismatch checks only emit warnings and do not change this value.")]
         public static bool Update(this FamilyInstance element, PadFoundation bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
         {
-            var result = ((Element)element).Update((IBHoMObject)bHoMObject, settings, setLocationOnUpdate);
+            bool result = ((Element)element).Update((IBHoMObject)bHoMObject, settings, setLocationOnUpdate);
 
-            Polyline outline = bHoMObject.FoundationBoundary();
-            outline.FoundationClassifyOutline(out PadFoundationOutlineShape padShape);
+            FamilySymbol symbol = element.Document.GetElement(element.GetTypeId()) as FamilySymbol;
 
-            FamilySymbol sym = element.Document.GetElement(element.GetTypeId()) as FamilySymbol;
-            double tol = Tolerance.Distance;
-
-            if (padShape == PadFoundationOutlineShape.Rectangle)
+            Polyline outline = bHoMObject.Outline();
+            bool isRectangle = outline.IsRectangle(settings);
+            bool matchingOutline;
+            if (isRectangle)
             {
-                if (!result || bHoMObject.FoundationBoundary() == null || !(bHoMObject.FoundationBoundary() is Polyline bhomOutline) || !bhomOutline.TryPadOutlinePlacementInXY(out _, out _, out double bhomExtentAlongLongest, out double bhomExtentPerpendicular))
-                    return result;
-                double bhomMax = Math.Max(bhomExtentAlongLongest, bhomExtentPerpendicular);
-                double bhomMin = Math.Min(bhomExtentAlongLongest, bhomExtentPerpendicular);
+                double len1 = outline.ControlPoints[0].Distance(outline.ControlPoints[1]);
+                double len2 = outline.ControlPoints[1].Distance(outline.ControlPoints[2]);
+                double bhomLength = Math.Max(len1, len2);
+                double bhomWidth = Math.Min(len1, len2);
 
-                Parameter pLength = sym?.LookupParameter("BHE_Length");
-                Parameter pWidth = sym?.LookupParameter("BHE_Width");
+                double revitLength = element.LookupParameterDouble("BHE_Length");
+                double revitWidth = element.LookupParameterDouble("BHE_Width");
 
-                double revitLength = pLength.AsDouble().ToSI(pLength.Definition.GetDataType());
-                double revitWidth = pWidth.AsDouble().ToSI(pWidth.Definition.GetDataType());
-                double revitMax = Math.Max(revitLength, revitWidth);
-                double revitMin = Math.Min(revitLength, revitWidth);
-
-                if (Math.Abs(bhomMax - revitMax) > tol || Math.Abs(bhomMin - revitMin) > tol)
-                    BH.Engine.Base.Compute.RecordWarning($"Pad plan size differs from BHoM ({bhomMax:0.###}×{bhomMin:0.###} vs type {revitMax:0.###}×{revitMin:0.###}). ElementId {element.Id.Value()}");
+                matchingOutline = Math.Abs(bhomLength - revitLength) <= settings.DistanceTolerance &&
+                                  Math.Abs(bhomWidth - revitWidth) <= settings.DistanceTolerance;
             }
             else
+                matchingOutline = symbol.Family.IsMatchingOutline(outline, settings);
+
+            if (!matchingOutline)
+                BH.Engine.Base.Compute.RecordWarning($"Pad outline had not been updated successfully, there is a mismatch between BHoM and Revit. ElementId {element.Id.Value()}");
+
+            double bhomThickness = bHoMObject.Thickness();
+            if (!double.IsNaN(bhomThickness))
             {
-                double bhomDepth = bHoMObject.Thickness();
-                if (double.IsNaN(bhomDepth))
-                    return result;
-                Parameter pDepth = sym?.LookupParameter("BHE_Depth");
-                if (pDepth == null || !pDepth.HasValue)
-                    return result;
-                double revitDepth = pDepth.AsDouble().ToSI(pDepth.Definition.GetDataType());
-                if (Math.Abs(bhomDepth - revitDepth) > tol)
-                    BH.Engine.Base.Compute.RecordWarning($"Pad thickness differs from BHoM ({bhomDepth:0.###} vs type BHE_Depth/Depth {revitDepth:0.###}). ElementId {element.Id.Value()}");
+                double revitThickness = element.LookupParameterDouble("BHE_Thickness");
+                if (Math.Abs(bhomThickness - revitThickness) > settings.DistanceTolerance)
+                    BH.Engine.Base.Compute.RecordWarning($"Pad thickness had not been updated successfully, there is a mismatch between BHoM and Revit. ElementId {element.Id.Value()}");
             }
 
             return result;

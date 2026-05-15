@@ -22,7 +22,6 @@
 
 using BH.Engine.Geometry;
 using BH.Engine.Physical;
-using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
@@ -43,23 +42,22 @@ namespace BH.Revit.Engine.Core
         [Description("Extracts the outer rectangular boundary of a PadFoundation as a Polyline.")]
         [Input("element", "PadFoundation element whose boundary should be extracted.")]
         [Output("outline", "Polyline representing the PadFoundation external boundary.")]
-        public static Polyline FoundationBoundary(this PadFoundation element)
+        public static Polyline Outline(this PadFoundation element)
         {
-            if (element.Location == null)
+            ICurve outline = element?.Location?.ExternalBoundary;
+            if (outline == null)
                 return null;
 
             if (element.Location.InternalBoundaries.Count != 0)
-            {
-                BH.Engine.Base.Compute.RecordError($"PadFoundation with internal boundaries are currently not supported. BHoM_Guid: {element.BHoM_Guid}");
-            }
+                BH.Engine.Base.Compute.RecordWarning($"PadFoundation with internal boundaries are currently not supported, holes were skipped. BHoM_Guid: {element.BHoM_Guid}");
 
-            List<ICurve> segments = element.Location.ExternalBoundary.ISubParts().ToList();
-            if (segments.Any(x => !(x is BH.oM.Geometry.Line)))
+            if (outline.ISubParts().Any(x => !(x is Line)))
             {
                 BH.Engine.Base.Compute.RecordError($"PadFoundation boundary contains non-linear curve segments. Only linear segments are currently supported. BHoM_Guid: {element.BHoM_Guid}");
+                return null;
             }
 
-            return BH.Engine.Geometry.Create.Polyline(segments.Cast<BH.oM.Geometry.Line>().ToList());
+            return outline.IToPolyline();
         }
 
         /***************************************************/
@@ -78,30 +76,13 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Classifies a closed linear pad outline in XY as Rectangle (four vertices after dropping closure duplicate) or Freeform.")]
-        [Input("outline", "Closed polyline of line segments in plan.")]
-        [Output("shape", "Rectangle or Freeform; on failure (invalid outline) Freeform is set and the method returns false.")]
-        public static bool FoundationClassifyOutline(this Polyline outline, out PadFoundationOutlineShape shape)
+        public static Polyline OrientToOrigin(this Polyline outline)
         {
-            List<BH.oM.Geometry.Point> pts = outline?.ControlPoints;
-            if (pts == null || pts.Count < 3)
-            {
-                shape = PadFoundationOutlineShape.Freeform;
-                return false;
-            }
+            if (!outline.TryPadOutlinePlacementInXY(out BH.oM.Geometry.Point centroid, out double rotation, out double length, out double width))
+                return null;
 
-            int n = pts.Count;
-            if (n >= 3 && (pts[n - 1] - pts[0]).Length() <= BH.oM.Geometry.Tolerance.Distance)
-                n--;
-
-            if (n == 4)
-            {
-                shape = PadFoundationOutlineShape.Rectangle;
-                return true;
-            }
-
-            shape = PadFoundationOutlineShape.Freeform;
-            return true;
+            Point origin = new Point();
+            return outline.Translate(origin - centroid).Rotate(origin, Vector.ZAxis, rotation);
         }
 
         /***************************************************/
@@ -239,25 +220,7 @@ namespace BH.Revit.Engine.Core
         [Output("origin", "Origin point (centroid) of the foundation external boundary, or null if invalid.")]
         public static BH.oM.Geometry.Point Origin(this PadFoundation element)
         {
-            Polyline outline = FoundationBoundary(element);
-            if (outline?.ControlPoints == null)
-                return null;
-
-            if (!outline.IsClosed(BH.oM.Geometry.Tolerance.Distance))
-            {
-                BH.Engine.Base.Compute.RecordError("Foundation outline is not properly closed.");
-                return null;
-            }
-
-            var centerPoint = outline.Centroid();
-
-            if (centerPoint == null)
-            {
-                BH.Engine.Base.Compute.RecordError("Could not calculate centroid of foundation outline.");
-                return null;
-            }
-
-            return centerPoint;
+            return element?.Outline()?.Centroid();
         }
 
         /***************************************************/
