@@ -78,24 +78,20 @@ namespace BH.Revit.Engine.Core
 
         public static Polyline OrientToOrigin(this Polyline outline)
         {
-            if (!outline.TryPadOutlinePlacementInXY(out BH.oM.Geometry.Point centroid, out double rotation, out double length, out double width))
+            (Vector translation, double rotation) = outline.TransformToOriginInXY();
+            if (translation == null || double.IsNaN(rotation))
                 return null;
 
-            Point origin = new Point();
-            return outline.Translate(origin - centroid).Rotate(origin, Vector.ZAxis, rotation);
+            return outline.Translate(translation).Rotate(new Point(), Vector.ZAxis, rotation);
         }
 
         /***************************************************/
 
-        [Description("Finds the longest polyline edge in the XY plane (closed boundary). When several edges tie for length (e.g. squares), picks the edge whose direction has the smallest azimuth in [0, 2π) so pad rotation is stable.")]
-        [Input("polyline", "Closed polyline boundary.")]
-        [Output("success", "True if a non-degenerate longest edge was found.")]
-        public static bool TryLongestEdgeInXY(this Polyline polyline, out Vector longestEdge)
+        public static Vector LongestEdgeInXY(this Polyline polyline)
         {
-            longestEdge = null;
             List<BH.oM.Geometry.Point> pts = polyline?.ControlPoints;
             if (pts == null || pts.Count < 2)
-                return false;
+                return null;
 
             int n = pts.Count;
             if (n > 2 && (pts[n - 1] - pts[0]).Length() <= BH.oM.Geometry.Tolerance.Distance)
@@ -119,11 +115,12 @@ namespace BH.Revit.Engine.Core
             }
 
             if (maxLen <= tol)
-                return false;
+                return null;
 
             double tieTol = Math.Max(tol, 1e-9 * maxLen);
             double bestAz = double.MaxValue;
 
+            Vector longestEdge = null;
             for (int i = 0; i < n; i++)
             {
                 if (!Edge(i, out Vector e, out double len) || len < maxLen - tieTol)
@@ -140,15 +137,12 @@ namespace BH.Revit.Engine.Core
                 }
             }
 
-            return longestEdge != null;
+            return longestEdge;
         }
 
         /***************************************************/
 
-        [Description("Plan rotation (radians, same convention as Revit plan rotation) from the longest boundary edge direction in XY: aligns that edge with family +X after folding to (-π/2, π/2].")]
-        [Input("longestEdge", "Longest edge direction in the XY plane (non-zero).")]
-        [Output("rotationAboutZ", "Rotation about world Z consistent with TryPadOutlinePlacementInXY.")]
-        public static double PlanRotationAboutZFromLongestEdgeXY(Vector longestEdge)
+        public static double RotationToGlobalX(Vector longestEdge)
         {
             double theta = Math.Atan2(longestEdge.Y, longestEdge.X).NormalizeAngleDomain();
             if (theta > Math.PI / 2)
@@ -161,64 +155,38 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        [Description("Single source of truth for pad plan placement: centroid of the BHoM outline (top face boundary), rotationAboutZ (radians) from the longest boundary edge in XY (same rule as Revit top-face longest edge in SetLocation(PadFoundation)), and extents in that frame for BHE_Length/BHE_Width.")]
-        [Input("outline", "Closed polyline in model XY.")]
-        [Output("success", "False if outline is invalid or degenerate.")]
-        public static bool TryPadOutlinePlacementInXY(this Polyline outline, out BH.oM.Geometry.Point centroid, out double rotationAboutZ, out double extentAlongFamilyX, out double extentAlongFamilyY)
+        public static (Vector, double) TransformToOriginInXY(this Polyline outline)
         {
-            rotationAboutZ = double.NaN;
-            extentAlongFamilyX = double.NaN;
-            extentAlongFamilyY = double.NaN;
-            centroid = null;
+            Vector translation = null;
+            double rotation = double.NaN;
 
-            List<BH.oM.Geometry.Point> pts = outline?.ControlPoints;
+            List<Point> pts = outline?.ControlPoints;
             if (pts == null || pts.Count < 3)
-                return false;
+                return (translation, rotation);
 
             int n = pts.Count;
             if (n >= 3 && (pts[n - 1] - pts[0]).Length() <= BH.oM.Geometry.Tolerance.Distance)
                 n--;
 
             if (n < 3)
-                return false;
+                return (translation, rotation);
 
-            centroid = outline.Centroid();
+            Point centroid = outline.Centroid();
             if (centroid == null)
-                return false;
+                return (translation, rotation);
 
-            if (!outline.TryLongestEdgeInXY(out Vector longestEdge))
-                return false;
+            translation = (centroid - new Point()).ProjectToXY();
 
-            rotationAboutZ = PlanRotationAboutZFromLongestEdgeXY(longestEdge);
+            Vector longestEdge = outline.LongestEdgeInXY();
+            if (longestEdge != null)
+                rotation = RotationToGlobalX(longestEdge);
 
-            double cosT = Math.Cos(rotationAboutZ);
-            double sinT = Math.Sin(rotationAboutZ);
-            double minX = double.MaxValue, maxX = double.MinValue, minY = double.MaxValue, maxY = double.MinValue;
-
-            for (int i = 0; i < n; i++)
-            {
-                double dx = pts[i].X - centroid.X;
-                double dy = pts[i].Y - centroid.Y;
-                double lx = dx * cosT + dy * sinT;
-                double ly = -dx * sinT + dy * cosT;
-                if (lx < minX) minX = lx;
-                if (lx > maxX) maxX = lx;
-                if (ly < minY) minY = ly;
-                if (ly > maxY) maxY = ly;
-            }
-
-            extentAlongFamilyX = maxX - minX;
-            extentAlongFamilyY = maxY - minY;
-
-            return true;
+            return (translation, rotation);
         }
 
         /***************************************************/
 
-        [Description("Gets the origin point (centroid) of a PadFoundation.")]
-        [Input("element", "PadFoundation element whose origin should be computed.")]
-        [Output("origin", "Origin point (centroid) of the foundation external boundary, or null if invalid.")]
-        public static BH.oM.Geometry.Point Origin(this PadFoundation element)
+        public static Point Centroid(this PadFoundation element)
         {
             return element?.Outline()?.Centroid();
         }

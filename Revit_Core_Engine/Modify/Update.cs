@@ -145,7 +145,7 @@ namespace BH.Revit.Engine.Core
                                   Math.Abs(bhomWidth - revitWidth) <= settings.DistanceTolerance;
             }
             else
-                matchingOutline = symbol.Family.IsMatchingOutline(outline, settings);
+                matchingOutline = symbol.Family.IsMatchingOutline(outline.OrientToOrigin(), settings);
 
             if (!matchingOutline)
                 BH.Engine.Base.Compute.RecordWarning($"Pad outline had not been updated successfully, there is a mismatch between BHoM and Revit. ElementId {element.Id.Value()}");

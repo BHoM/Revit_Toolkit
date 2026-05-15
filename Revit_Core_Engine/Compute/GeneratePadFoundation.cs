@@ -25,7 +25,6 @@ using Autodesk.Revit.UI;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.Engine.Spatial;
-using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
@@ -55,14 +54,14 @@ namespace BH.Revit.Engine.Core
         {
             settings = settings.DefaultIfNull();
 
-            PadFoundationOutlineShape shape;
+            bool isRectangle;
             Polyline outline = padFoundation?.Outline();
             if (outline != null)
-                outline.FoundationClassifyOutline(out shape);
+                isRectangle = outline.IsRectangle(settings);
             else
                 return null;
 
-            if (shape == PadFoundationOutlineShape.Rectangle)
+            if (isRectangle)
                 return GenerateRectangularType(padFoundation, document, settings);
             else
                 return GenerateFreeformType(padFoundation, document, settings);
@@ -86,7 +85,7 @@ namespace BH.Revit.Engine.Core
                     return null;
             }
 
-            (double, double, double) dimensions = RectangularPadDimensions(padFoundation);
+            (double, double, double) dimensions = padFoundation.RectangularDimensions();
             if (double.IsNaN(dimensions.Item1) || double.IsNaN(dimensions.Item2) || double.IsNaN(dimensions.Item3))
                 return null;
 
@@ -113,19 +112,15 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static (double, double, double) RectangularPadDimensions(PadFoundation padFoundation)
+        private static (double, double, double) RectangularDimensions(this PadFoundation padFoundation)
         {
-            Polyline outline = padFoundation?.Outline();
-            if (outline == null || !outline.TryPadOutlinePlacementInXY(out _, out _, out double extentAlongLongest, out double extentPerpendicular))
-                return (double.NaN, double.NaN, double.NaN);
+            Polyline outline = padFoundation.Outline();
+            double len1 = outline.ControlPoints[0].Distance(outline.ControlPoints[1]);
+            double len2 = outline.ControlPoints[1].Distance(outline.ControlPoints[2]);
+            double bhomLength = Math.Max(len1, len2);
+            double bhomWidth = Math.Min(len1, len2);
 
-            double planMin = Math.Min(extentAlongLongest, extentPerpendicular);
-            double planMax = Math.Max(extentAlongLongest, extentPerpendicular);
-            double depth = padFoundation.Thickness();
-            if (double.IsNaN(depth))
-                return (double.NaN, double.NaN, double.NaN);
-            else
-                return (planMin, planMax, depth);
+            return (bhomLength, bhomWidth, padFoundation.Thickness());
         }
 
         /***************************************************/
@@ -144,10 +139,10 @@ namespace BH.Revit.Engine.Core
             if (double.IsNaN(thickness))
                 return null;
 
-            if (!outline.TryPadOutlinePlacementInXY(out BH.oM.Geometry.Point centroid, out double rotation, out double length, out double width))
+            Polyline orientedOutline = outline.OrientToOrigin();
+            if (orientedOutline == null)
                 return null;
 
-            Polyline orientedOutline = outline.OrientToOrigin();
             List<Family> freeformFamilies = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>()
                 .Where(x => Regex.IsMatch(x.Name, $"^{prefix}\\d+$")).ToList();
 
@@ -167,7 +162,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        public static bool IsMatchingOutline(this Family family, Polyline bhomOutline, RevitSettings settings)
+        public static bool IsMatchingOutline(this Family family, Polyline orientedOutline, RevitSettings settings)
         {
             Document document = family.Document;
             Document famDoc = null;
@@ -182,10 +177,10 @@ namespace BH.Revit.Engine.Core
                 if (familyOutline == null || familyOutline.ControlPoints.Count == 0)
                     return false;
 
-                if (familyOutline.ControlPoints.Count != bhomOutline.ControlPoints.Count)
+                if (familyOutline.ControlPoints.Count != orientedOutline.ControlPoints.Count)
                     return false;
 
-                List<BH.oM.Geometry.Line> bhomEdges = bhomOutline.SubParts().Where(x => x != null && x.Length() > tol).ToList();
+                List<BH.oM.Geometry.Line> bhomEdges = orientedOutline.SubParts().Where(x => x != null && x.Length() > tol).ToList();
                 List<BH.oM.Geometry.Line> revitEdges = familyOutline.SubParts().Where(x => x != null && x.Length() > tol).ToList();
 
                 if (bhomEdges.Count != revitEdges.Count)
