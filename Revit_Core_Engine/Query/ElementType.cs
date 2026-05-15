@@ -23,11 +23,9 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using BH.Engine.Adapters.Revit;
-using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
-using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
@@ -88,16 +86,9 @@ namespace BH.Revit.Engine.Core
         public static FamilySymbol ElementType(this BH.oM.Physical.Elements.PadFoundation padFoundation, Document document, RevitSettings settings = null)
         {
             HashSet<BuiltInCategory> categories = padFoundation.BuiltInCategories();
-
-            Polyline outline = padFoundation.FoundationBoundary();
-            bool isRectangle = outline != null && outline.FoundationClassifyOutline(out PadFoundationOutlineShape outlineShape) && outlineShape == PadFoundationOutlineShape.Rectangle;
-
-            if (!isRectangle)
-                return padFoundation.PadFoundationGenerateType(document, settings);
-
             FamilySymbol result = padFoundation.ElementType(document, categories, settings) as FamilySymbol;
             if (result == null)
-                result = padFoundation.PadFoundationGenerateType(document, settings);
+                result = padFoundation.GeneratePadFoundationType(document, settings);
 
             return result;
         }
