@@ -24,12 +24,14 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Plumbing;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Base;
+using BH.Engine.Geometry;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using BH.oM.MEP.System.MaterialFragments;
+using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -110,6 +112,61 @@ namespace BH.Revit.Engine.Core
                 element.ISetLocation(bHoMObject, settings);
 
             return true;
+        }
+
+        /***************************************************/
+
+        [Description("Updates a Revit pad foundation FamilyInstance from the BHoM PadFoundation using the standard element update.")]
+        [Input("element", "Revit FamilyInstance representing the pad foundation to update.")]
+        [Input("bHoMObject", "BHoM PadFoundation whose properties (and optionally location) should be applied to the Revit instance.")]
+        [Input("settings", "Revit adapter settings used for the underlying element update.")]
+        [Input("setLocationOnUpdate", "If false, only parameters and properties are updated; if true, the instance location is updated as well.")]
+        [Output("success", "True if the underlying Element.Update succeeded; dimension mismatch checks only emit warnings and do not change this value.")]
+        public static bool Update(this FamilyInstance element, PadFoundation bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            // Base update
+            bool result = ((Element)element).Update((IBHoMObject)bHoMObject, settings, setLocationOnUpdate);
+
+            FamilySymbol symbol = element.Document.GetElement(element.GetTypeId()) as FamilySymbol;
+
+            // Check if outlines match after setting the type (location & orientation irrelevant)
+            Polyline outline = bHoMObject.Outline();
+            bool isRectangle = outline.IsRectangle(settings);
+            bool matchingOutline;
+            if (isRectangle)
+            {
+                double len1 = outline.ControlPoints[0].Distance(outline.ControlPoints[1]);
+                double len2 = outline.ControlPoints[1].Distance(outline.ControlPoints[2]);
+                double bhomLength = Math.Max(len1, len2);
+                double bhomWidth = Math.Min(len1, len2);
+
+                double revitLength = element.LookupParameterDouble("BHE_Length");
+                double revitWidth = element.LookupParameterDouble("BHE_Width");
+
+                matchingOutline = Math.Abs(bhomLength - revitLength) <= settings.DistanceTolerance &&
+                                  Math.Abs(bhomWidth - revitWidth) <= settings.DistanceTolerance;
+            }
+            else
+                matchingOutline = symbol.Family.IsMatchingOutline(outline.OrientToOrigin(), settings);
+
+            if (!matchingOutline)
+                BH.Engine.Base.Compute.RecordWarning($"Pad outline had not been updated successfully, there is a mismatch between BHoM and Revit. ElementId {element.Id.Value()}");
+
+            // Check if thickness matches after setting the type
+            bool matchingThickness;
+            double bhomThickness = bHoMObject.Thickness();
+            if (!double.IsNaN(bhomThickness))
+            {
+                double revitThickness = element.LookupParameterDouble("BHE_Thickness");
+                matchingThickness = Math.Abs(bhomThickness - revitThickness) <= settings.DistanceTolerance;
+            }
+            else
+                matchingThickness = false;
+
+            if (!matchingThickness)
+                BH.Engine.Base.Compute.RecordWarning($"Pad thickness had not been updated successfully, there is a mismatch between BHoM and Revit. ElementId {element.Id.Value()}");
+
+            return result;
         }
 
         /***************************************************/

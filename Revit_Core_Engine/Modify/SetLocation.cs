@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.Engine.Spatial;
 using BH.oM.Adapters.Revit.Elements;
@@ -338,6 +339,101 @@ namespace BH.Revit.Engine.Core
             }
 
             updated |= element.UpdateRotationOfVerticalElement(pile, settings);
+
+            return updated;
+        }
+
+        /***************************************************/
+
+        [Description("Sets the location of a given Revit FamilyInstance based on a given BHoM PadFoundation.")]
+        [Input("element", "Revit FamilyInstance to be modified.")]
+        [Input("padFoundation", "BHoM PadFoundation acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit FamilyInstance has been successfully set.")]
+        public static bool SetLocation(this FamilyInstance element, PadFoundation padFoundation, RevitSettings settings)
+        {
+            if (element == null || padFoundation == null)
+                return false;
+
+            settings = settings.DefaultIfNull();
+
+            // Revit location point including coordinates and rotation
+            LocationPoint revitLocation = element.Location as LocationPoint;
+            if (revitLocation == null)
+                return false;
+
+            Polyline bhomOutline = padFoundation.Outline();
+            if (bhomOutline == null)
+                return false;
+
+            // Transformation needed to bring BHoM outline to global XY
+            (Vector, double) bhomTransform = bhomOutline.TransformToOriginInXY();
+            if (bhomTransform.Item1 == null || double.IsNaN(bhomTransform.Item2))
+                return false;
+
+            // Translation between the current location and BHoM centroid
+            XYZ bhomXY = (new BH.oM.Geometry.Point() + bhomTransform.Item1).ToRevit();
+
+            bool updated = false;
+            XYZ referencePoint = null;
+            foreach (Autodesk.Revit.DB.Face face in element.Faces(new Options(), settings))
+            {
+                if (face is PlanarFace planarFace && Math.Abs(1 - planarFace.FaceNormal.DotProduct(XYZ.BasisZ)) <= BH.oM.Adapters.Revit.Tolerance.Angle)
+                {
+                    referencePoint = planarFace.Centroid();
+                    break;
+                }
+            }
+
+            XYZ deltaXY = new XYZ(bhomXY.X - referencePoint.X, bhomXY.Y - referencePoint.Y, 0);
+
+            if (deltaXY.GetLength() > settings.DistanceTolerance)
+            {
+                ElementTransformUtils.MoveElement(element.Document, element.Id, deltaXY);
+                updated = true;
+                element.Document.Regenerate();
+            }
+
+            // Rotate if needed
+            double dRot = (bhomTransform.Item2 - revitLocation.Rotation).NormalizeAngleDomain();
+            if (Math.Abs(dRot) > settings.AngleTolerance)
+            {
+                Autodesk.Revit.DB.Line axis = Autodesk.Revit.DB.Line.CreateBound(bhomXY, bhomXY + XYZ.BasisZ);
+                ElementTransformUtils.RotateElement(element.Document, element.Id, axis, dRot);
+                updated = true;
+                element.Document.Regenerate();
+            }
+
+            BoundingBoxXYZ bbox = element.get_BoundingBox(null);
+            double topZ = bbox.Max.Z;
+            BH.oM.Geometry.Point bhomCentroid = padFoundation.Centroid();
+            double dz = bhomCentroid.Z.FromSI(SpecTypeId.Length) - topZ;
+
+            // Move vertically if needed
+            if (Math.Abs(dz) > settings.DistanceTolerance)
+            {
+                Parameter offParam = element.get_Parameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM);
+                if (offParam != null && offParam.HasValue && !offParam.IsReadOnly)
+                {
+                    offParam.Set(offParam.AsDouble() + dz);
+                    updated = true;
+                    element.Document.Regenerate();
+                }
+                else
+                {
+                    try
+                    {
+                        XYZ p = revitLocation.Point;
+                        revitLocation.Point = new XYZ(p.X, p.Y, p.Z + dz);
+                        updated = true;
+                        element.Document.Regenerate();
+                    }
+                    catch (Exception)
+                    {
+                        BH.Engine.Base.Compute.RecordWarning($"Pad foundation vertical placement could not be adjusted (offset parameter missing or location read-only). ElementId: {element.Id.Value()}");
+                    }
+                }
+            }
 
             return updated;
         }
@@ -870,7 +966,6 @@ namespace BH.Revit.Engine.Core
 
             return updated;
         }
-
 
         /***************************************************/
         /****            Private collections            ****/

@@ -78,6 +78,23 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Returns the Revit FamilySymbol to use when converting a BHoM PadFoundation. Orthogonal rectangular plans resolve by BHoM family/type name (document or library), then fall back to generation; non-rectangular plans use generation from geometry.")]
+        [Input("padFoundation", "BHoM pad foundation to find or generate a correspondent Revit family type for.")]
+        [Input("document", "Revit document to search for the element type or host generated types.")]
+        [Input("settings", "Revit adapter settings to be used while performing the query.")]
+        [Output("familySymbol", "Revit FamilySymbol to be used when converting the input pad foundation to Revit.")]
+        public static FamilySymbol ElementType(this BH.oM.Physical.Elements.PadFoundation padFoundation, Document document, RevitSettings settings = null)
+        {
+            HashSet<BuiltInCategory> categories = padFoundation.BuiltInCategories();
+            FamilySymbol result = padFoundation.ElementType(document, categories, settings) as FamilySymbol;
+            if (result == null)
+                result = padFoundation.GeneratePadFoundationType(document, settings);
+
+            return result;
+        }
+
+        /***************************************************/
+
         [Description("Returns the Revit element type to be used when converting a given BHoM IInstance to Revit.")]
         [Input("instance", "BHoM IInstance to find a correspondent Revit element type for.")]
         [Input("document", "Revit document to parse in search for the element type.")]
