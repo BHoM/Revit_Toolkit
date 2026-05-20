@@ -24,7 +24,6 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
-using BH.Engine.Spatial;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
@@ -65,68 +64,6 @@ namespace BH.Revit.Engine.Core
                 return GenerateRectangularType(padFoundation, document, settings);
             else
                 return GenerateFreeformType(padFoundation, document, settings);
-        }
-
-        /***************************************************/
-
-        //TODO: this is a query method
-        public static bool IsMatchingOutline(this Family family, Polyline orientedOutline, RevitSettings settings)
-        {
-            Document document = family.Document;
-            Document famDoc = null;
-            double tol = settings.DistanceTolerance;
-            try
-            {
-                famDoc = document.EditFamily(family);
-                if (famDoc == null)
-                    return false;
-
-                Polyline familyOutline = document.ExtrusionOutline(settings);
-                if (familyOutline == null || familyOutline.ControlPoints.Count == 0)
-                    return false;
-
-                if (familyOutline.ControlPoints.Count != orientedOutline.ControlPoints.Count)
-                    return false;
-
-                List<BH.oM.Geometry.Line> bhomEdges = orientedOutline.SubParts().Where(x => x != null && x.Length() > tol).ToList();
-                List<BH.oM.Geometry.Line> revitEdges = familyOutline.SubParts().Where(x => x != null && x.Length() > tol).ToList();
-
-                if (bhomEdges.Count != revitEdges.Count)
-                    return false;
-
-                for (int i = 0; i < bhomEdges.Count; i++)
-                {
-                    BH.oM.Geometry.Line bhomEdge = bhomEdges[i];
-                    bool edgeMatch = false;
-                    foreach (oM.Geometry.Line revitEdge in revitEdges)
-                    {
-                        oM.Geometry.Point bhomStart = bhomEdge.Start;
-                        oM.Geometry.Point bhomEnd = bhomEdge.End;
-                        oM.Geometry.Point revitStart = revitEdge.Start;
-                        oM.Geometry.Point revitEnd = revitEdge.End;
-                        if ((bhomStart.Distance(revitStart) <= tol && bhomEnd.Distance(revitEnd) <= tol)
-                            || (bhomStart.Distance(revitEnd) <= tol && bhomEnd.Distance(revitStart) <= tol))
-                        {
-                            edgeMatch = true;
-                            break;
-                        }
-                    }
-
-                    if (!edgeMatch)
-                        return false;
-                }
-
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-            finally
-            {
-                if (famDoc != null && famDoc.IsValidObject)
-                    famDoc.Close(false);
-            }
         }
 
         /***************************************************/
@@ -223,7 +160,7 @@ namespace BH.Revit.Engine.Core
             {
                 List<int> takenIndices = freeformFamilies.Select(x => int.Parse(x.Name.Substring(prefix.Length))).ToList();
                 int newIndex = takenIndices.Count > 0 ? takenIndices.Max() + 1 : 1;
-                family = GenerateFreeFormPadFamilyFromTemplate(document, orientedOutline, $"{prefix}_{newIndex}", settings);
+                family = GenerateFreeFormPadFamilyFromTemplate(document, orientedOutline, thickness, $"{prefix}{newIndex}", padFoundation, settings);
             }
 
             if (family == null)
@@ -235,28 +172,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static Polyline ExtrusionOutline(this Document familyDocument, RevitSettings settings)
-        {
-            Extrusion extrusion = new FilteredElementCollector(familyDocument).OfClass(typeof(Extrusion)).FirstElement() as Extrusion;
-            if (extrusion?.Sketch?.Profile?.Size != 1)
-                return null;
-
-            CurveArray curveArray = extrusion.Sketch.Profile.get_Item(0);
-            List<ICurve> segments = curveArray.FromRevit();
-            List<BH.oM.Geometry.Line> lines = segments.OfType<BH.oM.Geometry.Line>().ToList();
-            if (segments.Count != lines.Count)
-                return null;
-
-            List<Polyline> polylines = lines.Join(settings.DistanceTolerance);
-            if (polylines.Count != 1)
-                return null;
-
-            return polylines[0];
-        }
-
-        /***************************************************/
-
-        private static Family GenerateFreeFormPadFamilyFromTemplate(this Document document, Polyline orientedOutline, string familyName, RevitSettings settings = null)
+        private static Family GenerateFreeFormPadFamilyFromTemplate(this Document document, Polyline orientedOutline, double thickness, string familyName, PadFoundation padFoundation, RevitSettings settings = null)
         {
             string templatePath = Path.Combine(m_FamilyDirectory, "BHE_StructuralFoundations_FreeForm.rfa");
             Document familyDocument = new UIDocument(document).Application.Application.OpenDocumentFile(templatePath);
@@ -265,7 +181,7 @@ namespace BH.Revit.Engine.Core
 
             try
             {
-                if (!ReplaceFreeFormExtrusion(familyDocument, orientedOutline))
+                if (!ReplaceFreeFormExtrusion(familyDocument, orientedOutline, padFoundation))
                     return null;
 
                 return SaveAndLoadFamily(document, familyDocument, familyName);
@@ -282,8 +198,17 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
+        private static double FreeformExtrusionDepth(PadFoundation padFoundation)
+        {
+            double depth = padFoundation.Thickness();
+            double h = double.IsNaN(depth) ? double.NaN : depth.FromSI(SpecTypeId.Length);
+            if (double.IsNaN(h) || h <= 1e-6)
+                h = 0.5.FromSI(SpecTypeId.Length);
+            return h;
+        }
 
-        private static bool ReplaceFreeFormExtrusion(Document familyDocument, Polyline orientedOutline)
+        /***************************************************/
+        private static bool ReplaceFreeFormExtrusion(Document familyDocument, Polyline orientedOutline, PadFoundation padFoundation)
         {
             try
             {
@@ -294,7 +219,7 @@ namespace BH.Revit.Engine.Core
                 using (Transaction t = new Transaction(familyDocument, "Update Freeform Pad Foundation Footprint"))
                 {
                     t.Start();
-                    familyDocument.FamilyCreate.NewExtrusion(true, profile, extrusion.Sketch.SketchPlane, extrusion.EndOffset);
+                    familyDocument.FamilyCreate.NewExtrusion(true, profile, extrusion.Sketch.SketchPlane, FreeformExtrusionDepth(padFoundation));
                     familyDocument.Delete(extrusion.Id);
                     t.Commit();
                 }
@@ -317,18 +242,21 @@ namespace BH.Revit.Engine.Core
 
             string typeName = $"{(long)Math.Round(thickness * 1000.0)}mm";
             FamilySymbol result = symbols.FirstOrDefault(x => x?.Name == typeName);
-            if (result != null)
-                result.Activate();
-            else if (symbols.Count != 0)
+            if (result == null && symbols.Count != 0)
             {
-                result = symbols[0].Duplicate(typeName) as FamilySymbol;
-                result.Activate();
+                result = symbols.FirstOrDefault(x => !(new FilteredElementCollector(family.Document).WherePasses(new FamilyInstanceFilter(family.Document, x.Id)).Any()));
+                if (symbols != null)
+                    result.Name = typeName;
+                else
+                    result = symbols[0].Duplicate(typeName) as FamilySymbol;
+
                 result.SetParameter("BHE_Depth", thickness);
             }
 
+            result?.Activate();
             return result;
-        }
 
-        /***************************************************/
+            /***************************************************/
+        }
     }
 }

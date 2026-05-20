@@ -260,6 +260,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
+            familySymbol.Activate();
             familyInstance = document.Create.NewFamilyInstance(placementPoint, familySymbol, level, StructuralType.Footing);
             document.Regenerate();
 

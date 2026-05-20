@@ -372,11 +372,21 @@ namespace BH.Revit.Engine.Core
                 return false;
 
             // Translation between the current location and BHoM centroid
-            XYZ bhomXY = (new BH.oM.Geometry.Point() - bhomTransform.Item1).ToRevit();
-            XYZ deltaXY = new XYZ(bhomXY.X - revitLocation.Point.X, bhomXY.Y - revitLocation.Point.Y, 0);
+            XYZ bhomXY = (new BH.oM.Geometry.Point() + bhomTransform.Item1).ToRevit();
 
-            // Translate if needed
             bool updated = false;
+            XYZ referencePoint = null;
+            foreach (Autodesk.Revit.DB.Face face in element.Faces(new Options(), settings))
+            {
+                if (face is PlanarFace planarFace && Math.Abs(1 - planarFace.FaceNormal.DotProduct(XYZ.BasisZ)) <= BH.oM.Adapters.Revit.Tolerance.Angle)
+                {
+                    referencePoint = planarFace.Centroid();
+                    break;
+                }
+            }
+
+            XYZ deltaXY = new XYZ(bhomXY.X - referencePoint.X, bhomXY.Y - referencePoint.Y, 0);
+
             if (deltaXY.GetLength() > settings.DistanceTolerance)
             {
                 ElementTransformUtils.MoveElement(element.Document, element.Id, deltaXY);
@@ -394,10 +404,10 @@ namespace BH.Revit.Engine.Core
                 element.Document.Regenerate();
             }
 
-            // Find top Z
             BoundingBoxXYZ bbox = element.get_BoundingBox(null);
             double topZ = bbox.Max.Z;
-            double dz = bhomOutline.ControlPoints[0].Z.FromSI(SpecTypeId.Length) - topZ;
+            BH.oM.Geometry.Point bhomCentroid = padFoundation.Centroid();
+            double dz = bhomCentroid.Z.FromSI(SpecTypeId.Length) - topZ;
 
             // Move vertically if needed
             if (Math.Abs(dz) > settings.DistanceTolerance)
@@ -722,7 +732,6 @@ namespace BH.Revit.Engine.Core
 
             return updated;
         }
-
 
         /***************************************************/
         /****            Private collections            ****/

@@ -22,6 +22,7 @@
 
 using BH.Engine.Geometry;
 using BH.Engine.Physical;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
@@ -75,6 +76,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Returns the centroid of the PadFoundation outer boundary as a Point.")]
+        [Input("element", "PadFoundation element to compute the centroid for.")]
+        [Output("centroid", "Centroid of the PadFoundation outer boundary point.")]
         public static Point Centroid(this PadFoundation element)
         {
             return element?.Outline()?.Centroid();
@@ -82,48 +86,30 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        //THIS IS MODIFY METHOD
-        public static Polyline OrientToOrigin(this Polyline outline)
+        [Description("Checks whether a Polyline represents a rectangle.")]
+        [Input("polyline", "Polyline to check.")]
+        [Input("settings", "Revit adapter settings containing tolerance values. If null, default tolerance will be used.")]
+        [Output("isRectangular", "True if the polyline represents a rectangle; otherwise false.")]
+        public static bool IsRectangle(this Polyline polyline, RevitSettings settings = null)
         {
-            (Vector translation, double rotation) = outline.TransformToOriginInXY();
-            if (translation == null || double.IsNaN(rotation))
-                return null;
+            List<Point> pts = polyline?.ControlPoints;
+            if (pts == null || pts.Count < 4)
+                return false;
 
-            return outline.Translate(translation).Rotate(new Point(), Vector.ZAxis, rotation);
-        }
-
-        /***************************************************/
-
-        //THIS IS QUERY METHOD
-        public static (Vector, double) TransformToOriginInXY(this Polyline outline)
-        {
-            Vector translation = null;
-            double rotation = double.NaN;
-
-            List<Point> pts = outline?.ControlPoints;
-            if (pts == null || pts.Count < 3)
-                return (translation, rotation);
+            double tol = settings?.DistanceTolerance ?? BH.oM.Geometry.Tolerance.Distance;
 
             int n = pts.Count;
-            if (n >= 3 && (pts[n - 1] - pts[0]).Length() <= BH.oM.Geometry.Tolerance.Distance)
-                n--;
+            if (n == 5 && pts[4].Distance(pts[0]) <= tol)
+                n = 4;
 
-            if (n < 3)
-                return (translation, rotation);
+            if (n != 4)
+                return false;
 
-            Point centroid = outline.Centroid();
-            if (centroid == null)
-                return (translation, rotation);
+            double diagonal1 = pts[2].Distance(pts[0]);
+            double diagonal2 = pts[3].Distance(pts[1]);
 
-            translation = (centroid - new Point()).ProjectToXY();
-
-            Vector longestEdge = outline.LongestEdgeInXY();
-            if (longestEdge != null)
-                rotation = RotationToGlobalX(longestEdge);
-
-            return (translation, rotation);
+            return Math.Abs(diagonal1 - diagonal2) <= tol;
         }
-
 
         /***************************************************/
         /****              Private methods              ****/
@@ -180,19 +166,6 @@ namespace BH.Revit.Engine.Core
             }
 
             return longestEdge;
-        }
-
-        /***************************************************/
-
-        private static double RotationToGlobalX(Vector longestEdge)
-        {
-            double theta = Math.Atan2(longestEdge.Y, longestEdge.X).NormalizeAngleDomain();
-            if (theta > Math.PI / 2)
-                theta -= Math.PI;
-            else if (theta < -Math.PI / 2)
-                theta += Math.PI;
-
-            return theta;
         }
 
         /***************************************************/
