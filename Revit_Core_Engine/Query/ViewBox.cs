@@ -50,6 +50,20 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Returns the combined bounding box containing given Revit solids, aligned with the right given direction, inflated by a given offset.")]
+        [Input("solids", "Solids to find the elevation box for.")]
+        [Input("direction", "Direction, along which the elevation is meant to be made.")]
+        [Input("sideOffset", "Offset value to inflate the elevation view in width and height, in metres.")]
+        [Input("frontOffset", "Offset distance between the solid front and the origin of the view, in metres. Use negative value to create section.")]
+        [Input("backOffset", "Offset distance between the solid back and the back edge of the view, in metres.")]
+        [Output("box", "Elevation box of the input Revit solids.")]
+        public static BoundingBoxXYZ ViewBoxElevation(this IEnumerable<Solid> solids, XYZ direction, double sideOffset, double frontOffset, double backOffset)
+        {
+            return solids.ViewBoxSection(direction, XYZ.BasisZ, sideOffset, frontOffset, backOffset);
+        }
+
+        /***************************************************/
+
         [Description("Returns the bounding box containing a given Revit element, aligned with the given right direction, inflated by a given offset.")]
         [Input("element", "Element to find the elevation box for.")]
         [Input("direction", "Direction, along which the elevation is meant to be made.")]
@@ -77,6 +91,33 @@ namespace BH.Revit.Engine.Core
             if (elements == null || !elements.Any())
             {
                 BH.Engine.Base.Compute.RecordError("Could create view box for null Revit elements.");
+                return null;
+            }
+
+            Options options = new Options();
+            options.DetailLevel = Autodesk.Revit.DB.ViewDetailLevel.Fine;
+            options.ComputeReferences = false;
+            options.IncludeNonVisibleObjects = false;
+
+            IEnumerable<Solid> solids = elements?.SelectMany(x => x.Solids(options));
+            return solids.ViewBoxSection(rightDirection, upDirection, sideOffset, frontOffset, backOffset);
+        }
+
+        /***************************************************/
+
+        [Description("Returns the combined bounding box containing given Revit solids, aligned with the given right and up direction, inflated by a given offset.")]
+        [Input("solids", "Solids to find the elevation box for.")]
+        [Input("rightDirection", "Direction, along which the elevation is meant to be made.")]
+        [Input("upDirection", "Direction pointing up in the created section. Needs to be perpendicular to upDirection.")]
+        [Input("sideOffset", "Offset value to inflate the elevation view in width and height, in metres.")]
+        [Input("frontOffset", "Offset distance between the solid front and the origin of the view, in metres. Use negative value to create section.")]
+        [Input("backOffset", "Offset distance between the solid back and the back edge of the view, in metres.")]
+        [Output("box", "Elevation box of the input Revit solids.")]
+        public static BoundingBoxXYZ ViewBoxSection(this IEnumerable<Solid> solids, XYZ rightDirection, XYZ upDirection, double sideOffset, double frontOffset, double backOffset)
+        {
+            if (solids == null || !solids.Any())
+            {
+                BH.Engine.Base.Compute.RecordError("Could create view box for null Revit solids.");
                 return null;
             }
 
@@ -108,7 +149,7 @@ namespace BH.Revit.Engine.Core
             Transform transform = orientationMatrix.ToRevit().TryFixIfNonConformal();
 
             // Bounds of the element in the provided coordinate system
-            BoundingBoxXYZ boundingBox = elements.PhysicalBounds(transform.Inverse);
+            BoundingBoxXYZ boundingBox = solids.Bounds(transform.Inverse);
             boundingBox.Transform = transform;
 
             // Front offset and depth
