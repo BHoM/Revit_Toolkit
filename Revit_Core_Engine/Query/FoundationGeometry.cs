@@ -22,6 +22,7 @@
 
 using BH.Engine.Geometry;
 using BH.Engine.Physical;
+using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
@@ -89,26 +90,28 @@ namespace BH.Revit.Engine.Core
         [Input("polyline", "Polyline to check.")]
         [Input("settings", "Revit adapter settings containing tolerance values. If null, default tolerance will be used.")]
         [Output("isRectangular", "True if the polyline represents a rectangle; otherwise false.")]
-        public static bool IsRectangle(this Polyline polyline, double tolerance)
+        public static bool IsRectangle(this Polyline polyline, RevitSettings settings = null)
         {
             List<Point> pts = polyline?.ControlPoints;
             if (pts == null || pts.Count != 5)
                 return false;
 
-            if (polyline.IIsClosed(tolerance) != true)
+            double tol = settings?.DistanceTolerance ?? BH.oM.Geometry.Tolerance.Distance;
+
+            if (polyline.IIsClosed(tol) != true)
                 return false;
 
             double diagonal1 = pts[2].Distance(pts[0]);
             double diagonal2 = pts[3].Distance(pts[1]);
 
-            return Math.Abs(diagonal1 - diagonal2) <= tolerance;
+            return Math.Abs(diagonal1 - diagonal2) <= tol;
         }
 
         /***************************************************/
         /****              Private methods              ****/
         /***************************************************/
 
-        private static Vector LongestEdgeDirection(this Polyline polyline, double tolerance)
+        private static Vector LongestEdgeDirection(this Polyline polyline, double tolerance, double angleTolerance = Tolerance.Angle)
         {
             List<Line> edges = polyline.SubParts().Where(x => x != null && x.Length() > tolerance).ToList();
             Line longest = edges.OrderByDescending(x => x.Length()).First();
@@ -118,10 +121,10 @@ namespace BH.Revit.Engine.Core
             Dictionary<Vector, double> dirLen = new Dictionary<Vector, double>();
             foreach (Line edge in edges)
             {
-                Vector direction = edge.End - edge.Start;
+                Vector direction = edge.Direction();
                 direction.Z = 0;
 
-                Vector dir = dirLen.Keys.FirstOrDefault(x => 1 - Math.Abs(x.DotProduct(direction)) <= tolerance);
+                Vector dir = dirLen.Keys.FirstOrDefault(x => x.IsParallel(direction, angleTolerance) != 0);
                 if (dir != null)
                     dirLen[dir] += edge.Length();
                 else
