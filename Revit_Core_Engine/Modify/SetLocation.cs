@@ -362,7 +362,7 @@ namespace BH.Revit.Engine.Core
             if (revitLocation == null)
                 return false;
 
-            Polyline bhomOutline = padFoundation.Outline();
+            Polyline bhomOutline = padFoundation.FoundationGeometryOutline();
             if (bhomOutline == null)
                 return false;
 
@@ -406,7 +406,7 @@ namespace BH.Revit.Engine.Core
 
             BoundingBoxXYZ bbox = element.get_BoundingBox(null);
             double topZ = bbox.Max.Z;
-            BH.oM.Geometry.Point bhomCentroid = padFoundation.Centroid();
+            BH.oM.Geometry.Point bhomCentroid = padFoundation.FoundationGeometryCentroid();
             double dz = bhomCentroid.Z.FromSI(SpecTypeId.Length) - topZ;
 
             // Move vertically if needed

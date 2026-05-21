@@ -22,7 +22,6 @@
 
 using BH.Engine.Geometry;
 using BH.Engine.Physical;
-using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using BH.oM.Physical.Elements;
@@ -42,7 +41,7 @@ namespace BH.Revit.Engine.Core
         [Description("Extracts the outer rectangular boundary of a PadFoundation as a Polyline.")]
         [Input("element", "PadFoundation element whose boundary should be extracted.")]
         [Output("outline", "Polyline representing the PadFoundation external boundary.")]
-        public static Polyline Outline(this PadFoundation element)
+        public static Polyline FoundationGeometryOutline(this PadFoundation element)
         {
             ICurve outline = element?.Location?.ExternalBoundary;
             if (outline == null)
@@ -65,7 +64,7 @@ namespace BH.Revit.Engine.Core
         [Description("Computes the total thickness (sum of construction layers) of a PadFoundation.")]
         [Input("element", "PadFoundation element whose thickness should be computed.")]
         [Output("thickness", "Total thickness of all construction layers.")]
-        public static double Thickness(this PadFoundation element)
+        public static double FoundationGeometryThickness(this PadFoundation element)
         {
             oM.Physical.Constructions.Construction construction = element?.Construction as oM.Physical.Constructions.Construction;
             if (construction?.Layers == null)
@@ -79,9 +78,9 @@ namespace BH.Revit.Engine.Core
         [Description("Returns the centroid of the PadFoundation outer boundary as a Point.")]
         [Input("element", "PadFoundation element to compute the centroid for.")]
         [Output("centroid", "Centroid of the PadFoundation outer boundary point.")]
-        public static Point Centroid(this PadFoundation element)
+        public static Point FoundationGeometryCentroid(this PadFoundation element)
         {
-            return element?.Outline()?.Centroid();
+            return element?.FoundationGeometryOutline()?.Centroid();
         }
 
         /***************************************************/
@@ -90,82 +89,46 @@ namespace BH.Revit.Engine.Core
         [Input("polyline", "Polyline to check.")]
         [Input("settings", "Revit adapter settings containing tolerance values. If null, default tolerance will be used.")]
         [Output("isRectangular", "True if the polyline represents a rectangle; otherwise false.")]
-        public static bool IsRectangle(this Polyline polyline, RevitSettings settings = null)
+        public static bool IsRectangle(this Polyline polyline, double tolerance)
         {
             List<Point> pts = polyline?.ControlPoints;
-            if (pts == null || pts.Count < 4)
+            if (pts == null || pts.Count != 5)
                 return false;
 
-            double tol = settings?.DistanceTolerance ?? BH.oM.Geometry.Tolerance.Distance;
-
-            int n = pts.Count;
-            if (n == 5 && pts[4].Distance(pts[0]) <= tol)
-                n = 4;
-
-            if (n != 4)
+            if (polyline.IIsClosed(tolerance) != true)
                 return false;
 
             double diagonal1 = pts[2].Distance(pts[0]);
             double diagonal2 = pts[3].Distance(pts[1]);
 
-            return Math.Abs(diagonal1 - diagonal2) <= tol;
+            return Math.Abs(diagonal1 - diagonal2) <= tolerance;
         }
 
         /***************************************************/
         /****              Private methods              ****/
         /***************************************************/
 
-        private static Vector LongestEdgeInXY(this Polyline polyline)
+        private static Vector LongestEdgeDirection(this Polyline polyline, double tolerance)
         {
-            List<Point> pts = polyline?.ControlPoints;
-            if (pts == null || pts.Count < 2)
-                return null;
+            List<Line> edges = polyline.SubParts().Where(x => x != null && x.Length() > tolerance).ToList();
+            Line longest = edges.OrderByDescending(x => x.Length()).First();
+            Vector longestDir = longest.Direction();
+            longestDir.Z = 0;
 
-            int n = pts.Count;
-            if (n > 2 && (pts[n - 1] - pts[0]).Length() <= Tolerance.Distance)
-                n--;
-
-            double tol = Tolerance.Distance;
-
-            bool Edge(int i, out Vector e, out double len)
+            Dictionary<Vector, double> dirLen = new Dictionary<Vector, double>();
+            foreach (Line edge in edges)
             {
-                e = pts[(i + 1) % n] - pts[i];
-                e.Z = 0;
-                len = e.Length();
-                return len > tol;
+                Vector direction = edge.End - edge.Start;
+                direction.Z = 0;
+
+                Vector dir = dirLen.Keys.FirstOrDefault(x => 1 - Math.Abs(x.DotProduct(direction)) <= tolerance);
+                if (dir != null)
+                    dirLen[dir] += edge.Length();
+                else
+                    dirLen[direction] = edge.Length();
             }
 
-            double maxLen = 0;
-            for (int i = 0; i < n; i++)
-            {
-                if (Edge(i, out _, out double len) && len > maxLen)
-                    maxLen = len;
-            }
-
-            if (maxLen <= tol)
-                return null;
-
-            double tieTol = Math.Max(tol, 1e-9 * maxLen);
-            double bestAz = double.MaxValue;
-
-            Vector longestEdge = null;
-            for (int i = 0; i < n; i++)
-            {
-                if (!Edge(i, out Vector e, out double len) || len < maxLen - tieTol)
-                    continue;
-
-                double az = Math.Atan2(e.Y, e.X);
-                if (az < 0)
-                    az += 2 * Math.PI;
-
-                if (longestEdge == null || az < bestAz - 1e-12)
-                {
-                    bestAz = az;
-                    longestEdge = e;
-                }
-            }
-
-            return longestEdge;
+            return longestDir;
         }
 
         /***************************************************/
