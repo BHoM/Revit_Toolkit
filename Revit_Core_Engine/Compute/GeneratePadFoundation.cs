@@ -56,7 +56,7 @@ namespace BH.Revit.Engine.Core
             bool isRectangle;
             Polyline outline = padFoundation?.PadFoundationOutline();
             if (outline != null)
-                isRectangle = outline.IsRectangle(settings);
+                isRectangle = outline.IsRectangle(settings.DistanceTolerance);
             else
                 return null;
 

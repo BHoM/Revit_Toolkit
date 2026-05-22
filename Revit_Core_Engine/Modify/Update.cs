@@ -124,6 +124,8 @@ namespace BH.Revit.Engine.Core
         [Output("success", "True if the underlying Element.Update succeeded; dimension mismatch checks only emit warnings and do not change this value.")]
         public static bool Update(this FamilyInstance element, PadFoundation bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
         {
+            settings = settings.DefaultIfNull();
+
             // Base update
             bool result = ((Element)element).Update((IBHoMObject)bHoMObject, settings, setLocationOnUpdate);
 
@@ -131,7 +133,7 @@ namespace BH.Revit.Engine.Core
 
             // Check if outlines match after setting the type (location & orientation irrelevant)
             Polyline outline = bHoMObject.PadFoundationOutline();
-            bool isRectangle = outline.IsRectangle(settings);
+            bool isRectangle = outline.IsRectangle(settings.DistanceTolerance);
             bool matchingOutline;
             if (isRectangle)
             {
