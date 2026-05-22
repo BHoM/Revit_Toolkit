@@ -46,7 +46,7 @@ namespace BH.Revit.Engine.Core
             if (centroid == null)
                 return (translation, rotation);
 
-            translation = (centroid - new Point()).ProjectToXY();
+            translation = (new Point() - centroid);
             Vector longestEdge = outline.LongestEdgeDirection(BH.oM.Geometry.Tolerance.Distance);
             if (longestEdge != null)
                 rotation = Vector.XAxis.SignedAngle(longestEdge, Vector.ZAxis);

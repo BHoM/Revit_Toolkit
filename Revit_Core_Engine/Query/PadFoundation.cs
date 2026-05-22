@@ -42,7 +42,7 @@ namespace BH.Revit.Engine.Core
         [Description("Extracts the outer rectangular boundary of a PadFoundation as a Polyline.")]
         [Input("element", "PadFoundation element whose boundary should be extracted.")]
         [Output("outline", "Polyline representing the PadFoundation external boundary.")]
-        public static Polyline FoundationGeometryOutline(this PadFoundation element)
+        public static Polyline PadFoundationOutline(this PadFoundation element)
         {
             ICurve outline = element?.Location?.ExternalBoundary;
             if (outline == null)
@@ -65,7 +65,7 @@ namespace BH.Revit.Engine.Core
         [Description("Computes the total thickness (sum of construction layers) of a PadFoundation.")]
         [Input("element", "PadFoundation element whose thickness should be computed.")]
         [Output("thickness", "Total thickness of all construction layers.")]
-        public static double FoundationGeometryThickness(this PadFoundation element)
+        public static double PadFoundationThickness(this PadFoundation element)
         {
             oM.Physical.Constructions.Construction construction = element?.Construction as oM.Physical.Constructions.Construction;
             if (construction?.Layers == null)
@@ -79,9 +79,9 @@ namespace BH.Revit.Engine.Core
         [Description("Returns the centroid of the PadFoundation outer boundary as a Point.")]
         [Input("element", "PadFoundation element to compute the centroid for.")]
         [Output("centroid", "Centroid of the PadFoundation outer boundary point.")]
-        public static Point FoundationGeometryCentroid(this PadFoundation element)
+        public static Point PadFoundationCentroid(this PadFoundation element)
         {
-            return element?.FoundationGeometryOutline()?.Centroid();
+            return element?.PadFoundationOutline()?.Centroid();
         }
 
         /***************************************************/
@@ -111,27 +111,38 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
-        private static Vector LongestEdgeDirection(this Polyline polyline, double tolerance, double angleTolerance = Tolerance.Angle)
+        private static Vector LongestEdgeDirection(this Polyline polyline, double tolerance = Tolerance.Distance, double angleTolerance = Tolerance.Angle)
         {
             List<Line> edges = polyline.SubParts().Where(x => x != null && x.Length() > tolerance).ToList();
-            Line longest = edges.OrderByDescending(x => x.Length()).First();
-            Vector longestDir = longest.Direction();
-            longestDir.Z = 0;
 
             Dictionary<Vector, double> dirLen = new Dictionary<Vector, double>();
+
             foreach (Line edge in edges)
             {
                 Vector direction = edge.Direction();
                 direction.Z = 0;
 
-                Vector dir = dirLen.Keys.FirstOrDefault(x => x.IsParallel(direction, angleTolerance) != 0);
-                if (dir != null)
-                    dirLen[dir] += edge.Length();
+                if (direction.Length() <= tolerance)
+                    continue;
+
+                if (direction.X < 0 || (Math.Abs(direction.X) < tolerance && direction.Y < 0))
+                {
+                    direction = -direction;
+                }
+
+                Vector existDir = dirLen.Keys.FirstOrDefault(x => x.IsParallel(direction, angleTolerance) != 0);
+
+                if (existDir != null)
+                {
+                    dirLen[existDir] = edge.Length();
+                }
                 else
+                {
                     dirLen[direction] = edge.Length();
+                }
             }
 
-            return longestDir;
+            return dirLen.OrderByDescending(x => x.Value).First().Key;
         }
 
         /***************************************************/

@@ -28,7 +28,6 @@ using BH.oM.Geometry;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Extrusion = Autodesk.Revit.DB.Extrusion;
 
 namespace BH.Revit.Engine.Core
 {
@@ -46,23 +45,11 @@ namespace BH.Revit.Engine.Core
         public static bool IsMatchingOutline(this Family padFoundationFamily, Polyline orientedOutline, RevitSettings settings)
         {
             Document document = padFoundationFamily.Document;
-            Document famDoc = null;
             double tol = settings.DistanceTolerance;
             try
             {
-                famDoc = document.EditFamily(padFoundationFamily);
-                if (famDoc == null)
-                    return false;
-
-                Polyline familyOutline = document.ExtrusionOutline(settings);
-                if (familyOutline == null || familyOutline.ControlPoints.Count == 0)
-                    return false;
-
-                if (familyOutline.ControlPoints.Count != orientedOutline.ControlPoints.Count)
-                    return false;
-
                 List<BH.oM.Geometry.Line> bhomEdges = orientedOutline.SubParts().Where(x => x != null && x.Length() > tol).ToList();
-                List<BH.oM.Geometry.Line> revitEdges = familyOutline.SubParts().Where(x => x != null && x.Length() > tol).ToList();
+                List<BH.oM.Geometry.Line> revitEdges = padFoundationFamily.ExtrusionEdges(settings);
 
                 if (bhomEdges.Count != revitEdges.Count)
                     return false;
@@ -95,35 +82,42 @@ namespace BH.Revit.Engine.Core
             {
                 return false;
             }
-            finally
-            {
-                if (famDoc != null && famDoc.IsValidObject)
-                    famDoc.Close(false);
-            }
         }
 
         /***************************************************/
         /****              Private methods              ****/
         /***************************************************/
 
-        private static Polyline ExtrusionOutline(this Document familyDocument, RevitSettings settings)
+        private static List<BH.oM.Geometry.Line> ExtrusionEdges(this Family family, RevitSettings settings)
         {
-            Extrusion extrusion = new FilteredElementCollector(familyDocument).OfClass(typeof(Extrusion)).FirstElement() as Extrusion;
-            if (extrusion?.Sketch?.Profile?.Size != 1)
+            ISet<ElementId> symbolIds = family.GetFamilySymbolIds();
+            if (symbolIds == null || symbolIds.Count == 0)
                 return null;
 
-            CurveArray curveArray = extrusion.Sketch.Profile.get_Item(0);
-            List<ICurve> segments = curveArray.FromRevit();
-            List<BH.oM.Geometry.Line> lines = segments.OfType<BH.oM.Geometry.Line>().ToList();
-            if (segments.Count != lines.Count)
+            ElementType type = family.Document.GetElement(symbolIds.First()) as ElementType;
+
+            Options options = new Options()
+            {
+                ComputeReferences = false,
+                DetailLevel = Autodesk.Revit.DB.ViewDetailLevel.Medium,
+                IncludeNonVisibleObjects = false
+            };
+
+            List<Autodesk.Revit.DB.Face> faces = type.Faces(options);
+            List<PlanarFace> tops = faces.OfType<PlanarFace>().Where(x => x.FaceNormal.IsAlmostEqualTo(XYZ.BasisZ)).ToList();
+            if (tops == null || tops.Count != 1)
                 return null;
 
-            List<Polyline> polylines = lines.Join(settings.DistanceTolerance);
-            if (polylines.Count != 1)
+            IList<CurveLoop> outlines = tops[0].GetEdgesAsCurveLoops();
+            if (outlines == null || outlines.Count != 1)
                 return null;
 
-            return polylines[0];
+            List<ICurve> edges = outlines[0].FromRevit().SubParts();
+            List<oM.Geometry.Line> lines = edges.OfType<BH.oM.Geometry.Line>().ToList();
+            if (edges.Count != lines.Count)
+                return null;
+
+            return lines.Where(x => x.Length() > settings.DistanceTolerance).Select(x => x.Project(new oM.Geometry.Plane())).ToList();
         }
     }
-
 }

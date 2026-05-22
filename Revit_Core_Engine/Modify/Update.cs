@@ -130,7 +130,7 @@ namespace BH.Revit.Engine.Core
             FamilySymbol symbol = element.Document.GetElement(element.GetTypeId()) as FamilySymbol;
 
             // Check if outlines match after setting the type (location & orientation irrelevant)
-            Polyline outline = bHoMObject.FoundationGeometryOutline();
+            Polyline outline = bHoMObject.PadFoundationOutline();
             bool isRectangle = outline.IsRectangle(settings);
             bool matchingOutline;
             if (isRectangle)
@@ -154,7 +154,7 @@ namespace BH.Revit.Engine.Core
 
             // Check if thickness matches after setting the type
             bool matchingThickness;
-            double bhomThickness = bHoMObject.FoundationGeometryThickness();
+            double bhomThickness = bHoMObject.PadFoundationThickness();
             if (!double.IsNaN(bhomThickness))
             {
                 double revitThickness = element.LookupParameterDouble("BHE_Thickness");

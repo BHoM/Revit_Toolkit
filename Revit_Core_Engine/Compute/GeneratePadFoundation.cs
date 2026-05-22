@@ -54,7 +54,7 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
 
             bool isRectangle;
-            Polyline outline = padFoundation?.FoundationGeometryOutline();
+            Polyline outline = padFoundation?.PadFoundationOutline();
             if (outline != null)
                 isRectangle = outline.IsRectangle(settings);
             else
@@ -73,7 +73,7 @@ namespace BH.Revit.Engine.Core
         private static FamilySymbol GenerateRectangularType(PadFoundation padFoundation, Document document, RevitSettings settings)
         {
             // Check if family loaded to the document, if not, load it from resources path
-            string familyName = "BHE_StructuralFoundations_Pad-Rectangular";
+            string familyName = "BHE_StructuralFoundations_PadFoundation-Rectangular";
             Family family = new FilteredElementCollector(document).OfClass(typeof(Family)).FirstOrDefault(x => x.Name == familyName) as Family;
             if (family == null)
             {
@@ -117,13 +117,13 @@ namespace BH.Revit.Engine.Core
 
         private static (double, double, double) RectangularDimensions(this PadFoundation padFoundation)
         {
-            Polyline outline = padFoundation.FoundationGeometryOutline();
+            Polyline outline = padFoundation.PadFoundationOutline();
             double len1 = outline.ControlPoints[0].Distance(outline.ControlPoints[1]);
             double len2 = outline.ControlPoints[1].Distance(outline.ControlPoints[2]);
             double bhomLength = Math.Max(len1, len2);
             double bhomWidth = Math.Min(len1, len2);
 
-            return (bhomLength, bhomWidth, padFoundation.FoundationGeometryThickness());
+            return (bhomLength, bhomWidth, padFoundation.PadFoundationThickness());
         }
 
         /***************************************************/
@@ -133,7 +133,7 @@ namespace BH.Revit.Engine.Core
             string prefix = "BHE_StructuralFoundations_FreeForm_";
 
             // Get the outline and check if valid
-            Polyline outline = padFoundation.FoundationGeometryOutline();
+            Polyline outline = padFoundation.PadFoundationOutline();
             if (outline?.IIsClosed() != true)
             {
                 BH.Engine.Base.Compute.RecordError($"Pad foundation outline is invalid. BHoM_Guid: {padFoundation.BHoM_Guid}");
@@ -141,7 +141,7 @@ namespace BH.Revit.Engine.Core
             }
 
             // Get the thickness and check if valid
-            double thickness = padFoundation.FoundationGeometryThickness();
+            double thickness = padFoundation.PadFoundationThickness();
             if (double.IsNaN(thickness))
                 return null;
 
@@ -200,7 +200,7 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
         private static double FreeformExtrusionDepth(PadFoundation padFoundation)
         {
-            double depth = padFoundation.FoundationGeometryThickness();
+            double depth = padFoundation.PadFoundationThickness();
             double h = double.IsNaN(depth) ? double.NaN : depth.FromSI(SpecTypeId.Length);
             if (double.IsNaN(h) || h <= 1e-6)
                 h = 0.5.FromSI(SpecTypeId.Length);

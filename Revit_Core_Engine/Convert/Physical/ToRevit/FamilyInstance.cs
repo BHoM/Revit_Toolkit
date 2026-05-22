@@ -240,7 +240,7 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
-            BH.oM.Geometry.Point origin = padFoundation.FoundationGeometryCentroid();
+            BH.oM.Geometry.Point origin = padFoundation.PadFoundationCentroid();
             if (origin == null)
             {
                 BH.Engine.Base.Compute.RecordError($"PadFoundation boundary extraction failed or foundation is not rectangular. BHoM_Guid: {padFoundation.BHoM_Guid}");
