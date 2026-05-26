@@ -73,7 +73,7 @@ namespace BH.Revit.Engine.Core
         private static FamilySymbol GenerateRectangularType(PadFoundation padFoundation, Document document, RevitSettings settings)
         {
             // Check if family loaded to the document, if not, load it from resources path
-            string familyName = "BHE_StructuralFoundations_PadFoundation-Rectangular";
+            string familyName = "BHE_StructuralFoundations_Pad-Rectangular";
             Family family = new FilteredElementCollector(document).OfClass(typeof(Family)).FirstOrDefault(x => x.Name == familyName) as Family;
             if (family == null)
             {
@@ -123,7 +123,7 @@ namespace BH.Revit.Engine.Core
             double bhomLength = Math.Max(len1, len2);
             double bhomWidth = Math.Min(len1, len2);
 
-            return (bhomLength, bhomWidth, padFoundation.PadFoundationThickness());
+            return (bhomWidth, bhomLength, padFoundation.PadFoundationThickness());
         }
 
         /***************************************************/
@@ -245,7 +245,7 @@ namespace BH.Revit.Engine.Core
             if (result == null && symbols.Count != 0)
             {
                 result = symbols.FirstOrDefault(x => !(new FilteredElementCollector(family.Document).WherePasses(new FamilyInstanceFilter(family.Document, x.Id)).Any()));
-                if (symbols != null)
+                if (result != null)
                     result.Name = typeName;
                 else
                     result = symbols[0].Duplicate(typeName) as FamilySymbol;

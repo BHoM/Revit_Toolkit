@@ -142,8 +142,8 @@ namespace BH.Revit.Engine.Core
                 double bhomLength = Math.Max(len1, len2);
                 double bhomWidth = Math.Min(len1, len2);
 
-                double revitLength = element.LookupParameterDouble("BHE_Length");
-                double revitWidth = element.LookupParameterDouble("BHE_Width");
+                double revitLength = symbol.LookupParameterDouble("BHE_Length");
+                double revitWidth = symbol.LookupParameterDouble("BHE_Width");
 
                 matchingOutline = Math.Abs(bhomLength - revitLength) <= settings.DistanceTolerance &&
                                   Math.Abs(bhomWidth - revitWidth) <= settings.DistanceTolerance;
@@ -152,21 +152,21 @@ namespace BH.Revit.Engine.Core
                 matchingOutline = symbol.Family.IsMatchingOutline(outline.OrientToOrigin(), settings);
 
             if (!matchingOutline)
-                BH.Engine.Base.Compute.RecordWarning($"Pad outline had not been updated successfully, there is a mismatch between BHoM and Revit. ElementId {element.Id.Value()}");
+                BH.Engine.Base.Compute.RecordWarning($"Pad outline had not been updated successfully, there is a mismatch between BHoM and Revit dimensions. ElementId {element.Id.Value()}");
 
             // Check if thickness matches after setting the type
             bool matchingThickness;
             double bhomThickness = bHoMObject.PadFoundationThickness();
             if (!double.IsNaN(bhomThickness))
             {
-                double revitThickness = element.LookupParameterDouble("BHE_Thickness");
+                double revitThickness = symbol.LookupParameterDouble("BHE_Depth");
                 matchingThickness = Math.Abs(bhomThickness - revitThickness) <= settings.DistanceTolerance;
             }
             else
                 matchingThickness = false;
 
             if (!matchingThickness)
-                BH.Engine.Base.Compute.RecordWarning($"Pad thickness had not been updated successfully, there is a mismatch between BHoM and Revit. ElementId {element.Id.Value()}");
+                BH.Engine.Base.Compute.RecordWarning($"Pad thickness had not been updated successfully, there is a mismatch between BHoM and Revit dimensions. ElementId {element.Id.Value()}");
 
             return result;
         }
