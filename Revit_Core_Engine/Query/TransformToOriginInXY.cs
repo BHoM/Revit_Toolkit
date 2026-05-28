@@ -52,11 +52,8 @@ namespace BH.Revit.Engine.Core
 
             translation = (new Point() - centroid);
             Vector dominantEdge = outline.DominantEdgeDirection(BH.oM.Geometry.Tolerance.Distance);
-            Vector d = dominantEdge;
-            if (d.DotProduct(Vector.XAxis) < 0)
-                d = -d;
             if (dominantEdge != null)
-                rotation = Vector.XAxis.SignedAngle(d, Vector.ZAxis);
+                rotation = Vector.XAxis.SignedAngle(dominantEdge, Vector.ZAxis);
             return (translation, rotation);
         }
     }

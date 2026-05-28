@@ -398,11 +398,11 @@ namespace BH.Revit.Engine.Core
             }
 
             // Rotate if needed
-            double dRot = (bhomTransform.Item2 - revitLocation.Rotation).NormalizeAngleDomain();
+            double dRot = (-bhomTransform.Item2 - revitLocation.Rotation).NormalizeAngleDomain();
             if (Math.Abs(dRot) > settings.AngleTolerance)
             {
                 Autodesk.Revit.DB.Line axis = Autodesk.Revit.DB.Line.CreateBound(bhomXY, bhomXY + XYZ.BasisZ);
-                ElementTransformUtils.RotateElement(element.Document, element.Id, axis, -dRot);
+                ElementTransformUtils.RotateElement(element.Document, element.Id, axis, dRot);
                 updated = true;
                 element.Document.Regenerate();
             }
