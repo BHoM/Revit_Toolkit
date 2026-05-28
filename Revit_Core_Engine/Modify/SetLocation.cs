@@ -371,7 +371,7 @@ namespace BH.Revit.Engine.Core
             if (bhomTransform.Item1 == null || double.IsNaN(bhomTransform.Item2))
                 return false;
 
-            // Translation between the current location and BHoM centroid
+            // Translation between the origin and BHoM centroid
             XYZ bhomXY = (new BH.oM.Geometry.Point() - bhomTransform.Item1).ToRevit();
 
             bool updated = false;
@@ -384,6 +384,9 @@ namespace BH.Revit.Engine.Core
                     break;
                 }
             }
+
+            if (referencePoint == null)
+                return false;
 
             XYZ deltaXY = new XYZ(bhomXY.X - referencePoint.X, bhomXY.Y - referencePoint.Y, 0);
 
@@ -399,15 +402,15 @@ namespace BH.Revit.Engine.Core
             if (Math.Abs(dRot) > settings.AngleTolerance)
             {
                 Autodesk.Revit.DB.Line axis = Autodesk.Revit.DB.Line.CreateBound(bhomXY, bhomXY + XYZ.BasisZ);
-                ElementTransformUtils.RotateElement(element.Document, element.Id, axis, dRot);
+                ElementTransformUtils.RotateElement(element.Document, element.Id, axis, -dRot);
                 updated = true;
                 element.Document.Regenerate();
             }
 
             BoundingBoxXYZ bbox = element.get_BoundingBox(null);
             double topZ = bbox.Max.Z;
-            BH.oM.Geometry.Point bhomCentroid = padFoundation.PadFoundationCentroid();
-            double dz = bhomCentroid.Z.FromSI(SpecTypeId.Length) - topZ;
+            double bhomZ = -bhomTransform.Item1.Z.FromSI(SpecTypeId.Length);
+            double dz = bhomZ - topZ;
 
             // Move vertically if needed
             if (Math.Abs(dz) > settings.DistanceTolerance)

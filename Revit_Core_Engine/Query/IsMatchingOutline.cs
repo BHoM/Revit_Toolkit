@@ -44,7 +44,6 @@ namespace BH.Revit.Engine.Core
         [Output("matches", "True if the padFoundationFamily extrusion outline matches the input outline.")]
         public static bool IsMatchingOutline(this Family padFoundationFamily, Polyline orientedOutline, RevitSettings settings)
         {
-            Document document = padFoundationFamily.Document;
             double tol = settings.DistanceTolerance;
             try
             {

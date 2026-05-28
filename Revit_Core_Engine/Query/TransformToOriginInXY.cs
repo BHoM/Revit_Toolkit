@@ -30,6 +30,10 @@ namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
+        /***************************************************/
+        /****              Public methods               ****/
+        /***************************************************/
+
         [Description("Computes translation and rotation to orient a Polyline to the origin in XY.")]
         [Input("outline", "Polyline to transform.")]
         [Output("result", "Centroid projected to XY and rotation angle in radians around Z.")]
@@ -47,10 +51,12 @@ namespace BH.Revit.Engine.Core
                 return (translation, rotation);
 
             translation = (new Point() - centroid);
-            Vector longestEdge = outline.LongestEdgeDirection(BH.oM.Geometry.Tolerance.Distance);
-            if (longestEdge != null)
-                rotation = Vector.XAxis.SignedAngle(longestEdge, Vector.ZAxis);
-
+            Vector dominantEdge = outline.DominantEdgeDirection(BH.oM.Geometry.Tolerance.Distance);
+            Vector d = dominantEdge;
+            if (d.DotProduct(Vector.XAxis) < 0)
+                d = -d;
+            if (dominantEdge != null)
+                rotation = Vector.XAxis.SignedAngle(d, Vector.ZAxis);
             return (translation, rotation);
         }
     }
