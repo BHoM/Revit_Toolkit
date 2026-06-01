@@ -133,7 +133,7 @@ namespace BH.Revit.Engine.Core
 
             // Check if outlines match after setting the type (location & orientation irrelevant)
             Polyline outline = bHoMObject.PadFoundationOutline();
-            bool isRectangle = outline.IsRectangle(settings.DistanceTolerance);
+            bool isRectangle = outline.IsRectangular(settings.DistanceTolerance);
             bool matchingOutline;
             if (isRectangle)
             {
@@ -142,8 +142,8 @@ namespace BH.Revit.Engine.Core
                 double bhomLength = Math.Max(len1, len2);
                 double bhomWidth = Math.Min(len1, len2);
 
-                double revitLength = symbol.LookupParameterDouble("BHE_Length");
-                double revitWidth = symbol.LookupParameterDouble("BHE_Width");
+                double revitLength = symbol.LookupParameterDouble("Length");
+                double revitWidth = symbol.LookupParameterDouble("Width");
 
                 matchingOutline = Math.Abs(bhomLength - revitLength) <= settings.DistanceTolerance &&
                                   Math.Abs(bhomWidth - revitWidth) <= settings.DistanceTolerance;
@@ -159,7 +159,7 @@ namespace BH.Revit.Engine.Core
             double bhomThickness = bHoMObject.PadFoundationThickness();
             if (!double.IsNaN(bhomThickness))
             {
-                double revitThickness = symbol.LookupParameterDouble("BHE_Depth");
+                double revitThickness = symbol.LookupParameterDouble("Foundation Thickness");
                 matchingThickness = Math.Abs(bhomThickness - revitThickness) <= settings.DistanceTolerance;
             }
             else

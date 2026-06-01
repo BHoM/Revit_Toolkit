@@ -56,7 +56,7 @@ namespace BH.Revit.Engine.Core
             bool isRectangle;
             Polyline outline = padFoundation?.PadFoundationOutline();
             if (outline != null)
-                isRectangle = outline.IsRectangle(settings.DistanceTolerance);
+                isRectangle = outline.IsRectangular(settings.DistanceTolerance);
             else
                 return null;
 
@@ -73,11 +73,12 @@ namespace BH.Revit.Engine.Core
         private static FamilySymbol GenerateRectangularType(PadFoundation padFoundation, Document document, RevitSettings settings)
         {
             // Check if family loaded to the document, if not, load it from resources path
-            string familyName = "BHE_StructuralFoundations_Pad-Rectangular";
+            string familyName = "StructuralFoundations_Pad-Rectangular";
+
             Family family = new FilteredElementCollector(document).OfClass(typeof(Family)).FirstOrDefault(x => x.Name == familyName) as Family;
             if (family == null)
             {
-                string path = Path.Combine(m_FamilyDirectory, $"{familyName}.rfa");
+                string path = Directory.GetFiles(m_FamilyDirectory, $"*{familyName}.rfa").FirstOrDefault();
                 if (!File.Exists(path))
                     return null;
 
@@ -105,9 +106,9 @@ namespace BH.Revit.Engine.Core
             {
                 result = symbols[0].Duplicate(typeName) as FamilySymbol;
                 result.Activate();
-                result.SetParameter("BHE_Width", dimensions.Item1);
-                result.SetParameter("BHE_Length", dimensions.Item2);
-                result.SetParameter("BHE_Depth", dimensions.Item3);
+                result.SetParameter("Width", dimensions.Item1);
+                result.SetParameter("Length", dimensions.Item2);
+                result.SetParameter("Foundation Thickness", dimensions.Item3);
             }
 
             return result;
@@ -130,7 +131,7 @@ namespace BH.Revit.Engine.Core
 
         private static FamilySymbol GenerateFreeformType(PadFoundation padFoundation, Document document, RevitSettings settings)
         {
-            string prefix = "BHE_StructuralFoundations_FreeForm_";
+            string prefix = "StructuralFoundations_FreeForm_";
 
             // Get the outline and check if valid
             Polyline outline = padFoundation.PadFoundationOutline();
@@ -174,7 +175,9 @@ namespace BH.Revit.Engine.Core
 
         private static Family GenerateFreeFormPadFamilyFromTemplate(this Document document, Polyline orientedOutline, double thickness, string familyName, PadFoundation padFoundation, RevitSettings settings = null)
         {
-            string templatePath = Path.Combine(m_FamilyDirectory, "BHE_StructuralFoundations_FreeForm.rfa");
+            string templateFamilyName = "StructuralFoundations_FreeForm";
+            string templatePath = Directory.GetFiles(m_FamilyDirectory, $"*{templateFamilyName}.rfa").FirstOrDefault();
+
             Document familyDocument = new UIDocument(document).Application.Application.OpenDocumentFile(templatePath);
             if (familyDocument == null)
                 return null;
@@ -250,7 +253,7 @@ namespace BH.Revit.Engine.Core
                 else
                     result = symbols[0].Duplicate(typeName) as FamilySymbol;
 
-                result.SetParameter("BHE_Depth", thickness);
+                result.SetParameter("Foundation Thickness", thickness);
             }
 
             result?.Activate();
