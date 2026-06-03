@@ -23,8 +23,10 @@
 using BH.Engine.Geometry;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -51,9 +53,20 @@ namespace BH.Revit.Engine.Core
                 return (translation, rotation);
 
             translation = (new Point() - centroid);
-            Vector dominantEdge = outline.DominantEdgeDirection(BH.oM.Geometry.Tolerance.Distance);
+
+            // 1. Find dominant edge direction
+            // 2. Find longest edge parallel to the dominant direction
+            // 3. Rotate the longest edge to X axis and check if the start point is above or below the centroid to determine the rotation direction 
+            Vector dominantEdge = outline.DominantEdgeDirection(Tolerance.Distance);
             if (dominantEdge != null)
-                rotation = Vector.XAxis.SignedAngle(dominantEdge, Vector.ZAxis);
+            {
+                Line longestEdge = outline.SubParts().Where(x => x.Direction().IsParallel(dominantEdge, Tolerance.Angle) != 0).OrderByDescending(x => x.Length()).First();
+                rotation = dominantEdge.SignedAngle(Vector.XAxis, Vector.ZAxis);
+                Point orientedStart = longestEdge.Start.Rotate(centroid, Vector.ZAxis, rotation);
+                if (orientedStart.Y > centroid.Y)
+                    rotation -= Math.PI;
+            }
+
             return (translation, rotation);
         }
     }
