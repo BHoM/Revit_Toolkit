@@ -98,19 +98,23 @@ namespace BH.Revit.Engine.Core
             string typeName = $"{minMm}x{maxMm}x{depthMm}";
 
             // Try get the type with matching name, otherwise create it by duplicating an existing one and setting the dimensions parameters
-            List<FamilySymbol> symbols = family.GetFamilySymbolIds().Select(x => document.GetElement(x) as FamilySymbol).Where(x => x != null).ToList();
+            List<FamilySymbol> symbols = family.GetFamilySymbolIds().Select(id => document.GetElement(id) as FamilySymbol).Where(s => s != null).ToList();
+            if (symbols.Count == 0)
+                return null;
+
             FamilySymbol result = symbols.FirstOrDefault(x => x?.Name == typeName);
-            if (result != null)
-                result.Activate();
-            else if (symbols.Count != 0)
+            if (result == null)
             {
-                result = symbols[0].Duplicate(typeName) as FamilySymbol;
-                result.Activate();
+                result = symbols.FirstOrDefault(x => !(new FilteredElementCollector(document).WherePasses(new FamilyInstanceFilter(document, x.Id)).Any()));
+                if (result != null)
+                    result.Name = typeName;
+                else
+                    result = symbols[0].Duplicate(typeName) as FamilySymbol;
                 result.SetParameter("Width", dimensions.Item1);
                 result.SetParameter("Length", dimensions.Item2);
                 result.SetParameter("Foundation Thickness", dimensions.Item3);
             }
-
+            result?.Activate();
             return result;
         }
 
@@ -222,7 +226,7 @@ namespace BH.Revit.Engine.Core
                 using (Transaction t = new Transaction(familyDocument, "Update Freeform Pad Foundation Footprint"))
                 {
                     t.Start();
-                    familyDocument.FamilyCreate.NewExtrusion(true, profile, extrusion.Sketch.SketchPlane, FreeformExtrusionDepth(padFoundation));
+                    familyDocument.FamilyCreate.NewExtrusion(true, profile, extrusion.Sketch.SketchPlane, -FreeformExtrusionDepth(padFoundation));
                     familyDocument.Delete(extrusion.Id);
                     t.Commit();
                 }
