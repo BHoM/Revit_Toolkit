@@ -101,7 +101,7 @@ namespace BH.Revit.Engine.Core
             long widthMm = (long)Math.Round(width * 1000.0);
             long lengthMm = (long)Math.Round(length * 1000.0);
             long depthMm = (long)Math.Round(thickness * 1000.0);
-            string typeName = $"{widthMm}x{lengthMm}x{depthMm}";
+            string typeName = $"{widthMm}x{lengthMm}x{depthMm}mm";
 
             FamilySymbol result = symbols.FirstOrDefault(x => x?.Name == typeName);
             if (result == null && symbols.Count != 0)
