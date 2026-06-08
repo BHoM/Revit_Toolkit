@@ -90,36 +90,36 @@ namespace BH.Revit.Engine.Core
             (double, double, double) dimensions = padFoundation.RectangularDimensions();
             if (double.IsNaN(dimensions.Item1) || double.IsNaN(dimensions.Item2) || double.IsNaN(dimensions.Item3))
                 return null;
+            return family.FindOrCreateTypeWithDimensions(dimensions.Item1, dimensions.Item2, dimensions.Item3);
+        }
 
-            // Create type name based on dimensions
-            int minMm = (int)Math.Round(dimensions.Item1 * 1000.0);
-            int maxMm = (int)Math.Round(dimensions.Item2 * 1000.0);
-            int depthMm = (int)Math.Round(dimensions.Item3 * 1000.0);
-            string typeName = $"{minMm}x{maxMm}x{depthMm}";
+        /***************************************************/
+        private static FamilySymbol FindOrCreateTypeWithDimensions(this Family family, double width, double length, double thickness)
+        {
+            List<FamilySymbol> symbols = family.GetFamilySymbolIds().Select(id => family.Document.GetElement(id) as FamilySymbol).Where(s => s != null).ToList();
 
-            // Try get the type with matching name, otherwise create it by duplicating an existing one and setting the dimensions parameters
-            List<FamilySymbol> symbols = family.GetFamilySymbolIds().Select(id => document.GetElement(id) as FamilySymbol).Where(s => s != null).ToList();
-            if (symbols.Count == 0)
-                return null;
+            long widthMm = (long)Math.Round(width * 1000.0);
+            long lengthMm = (long)Math.Round(length * 1000.0);
+            long depthMm = (long)Math.Round(thickness * 1000.0);
+            string typeName = $"{widthMm}x{lengthMm}x{depthMm}";
 
             FamilySymbol result = symbols.FirstOrDefault(x => x?.Name == typeName);
-            if (result == null)
+            if (result == null && symbols.Count != 0)
             {
-                result = symbols.FirstOrDefault(x => !(new FilteredElementCollector(document).WherePasses(new FamilyInstanceFilter(document, x.Id)).Any()));
+                result = symbols.FirstOrDefault(x => !(new FilteredElementCollector(family.Document).WherePasses(new FamilyInstanceFilter(family.Document, x.Id)).Any()));
                 if (result != null)
                     result.Name = typeName;
                 else
                     result = symbols[0].Duplicate(typeName) as FamilySymbol;
-                result.SetParameter("Width", dimensions.Item1);
-                result.SetParameter("Length", dimensions.Item2);
-                result.SetParameter("Foundation Thickness", dimensions.Item3);
+                result.SetParameter("Width", width);
+                result.SetParameter("Length", length);
+                result.SetParameter("Foundation Thickness", thickness);
             }
             result?.Activate();
             return result;
         }
 
         /***************************************************/
-
         private static (double, double, double) RectangularDimensions(this PadFoundation padFoundation)
         {
             Polyline outline = padFoundation.PadFoundationOutline();
