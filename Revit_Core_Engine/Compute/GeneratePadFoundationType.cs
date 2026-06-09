@@ -135,7 +135,7 @@ namespace BH.Revit.Engine.Core
 
         private static FamilySymbol GenerateFreeformType(PadFoundation padFoundation, Document document, RevitSettings settings)
         {
-            string prefix = "StructuralFoundations_FreeForm_";
+            string prefix = "StructuralFoundations_Pad-Freeform_";
 
             // Get the outline and check if valid
             Polyline outline = padFoundation.PadFoundationOutline();
@@ -157,7 +157,7 @@ namespace BH.Revit.Engine.Core
 
             // Get all BHoM-generated freeform families in the document
             List<Family> freeformFamilies = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>()
-                .Where(x => Regex.IsMatch(x.Name, $"^{prefix}\\d+$")).ToList();
+                .Where(x => Regex.IsMatch(x.Name, $"{prefix}\\d+$")).ToList();
 
             // Try to find a family with matching outline, otherwise create a new one from template
             Family family = freeformFamilies.FirstOrDefault(x => x.IsMatchingOutline(orientedOutline, settings));
@@ -165,7 +165,7 @@ namespace BH.Revit.Engine.Core
             {
                 List<int> takenIndices = freeformFamilies.Select(x => int.Parse(x.Name.Substring(prefix.Length))).ToList();
                 int newIndex = takenIndices.Count > 0 ? takenIndices.Max() + 1 : 1;
-                family = GenerateFreeFormPadFamilyFromTemplate(document, orientedOutline, thickness, $"{prefix}{newIndex}", padFoundation, settings);
+                family = GenerateFreeFormPadFamilyFromTemplate(document, orientedOutline, thickness, newIndex, padFoundation, settings);
             }
 
             if (family == null)
@@ -177,9 +177,9 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static Family GenerateFreeFormPadFamilyFromTemplate(this Document document, Polyline orientedOutline, double thickness, string familyName, PadFoundation padFoundation, RevitSettings settings = null)
+        private static Family GenerateFreeFormPadFamilyFromTemplate(this Document document, Polyline orientedOutline, double thickness, int index, PadFoundation padFoundation, RevitSettings settings = null)
         {
-            string templateFamilyName = "StructuralFoundations_FreeForm";
+            string templateFamilyName = "StructuralFoundations_Pad-Freeform";
             string templatePath = Directory.GetFiles(m_FamilyDirectory, $"*{templateFamilyName}.rfa").FirstOrDefault();
 
             Document familyDocument = new UIDocument(document).Application.Application.OpenDocumentFile(templatePath);
@@ -191,7 +191,7 @@ namespace BH.Revit.Engine.Core
                 if (!ReplaceFreeFormExtrusion(familyDocument, orientedOutline, padFoundation))
                     return null;
 
-                return SaveAndLoadFamily(document, familyDocument, familyName);
+                return SaveAndLoadFamily(document, familyDocument, $"{Path.GetFileNameWithoutExtension(templatePath)}_{index}");
             }
             catch (Exception ex)
             {
