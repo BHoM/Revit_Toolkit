@@ -85,10 +85,14 @@ namespace BH.Revit.Engine.Core
         [Output("familySymbol", "Revit FamilySymbol to be used when converting the input pad foundation to Revit.")]
         public static FamilySymbol ElementType(this BH.oM.Physical.Elements.PadFoundation padFoundation, Document document, RevitSettings settings = null)
         {
-            HashSet<BuiltInCategory> categories = padFoundation.BuiltInCategories();
-            FamilySymbol result = padFoundation.ElementType(document, categories, settings) as FamilySymbol;
-            if (result == null)
-                result = padFoundation.GeneratePadFoundationType(document, settings);
+            FamilySymbol result = padFoundation.GeneratePadFoundationType(document, settings);
+            padFoundation.FamilyAndTypeNames(out string familyName, out string familyTypeName);
+
+            if (!string.IsNullOrWhiteSpace(familyName) && result.FamilyName != familyName)
+                BH.Engine.Base.Compute.RecordWarning($"BHoM PadFoundation's name does not match Revit family name derived from its geometry. BHoM_Guid: {padFoundation.BHoM_Guid}");
+
+            if (!string.IsNullOrWhiteSpace(familyTypeName) && result.FamilyName != familyTypeName)
+                BH.Engine.Base.Compute.RecordWarning($"BHoM PadFoundation's name does not match Revit type name derived from its geometry. BHoM_Guid: {padFoundation.BHoM_Guid}");
 
             return result;
         }
