@@ -75,7 +75,7 @@ namespace BH.Revit.Engine.Core
             // Check if family loaded to the document, if not, load it from resources path
             string familyName = "StructuralFoundations_Pad-Rectangular";
 
-            Family family = new FilteredElementCollector(document).OfClass(typeof(Family)).FirstOrDefault(x => x.Name == familyName) as Family;
+            Family family = new FilteredElementCollector(document).OfClass(typeof(Family)).FirstOrDefault(x => x.Name.EndsWith(familyName)) as Family;
             if (family == null)
             {
                 string path = Directory.GetFiles(m_FamilyDirectory, $"*{familyName}.rfa").FirstOrDefault();
