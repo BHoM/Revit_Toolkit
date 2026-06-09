@@ -163,7 +163,7 @@ namespace BH.Revit.Engine.Core
             Family family = freeformFamilies.FirstOrDefault(x => x.IsMatchingOutline(orientedOutline, settings));
             if (family == null)
             {
-                List<int> takenIndices = freeformFamilies.Select(x => int.Parse(x.Name.Substring(prefix.Length))).ToList();
+                List<int> takenIndices = freeformFamilies.Select(x => Regex.Match(x.Name, $"{Regex.Escape(prefix)}(\\d+)$")).Select(x => int.Parse(x.Groups[1].Value)).ToList();
                 int newIndex = takenIndices.Count > 0 ? takenIndices.Max() + 1 : 1;
                 family = GenerateFreeFormPadFamilyFromTemplate(document, orientedOutline, thickness, newIndex, padFoundation, settings);
             }

@@ -91,7 +91,7 @@ namespace BH.Revit.Engine.Core
             if (!string.IsNullOrWhiteSpace(familyName) && result.FamilyName != familyName)
                 BH.Engine.Base.Compute.RecordWarning($"BHoM PadFoundation's name does not match Revit family name derived from its geometry. BHoM_Guid: {padFoundation.BHoM_Guid}");
 
-            if (!string.IsNullOrWhiteSpace(familyTypeName) && result.FamilyName != familyTypeName)
+            if (!string.IsNullOrWhiteSpace(familyTypeName) && result.Name != familyTypeName)
                 BH.Engine.Base.Compute.RecordWarning($"BHoM PadFoundation's name does not match Revit type name derived from its geometry. BHoM_Guid: {padFoundation.BHoM_Guid}");
 
             return result;
