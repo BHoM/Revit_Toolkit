@@ -96,9 +96,6 @@ namespace BH.Revit.Engine.Core
                 {
 #if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
                     SlabShapeEditor slabShapeEditor = roofBase.SlabShapeEditor;
-#else
-                    SlabShapeEditor slabShapeEditor = roofBase.GetSlabShapeEditor();
-#endif
                     slabShapeEditor.ResetSlabShape();
 
                     foreach (oM.Geometry.Point point in controlPoints)
@@ -106,13 +103,60 @@ namespace BH.Revit.Engine.Core
                         if (Math.Abs(point.Z - plane.Origin.Z) > settings.DistanceTolerance)
                         {
                             XYZ xyz = point.ToRevit();
-#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
                             slabShapeEditor.DrawPoint(xyz);
-#else
-                            slabShapeEditor.AddPoint(xyz);
-#endif
                         }
                     }
+#else
+                    try
+                    {
+                        FootPrintRoof ext = roofBase as FootPrintRoof;
+                        ModelCurveArrArray prof = ext.GetProfiles();
+
+                        List<Curve> crvs = new List<Curve>();
+
+                        foreach (ModelCurveArray profileCurveArray in prof)
+                        {
+                            foreach (ModelCurve mc in profileCurveArray)
+                                crvs.Add(mc.GeometryCurve);
+                        }
+
+                        SlabShapeEditor slabShapeEditor = roofBase.GetSlabShapeEditor();
+
+                        if (!slabShapeEditor.IsEnabled)
+                            slabShapeEditor.Enable();
+
+                        document.Regenerate();
+
+                        foreach (oM.Geometry.Point point in controlPoints)
+                        {
+                            if (Math.Abs(point.Z - plane.Origin.Z) > settings.DistanceTolerance)
+                            {
+                                XYZ xyz = point.ToRevit();
+                                XYZ proj = new XYZ(xyz.X, xyz.Y, level.Elevation);
+
+                                Curve closest = null;
+                                double minDist = double.MaxValue;
+                                foreach (Curve crv in crvs)
+                                {
+                                    double dist = crv.Distance(proj);
+                                    if (dist < minDist)
+                                    {
+                                        minDist = dist;
+                                        closest = crv;
+                                    }
+                                }
+
+                                XYZ onCurve = closest.Project(proj).XYZPoint;
+                                XYZ onCurveInPlane = new XYZ(onCurve.X, onCurve.Y, xyz.Z);
+                                slabShapeEditor.AddPoint(onCurveInPlane);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        BH.Engine.Base.Compute.RecordError($"Failed to update roof shape {roofBase.Id.Value()}: {ex.Message}");
+                    }
+#endif
                 }
             }
 
