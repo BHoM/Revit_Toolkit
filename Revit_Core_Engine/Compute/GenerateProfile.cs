@@ -96,7 +96,7 @@ namespace BH.Revit.Engine.Core
             if (family == null)
                 return null;
 
-            if (!(property.Profile is FreeFormProfile))
+            if (!fromTemplate && !(property.Profile is FreeFormProfile))
                 BH.Engine.Base.Compute.RecordWarning($"Generation of profiles with shape {property.Profile.GetType().Name} is currently not fully supported - a freeform, dimensionless profile with a dedicated family has been created.");
 
             family.SetMaterialForModelBehaviour(property?.Material);
