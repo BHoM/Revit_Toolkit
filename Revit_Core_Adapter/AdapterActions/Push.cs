@@ -27,6 +27,7 @@ using BH.oM.Adapters.Revit;
 using BH.oM.Adapters.Revit.Elements;
 using BH.oM.Base;
 using BH.Revit.Engine.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -60,7 +61,7 @@ namespace BH.Revit.Adapter.Core
                 BH.Engine.Base.Compute.RecordError("BHoM objects could not be removed because another transaction is open in Revit.");
                 return new List<object>();
             }
-            
+
             // If unset, set the pushType to AdapterSettings' value (base AdapterSettings default is FullCRUD). Disallow the unsupported PushTypes.
             if (pushType == PushType.AdapterDefault)
                 pushType = PushType.UpdateOrCreateOnly;
@@ -69,7 +70,7 @@ namespace BH.Revit.Adapter.Core
                 BH.Engine.Base.Compute.RecordError("Full Push is currently not supported by Revit_Toolkit, please use Create, UpdateOnly or DeleteThenCreate instead.");
                 return new List<object>();
             }
-            
+
             // Set config
             RevitPushConfig pushConfig = actionConfig as RevitPushConfig;
             if (pushConfig == null)
@@ -81,7 +82,7 @@ namespace BH.Revit.Adapter.Core
             // Suppress warnings
             if (UIControlledApplication != null && pushConfig.SuppressFailureMessages)
                 UIControlledApplication.ControlledApplication.FailuresProcessing += ControlledApplication_FailuresProcessing;
-            
+
             // Process the objects (verify they are valid; DeepClone them, wrap them, etc).
             IEnumerable<IBHoMObject> objectsToPush = ProcessObjectsForPush(objects, pushConfig); // Note: default Push only supports IBHoMObjects.
 
@@ -131,6 +132,7 @@ namespace BH.Revit.Adapter.Core
                 {
                     List<string> distinctNames = group.Select(x => x.Name).Distinct().ToList();
                     if (distinctNames.Count > 1)
+
                         BH.Engine.Base.Compute.RecordWarning($"BHoM objects with names {string.Join(", ", distinctNames)} correspond to the same Revit assembly that has finally been named {group.Key.AssemblyTypeName}.");
                 }
             }
@@ -149,55 +151,85 @@ namespace BH.Revit.Adapter.Core
 
         private List<IBHoMObject> PushToRevit(Document document, IEnumerable<IBHoMObject> objects, PushType pushType, RevitPushConfig pushConfig, string transactionName)
         {
+
+            SketchUpdateQueue.SketchUpdates.Clear();
+
             List<IBHoMObject> pushed = new List<IBHoMObject>();
-            using (Transaction transaction = new Transaction(document, transactionName))
+
+            using (TransactionGroup tg = new TransactionGroup(document, transactionName))
             {
-                transaction.Start();
+                tg.Start();
 
-                if (pushType == PushType.CreateOnly)
-                    pushed = Create(objects, pushConfig);
-                else if (pushType == PushType.CreateNonExisting)
+                using (Transaction transaction = new Transaction(document, transactionName))
                 {
-                    IEnumerable<IBHoMObject> toCreate = objects.Where(x => x.Element(document) == null);
-                    pushed = Create(toCreate, pushConfig);
-                }
-                else if (pushType == PushType.DeleteThenCreate)
-                {
-                    List<IBHoMObject> toCreate = new List<IBHoMObject>();
-                    foreach (IBHoMObject obj in objects)
+                    transaction.Start();
+
+                    if (pushType == PushType.CreateOnly)
+                        pushed = Create(objects, pushConfig);
+                    else if (pushType == PushType.CreateNonExisting)
                     {
-                        Element element = obj.Element(document);
-                        if (element == null || Delete(element.Id, document, false).Count() != 0)
-                            toCreate.Add(obj);
+                        IEnumerable<IBHoMObject> toCreate = objects.Where(x => x.Element(document) == null);
+                        pushed = Create(toCreate, pushConfig);
+                    }
+                    else if (pushType == PushType.DeleteThenCreate)
+                    {
+                        List<IBHoMObject> toCreate = new List<IBHoMObject>();
+                        foreach (IBHoMObject obj in objects)
+                        {
+                            Element element = obj.Element(document);
+                            if (element == null || Delete(element.Id, document, false).Count() != 0)
+                                toCreate.Add(obj);
+                        }
+
+                        pushed = Create(toCreate, pushConfig);
+                    }
+                    else if (pushType == PushType.UpdateOnly)
+                    {
+                        foreach (IBHoMObject obj in objects)
+                        {
+                            Element element = obj.Element(document);
+                            if (element != null && Update(element, obj, pushConfig))
+                                pushed.Add(obj);
+                        }
+                    }
+                    else if (pushType == PushType.UpdateOrCreateOnly)
+                    {
+                        List<IBHoMObject> toCreate = new List<IBHoMObject>();
+                        foreach (IBHoMObject obj in objects)
+                        {
+                            Element element = obj.Element(document);
+                            if (element != null && Update(element, obj, pushConfig))
+                                pushed.Add(obj);
+                            else if (element == null || Delete(element.Id, document, false).Count() != 0)
+                                toCreate.Add(obj);
+                        }
+
+                        pushed.AddRange(Create(toCreate, pushConfig));
                     }
 
-                    pushed = Create(toCreate, pushConfig);
-                }
-                else if (pushType == PushType.UpdateOnly)
-                {
-                    foreach (IBHoMObject obj in objects)
-                    {
-                        Element element = obj.Element(document);
-                        if (element != null && Update(element, obj, pushConfig))
-                            pushed.Add(obj);
-                    }
-                }
-                else if (pushType == PushType.UpdateOrCreateOnly)
-                {
-                    List<IBHoMObject> toCreate = new List<IBHoMObject>();
-                    foreach (IBHoMObject obj in objects)
-                    {
-                        Element element = obj.Element(document);
-                        if (element != null && Update(element, obj, pushConfig))
-                            pushed.Add(obj);
-                        else if (element == null || Delete(element.Id, document, false).Count() != 0)
-                            toCreate.Add(obj);
-                    }
-
-                    pushed.AddRange(Create(toCreate, pushConfig));
+                    transaction.Commit();
                 }
 
-                transaction.Commit();
+                if (SketchUpdateQueue.SketchUpdates.Count > 0)
+                {
+                    foreach (Action call in SketchUpdateQueue.SketchUpdates)
+                    {
+                        try
+                        {
+                            call.Invoke();
+                        }
+                        catch (Exception ex)
+                        {
+                            string errorMsg = $"Sketch update failed: {ex.Message}";
+                            if (ex.InnerException != null)
+                                errorMsg += $" Inner: {ex.InnerException.Message}";
+
+                            BH.Engine.Base.Compute.RecordError(errorMsg);
+                        }
+                    }
+                }
+
+                tg.Assimilate(); 
             }
 
             return pushed;

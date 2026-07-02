@@ -21,6 +21,7 @@
  */
 
 using Autodesk.Revit.DB;
+using BH.Engine.Adapters.Revit;
 using BH.Engine.Geometry;
 using BH.Engine.Spatial;
 using BH.oM.Adapters.Revit.Elements;
@@ -344,6 +345,104 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets the location of a given Revit FamilyInstance based on a given BHoM PadFoundation.")]
+        [Input("element", "Revit FamilyInstance to be modified.")]
+        [Input("padFoundation", "BHoM PadFoundation acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit FamilyInstance has been successfully set.")]
+        public static bool SetLocation(this FamilyInstance element, PadFoundation padFoundation, RevitSettings settings)
+        {
+            if (element == null || padFoundation == null)
+                return false;
+
+            settings = settings.DefaultIfNull();
+
+            // Revit location point including coordinates and rotation
+            LocationPoint revitLocation = element.Location as LocationPoint;
+            if (revitLocation == null)
+                return false;
+
+            Polyline bhomOutline = padFoundation.PadFoundationOutline();
+            if (bhomOutline == null)
+                return false;
+
+            // Transformation needed to bring BHoM outline to global XY
+            (Vector, double) bhomTransform = bhomOutline.TransformToOriginInXY();
+            if (bhomTransform.Item1 == null || double.IsNaN(bhomTransform.Item2))
+                return false;
+
+            // Translation between the origin and BHoM centroid
+            XYZ bhomXY = (new BH.oM.Geometry.Point() - bhomTransform.Item1).ToRevit();
+
+            bool updated = false;
+            XYZ referencePoint = null;
+            foreach (Autodesk.Revit.DB.Face face in element.Faces(new Options(), settings))
+            {
+                if (face is PlanarFace planarFace && Math.Abs(1 - planarFace.FaceNormal.DotProduct(XYZ.BasisZ)) <= BH.oM.Adapters.Revit.Tolerance.Angle)
+                {
+                    referencePoint = planarFace.Centroid();
+                    break;
+                }
+            }
+
+            if (referencePoint == null)
+                return false;
+
+            XYZ deltaXY = new XYZ(bhomXY.X - referencePoint.X, bhomXY.Y - referencePoint.Y, 0);
+
+            if (deltaXY.GetLength() > settings.DistanceTolerance)
+            {
+                ElementTransformUtils.MoveElement(element.Document, element.Id, deltaXY);
+                updated = true;
+                element.Document.Regenerate();
+            }
+
+            // Rotate if needed
+            double dRot = (-bhomTransform.Item2 - revitLocation.Rotation).NormalizeAngleDomain();
+            if (Math.Abs(dRot) > settings.AngleTolerance)
+            {
+                Autodesk.Revit.DB.Line axis = Autodesk.Revit.DB.Line.CreateBound(bhomXY, bhomXY + XYZ.BasisZ);
+                ElementTransformUtils.RotateElement(element.Document, element.Id, axis, dRot);
+                updated = true;
+                element.Document.Regenerate();
+            }
+
+            BoundingBoxXYZ bbox = element.get_BoundingBox(null);
+            double topZ = bbox.Max.Z;
+            double bhomZ = -bhomTransform.Item1.Z.FromSI(SpecTypeId.Length);
+            double dz = bhomZ - topZ;
+
+            // Move vertically if needed
+            if (Math.Abs(dz) > settings.DistanceTolerance)
+            {
+                Parameter offParam = element.get_Parameter(BuiltInParameter.FAMILY_BASE_LEVEL_OFFSET_PARAM);
+                if (offParam != null && offParam.HasValue && !offParam.IsReadOnly)
+                {
+                    offParam.Set(offParam.AsDouble() + dz);
+                    updated = true;
+                    element.Document.Regenerate();
+                }
+                else
+                {
+                    try
+                    {
+                        XYZ p = revitLocation.Point;
+                        revitLocation.Point = new XYZ(p.X, p.Y, p.Z + dz);
+                        updated = true;
+                        element.Document.Regenerate();
+                    }
+                    catch (Exception)
+                    {
+                        BH.Engine.Base.Compute.RecordWarning($"Pad foundation vertical placement could not be adjusted (offset parameter missing or location read-only). ElementId: {element.Id.Value()}");
+                    }
+                }
+            }
+
+            return updated;
+        }
+
+        /***************************************************/
+
         [Description("Sets the location of a given Revit Space based on a given BHoM Space.")]
         [Input("revitSpace", "Revit Space to be modified.")]
         [Input("bHoMSpace", "BHoM Space acting as a source of information about the new location.")]
@@ -446,6 +545,18 @@ namespace BH.Revit.Engine.Core
             return false;
         }
 
+        /***************************************************/
+
+        [Description("Sets the location of a given Revit Floor based on a given BHoM Floor.")]
+        [Input("element", "Revit Floor to be modified.")]
+        [Input("bHoMObject", "BHoM Floor acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit Floor has been successfully set.")]
+        public static bool SetLocation(this Autodesk.Revit.DB.Floor element, BH.oM.Physical.Elements.Floor bHoMObject, RevitSettings settings)
+        {
+            return element.SetLocation(bHoMObject.Location, settings);
+        }
+
 
         /***************************************************/
         /****             Fallback Methods              ****/
@@ -492,6 +603,227 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
         /****              Private Methods              ****/
+        /***************************************************/
+
+        private static bool SetLocation(this Autodesk.Revit.DB.Floor element, BH.oM.Geometry.ISurface location, RevitSettings settings)
+        {
+            PlanarSurface ps = location as PlanarSurface;
+            if (ps == null)
+            {
+                BH.Engine.Base.Compute.RecordWarning("Floor location must be a PlanarSurface");
+                return false;
+            }
+
+            if (ps.InternalBoundaries != null && ps.InternalBoundaries.Count > 0)
+                BH.Engine.Base.Compute.RecordWarning($"Floor has openings which will be ignored during sketch update. ElementId: {element.Id.Value()}");
+
+            Document doc = element.Document;
+            ElementId floorId = element.Id;
+            Sketch sketch = new FilteredElementCollector(doc).OfClass(typeof(Sketch)).Cast<Sketch>().FirstOrDefault(s => s.OwnerId == floorId);
+            if (sketch?.Id == null || sketch.SketchPlane == null)
+            {
+                BH.Engine.Base.Compute.RecordError($"Floor sketch not found. ElementId: {element.Id.Value()}");
+                return false;
+            }
+
+            Level level = doc.GetElement(element.LevelId) as Level;
+            BH.oM.Geometry.Plane slabPlane = ps.FitPlane();
+
+            double floorThickness = 0;
+            FloorType floorType = doc.GetElement(element.GetTypeId()) as FloorType;
+            if (floorType?.GetCompoundStructure() != null)
+                floorThickness = floorType.GetCompoundStructure().GetWidth();
+
+            double bottomElevation = BH.Engine.Geometry.Query.IBounds(ps).Min.Z;
+            oM.Geometry.Plane sketchPlaneBhom = new oM.Geometry.Plane { Origin = new BH.oM.Geometry.Point { Z = bottomElevation }, Normal = Vector.ZAxis };
+            ICurve curve = ps.ExternalBoundary.IProject(sketchPlaneBhom);
+
+            bool isFlat = 1 - Math.Abs(Vector.ZAxis.DotProduct(slabPlane.Normal)) <= settings.AngleTolerance;
+
+            double newOffset;
+            double tan = 0;
+            Autodesk.Revit.DB.Line slopeLineForCreate = null;
+
+            if (isFlat)
+            {
+                newOffset = slabPlane.Origin.Z.FromSI(SpecTypeId.Length) - level.ProjectElevation;
+            }
+            else
+            {
+                Vector normal = slabPlane.Normal;
+                if (normal.Z < 0)
+                    normal = -slabPlane.Normal;
+
+                double angle = normal.Angle(Vector.ZAxis);
+                tan = Math.Tan(angle);
+
+                XYZ dir = normal.Project(oM.Geometry.Plane.XY).ToRevit().Normalize();
+                BH.oM.Geometry.Line ln = slabPlane.PlaneIntersection(sketchPlaneBhom);
+                XYZ start = ln.ClosestPoint(curve.IStartPoint(), true).ToRevit();
+
+                CurveLoop outlineForIntersection = curve.ToRevitCurveLoop();
+                XYZ centroid = curve.ICentroid().ToRevit();
+
+                double extensionLength = 10000;
+                Autodesk.Revit.DB.Line slopeThroughCentroid = Autodesk.Revit.DB.Line.CreateBound(centroid - dir * extensionLength, centroid + dir * extensionLength);
+
+                List<XYZ> edgePoints = slopeThroughCentroid.Intersections(outlineForIntersection);
+                if (edgePoints != null && edgePoints.Count >= 2)
+                {
+                    edgePoints.Sort((a, b) => a.DotProduct(dir).CompareTo(b.DotProduct(dir)));
+                    slopeLineForCreate = Autodesk.Revit.DB.Line.CreateBound(edgePoints.First(), edgePoints.Last());
+                }
+
+                double baseOffset = ln.Start.Z.FromSI(SpecTypeId.Length) - level.ProjectElevation;
+
+                if (slopeLineForCreate != null)
+                {
+                    XYZ slopeTail = slopeLineForCreate.GetEndPoint(0);
+                    double signedDistFromLn = (slopeTail - start).DotProduct(dir);
+                    baseOffset -= signedDistFromLn * tan;
+                }
+
+                newOffset = baseOffset;
+            }
+
+            CurveLoop newOutline;
+            BH.oM.Geometry.ICurve projectedBoundary;
+            if (isFlat)
+            {
+                Autodesk.Revit.DB.Plane revitPlane = sketch.SketchPlane.GetPlane();
+                BH.oM.Geometry.Plane revitSketchBhomPlane = BH.Engine.Geometry.Create.Plane(revitPlane.Origin.PointFromRevit(), revitPlane.Normal.VectorFromRevit());
+                projectedBoundary = ps.ExternalBoundary.IProject(revitSketchBhomPlane);
+                newOutline = projectedBoundary.ToRevitCurveLoop();
+            }
+            else
+            {
+                projectedBoundary = curve;
+                newOutline = curve.ToRevitCurveLoop();
+            }
+
+            if (HasFloorChanged(element, sketch, newOutline, newOffset, settings))
+            {
+                ElementId sketchId = sketch.Id;
+                ElementId floorTypeId = element.GetTypeId();
+                ElementId levelId = element.LevelId;
+
+                Autodesk.Revit.DB.Line slopeLine = slopeLineForCreate;
+                double getTan = tan;
+                double getOffset = newOffset;
+                CurveLoop getOutline = newOutline;
+
+                SketchUpdateQueue.SketchUpdates.Enqueue(() =>
+                {
+                    Autodesk.Revit.DB.Floor floor = doc.GetElement(floorId) as Autodesk.Revit.DB.Floor;
+                    if (floor == null || !floor.IsValidObject)
+                        return;
+
+                    try
+                    {
+                        if (!isFlat)
+                        {
+                            // recreate floor
+                            using (Transaction tSlope = new Transaction(doc, "Recreate sloped floor"))
+                            {
+                                tSlope.Start();
+                                doc.Delete(floor.Id);
+                                doc.Regenerate();
+                                Autodesk.Revit.DB.Floor newFloor = Autodesk.Revit.DB.Floor.Create(doc, new List<CurveLoop> { getOutline }, floorTypeId, levelId, true, slopeLine, -getTan);
+                                if (newFloor != null)
+                                {
+                                    newFloor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, getOffset, false);
+                                    doc.Regenerate();
+                                }
+                                tSlope.Commit();
+                            }
+                        }
+                        else
+                        {
+                            Sketch floorSketch = doc.GetElement(sketchId) as Sketch;
+
+                            UpdateSketchOutline(doc, sketchId, getOutline);
+
+                            using (Transaction tOffset = new Transaction(doc, "Update floor offset"))
+                            {
+                                tOffset.Start();
+                                floor.SetParameter(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, getOffset, false);
+                                doc.Regenerate();
+                                tOffset.Commit();
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        BH.Engine.Base.Compute.RecordError($"Failed to update floor sketch for ElementId {floorId.Value()}: {ex.Message}");
+                        return;
+                    }
+                });
+            }
+
+            return true;
+        }
+
+        /***************************************************/
+
+        private static void UpdateSketchOutline(Document doc, ElementId sketchId, CurveLoop newOutline)
+        {
+            using (SketchEditScope ses = new SketchEditScope(doc, "Update floor sketch"))
+            {
+                ses.Start(sketchId);
+                using (Transaction t = new Transaction(doc, "Modify sketch profile"))
+                {
+                    t.Start();
+                    Sketch currentSketch = doc.GetElement(sketchId) as Sketch;
+                    if (currentSketch != null)
+                    {
+                        IList<ElementId> existingElements = currentSketch.GetAllElements();
+                        if (existingElements != null && existingElements.Count > 0)
+                            doc.Delete(existingElements);
+
+                        SketchPlane sketchPlane = currentSketch.SketchPlane;
+                        if (sketchPlane != null)
+                            foreach (Curve curve in newOutline)
+                                doc.Create.NewModelCurve(curve, sketchPlane);
+                    }
+                    t.Commit();
+                }
+                ses.Commit(new SketchUpdateFailurePreprocessor());
+            }
+        }
+
+        /***************************************************/
+
+        private static bool HasFloorChanged(Autodesk.Revit.DB.Floor floor, Sketch sketch, CurveLoop newOutline, double newOffset, RevitSettings settings)
+        {
+            // newOffset is in Revit internal units (feet), so read without SI conversion
+            double currentOffset = floor.LookupParameterDouble(BuiltInParameter.FLOOR_HEIGHTABOVELEVEL_PARAM, false);
+            if (Math.Abs(currentOffset - newOffset) > settings.DistanceTolerance)
+                return true;
+
+            IList<ElementId> sketchElements = sketch.GetAllElements();
+            if (sketchElements == null || sketchElements.Count == 0)
+                return true;
+
+            List<Curve> currentCurves = new List<Curve>();
+            foreach (ElementId elemId in sketchElements)
+            {
+                ModelCurve modelCurve = floor.Document.GetElement(elemId) as ModelCurve;
+                if (modelCurve != null && modelCurve.GeometryCurve != null && !(modelCurve.GeometryCurve is Autodesk.Revit.DB.Line && modelCurve.GeometryCurve.Length < 1.1))
+                    currentCurves.Add(modelCurve.GeometryCurve);
+            }
+
+            if (currentCurves.Count != newOutline.Count())
+                return true;
+
+            for (int i = 0; i < currentCurves.Count; i++)
+            {
+                if (!currentCurves[i].IsSimilar(newOutline.ElementAt(i), settings))
+                    return true;
+            }
+
+            return false;
+        }
+
         /***************************************************/
 
         private static bool SetLocation(this FamilyInstance element, BH.oM.Geometry.Point location, Basis orientation, RevitSettings settings)
@@ -562,6 +894,7 @@ namespace BH.Revit.Engine.Core
                                 newLocation = linkTransform.OfPoint(newLocation);
 
                             if (ir.Distance > settings.DistanceTolerance)
+
                                 BH.Engine.Base.Compute.RecordWarning($"The location point used on update of a family instance has been snapped to its host face. ElementId: {element.Id.Value()}");
                         }
                     }
@@ -592,6 +925,7 @@ namespace BH.Revit.Engine.Core
                     }
 
                     if (1 - Math.Abs(revitNormal.DotProduct(bHoMNormal)) > settings.AngleTolerance)
+
                         BH.Engine.Base.Compute.RecordWarning($"The orientation applied to the family instance on update has different normal than the original one. Only in-plane rotation has been applied, the orientation out of plane has been ignored. ElementId: {element.Id.Value()}");
 
                     double angle = transform.BasisX.AngleOnPlaneTo(newX, revitNormal);
@@ -605,9 +939,8 @@ namespace BH.Revit.Engine.Core
 
             return success;
         }
-
+        
         /***************************************************/
-
         private static bool UpdateRotationOfVerticalElement(this FamilyInstance element, IFramingElement bhomElement, RevitSettings settings)
         {
             bool updated = false;
@@ -636,7 +969,6 @@ namespace BH.Revit.Engine.Core
 
             return updated;
         }
-
 
         /***************************************************/
         /****            Private collections            ****/

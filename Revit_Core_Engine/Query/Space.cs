@@ -36,7 +36,6 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("9.1", "BH.Revit.Engine.Core.Query.Space(Autodesk.Revit.DB.Element, System.Collections.Generic.IEnumerable<Autodesk.Revit.DB.Mechanical.Space>, System.Boolean)")]
         [Description("Returns the Revit Space that contains the given element.")]
         [Input("element", "The Revit element for which to find the containing Space.")]
         [Input("spaces", "An optional collection of Revit Spaces to search. If not provided, all Spaces in the element's document will be used.")]
@@ -102,7 +101,17 @@ namespace BH.Revit.Engine.Core
             if (!findClosestIfNotContained)
                 return null;
 
-            // 4. If not found, try find closest space in connector directions (for MEP elements)
+            // 4. If still not found, try find closest above (Z direction)
+            Space closestAbove = locationPoint.FindClosestSpaceInDirection(XYZ.BasisZ, spaces, maxDistance: 1); // 1 feet max distance
+            if (closestAbove != null)
+                return closestAbove;
+
+            // 5. If still not found, try find closest below (negative Z direction)
+            Space closestBelow = locationPoint.FindClosestSpaceInDirection(-XYZ.BasisZ, spaces, maxDistance: 10); // 10 feet max distance
+            if (closestBelow != null)
+                return closestBelow;
+
+            // 6. If not found, try find closest space in connector directions (for MEP elements)
             var connectors = element.Connectors()?.OrderByDescending(x => x.GetMEPConnectorInfo().IsPrimary).ToList();
             if (connectors != null && connectors.Any())
             {
@@ -122,16 +131,6 @@ namespace BH.Revit.Engine.Core
                         return closestToConnector;
                 }
             }
-
-            // 5. If still not found, try find closest above (Z direction)
-            Space closestAbove = locationPoint.FindClosestSpaceInDirection(XYZ.BasisZ, spaces, maxDistance: 1); // 1 feet max distance
-            if (closestAbove != null)
-                return closestAbove;
-
-            // 6. If still not found, try find closest below (negative Z direction)
-            Space closestBelow = locationPoint.FindClosestSpaceInDirection(-XYZ.BasisZ, spaces, maxDistance: 10); // 10 feet max distance
-            if (closestBelow != null)
-                return closestBelow;
 
             // Not found
             return null;

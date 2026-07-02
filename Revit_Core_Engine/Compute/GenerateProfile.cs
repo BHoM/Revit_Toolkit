@@ -60,7 +60,8 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            string familyName = element.ProfileFamilyName();
+            bool fromTemplate = element.HasTemplateFamily();
+            string familyName = element.ProfileFamilyName(!fromTemplate);
             if (string.IsNullOrWhiteSpace(familyName))
             {
                 BH.Engine.Base.Compute.RecordError($"Creation of a Revit profile family failed because neither the BHoM section property nor its profile has a name. BHoM_Guid: {property.BHoM_Guid}");
@@ -69,46 +70,47 @@ namespace BH.Revit.Engine.Core
 
             settings = settings.DefaultIfNull();
 
+            FamilySymbol result;
             Family family = new FilteredElementCollector(document).OfClass(typeof(Family)).FirstOrDefault(x => x.Name == familyName) as Family;
             if (family != null)
             {
                 List<FamilySymbol> symbols = family.GetFamilySymbolIds().Select(x => document.GetElement(x) as FamilySymbol).Where(x => x != null).ToList();
-                FamilySymbol result = symbols.FirstOrDefault(x => x?.Name == element.Property.Name);
-                if (result == null && symbols.Count != 0)
+                result = symbols.FirstOrDefault(x => x?.Name == element.Property.Name);
+                if (result != null)
+                    return result;
+
+                if (fromTemplate && symbols.Count != 0)
                 {
                     result = symbols[0].Duplicate(element.Property.Name) as FamilySymbol;
                     result.Activate();
-                    property.Profile.ICopyDimensions(result, settings);
+                    element.ICopyProfileDimensions(result, settings);
+                    return result;
                 }
-
-                return result;
             }
-            else
-            {
+
+            if (fromTemplate)
                 family = document.GenerateFamilyFromTemplate(element, familyName, settings);
-                if (family == null)
-                {
-                    family = document.GenerateFreeformFamily(element, familyName, settings);
-                    if (family == null)
-                        return null;
+            else
+                family = document.GenerateFreeformFamily(element, familyName, settings);
 
-                    if (!(property.Profile is FreeFormProfile))
-                        BH.Engine.Base.Compute.RecordWarning($"Generation of profiles with shape {property.Profile.GetType().Name} is currently not fully supported - a freeform, dimensionless profile with a dedicated family has been created.");
-                }
+            if (family == null)
+                return null;
 
-                family.SetMaterialForModelBehaviour(property?.Material);
+            if (!fromTemplate && !(property.Profile is FreeFormProfile))
+                BH.Engine.Base.Compute.RecordWarning($"Generation of profiles with shape {property.Profile.GetType().Name} is currently not fully supported - a freeform, dimensionless profile with a dedicated family has been created.");
 
-                FamilySymbol result = document.GetElement(family.GetFamilySymbolIds().FirstOrDefault()) as FamilySymbol;
-                if (result == null)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"Generation of a Revit family representing the section property of a BHoM framing element failed due to an internal error. BHoM_Guid: {element.BHoM_Guid}");
-                    return null;
-                }
+            family.SetMaterialForModelBehaviour(property?.Material);
 
-                result.Activate();
-                result.Name = element.ProfileTypeName();
-                return result;
+            result = document.GetElement(family.GetFamilySymbolIds().FirstOrDefault()) as FamilySymbol;
+            if (result == null)
+            {
+                BH.Engine.Base.Compute.RecordWarning($"Generation of a Revit family representing the section property of a BHoM framing element failed due to an internal error. BHoM_Guid: {element.BHoM_Guid}");
+                return null;
             }
+
+            result.Activate();
+            result.Name = element.ProfileTypeName();
+            return result;
         }
 
 
@@ -116,7 +118,7 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
-        private static Family SaveAndLoadFamily(Document document, Document familyDocument, string familyName, IFramingElement element, RevitSettings settings)
+        private static Family SaveAndLoadFamily(Document document, Document templateDocument, string familyName)
         {
             Family result = null;
             string tempFolder = Path.GetTempPath();
@@ -129,7 +131,7 @@ namespace BH.Revit.Engine.Core
 
                 SaveAsOptions saveOptions = new SaveAsOptions();
                 saveOptions.OverwriteExistingFile = true;
-                familyDocument.SaveAs(tempLocation, saveOptions);
+                templateDocument.SaveAs(tempLocation, saveOptions);
             }
             catch (Exception ex)
             {
@@ -155,7 +157,7 @@ namespace BH.Revit.Engine.Core
 
         private static Family GenerateFamilyFromTemplate(this Document document, IFramingElement element, string familyName, RevitSettings settings = null)
         {
-            string templateFamilyName = element.TemplateProfileFamilyName();
+            string templateFamilyName = element.ITemplateProfileFamilyName();
             if (string.IsNullOrWhiteSpace(templateFamilyName))
                 return null;
 
@@ -174,7 +176,7 @@ namespace BH.Revit.Engine.Core
                     t.Commit();
                 }
 
-                result = SaveAndLoadFamily(document, familyDocument, familyName, element, settings);
+                result = SaveAndLoadFamily(document, familyDocument, familyName);
             }
             catch (Exception ex)
             {
@@ -223,7 +225,10 @@ namespace BH.Revit.Engine.Core
 
             Family result = null;
             UIDocument uidoc = new UIDocument(document);
-            Document familyDocument = uidoc.Application.Application.OpenDocumentFile($"{m_FamilyDirectory}\\{element.IProfileFamilyNamePrefix()}FreeformProfile.rfa");
+
+            string familyTemplateNameMask = $"*{element.IProfileFamilyNamePrefix()}FreeformProfile.rfa";
+            string filePath = Directory.GetFiles(m_FamilyDirectory, familyTemplateNameMask).FirstOrDefault();
+            Document familyDocument = uidoc.Application.Application.OpenDocumentFile(filePath);
 
             try
             {
@@ -273,7 +278,7 @@ namespace BH.Revit.Engine.Core
                     t.Commit();
                 }
 
-                result = SaveAndLoadFamily(document, familyDocument, familyName, element, settings);
+                result = SaveAndLoadFamily(document, familyDocument, familyName);
             }
             catch (Exception ex)
             {
@@ -285,6 +290,14 @@ namespace BH.Revit.Engine.Core
             }
 
             return result;
+        }
+
+        /***************************************************/
+
+        private static bool HasTemplateFamily(this IFramingElement element)
+        {
+            string templateFamilyName = element.ITemplateProfileFamilyName();
+            return !string.IsNullOrWhiteSpace(templateFamilyName) && !templateFamilyName.Contains(m_FamilyFileNames[typeof(FreeFormProfile)]);
         }
 
         /***************************************************/
@@ -373,7 +386,14 @@ namespace BH.Revit.Engine.Core
                 return;
             }
 
-            CopyPileDimensions(sourceProfile as dynamic, targetSymbol, settings);
+            if (!(sourceProfile is CircleProfile circle))
+            {
+                BH.Engine.Base.Compute.RecordError($"Could not copy profile dimensions because the BHoM framing element is not a pile with a circular profile. BHoM_Guid: {element.BHoM_Guid}");
+                return;
+            }
+
+            Parameter parameter = targetSymbol.ParametersMap.Cast<Parameter>().FirstOrDefault(x => x.Definition.Name.Contains("Diameter"));
+            parameter?.Set(Convert.FromSI(circle.Diameter, SpecTypeId.Length));
         }
 
         /***************************************************/
@@ -387,7 +407,7 @@ namespace BH.Revit.Engine.Core
                 return;
             }
 
-            CopyDimensions(sourceProfile as dynamic, targetSymbol, settings);
+            sourceProfile.ICopyDimensions(targetSymbol, settings);
         }
 
         /***************************************************/
@@ -594,14 +614,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static void CopyPileDimensions(this CircleProfile sourceProfile, FamilySymbol targetSymbol, RevitSettings settings = null)
-        {
-            targetSymbol.SetParameter("Diameter", sourceProfile.Diameter);
-        }
-
-        /***************************************************/
-
-        private static string ProfileFamilyName(this IFramingElement element)
+        private static string ProfileFamilyName(this IFramingElement element, bool freeform)
         {
             string propertyName = element?.Property?.Name;
             string profileName = (element?.Property as ConstantFramingProperty)?.Profile?.Name;
@@ -617,11 +630,16 @@ namespace BH.Revit.Engine.Core
             else
             {
                 // Take template fam name and remove last section after underscore
-                string prefix = Regex.Replace(element.TemplateProfileFamilyName(), "_[^_]*$", "");
+                string prefix = Regex.Replace(element.ITemplateProfileFamilyName(), "_[^_]*$", "");
 
                 // Add profile name
-                Regex pattern = new Regex(@"\d([\d\.\/\-xX ])*\d");
-                return $"{prefix}_{pattern.Replace(name, "").Replace("  ", " ").Trim()}";
+                if (!freeform)
+                {
+                    Regex pattern = new Regex(@"\d([\d\.\/\-xX ])*\d");
+                    name = pattern.Replace(name, "").Replace("  ", " ").Trim();
+                }
+
+                return $"{prefix}_{name}";
             }
         }
 
@@ -643,6 +661,13 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        private static string ITemplateProfileFamilyName(this IFramingElement element)
+        {
+            return TemplateProfileFamilyName(element as dynamic);
+        }
+
+        /***************************************************/
+
         private static string TemplateProfileFamilyName(this IFramingElement element)
         {
             Type profileType = (element?.Property as ConstantFramingProperty)?.Profile?.GetType();
@@ -650,6 +675,28 @@ namespace BH.Revit.Engine.Core
                 return null;
 
             string name = element.IProfileFamilyNamePrefix() + m_FamilyFileNames[profileType];
+            string path = Directory.GetFiles(m_FamilyDirectory, $"*{name}.rfa").FirstOrDefault();
+            if (!string.IsNullOrEmpty(path))
+                return Path.GetFileNameWithoutExtension(path);
+            else
+                return null;
+        }
+
+        /***************************************************/
+
+        private static string TemplateProfileFamilyName(this Pile element)
+        {
+            Type profileType = (element?.Property as ConstantFramingProperty)?.Profile?.GetType();
+            if (!m_FamilyFileNames.ContainsKey(profileType))
+                return null;
+
+            string profileName;
+            if (profileType == typeof(CircleProfile))
+                profileName = m_FamilyFileNames[typeof(CircleProfile)];
+            else
+                profileName = m_FamilyFileNames[typeof(FreeFormProfile)];
+
+            string name = element.IProfileFamilyNamePrefix() + profileName;
             string path = Directory.GetFiles(m_FamilyDirectory, $"*{name}.rfa").FirstOrDefault();
             if (!string.IsNullOrEmpty(path))
                 return Path.GetFileNameWithoutExtension(path);
@@ -809,6 +856,5 @@ namespace BH.Revit.Engine.Core
         /***************************************************/
     }
 }
-
 
 
