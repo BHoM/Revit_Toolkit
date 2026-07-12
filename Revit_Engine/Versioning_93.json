@@ -1,0 +1,51 @@
+{
+  "Namespace": {
+    "ToNew": {
+
+    },
+    "ToOld": {
+
+    }
+  },
+  "Type": {
+    "ToNew": {
+
+    },
+    "ToOld": {
+
+    }
+  },
+  "Method": {
+    "ToNew": {
+
+    },
+    "ToOld": {
+
+    }
+  },
+  "Property": {
+    "ToNew": {
+
+    },
+    "ToOld": {
+
+    }
+  },
+  "Dataset": {
+    "ToNew": {
+
+    },
+    "ToOld": {
+
+    },
+    "MessageForDeleted": {
+
+    }
+  },
+  "MessageForDeleted": {
+    "BH.Revit.Engine.Core.Create.ViewReflectedCeilingPlan(Autodesk.Revit.DB.Document, Autodesk.Revit.DB.Level, System.String, Autodesk.Revit.DB.CurveLoop, Autodesk.Revit.DB.ElementId, Autodesk.Revit.DB.ViewDetailLevel)": "Calls to this method to be replaced with Create.ViewPlan with 'viewFamily' parameter equal to ViewFamily.CeilingPlan."
+  },
+  "MessageForNoUpgrade": {
+
+  }
+}
