@@ -95,10 +95,10 @@ namespace BH.Revit.Engine.Core
                         BoundingBoxXYZ bbox = familyInstance.get_BoundingBox(null);
                         double width = Math.Max(bbox.Max.X - bbox.Min.X, bbox.Max.Y - bbox.Min.Y);
                         double height = bbox.Max.Z - bbox.Min.Z;
-                        if (height < width)
-                            return typeof(BH.oM.Physical.Elements.PadFoundation);
-                        else if (familyInstance.GetSubComponentIds().Count != 0)
+                        if (familyInstance.GetSubComponentIds().Count != 0)
                             return typeof(BH.oM.Physical.Elements.PileFoundation);
+                        else if (height < width)
+                            return typeof(BH.oM.Physical.Elements.PadFoundation);
                         return null; // Temporarily disabled until PileFoundation is properly implemented in the Revit adapter.
                         //else
                         //    return typeof(BH.oM.Physical.Elements.Pile);
