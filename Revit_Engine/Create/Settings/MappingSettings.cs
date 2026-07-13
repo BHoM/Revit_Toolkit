@@ -34,7 +34,8 @@ namespace BH.Engine.Adapters.Revit
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
-        
+
+        [PreviousVersion("9.3", "BH.Engine.Adapters.Revit.Create.MappingSettings(System.Collections.Generic.IEnumerable<BH.oM.Adapters.Revit.Mapping.ParameterMap>, System.String, System.String)")]
         [Description("Creates an entity holding information about the enforced convert relationships between Revit families and BHoM types on Pull as well as mapping between Revit parameters and BHoM object properties.")]
         [InputFromProperty("parameterMaps")]
         [InputFromProperty("familyMaps")]
@@ -49,26 +50,6 @@ namespace BH.Engine.Adapters.Revit
 
             if (familyMaps != null)
                 mappingSettings.FamilyMaps = familyMaps.ToList();
-
-            mappingSettings.TagsParameter = tagsParameter;
-            mappingSettings.MaterialGradeParameter = materialGradeParameter;
-
-            return mappingSettings;
-        }
-
-        /***************************************************/
-
-        [ToBeRemoved("4.3", "More up to date version with a larger number of parameters has been added.")]
-        [Description("Created an entity holding information about conversion-specific Revit parameter names as well as relationships between object's property names (or names of RevitParameters attached to it) and Revit parameter names.")]
-        [InputFromProperty("parameterMaps")]
-        [InputFromProperty("tagsParameter")]
-        [InputFromProperty("materialGradeParameter")]
-        [Output("mappingSettings")]
-        public static MappingSettings MappingSettings(IEnumerable<ParameterMap> parameterMaps = null, string tagsParameter = "", string materialGradeParameter = "")
-        {
-            MappingSettings mappingSettings = new MappingSettings();
-            if (parameterMaps != null)
-                mappingSettings = mappingSettings.AddParameterMaps(parameterMaps);
 
             mappingSettings.TagsParameter = tagsParameter;
             mappingSettings.MaterialGradeParameter = materialGradeParameter;
