@@ -56,15 +56,17 @@ namespace BH.Revit.Engine.Core
             oM.Physical.Constructions.Construction construction = familyInstance.ConstructionPadFoundation(settings, refObjects);
             PadFoundation pileCap = BH.Engine.Physical.Create.PadFoundation(location, construction, familyInstance.FamilyTypeFullName());
 
+            oM.Geometry.Plane padPlane = location.FitPlane();
             List<Pile> piles = new List<Pile>();
-            double capTopZ = location.IBounds().Max.Z;
             foreach (ElementId pileId in familyInstance.GetSubComponentIds())
             {
                 FamilyInstance pileInstance = familyInstance.Document.GetElement(pileId) as FamilyInstance;
                 Pile pile = pileInstance.PileFromRevit(settings, refObjects);
 
                 if (pile.Location is oM.Geometry.Line line)
-                    line.End = new oM.Geometry.Point { X = line.End.X, Y = line.End.Y, Z = ((IGeometry)location).IBounds().Max.Z };
+                    line.End = line.End.ProjectAlong(padPlane, line.Direction());
+                else
+                    BH.Engine.Base.Compute.RecordWarning($"Could not extend the pile to the top of the cap because the pile is not linear. ElementId: {familyInstance.Id.Value()}");
 
                 piles.Add(pile);
             }
