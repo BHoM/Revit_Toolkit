@@ -27,10 +27,10 @@ using BH.oM.Adapters.Revit.Enums;
 using BH.oM.Adapters.Revit.Properties;
 using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base;
+using BH.oM.Base.Attributes;
 using BH.oM.Physical.Elements;
 using BH.oM.Physical.FramingProperties;
 using BH.oM.Physical.Materials;
-using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -109,7 +109,7 @@ namespace BH.Revit.Engine.Core
                 else
                     unsupportedAPITypes.Add(new Tuple<Type, Type>(t, t.SupportedAPIType()));
             }
-            
+
             elementIds.UnionWith(collector.WherePasses(new LogicalOrFilter(filters)).ToElementIds());
             foreach (Tuple<Type, Type> unsupportedAPIType in unsupportedAPITypes)
             {
@@ -126,6 +126,10 @@ namespace BH.Revit.Engine.Core
             // Filter out walls that are parts of stacked wall
             if (types.Any(x => typeof(Autodesk.Revit.DB.Wall).IsAssignableFrom(x)))
                 elementIds = elementIds.RemoveStackedWallParts(document);
+
+            //TODO: Set this comment
+            if (type == typeof(Pile))
+                elementIds = new HashSet<ElementId>(elementIds.Select(x => (document.GetElement(x) as FamilyInstance)).Where(x => x.SuperComponent == null).Select(x => x.Id));
 
             //Revit returns additional "parent" Autodesk.Revit.DB.Panel with no geometry when pulling all panels from model. This part of the code filter them out
             if (type == typeof(Window))

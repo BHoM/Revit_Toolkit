@@ -92,16 +92,15 @@ namespace BH.Revit.Engine.Core
                 case Discipline.Architecture:
                     if (category == Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFoundation)
                     {
-                        BoundingBoxXYZ bbox = familyInstance.get_BoundingBox(null);
+                        BoundingBoxXYZ bbox = familyInstance.PhysicalBounds();
                         double width = Math.Max(bbox.Max.X - bbox.Min.X, bbox.Max.Y - bbox.Min.Y);
                         double height = bbox.Max.Z - bbox.Min.Z;
                         if (familyInstance.GetSubComponentIds().Count != 0)
                             return typeof(BH.oM.Physical.Elements.PileFoundation);
-                        if (familyInstance.SuperComponent != null)
-                            return typeof(BH.oM.Physical.Elements.Pile);
                         else if (height < width)
                             return typeof(BH.oM.Physical.Elements.PadFoundation);
-                        return null;
+                        else
+                            return typeof(BH.oM.Physical.Elements.Pile);
                     }
                     if (typeof(BH.oM.Physical.Elements.Window).BuiltInCategories().Contains(category))
                         return typeof(BH.oM.Physical.Elements.Window);
