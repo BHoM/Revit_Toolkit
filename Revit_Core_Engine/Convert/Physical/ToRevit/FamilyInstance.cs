@@ -273,6 +273,44 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts BH.oM.Physical.Elements.PileFoundation to a Revit FamilyInstance.")]
+        [Input("pileFoundation", "BH.oM.Physical.Elements.PileFoundation to be converted.")]
+        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.PileFoundation.")]
+
+        public static FamilyInstance ToRevitFamilyInstance(this PileFoundation pileFoundation, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
+        {
+            if (pileFoundation == null || document == null)
+                return null;
+            FamilyInstance familyInstance = refObjects.GetValue<FamilyInstance>(document, pileFoundation.BHoM_Guid);
+            if (familyInstance != null)
+                return familyInstance;
+            settings = settings.DefaultIfNull();
+            if (pileFoundation.PileCap == null)
+            {
+                BH.Engine.Base.Compute.RecordError($"PileFoundation has no PileCap. BHoM_Guid: {pileFoundation.BHoM_Guid}");
+                return null;
+            }
+            familyInstance = pileFoundation.PileCap.ToRevitFamilyInstance(document, settings, refObjects);
+            if (familyInstance == null)
+                return null;
+
+            familyInstance.CopyParameters(pileFoundation, settings);
+            familyInstance.SetLocation(pileFoundation, settings);
+
+            if (pileFoundation.Piles != null)
+            {
+                foreach (Pile pile in pileFoundation.Piles)
+                    pile.ToRevitFamilyInstance(document, settings, refObjects);
+            }
+            refObjects.AddOrReplace(pileFoundation, familyInstance);
+            return familyInstance;
+        }
+
+        /***************************************************/
+
         [Description("Converts BH.oM.Physical.Elements.IFramingElement to a Revit FamilyInstance.")]
         [Input("framingElement", "BH.oM.Physical.Elements.IFramingElement to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]
