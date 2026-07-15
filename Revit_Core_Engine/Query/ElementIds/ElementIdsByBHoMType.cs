@@ -127,7 +127,7 @@ namespace BH.Revit.Engine.Core
             if (types.Any(x => typeof(Autodesk.Revit.DB.Wall).IsAssignableFrom(x)))
                 elementIds = elementIds.RemoveStackedWallParts(document);
 
-            //TODO: Set this comment
+            // Filter out pile sub-components that are nested
             if (type == typeof(Pile))
                 elementIds = new HashSet<ElementId>(elementIds.Select(x => (document.GetElement(x) as FamilyInstance)).Where(x => x.SuperComponent == null).Select(x => x.Id));
 
