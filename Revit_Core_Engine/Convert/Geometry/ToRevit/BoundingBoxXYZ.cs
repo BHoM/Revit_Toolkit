@@ -39,6 +39,7 @@ namespace BH.Revit.Engine.Core
         public static BoundingBoxXYZ ToRevit(this BoundingBox boundingBox)
         {
             BoundingBoxXYZ result = new BoundingBoxXYZ();
+            result.Enabled = true;
             result.Min = boundingBox.Min.ToRevit();
             result.Max = boundingBox.Max.ToRevit();
             return result;
