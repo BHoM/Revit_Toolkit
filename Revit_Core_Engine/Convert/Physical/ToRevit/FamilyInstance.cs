@@ -279,33 +279,45 @@ namespace BH.Revit.Engine.Core
         [Input("settings", "Revit adapter settings to be used while performing the convert.")]
         [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
         [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.PileFoundation.")]
-
         public static FamilyInstance ToRevitFamilyInstance(this PileFoundation pileFoundation, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
         {
             if (pileFoundation == null || document == null)
                 return null;
+
             FamilyInstance familyInstance = refObjects.GetValue<FamilyInstance>(document, pileFoundation.BHoM_Guid);
             if (familyInstance != null)
                 return familyInstance;
+
             settings = settings.DefaultIfNull();
+
             if (pileFoundation.PileCap == null)
             {
                 BH.Engine.Base.Compute.RecordError($"PileFoundation has no PileCap. BHoM_Guid: {pileFoundation.BHoM_Guid}");
                 return null;
             }
-            familyInstance = pileFoundation.PileCap.ToRevitFamilyInstance(document, settings, refObjects);
-            if (familyInstance == null)
-                return null;
 
-            familyInstance.CopyParameters(pileFoundation, settings);
+            FamilySymbol symbol = pileFoundation.GeneratePileFoundationType(document, settings);
+            if (symbol == null)
+                return null;
+            symbol.Activate();
+
+            BH.oM.Geometry.Point origin = pileFoundation.PileCap.PadFoundationCentroid();
+
+            Level level = document.LevelAbove(origin.Z, settings);
+
+            symbol.Activate();
+            familyInstance = document.Create.NewFamilyInstance(origin.ToRevit(), symbol, level, StructuralType.Footing);
+            document.Regenerate();
+
             familyInstance.SetLocation(pileFoundation, settings);
+            refObjects.AddOrReplace(pileFoundation, familyInstance);
 
             if (pileFoundation.Piles != null)
             {
                 foreach (Pile pile in pileFoundation.Piles)
-                    pile.ToRevitFamilyInstance(document, settings, refObjects);
+                    refObjects.AddOrReplace(pile, familyInstance);
             }
-            refObjects.AddOrReplace(pileFoundation, familyInstance);
+
             return familyInstance;
         }
 
