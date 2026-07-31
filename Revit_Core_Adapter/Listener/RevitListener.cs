@@ -162,6 +162,10 @@ namespace BH.Revit.Adapter.Core
 
         public Result OnStartup(UIControlledApplication uIControlledApplication)
         {
+            int version = int.Parse(uIControlledApplication.ControlledApplication.VersionNumber.Substring(0, 4));
+            if (!BH.Revit.Engine.Core.Initialisation.Activate(version))
+                BH.Engine.Base.Compute.RecordError("Revit Engine initialisation failed. Revit adapter will not work properly.");
+
             // Load sensitive Dynamo assemblies prior to BHoM to prevent the former from crashing.
             BH.Revit.Engine.Core.Compute.LoadSensitiveDynamoAssemblies();
 
