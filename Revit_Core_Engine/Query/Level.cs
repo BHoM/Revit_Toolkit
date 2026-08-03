@@ -49,17 +49,25 @@ namespace BH.Revit.Engine.Core
             if (levelId.Value() != -1)
                 return doc.GetElement(levelId) as Level;
 
+            Level level = null;
+
             // Second priority: Check level parameters (LevelParameter or BaseLevelParameter)
             Parameter levelParameter = element.LevelParameter() ?? element.BaseLevelParameter();
             if (levelParameter != null)
-                return doc.GetElement(levelParameter.AsElementId()) as Level;
+                level = doc.GetElement(levelParameter?.AsElementId()) as Level;
+
+            if (level != null)
+                return level;
 
             // Third priority: Check if element is work plane-based and hosted on a level
             if (element.IsWorkPlaneLevelBased())
-                return (element as FamilyInstance)?.Host as Level;
+                level = (element as FamilyInstance)?.Host as Level;
+
+            if (level == null)
+                level = element.Document.LevelBelow(element.LocationPoint());
 
             // No level found
-            return null;
+            return level;
         }
 
         /***************************************************/
