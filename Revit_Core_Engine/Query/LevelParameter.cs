@@ -45,7 +45,8 @@ namespace BH.Revit.Engine.Core
                 .Select(x => element.get_Parameter(x))
                 .Where(x => x != null)
                 .OrderByDescending(x => x.AsElementId().Value() != -1) // Valid ElementIds first
-                .FirstOrDefault(x => !x.IsReadOnly);
+                .ThenByDescending(x => x.IsReadOnly) 
+                .FirstOrDefault();
         }
 
         /***************************************************/
@@ -62,7 +63,8 @@ namespace BH.Revit.Engine.Core
                 .Select(x => element.get_Parameter(x))
                 .Where(x => x != null)
                 .OrderByDescending(x => x.AsElementId().Value() != -1) // Valid ElementIds first
-                .FirstOrDefault(x => !x.IsReadOnly);
+                .ThenByDescending(x => x.IsReadOnly)
+                .FirstOrDefault();
         }
 
         /***************************************************/
@@ -79,7 +81,8 @@ namespace BH.Revit.Engine.Core
                 .Select(x => element.get_Parameter(x))
                 .Where(x => x != null)
                 .OrderByDescending(x => x.AsElementId().Value() != -1) // Valid ElementIds first
-                .FirstOrDefault(x => !x.IsReadOnly);
+                .ThenByDescending(x => x.IsReadOnly)
+                .FirstOrDefault();
         }
 
         /***************************************************/
