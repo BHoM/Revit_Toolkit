@@ -27,6 +27,7 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using BH.oM.Spatial.Layouts;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -39,24 +40,37 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
-        [Description("Checks whether a pile foundation family matches both the pile-cap outline and the pile layout.")]
+        [Description("Checks whether a pile foundation family matches the pile-cap outline, pile layout and pile diameter.")]
         [Input("family", "Revit pile foundation family to compare.")]
         [Input("orientedOutline", "Oriented pile-cap outline.")]
         [Input("layout", "Explicit pile layout points.")]
+        [Input("diameter", "Pile diameter to match against the family.")]
         [Input("settings", "Revit adapter settings.")]
-        [Output("matches", "True if outline and layout both match.")]
-        public static bool IsMatchingOutlineAndLayout(this Family family, Polyline orientedOutline, ExplicitLayout layout, RevitSettings settings)
+        [Output("matches", "True if outline, layout and diameter all match.")]
+        public static bool IsMatchingOutlineAndLayout(this Family family, Polyline orientedOutline, ExplicitLayout layout, double diameter, RevitSettings settings)
         {
-            if (family == null || orientedOutline == null || layout?.Points == null)
-                return false;
-
             settings = settings.DefaultIfNull();
 
-            List<oM.Geometry.Point> familyPilePoints = family.PileLayoutPoints(settings);
-            if (familyPilePoints == null)
+            if (!family.IsMatchingOutline(orientedOutline, settings))
                 return false;
 
-            if (familyPilePoints.Count != layout.Points.Count)
+            if (!family.IsMatchingPileLayout(layout, settings))
+                return false;
+
+            if (!family.IsMatchingPileDiameter(diameter, settings))
+                return false;
+
+            return true;
+        }
+
+        /***************************************************/
+        /****              Private methods              ****/
+        /***************************************************/
+
+        private static bool IsMatchingPileLayout(this Family family, ExplicitLayout layout, RevitSettings settings)
+        {
+            List<oM.Geometry.Point> familyPilePoints = family.PileLayoutPoints(settings);
+            if (familyPilePoints == null || familyPilePoints.Count != layout.Points.Count)
                 return false;
 
             double tol = settings.DistanceTolerance;
@@ -71,42 +85,57 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-        /****              Private methods              ****/
+
+        private static bool IsMatchingPileDiameter(this Family family, double diameter, RevitSettings settings)
+        {
+            FamilySymbol symbol = family.GetFamilySymbolIds()
+                .Select(id => family.Document.GetElement(id) as FamilySymbol)
+                .FirstOrDefault(s => s != null);
+            if (symbol == null)
+                return false;
+
+            double tol = settings.DistanceTolerance;
+            double radius = symbol.LookupParameterDouble("Radius");
+            if (!double.IsNaN(radius))
+                return Math.Abs(radius * 2.0 - diameter) <= tol;
+
+            double familyDiameter = symbol.LookupParameterDouble("Diameter");
+            if (!double.IsNaN(familyDiameter))
+                return Math.Abs(familyDiameter - diameter) <= tol;
+
+            return false;
+        }
+
         /***************************************************/
 
         private static List<oM.Geometry.Point> PileLayoutPoints(this Family family, RevitSettings settings)
         {
-            ISet<ElementId> symbolIds = family.GetFamilySymbolIds();
-            if (symbolIds == null || symbolIds.Count == 0)
+            Document doc = family.Document;
+
+            FamilyInstance host = new FilteredElementCollector(doc)
+                .OfClass(typeof(FamilyInstance))
+                .Cast<FamilyInstance>()
+                .FirstOrDefault(fi => fi.Symbol?.Family?.Id == family.Id);
+
+            if (host == null)
                 return null;
 
-            ElementType type = family.Document.GetElement(symbolIds.First()) as ElementType;
-            if (type == null)
-                return null;
+            Transform toFamily = host.GetTotalTransform().Inverse;
+            List<oM.Geometry.Point> points = new List<oM.Geometry.Point>();
 
-            Options options = new Options()
+            foreach (ElementId id in host.GetSubComponentIds())
             {
-                ComputeReferences = false,
-                DetailLevel = Autodesk.Revit.DB.ViewDetailLevel.Medium,
-                IncludeNonVisibleObjects = false
-            };
+                FamilyInstance nest = doc.GetElement(id) as FamilyInstance;
+                XYZ projectPt = (nest?.Location as LocationPoint)?.Point;
+                if (projectPt == null)
+                    continue;
 
-            List<Autodesk.Revit.DB.Face> faces = type.Faces(options);
-            if (faces == null || faces.Count == 0)
-                return null;
+                XYZ local = toFamily.OfPoint(projectPt);
+                oM.Geometry.Point p = local.PointFromRevit();
+                points.Add(new oM.Geometry.Point { X = p.X, Y = p.Y, Z = 0 });
+            }
 
-            List<PlanarFace> horizontal = faces.OfType<PlanarFace>()
-                .Where(x => x.FaceNormal.IsAlmostEqualTo(XYZ.BasisZ))
-                .OrderByDescending(x => x.Area)
-                .ToList();
-
-            return horizontal.Skip(1)
-                .Select(f =>
-                {
-                    oM.Geometry.Point p = f.Origin.PointFromRevit();
-                    return new oM.Geometry.Point { X = p.X, Y = p.Y, Z = 0 };
-                })
-                .ToList();
+            return points.Count > 0 ? points : null;
         }
 
         /***************************************************/
