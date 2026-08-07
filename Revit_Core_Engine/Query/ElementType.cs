@@ -106,7 +106,16 @@ namespace BH.Revit.Engine.Core
         [Output("familySymbol", "Revit FamilySymbol to be used when converting the input pile foundation to Revit.")]
         public static FamilySymbol ElementType(this BH.oM.Physical.Elements.PileFoundation pileFoundation, Document document, RevitSettings settings = null)
         {
-            return pileFoundation.GeneratePileFoundationType(document, settings);
+            FamilySymbol result = pileFoundation.GeneratePileFoundationType(document, settings);
+            pileFoundation.FamilyAndTypeNames(out string familyName, out string familyTypeName);
+
+            if (!string.IsNullOrWhiteSpace(familyName) && result.FamilyName != familyName)
+                BH.Engine.Base.Compute.RecordWarning($"BHoM PileFoundation's name does not match Revit family name derived from its geometry. BHoM_Guid: {pileFoundation.BHoM_Guid}");
+
+            if (!string.IsNullOrWhiteSpace(familyTypeName) && result.Name != familyTypeName)
+                BH.Engine.Base.Compute.RecordWarning($"BHoM PileFoundation's name does not match Revit type name derived from its geometry. BHoM_Guid: {pileFoundation.BHoM_Guid}");
+
+            return result;
         }
 
         /***************************************************/
