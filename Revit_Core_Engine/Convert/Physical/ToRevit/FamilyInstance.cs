@@ -273,6 +273,61 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Converts BH.oM.Physical.Elements.PileFoundation to a Revit FamilyInstance.")]
+        [Input("pileFoundation", "BH.oM.Physical.Elements.PileFoundation to be converted.")]
+        [Input("document", "Revit document, in which the output of the convert will be created.")]
+        [Input("settings", "Revit adapter settings to be used while performing the convert.")]
+        [Input("refObjects", "Optional, a collection of objects already processed in the current adapter action, stored to avoid processing the same object more than once.")]
+        [Output("instance", "Revit FamilyInstance resulting from converting the input BH.oM.Physical.Elements.PileFoundation.")]
+        public static FamilyInstance ToRevitFamilyInstance(this PileFoundation pileFoundation, Document document, RevitSettings settings = null, Dictionary<Guid, List<long>> refObjects = null)
+        {
+            if (pileFoundation == null || document == null)
+                return null;
+
+            FamilyInstance familyInstance = refObjects.GetValue<FamilyInstance>(document, pileFoundation.BHoM_Guid);
+            if (familyInstance != null)
+                return familyInstance;
+
+            settings = settings.DefaultIfNull();
+
+            if (pileFoundation.PileCap == null)
+            {
+                BH.Engine.Base.Compute.RecordError($"PileFoundation has no PileCap. BHoM_Guid: {pileFoundation.BHoM_Guid}");
+                return null;
+            }
+
+            FamilySymbol familySymbol = pileFoundation.ElementType(document, settings) as FamilySymbol;
+            if (familySymbol == null)
+            {
+                Compute.ElementTypeNotFoundWarning(pileFoundation);
+                return null;
+            }
+
+            BH.oM.Geometry.Point origin = pileFoundation.PileCap.PadFoundationCentroid();
+
+            Level level = document.LevelAbove(origin.Z, settings);
+
+            familyInstance = document.Create.NewFamilyInstance(origin.ToRevit(), familySymbol, level, StructuralType.Footing);
+            document.Regenerate();
+
+            double pileDepth = pileFoundation.PileFoundationDepth(settings);
+            if (!double.IsNaN(pileDepth))
+                familyInstance.SetParameter("Pile Depth", pileDepth);
+
+            familyInstance.SetLocation(pileFoundation, settings);
+            refObjects.AddOrReplace(pileFoundation, familyInstance);
+
+            if (pileFoundation.Piles != null)
+            {
+                foreach (Pile pile in pileFoundation.Piles)
+                    refObjects.AddOrReplace(pile, familyInstance);
+            }
+
+            return familyInstance;
+        }
+
+        /***************************************************/
+
         [Description("Converts BH.oM.Physical.Elements.IFramingElement to a Revit FamilyInstance.")]
         [Input("framingElement", "BH.oM.Physical.Elements.IFramingElement to be converted.")]
         [Input("document", "Revit document, in which the output of the convert will be created.")]

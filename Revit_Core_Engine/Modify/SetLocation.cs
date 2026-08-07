@@ -345,6 +345,20 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Sets the location of a given Revit FamilyInstance based on a given BHoM PileFoundation.")]
+        [Input("element", "Revit FamilyInstance to be modified.")]
+        [Input("pileFoundation", "BHoM PileFoundation acting as a source of information about the new location.")]
+        [Input("settings", "Revit adapter settings to be used while performing the operation.")]
+        [Output("success", "True if location of the input Revit FamilyInstance has been successfully set.")]
+        public static bool SetLocation(this FamilyInstance element, PileFoundation pileFoundation, RevitSettings settings)
+        {
+            if (element == null || pileFoundation?.PileCap == null)
+                return false;
+            return element.SetLocation(pileFoundation.PileCap, settings);
+        }
+
+        /***************************************************/
+
         [Description("Sets the location of a given Revit FamilyInstance based on a given BHoM PadFoundation.")]
         [Input("element", "Revit FamilyInstance to be modified.")]
         [Input("padFoundation", "BHoM PadFoundation acting as a source of information about the new location.")]
@@ -939,7 +953,7 @@ namespace BH.Revit.Engine.Core
 
             return success;
         }
-        
+
         /***************************************************/
         private static bool UpdateRotationOfVerticalElement(this FamilyInstance element, IFramingElement bhomElement, RevitSettings settings)
         {
