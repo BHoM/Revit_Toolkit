@@ -173,6 +173,27 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
+        [Description("Updates a Revit pile foundation FamilyInstance from the BHoM PileFoundation using the standard element update, then sets instance Pile Depth.")]
+        [Input("element", "Revit FamilyInstance representing the pile foundation to update.")]
+        [Input("bHoMObject", "BHoM PileFoundation whose properties (and optionally location) should be applied to the Revit instance.")]
+        [Input("settings", "Revit adapter settings used for the underlying element update.")]
+        [Input("setLocationOnUpdate", "If false, only parameters and properties are updated; if true, the instance location is updated as well.")]
+        [Output("success", "True if the underlying Element.Update succeeded.")]
+        public static bool Update(this FamilyInstance element, PileFoundation bHoMObject, RevitSettings settings, bool setLocationOnUpdate)
+        {
+            settings = settings.DefaultIfNull();
+
+            bool result = ((Element)element).Update((IBHoMObject)bHoMObject, settings, setLocationOnUpdate);
+
+            double pileDepth = bHoMObject.PileDepth(settings);
+            if (!double.IsNaN(pileDepth))
+                element.SetParameter("Pile Depth", pileDepth);
+
+            return result;
+        }
+
+        /***************************************************/
+
         [Description("Updates the existing Revit FamilyInstance based on the given BHoM builders work Opening.")]
         [Input("element", "Revit FamilyInstance to be updated.")]
         [Input("bHoMObject", "BHoM builders work Opening, based on which the Revit element will be updated.")]

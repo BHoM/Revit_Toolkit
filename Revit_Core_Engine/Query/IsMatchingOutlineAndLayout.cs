@@ -49,15 +49,19 @@ namespace BH.Revit.Engine.Core
         [Output("matches", "True if outline, layout and diameter all match.")]
         public static bool IsMatchingOutlineAndLayout(this Family family, Polyline orientedOutline, ExplicitLayout layout, double diameter, RevitSettings settings)
         {
+            if (family == null || orientedOutline == null || layout?.Points == null || diameter <= 0)
+                return false;
+
             settings = settings.DefaultIfNull();
+            double tol = settings.DistanceTolerance;
 
             if (!family.IsMatchingOutline(orientedOutline, settings))
                 return false;
 
-            if (!family.IsMatchingPileLayout(layout, settings))
+            if (!family.IsMatchingPileLayout(layout, tol))
                 return false;
 
-            if (!family.IsMatchingPileDiameter(diameter, settings))
+            if (!family.IsMatchingPileDiameter(diameter, tol))
                 return false;
 
             return true;
@@ -67,13 +71,12 @@ namespace BH.Revit.Engine.Core
         /****              Private methods              ****/
         /***************************************************/
 
-        private static bool IsMatchingPileLayout(this Family family, ExplicitLayout layout, RevitSettings settings)
+        private static bool IsMatchingPileLayout(this Family family, ExplicitLayout layout, double tol)
         {
-            List<oM.Geometry.Point> familyPilePoints = family.PileLayoutPoints(settings);
+            List<oM.Geometry.Point> familyPilePoints = family.PileLayoutPoints();
             if (familyPilePoints == null || familyPilePoints.Count != layout.Points.Count)
                 return false;
 
-            double tol = settings.DistanceTolerance;
             foreach (oM.Geometry.Point layoutPt in layout.Points)
             {
                 oM.Geometry.Point xy = new oM.Geometry.Point { X = layoutPt.X, Y = layoutPt.Y, Z = 0 };
@@ -86,29 +89,28 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static bool IsMatchingPileDiameter(this Family family, double diameter, RevitSettings settings)
+        private static bool IsMatchingPileDiameter(this Family family, double diameter, double tol)
         {
-            FamilySymbol symbol = family.GetFamilySymbolIds()
-                .Select(id => family.Document.GetElement(id) as FamilySymbol)
-                .FirstOrDefault(s => s != null);
-            if (symbol == null)
+            Document doc = family.Document;
+            FamilyInstance host = new FilteredElementCollector(doc).OfClass(typeof(FamilyInstance)).Cast<FamilyInstance>().FirstOrDefault(fi => fi.Symbol?.Family?.Id == family.Id);
+            if (host == null)
                 return false;
-
-            double tol = settings.DistanceTolerance;
-            double radius = symbol.LookupParameterDouble("Radius");
+            FamilyInstance nest = host.GetSubComponentIds().Select(id => doc.GetElement(id) as FamilyInstance).FirstOrDefault(fi => fi != null);
+            FamilySymbol nestSymbol = nest?.Symbol;
+            if (nestSymbol == null)
+                return false;
+            double radius = nestSymbol.LookupParameterDouble("Radius");
             if (!double.IsNaN(radius))
                 return Math.Abs(radius * 2.0 - diameter) <= tol;
-
-            double familyDiameter = symbol.LookupParameterDouble("Diameter");
-            if (!double.IsNaN(familyDiameter))
-                return Math.Abs(familyDiameter - diameter) <= tol;
-
+            double nestDiameter = nestSymbol.LookupParameterDouble("Diameter");
+            if (!double.IsNaN(nestDiameter))
+                return Math.Abs(nestDiameter - diameter) <= tol;
             return false;
         }
 
         /***************************************************/
 
-        private static List<oM.Geometry.Point> PileLayoutPoints(this Family family, RevitSettings settings)
+        private static List<oM.Geometry.Point> PileLayoutPoints(this Family family)
         {
             Document doc = family.Document;
 

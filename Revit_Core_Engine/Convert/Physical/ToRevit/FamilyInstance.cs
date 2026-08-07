@@ -296,18 +296,23 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
-            FamilySymbol symbol = pileFoundation.GeneratePileFoundationType(document, settings);
-            if (symbol == null)
+            FamilySymbol familySymbol = pileFoundation.ElementType(document, settings) as FamilySymbol;
+            if (familySymbol == null)
+            {
+                Compute.ElementTypeNotFoundWarning(pileFoundation);
                 return null;
-            symbol.Activate();
+            }
 
             BH.oM.Geometry.Point origin = pileFoundation.PileCap.PadFoundationCentroid();
 
             Level level = document.LevelAbove(origin.Z, settings);
 
-            symbol.Activate();
-            familyInstance = document.Create.NewFamilyInstance(origin.ToRevit(), symbol, level, StructuralType.Footing);
+            familyInstance = document.Create.NewFamilyInstance(origin.ToRevit(), familySymbol, level, StructuralType.Footing);
             document.Regenerate();
+
+            double pileDepth = pileFoundation.PileDepth(settings);
+            if (!double.IsNaN(pileDepth))
+                familyInstance.SetParameter("Pile Depth", pileDepth);
 
             familyInstance.SetLocation(pileFoundation, settings);
             refObjects.AddOrReplace(pileFoundation, familyInstance);
