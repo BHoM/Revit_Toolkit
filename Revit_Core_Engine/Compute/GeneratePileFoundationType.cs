@@ -89,7 +89,7 @@ namespace BH.Revit.Engine.Core
             if (double.IsNaN(thickness))
                 return null;
 
-            double pileDepth = pileFoundation.PileDepth(settings);
+            double pileDepth = pileFoundation.PileFoundationDepth(settings);
             if (double.IsNaN(pileDepth))
             {
                 BH.Engine.Base.Compute.RecordError($"Could not determine pile depth from cap soffit to pile tip. BHoM_Guid: {pileFoundation.BHoM_Guid}");
@@ -162,7 +162,7 @@ namespace BH.Revit.Engine.Core
 
             try
             {
-                if (!ReplaceFreeFormExtrusion(familyDocument, orientedOutline, thickness))
+                if (!ReplaceFreeFormExtrusionWithAssociate(familyDocument, orientedOutline, thickness))
                     return null;
 
                 if (!PlaceNestedPiles(familyDocument, layout, diameter))
@@ -193,17 +193,15 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static bool ReplaceFreeFormExtrusion(Document familyDocument, Polyline orientedOutline, double thickness)
+        private static bool ReplaceFreeFormExtrusionWithAssociate(Document familyDocument, Polyline orientedOutline, double thickness)
         {
             try
             {
                 Extrusion extrusion = new FilteredElementCollector(familyDocument).OfClass(typeof(Extrusion)).Cast<Extrusion>().FirstOrDefault();
                 if (extrusion == null)
                     return false;
-
-                CurveArrArray profile = new CurveArrArray();
-                profile.Append(orientedOutline.ToRevitCurveArray());
-
+                if (!ReplaceFreeFormExtrusion(familyDocument, orientedOutline, thickness))
+                    return false;
                 using (Transaction t = new Transaction(familyDocument, "Update Freeform Pile Foundation Footprint"))
                 {
                     t.Start();
@@ -214,20 +212,16 @@ namespace BH.Revit.Engine.Core
                         ? familyManager.GetAssociatedFamilyParameter(oldStartParam)
                         : null;
 
-                    Extrusion newExtrusion = familyDocument.FamilyCreate.NewExtrusion(
-                        true, profile, extrusion.Sketch.SketchPlane, -FreeformExtrusionDepth(thickness));
-
-                    Parameter endParam = newExtrusion.get_Parameter(BuiltInParameter.EXTRUSION_END_PARAM);
+                    Parameter endParam = extrusion.get_Parameter(BuiltInParameter.EXTRUSION_END_PARAM);
                     if (endParam != null && !endParam.IsReadOnly)
                         endParam.Set(0.0);
 
                     if (associatedStartParameter != null)
                     {
-                        Parameter newStartParam = newExtrusion.get_Parameter(BuiltInParameter.EXTRUSION_START_PARAM);
+                        Parameter newStartParam = extrusion.get_Parameter(BuiltInParameter.EXTRUSION_START_PARAM);
                         familyManager.AssociateElementParameterToFamilyParameter(newStartParam, associatedStartParameter);
                     }
 
-                    familyDocument.Delete(extrusion.Id);
                     t.Commit();
                 }
 
@@ -352,7 +346,7 @@ namespace BH.Revit.Engine.Core
             if (pileSymbol == null || diameter <= 0)
                 return pileSymbol;
 
-            string typeName = $"{(long)Math.Round(diameter * 1000.0)}Ø";
+            string typeName = $"Ø{(long)Math.Round(diameter * 1000.0)}";
             FamilySymbol nestSymbol = pileSymbol.Family.GetFamilySymbolIds().Select(id => pileSymbol.Document.GetElement(id) as FamilySymbol).FirstOrDefault(s => s != null && s.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase));
 
             if (nestSymbol == null)

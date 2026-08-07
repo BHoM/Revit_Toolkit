@@ -310,7 +310,7 @@ namespace BH.Revit.Engine.Core
             familyInstance = document.Create.NewFamilyInstance(origin.ToRevit(), familySymbol, level, StructuralType.Footing);
             document.Regenerate();
 
-            double pileDepth = pileFoundation.PileDepth(settings);
+            double pileDepth = pileFoundation.PileFoundationDepth(settings);
             if (!double.IsNaN(pileDepth))
                 familyInstance.SetParameter("Pile Depth", pileDepth);
 

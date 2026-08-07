@@ -185,7 +185,7 @@ namespace BH.Revit.Engine.Core
 
             bool result = ((Element)element).Update((IBHoMObject)bHoMObject, settings, setLocationOnUpdate);
 
-            double pileDepth = bHoMObject.PileDepth(settings);
+            double pileDepth = bHoMObject.PileFoundationDepth(settings);
             if (!double.IsNaN(pileDepth))
                 element.SetParameter("Pile Depth", pileDepth);
 

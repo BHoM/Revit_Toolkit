@@ -165,7 +165,7 @@ namespace BH.Revit.Engine.Core
             {
                 List<int> takenIndices = freeformFamilies.Select(x => Regex.Match(x.Name, $"{Regex.Escape(prefix)}(\\d+)$")).Select(x => int.Parse(x.Groups[1].Value)).ToList();
                 int newIndex = takenIndices.Count > 0 ? takenIndices.Max() + 1 : 1;
-                family = GenerateFreeFormPadFamilyFromTemplate(document, orientedOutline, thickness, newIndex, padFoundation, settings);
+                family = GenerateFreeFormPadFamilyFromTemplate(document, orientedOutline, thickness, newIndex, settings);
             }
 
             if (family == null)
@@ -177,7 +177,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static Family GenerateFreeFormPadFamilyFromTemplate(this Document document, Polyline orientedOutline, double thickness, int index, PadFoundation padFoundation, RevitSettings settings = null)
+        private static Family GenerateFreeFormPadFamilyFromTemplate(this Document document, Polyline orientedOutline, double thickness, int index, RevitSettings settings = null)
         {
             string templateFamilyName = "StructuralFoundations_Pad-Freeform";
             string templatePath = Directory.GetFiles(m_FamilyDirectory, $"*{templateFamilyName}.rfa").FirstOrDefault();
@@ -188,7 +188,7 @@ namespace BH.Revit.Engine.Core
 
             try
             {
-                if (!ReplaceFreeFormExtrusion(familyDocument, orientedOutline, padFoundation))
+                if (!ReplaceFreeFormExtrusion(familyDocument, orientedOutline, thickness))
                     return null;
 
                 return SaveAndLoadFamily(document, familyDocument, $"{Path.GetFileNameWithoutExtension(templatePath)}_{index}");
@@ -205,17 +205,8 @@ namespace BH.Revit.Engine.Core
         }
 
         /***************************************************/
-        private static double FreeformExtrusionDepth(PadFoundation padFoundation)
-        {
-            double depth = padFoundation.PadFoundationThickness();
-            double h = double.IsNaN(depth) ? double.NaN : depth.FromSI(SpecTypeId.Length);
-            if (double.IsNaN(h) || h <= 1e-6)
-                h = 0.5.FromSI(SpecTypeId.Length);
-            return h;
-        }
 
-        /***************************************************/
-        private static bool ReplaceFreeFormExtrusion(Document familyDocument, Polyline orientedOutline, PadFoundation padFoundation)
+        private static bool ReplaceFreeFormExtrusion(Document familyDocument, Polyline orientedOutline, double thickness)
         {
             try
             {
@@ -226,7 +217,7 @@ namespace BH.Revit.Engine.Core
                 using (Transaction t = new Transaction(familyDocument, "Update Freeform Pad Foundation Footprint"))
                 {
                     t.Start();
-                    familyDocument.FamilyCreate.NewExtrusion(true, profile, extrusion.Sketch.SketchPlane, -FreeformExtrusionDepth(padFoundation));
+                    familyDocument.FamilyCreate.NewExtrusion(true, profile, extrusion.Sketch.SketchPlane, -FreeformExtrusionDepth(thickness));
                     familyDocument.Delete(extrusion.Id);
                     t.Commit();
                 }

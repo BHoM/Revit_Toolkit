@@ -74,7 +74,7 @@ namespace BH.Revit.Engine.Core
         [Input("pileFoundation", "BHoM pile foundation to extract pile depth from.")]
         [Input("settings", "Revit adapter settings (distance tolerance for the top-vs-soffit check).")]
         [Output("pileDepth", "Depth from cap soffit to pile tip in SI units, or NaN if invalid.")]
-        public static double PileDepth(this PileFoundation pileFoundation, RevitSettings settings = null)
+        public static double PileFoundationDepth(this PileFoundation pileFoundation, RevitSettings settings = null)
         {
             settings = settings.DefaultIfNull();
 
@@ -116,6 +116,11 @@ namespace BH.Revit.Engine.Core
             double tol = settings.DistanceTolerance;
             double pileTop = pileLines.Max(l => Math.Max(l.Start.Z, l.End.Z));
             double pileBottom = pileLines.Min(l => Math.Min(l.Start.Z, l.End.Z));
+
+            if (Math.Abs(pileTop - capBottom) > tol)
+            {
+                BH.Engine.Base.Compute.RecordWarning($"Pile top is not at the bottom of the pile cap. " + $"Pile Depth was set from the bottom of the cap to the bottom of the pile. " + $"BHoM_Guid: {pileFoundation.BHoM_Guid}");
+            }
 
             double pileDepth = capBottom - pileBottom;
             if (pileDepth <= 0)
