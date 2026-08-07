@@ -197,13 +197,15 @@ namespace BH.Revit.Engine.Core
         {
             try
             {
-                Extrusion extrusion = new FilteredElementCollector(familyDocument).OfClass(typeof(Extrusion)).Cast<Extrusion>().FirstOrDefault();
-                if (extrusion == null)
-                    return false;
                 if (!ReplaceFreeFormExtrusion(familyDocument, orientedOutline, thickness))
                     return false;
+
                 using (Transaction t = new Transaction(familyDocument, "Update Freeform Pile Foundation Footprint"))
                 {
+                    Extrusion extrusion = new FilteredElementCollector(familyDocument).OfClass(typeof(Extrusion)).Cast<Extrusion>().FirstOrDefault();
+                    if (extrusion == null)
+                        return false;
+
                     t.Start();
 
                     FamilyManager familyManager = familyDocument.FamilyManager;
