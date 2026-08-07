@@ -97,12 +97,28 @@ namespace BH.Revit.Engine.Core
             if (pileLines.Count == 0)
                 return double.NaN;
 
+            // Get pile location lines and check if vertical and same top and bottom Z
+            if (pileLines.Count != pileFoundation.Piles.Count)
+            {
+                BH.Engine.Base.Compute.RecordError($"All piles must have a Line location. BHoM_Guid: {pileFoundation.BHoM_Guid}");
+                return double.NaN;
+            }
+
+            foreach (BH.oM.Geometry.Line line in pileLines)
+            {
+                if (1 - Math.Abs(line.Direction().DotProduct(Vector.ZAxis)) > settings.AngleTolerance)
+                {
+                    BH.Engine.Base.Compute.RecordError($"Only vertical piles are supported. BHoM_Guid: {pileFoundation.BHoM_Guid}");
+                    return double.NaN;
+                }
+            }
+
             double tol = settings.DistanceTolerance;
             double pileTop = pileLines.Max(l => Math.Max(l.Start.Z, l.End.Z));
             double pileBottom = pileLines.Min(l => Math.Min(l.Start.Z, l.End.Z));
 
-            double pileDepth = pileTop - pileBottom;
-            if (pileDepth <= tol)
+            double pileDepth = capBottom - pileBottom;
+            if (pileDepth <= 0)
                 return double.NaN;
 
             return pileDepth;

@@ -89,32 +89,6 @@ namespace BH.Revit.Engine.Core
             if (double.IsNaN(thickness))
                 return null;
 
-            // Get pile location lines and check if vertical and same top and bottom Z
-            List<BH.oM.Geometry.Line> pileLines = pileFoundation.Piles.Select(p => p.Location as BH.oM.Geometry.Line).ToList();
-            if (pileLines.Any(l => l == null))
-            {
-                BH.Engine.Base.Compute.RecordError($"All piles must have a Line location. BHoM_Guid: {pileFoundation.BHoM_Guid}");
-                return null;
-            }
-
-            foreach (BH.oM.Geometry.Line line in pileLines)
-            {
-                if (1 - Math.Abs(line.Direction().DotProduct(Vector.ZAxis)) > settings.AngleTolerance)
-                {
-                    BH.Engine.Base.Compute.RecordError($"Only vertical piles are supported. BHoM_Guid: {pileFoundation.BHoM_Guid}");
-                    return null;
-                }
-            }
-
-            double tol = settings.DistanceTolerance;
-            double topZ = pileLines.Select(l => Math.Max(l.Start.Z, l.End.Z)).First();
-            double bottomZ = pileLines.Select(l => Math.Min(l.Start.Z, l.End.Z)).First();
-            if (pileLines.Any(l => Math.Abs(Math.Max(l.Start.Z, l.End.Z) - topZ) > tol || Math.Abs(Math.Min(l.Start.Z, l.End.Z) - bottomZ) > tol))
-            {
-                BH.Engine.Base.Compute.RecordError($"All piles must share the same top and bottom elevation. BHoM_Guid: {pileFoundation.BHoM_Guid}");
-                return null;
-            }
-
             double pileDepth = pileFoundation.PileDepth(settings);
             if (double.IsNaN(pileDepth))
             {
@@ -131,6 +105,7 @@ namespace BH.Revit.Engine.Core
                 return null;
             }
 
+            double tol = settings.DistanceTolerance;
             double diameter = profiles[0].Diameter;
             if (profiles.Any(p => Math.Abs(p.Diameter - diameter) > tol))
             {
