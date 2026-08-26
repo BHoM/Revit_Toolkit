@@ -30,6 +30,7 @@ using BH.oM.Physical.Elements;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BH.Revit.Engine.Core
 {
@@ -312,7 +313,11 @@ namespace BH.Revit.Engine.Core
 
             double pileDepth = pileFoundation.PileFoundationDepth(settings);
             if (!double.IsNaN(pileDepth))
-                familyInstance.SetParameter("Pile Depth", pileDepth);
+            {
+                Parameter depthParam = familyInstance.Parameters.Cast<Parameter>().FirstOrDefault(x => x.Definition.Name.EndsWith("Depth"));
+                if (depthParam != null)
+                    depthParam.Set(pileDepth.FromSI(depthParam.Definition.GetDataType()));
+            }
 
             familyInstance.SetLocation(pileFoundation, settings);
             refObjects.AddOrReplace(pileFoundation, familyInstance);

@@ -187,7 +187,11 @@ namespace BH.Revit.Engine.Core
 
             double pileDepth = bHoMObject.PileFoundationDepth(settings);
             if (!double.IsNaN(pileDepth))
-                element.SetParameter("Pile Depth", pileDepth);
+            {
+                Parameter depthParam = element.Parameters.Cast<Parameter>().FirstOrDefault(x => x.Definition.Name.EndsWith("Depth"));
+                if (depthParam != null)
+                    depthParam.Set(pileDepth.FromSI(depthParam.Definition.GetDataType()));
+            }
 
             return result;
         }
