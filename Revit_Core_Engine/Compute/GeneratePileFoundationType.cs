@@ -135,7 +135,7 @@ namespace BH.Revit.Engine.Core
             {
                 List<int> takenIndices = freeformFamilies.Select(x => Regex.Match(x.Name, $"{Regex.Escape(prefix)}(\\d+)$")).Select(x => int.Parse(x.Groups[1].Value)).ToList();
                 int newIndex = takenIndices.Count > 0 ? takenIndices.Max() + 1 : 1;
-                family = GenerateFreeFormPileFoundationFamilyFromTemplate(document, orientedOutline, layout, diameter, thickness, newIndex);
+                family = GenerateFreeFormPileFoundationFamilyFromTemplate(document, orientedOutline, layout, diameter, thickness, newIndex, pileFoundation);
             }
 
             if (family == null)
@@ -146,7 +146,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static Family GenerateFreeFormPileFoundationFamilyFromTemplate(this Document document, Polyline orientedOutline, ExplicitLayout layout, double diameter, double thickness, int index)
+        private static Family GenerateFreeFormPileFoundationFamilyFromTemplate(this Document document, Polyline orientedOutline, ExplicitLayout layout, double diameter, double thickness, int index, PileFoundation pileFoundation)
         {
             string templateFamilyName = "StructuralFoundations_PileFoundation-Freeform";
             string templatePath = Directory.GetFiles(m_FamilyDirectory, $"*{templateFamilyName}.rfa").FirstOrDefault();
@@ -167,6 +167,13 @@ namespace BH.Revit.Engine.Core
 
                 if (!PlaceNestedPiles(familyDocument, layout, diameter))
                     return null;
+
+                using (Transaction t = new Transaction(familyDocument, "Update Subcategory"))
+                {
+                    t.Start();
+                    SetMaterialSubcategory(familyDocument, (pileFoundation.PileCap?.Construction as oM.Physical.Constructions.Construction)?.Layers?.FirstOrDefault()?.Material);
+                    t.Commit();
+                }
 
                 return SaveAndLoadFamily(document, familyDocument, $"{Path.GetFileNameWithoutExtension(templatePath)}_{index}");
             }
