@@ -319,7 +319,7 @@ namespace BH.Revit.Engine.Core
                     }
 
                     FamilyManager fm = familyDocument.FamilyManager;
-                    FamilyParameter radiusParam = fm.get_Parameter("Radius");
+                    FamilyParameter radiusParam = fm.Parameters.Cast<FamilyParameter>().FirstOrDefault(p => p.Definition.Name.EndsWith("Radius"));
                     if (radiusParam != null)
                         fm.Set(radiusParam, (diameter / 2.0).FromSI(SpecTypeId.Length));
 
@@ -364,7 +364,9 @@ namespace BH.Revit.Engine.Core
             if (nestSymbol == null)
                 return null;
 
-            nestSymbol.SetParameter("Radius", diameter / 2.0);
+            Parameter radiusParam = nestSymbol.Parameters.Cast<Parameter>().FirstOrDefault(x => x.Definition.Name.EndsWith("Radius"));
+            if (radiusParam != null)
+                radiusParam.Set((diameter / 2.0).FromSI(radiusParam.Definition.GetDataType()));
 
             if (!nestSymbol.IsActive)
                 nestSymbol.Activate();
@@ -390,7 +392,9 @@ namespace BH.Revit.Engine.Core
                 else
                     result = symbols[0].Duplicate(typeName) as FamilySymbol;
 
-                result.SetParameter("Depth", thickness);
+                Parameter depthParam = result.Parameters.Cast<Parameter>().FirstOrDefault(x => x.Definition.Name.EndsWith("Depth"));
+                if (depthParam != null)
+                    depthParam.Set(thickness.FromSI(depthParam.Definition.GetDataType()));
             }
 
             result?.Activate();

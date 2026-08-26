@@ -99,12 +99,19 @@ namespace BH.Revit.Engine.Core
             FamilySymbol nestSymbol = nest?.Symbol;
             if (nestSymbol == null)
                 return false;
-            double radius = nestSymbol.LookupParameterDouble("Radius");
-            if (!double.IsNaN(radius))
+            Parameter radiusParam = nestSymbol.Parameters.Cast<Parameter>().FirstOrDefault(p => p.Definition.Name.EndsWith("Radius"));
+            if (radiusParam != null && radiusParam.HasValue)
+            {
+                double radius = radiusParam.AsDouble().ToSI(radiusParam.Definition.GetDataType());
                 return Math.Abs(radius * 2.0 - diameter) <= tol;
-            double nestDiameter = nestSymbol.LookupParameterDouble("Diameter");
-            if (!double.IsNaN(nestDiameter))
+            }
+
+            Parameter diameterParam = nestSymbol.Parameters.Cast<Parameter>().FirstOrDefault(p => p.Definition.Name.EndsWith("Diameter"));
+            if (diameterParam != null && diameterParam.HasValue)
+            {
+                double nestDiameter = diameterParam.AsDouble().ToSI(diameterParam.Definition.GetDataType());
                 return Math.Abs(nestDiameter - diameter) <= tol;
+            }
             return false;
         }
 
