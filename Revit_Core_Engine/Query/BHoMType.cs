@@ -92,14 +92,13 @@ namespace BH.Revit.Engine.Core
                 case Discipline.Architecture:
                     if (category == Autodesk.Revit.DB.BuiltInCategory.OST_StructuralFoundation)
                     {
-                        BoundingBoxXYZ bbox = familyInstance.get_BoundingBox(null);
+                        BoundingBoxXYZ bbox = familyInstance.PhysicalBounds();
                         double width = Math.Max(bbox.Max.X - bbox.Min.X, bbox.Max.Y - bbox.Min.Y);
                         double height = bbox.Max.Z - bbox.Min.Z;
-                        if (height < width)
+                        if (familyInstance.GetSubComponentIds().Count != 0)
+                            return typeof(BH.oM.Physical.Elements.PileFoundation);
+                        else if (height < width)
                             return typeof(BH.oM.Physical.Elements.PadFoundation);
-                        else if (familyInstance.GetSubComponentIds().Count != 0)
-                            //return typeof(BH.oM.Physical.Elements.PileFoundation);
-                            return null; // Temporarily disabled until PileFoundation is properly implemented in the Revit adapter.
                         else
                             return typeof(BH.oM.Physical.Elements.Pile);
                     }

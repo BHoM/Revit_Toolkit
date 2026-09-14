@@ -20,47 +20,34 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapters.Revit.Mapping;
-using BH.oM.Adapters.Revit.Settings;
+using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
-using System.Collections.Generic;
+using BH.oM.Geometry;
 using System.ComponentModel;
-using System.Linq;
 
-namespace BH.Engine.Adapters.Revit
+namespace BH.Revit.Engine.Core
 {
-    public static partial class Create
+    public static partial class Convert
     {
         /***************************************************/
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("9.3", "BH.Engine.Adapters.Revit.Create.MappingSettings(System.Collections.Generic.IEnumerable<BH.oM.Adapters.Revit.Mapping.ParameterMap>, System.String, System.String)")]
-        [Description("Creates an entity holding information about the enforced convert relationships between Revit families and BHoM types on Pull as well as mapping between Revit parameters and BHoM object properties.")]
-        [InputFromProperty("parameterMaps")]
-        [InputFromProperty("familyMaps")]
-        [InputFromProperty("tagsParameter")]
-        [InputFromProperty("materialGradeParameter")]
-        [Output("mappingSettings")]
-        public static MappingSettings MappingSettings(IEnumerable<ParameterMap> parameterMaps = null, IEnumerable<FamilyMap> familyMaps = null, string tagsParameter = "", string materialGradeParameter = "")
+        [Description("Converts BH.oM.Geometry.BoundingBox to a Revit BoundingBoxXYZ.")]
+        [Input("boundingBox", "BH.oM.Geometry.BoundingBox to be converted.")]
+        [Output("boundingBoxXYZ", "Revit BoundingBoxXYZ resulting from converting the input BH.oM.Geometry.BoundingBox.")]
+        public static BoundingBoxXYZ ToRevit(this BoundingBox boundingBox)
         {
-            MappingSettings mappingSettings = new MappingSettings();
-            if (parameterMaps != null)
-                mappingSettings = mappingSettings.AddParameterMaps(parameterMaps);
-
-            if (familyMaps != null)
-                mappingSettings.FamilyMaps = familyMaps.ToList();
-
-            mappingSettings.TagsParameter = tagsParameter;
-            mappingSettings.MaterialGradeParameter = materialGradeParameter;
-
-            return mappingSettings;
+            BoundingBoxXYZ result = new BoundingBoxXYZ();
+            result.Enabled = true;
+            result.Min = boundingBox.Min.ToRevit();
+            result.Max = boundingBox.Max.ToRevit();
+            return result;
         }
 
         /***************************************************/
     }
 }
-
 
 
 

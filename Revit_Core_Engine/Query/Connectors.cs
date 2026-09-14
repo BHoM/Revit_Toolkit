@@ -58,7 +58,12 @@ namespace BH.Revit.Engine.Core
             foreach (Connector conn in connSet)
                 connList.Add(conn);
 
-            connList = connList.OrderBy(x => x.Origin.DistanceTo(startPoint)).ToList();
+            // Order by distance from the start point. Logical connectors have no Origin, so they are sorted to the end rather than crashing the query.
+            connList = connList.OrderBy(x =>
+            {
+                try { return x.Origin.DistanceTo(startPoint); }
+                catch { return double.MaxValue; }
+            }).ToList();
 
             return connList;
         }

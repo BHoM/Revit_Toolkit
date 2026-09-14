@@ -8,12 +8,11 @@ A set of tools enabling exchange of information between BHoM and [Revit](https:/
 - a set of utility methods supporting conversion and processing of Revit elements
 
 ### Known Versions of Software Supported
-Autodesk Revit 2018  
-Autodesk Revit 2019  
-Autodesk Revit 2020  
-Autodesk Revit 2021  
 Autodesk Revit 2022  
 Autodesk Revit 2023  
+Autodesk Revit 2024  
+Autodesk Revit 2025  
+Autodesk Revit 2026  
 
 ### Documentation
 For more information about functionality see [Revit_Toolkit Wiki](https://github.com/BHoM/Revit_Toolkit/wiki).
@@ -39,12 +38,11 @@ You will need the following to build Revit_Toolkit:
 - [Socket_Toolkit](https://github.com/BHoM/Socket_Toolkit)
 
 Revit_Toolkit needs to be built separately for each version of Revit. To switch between version and specific Revit_Toolkit configurations use Configuration Manager:  
-Debug2018 -> Revit 2018  
-Debug2019 -> Revit 2019  
-Debug2020 -> Revit 2020  
-Debug2021 -> Revit 2021  
 Debug2022 -> Revit 2022  
 Debug2023 -> Revit 2023  
+Debug2024 -> Revit 2024  
+Debug2025 -> Revit 2025  
+Debug2026 -> Revit 2026  
 
 
 ## Want to Contribute? ##
