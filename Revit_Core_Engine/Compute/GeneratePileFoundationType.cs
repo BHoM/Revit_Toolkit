@@ -319,7 +319,7 @@ namespace BH.Revit.Engine.Core
                     }
 
                     FamilyManager fm = familyDocument.FamilyManager;
-                    FamilyParameter radiusParam = fm.Parameters.Cast<FamilyParameter>().FirstOrDefault(p => p.Definition.Name.EndsWith("Radius"));
+                    FamilyParameter radiusParam = fm.Parameters.Cast<FamilyParameter>().FirstOrDefault(p => !p.IsReadOnly && p.Definition.Name.EndsWith("Radius"));
                     if (radiusParam != null)
                         fm.Set(radiusParam, (diameter / 2.0).FromSI(SpecTypeId.Length));
 
@@ -364,7 +364,7 @@ namespace BH.Revit.Engine.Core
             if (nestSymbol == null)
                 return null;
 
-            Parameter radiusParam = nestSymbol.Parameters.Cast<Parameter>().FirstOrDefault(x => x.Definition.Name.EndsWith("Radius"));
+            Parameter radiusParam = nestSymbol.Parameters.Cast<Parameter>().FirstOrDefault(x => !x.IsReadOnly && x.Definition.Name.EndsWith("Radius"));
             if (radiusParam != null)
                 radiusParam.Set((diameter / 2.0).FromSI(radiusParam.Definition.GetDataType()));
 
@@ -392,7 +392,7 @@ namespace BH.Revit.Engine.Core
                 else
                     result = symbols[0].Duplicate(typeName) as FamilySymbol;
 
-                Parameter depthParam = result.Parameters.Cast<Parameter>().FirstOrDefault(x => x.Definition.Name.EndsWith("Depth"));
+                Parameter depthParam = result.Parameters.Cast<Parameter>().FirstOrDefault(x => !x.IsReadOnly && x.Definition.Name.EndsWith("Depth") && !x.Definition.Name.Contains("Pile"));
                 if (depthParam != null)
                     depthParam.Set(thickness.FromSI(depthParam.Definition.GetDataType()));
             }

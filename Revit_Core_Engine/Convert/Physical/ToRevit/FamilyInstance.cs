@@ -314,9 +314,9 @@ namespace BH.Revit.Engine.Core
             double pileDepth = pileFoundation.PileFoundationDepth(settings);
             if (!double.IsNaN(pileDepth))
             {
-                Parameter depthParam = familyInstance.Parameters.Cast<Parameter>().FirstOrDefault(x => x.Definition.Name.EndsWith("Depth"));
-                if (depthParam != null)
-                    depthParam.Set(pileDepth.FromSI(depthParam.Definition.GetDataType()));
+                Parameter pileDepthParam = familyInstance.Parameters.Cast<Parameter>().FirstOrDefault(x => !x.IsReadOnly && x.Definition.Name.Contains("Pile") && x.Definition.Name.Contains("Depth"));
+                if (pileDepthParam != null)
+                    pileDepthParam.Set(pileDepth.FromSI(pileDepthParam.Definition.GetDataType()));
             }
 
             familyInstance.SetLocation(pileFoundation, settings);
