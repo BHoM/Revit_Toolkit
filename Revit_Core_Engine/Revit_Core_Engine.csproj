@@ -68,13 +68,6 @@
 		<ProjectReference Include="..\Revit_Engine\Revit_Engine.csproj" />
 		<ProjectReference Include="..\Revit_oM\Revit_oM.csproj" />
 	</ItemGroup>
-
-	<Target Name="ForceReferences" BeforeTargets="CoreCompile">
-		<WriteLinesToFile File="$(IntermediateOutputPath)ForceRefs.g.cs" Lines="@(ReferencePath->'[assembly: System.Reflection.AssemblyMetadata(&quot;UsedRef&quot;, &quot;%(Filename)&quot;)]')" Overwrite="true" />
-		<ItemGroup>
-			<Compile Include="$(IntermediateOutputPath)ForceRefs.g.cs" />
-		</ItemGroup>
-	</Target>
 	
 	<ItemGroup>
 		<Reference Include="RevitAPI">
@@ -87,11 +80,6 @@
 		</Reference>
 	</ItemGroup>
 	<ItemGroup>
-		<Reference Include="Analytical_Engine">
-			<SpecificVersion>False</SpecificVersion>
-			<HintPath>$(ProgramData)\BHoM\Assemblies\Analytical_Engine.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
 		<Reference Include="Analytical_oM">
 			<SpecificVersion>False</SpecificVersion>
 			<HintPath>$(ProgramData)\BHoM\Assemblies\Analytical_oM.dll</HintPath>
@@ -130,11 +118,6 @@
 		<Reference Include="Diffing_Engine">
 			<SpecificVersion>False</SpecificVersion>
 			<HintPath>$(ProgramData)\BHoM\Assemblies\Diffing_Engine.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Dimensional_Engine">
-			<SpecificVersion>False</SpecificVersion>
-			<HintPath>$(ProgramData)\BHoM\Assemblies\Dimensional_Engine.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="Dimensional_oM">
@@ -216,6 +199,11 @@
 			<SpecificVersion>False</SpecificVersion>
 			<HintPath>$(ProgramData)\BHoM\Assemblies\Physical_oM.dll</HintPath>
 			<Private>False</Private>
+		</Reference>
+		<Reference Include="Reflection_Engine">
+			<HintPath>$(ProgramData)\BHoM\Assemblies\Reflection_Engine.dll</HintPath>
+			<Private>False</Private>
+			<SpecificVersion>False</SpecificVersion>
 		</Reference>
 		<Reference Include="Spatial_Engine">
 			<HintPath>$(ProgramData)\BHoM\Assemblies\Spatial_Engine.dll</HintPath>
