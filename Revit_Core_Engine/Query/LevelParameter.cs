@@ -35,7 +35,7 @@ namespace BH.Revit.Engine.Core
 
         [Description("Returns the element parameter that stores the level of the element. Checks multiple built-in level parameters in order of preference.")]
         [Input("element", "Element to get the level parameter from.")]
-        [Output("parameter", "Parameter that stores the level, or null if not found or parameter is read-only.")]
+        [Output("parameter", "Level parameter of the element, or null if not found.")]
         public static Parameter LevelParameter(this Element element)
         {
             if (element == null)
@@ -45,7 +45,7 @@ namespace BH.Revit.Engine.Core
                 .Select(x => element.get_Parameter(x))
                 .Where(x => x != null)
                 .OrderByDescending(x => x.AsElementId().Value() != -1) // Valid ElementIds first
-                .ThenByDescending(x => x.IsReadOnly) 
+                .ThenBy(x => x.IsReadOnly) // Editable parameters first
                 .FirstOrDefault();
         }
 
@@ -53,7 +53,7 @@ namespace BH.Revit.Engine.Core
 
         [Description("Returns the element parameter that stores the base level of the element. Checks multiple built-in base level parameters in order of preference.")]
         [Input("element", "Element to get the base level parameter from.")]
-        [Output("parameter", "Parameter that stores the base level, or null if not found or parameter is read-only.")]
+        [Output("parameter", "Base level parameter of the element, or null if not found.")]
         public static Parameter BaseLevelParameter(this Element element)
         {
             if (element == null)
@@ -63,7 +63,7 @@ namespace BH.Revit.Engine.Core
                 .Select(x => element.get_Parameter(x))
                 .Where(x => x != null)
                 .OrderByDescending(x => x.AsElementId().Value() != -1) // Valid ElementIds first
-                .ThenByDescending(x => x.IsReadOnly)
+                .ThenBy(x => x.IsReadOnly) // Editable parameters first
                 .FirstOrDefault();
         }
 
@@ -71,7 +71,7 @@ namespace BH.Revit.Engine.Core
 
         [Description("Returns the element parameter that stores the top level of the element. Checks multiple built-in top level parameters in order of preference.")]
         [Input("element", "Element to get the top level parameter from.")]
-        [Output("parameter", "Parameter that stores the top level, or null if not found or parameter is read-only.")]
+        [Output("parameter", "Top level parameter of the element, or null if not found.")]
         public static Parameter TopLevelParameter(this Element element)
         {
             if (element == null)
@@ -81,7 +81,7 @@ namespace BH.Revit.Engine.Core
                 .Select(x => element.get_Parameter(x))
                 .Where(x => x != null)
                 .OrderByDescending(x => x.AsElementId().Value() != -1) // Valid ElementIds first
-                .ThenByDescending(x => x.IsReadOnly)
+                .ThenBy(x => x.IsReadOnly) // Editable parameters first
                 .FirstOrDefault();
         }
 

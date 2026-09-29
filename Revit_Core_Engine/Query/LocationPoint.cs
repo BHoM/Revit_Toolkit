@@ -70,7 +70,12 @@ namespace BH.Revit.Engine.Core
             // Fallback to bounding box center
             if (locationPoint == null)
             {
-                BoundingBoxXYZ bbox = element.PhysicalBounds() ?? element.get_BoundingBox(null);
+                BoundingBoxXYZ bbox = null;
+                if (element is DirectShape)
+                    bbox = element.get_BoundingBox(null);
+                else
+                    bbox = element.PhysicalBounds() ?? element.get_BoundingBox(null);
+
                 if (bbox != null)
                     locationPoint = (bbox.Max + bbox.Min) / 2;
             }

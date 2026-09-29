@@ -35,7 +35,6 @@ namespace BH.Engine.Adapters.Revit
         /****              Public methods               ****/
         /***************************************************/
 
-        [PreviousVersion("9.3", "BH.Engine.Adapters.Revit.Create.MappingSettings(System.Collections.Generic.IEnumerable<BH.oM.Adapters.Revit.Mapping.ParameterMap>, System.String, System.String)")]
         [Description("Creates an entity holding information about the enforced convert relationships between Revit families and BHoM types on Pull as well as mapping between Revit parameters and BHoM object properties.")]
         [InputFromProperty("parameterMaps")]
         [InputFromProperty("familyMaps")]
