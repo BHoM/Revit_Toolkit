@@ -135,7 +135,7 @@ namespace BH.Revit.Engine.Core
             {
                 List<int> takenIndices = freeformFamilies.Select(x => Regex.Match(x.Name, $"{Regex.Escape(prefix)}(\\d+)$")).Select(x => int.Parse(x.Groups[1].Value)).ToList();
                 int newIndex = takenIndices.Count > 0 ? takenIndices.Max() + 1 : 1;
-                family = GenerateFreeFormPileFoundationFamilyFromTemplate(document, orientedOutline, layout, diameter, thickness, newIndex, pileFoundation);
+                family = GenerateFreeFormPileFoundationFamilyFromTemplate(document, orientedOutline, layout, diameter, thickness, pileDepth, newIndex, pileFoundation);
             }
 
             if (family == null)
@@ -146,7 +146,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static Family GenerateFreeFormPileFoundationFamilyFromTemplate(this Document document, Polyline orientedOutline, ExplicitLayout layout, double diameter, double thickness, int index, PileFoundation pileFoundation)
+        private static Family GenerateFreeFormPileFoundationFamilyFromTemplate(this Document document, Polyline orientedOutline, ExplicitLayout layout, double diameter, double thickness, double pileDepth, int index, PileFoundation pileFoundation)
         {
             string templateFamilyName = "StructuralFoundations_PileFoundation-Freeform";
             string templatePath = Directory.GetFiles(m_FamilyDirectory, $"*{templateFamilyName}.rfa").FirstOrDefault();
@@ -165,7 +165,7 @@ namespace BH.Revit.Engine.Core
                 if (!ReplaceFreeFormExtrusionWithAssociate(familyDocument, orientedOutline, thickness))
                     return null;
 
-                if (!PlaceNestedPiles(familyDocument, layout, diameter))
+                if (!PlaceNestedPiles(familyDocument, layout, diameter, pileDepth))
                     return null;
 
                 using (Transaction t = new Transaction(familyDocument, "Update Subcategory"))
@@ -244,7 +244,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static bool PlaceNestedPiles(Document familyDocument, ExplicitLayout layout, double diameter)
+        private static bool PlaceNestedPiles(Document familyDocument, ExplicitLayout layout, double diameter, double pileDepth)
         {
             List<FamilyInstance> templatePiles = new FilteredElementCollector(familyDocument).OfClass(typeof(FamilyInstance)).Cast<FamilyInstance>().ToList();
             if (templatePiles.Count == 0)
@@ -316,6 +316,13 @@ namespace BH.Revit.Engine.Core
                     {
                         if (pile.Symbol.Id != nestType.Id && pile.IsValidType(nestType.Id))
                             pile.ChangeTypeId(nestType.Id);
+
+                        if (!double.IsNaN(pileDepth))
+                        {
+                            Parameter depthParam = pile.Parameters.Cast<Parameter>().FirstOrDefault(x => x.StorageType == StorageType.Double && !x.IsReadOnly && x.Definition.Name.Contains("Pile Depth"));
+                            if (depthParam != null)
+                                depthParam.Set(pileDepth.FromSI(depthParam.Definition.GetDataType()));
+                        }
                     }
 
                     FamilyManager fm = familyDocument.FamilyManager;
