@@ -130,12 +130,12 @@ namespace BH.Revit.Engine.Core
             List<Family> freeformFamilies = new FilteredElementCollector(document).OfClass(typeof(Family)).Cast<Family>()
                 .Where(x => Regex.IsMatch(x.Name, $"{prefix}\\d+$")).ToList();
 
-            Family family = freeformFamilies.FirstOrDefault(x => x.IsMatchingOutlineAndLayout(orientedOutline, layout, diameter, settings));
+            Family family = freeformFamilies.FirstOrDefault(x => x.IsMatchingOutlineAndLayout(orientedOutline, layout, settings));
             if (family == null)
             {
                 List<int> takenIndices = freeformFamilies.Select(x => Regex.Match(x.Name, $"{Regex.Escape(prefix)}(\\d+)$")).Select(x => int.Parse(x.Groups[1].Value)).ToList();
                 int newIndex = takenIndices.Count > 0 ? takenIndices.Max() + 1 : 1;
-                family = GenerateFreeFormPileFoundationFamilyFromTemplate(document, orientedOutline, layout, diameter, thickness, newIndex);
+                family = GenerateFreeFormPileFoundationFamilyFromTemplate(document, orientedOutline, layout, newIndex);
             }
 
             if (family == null)
@@ -146,7 +146,7 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static Family GenerateFreeFormPileFoundationFamilyFromTemplate(this Document document, Polyline orientedOutline, ExplicitLayout layout, double diameter, double thickness, int index)
+        private static Family GenerateFreeFormPileFoundationFamilyFromTemplate(this Document document, Polyline orientedOutline, ExplicitLayout layout, int index)
         {
             string templateFamilyName = "StructuralFoundations_PileFoundation-Freeform";
             string templatePath = Directory.GetFiles(m_FamilyDirectory, $"*{templateFamilyName}.rfa").FirstOrDefault();
@@ -162,10 +162,10 @@ namespace BH.Revit.Engine.Core
 
             try
             {
-                if (!ReplaceFreeFormExtrusionWithAssociate(familyDocument, orientedOutline, thickness))
+                if (!ReplaceFreeFormExtrusionWithDepthBinding(familyDocument, orientedOutline))
                     return null;
 
-                if (!PlaceNestedPiles(familyDocument, layout, diameter))
+                if (!SetPileLayout(familyDocument, layout))
                     return null;
 
                 return SaveAndLoadFamily(document, familyDocument, $"{Path.GetFileNameWithoutExtension(templatePath)}_{index}");
@@ -183,50 +183,15 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static double FreeformExtrusionDepth(double thickness)
-        {
-            double h = double.IsNaN(thickness) ? double.NaN : thickness.FromSI(SpecTypeId.Length);
-            if (double.IsNaN(h) || h <= 1e-6)
-                h = 0.5.FromSI(SpecTypeId.Length);
-            return h;
-        }
-
-        /***************************************************/
-
-        private static bool ReplaceFreeFormExtrusionWithAssociate(Document familyDocument, Polyline orientedOutline, double thickness)
+        private static bool ReplaceFreeFormExtrusionWithDepthBinding(Document familyDocument, Polyline orientedOutline)
         {
             try
             {
-                if (!ReplaceFreeFormExtrusion(familyDocument, orientedOutline, thickness))
+                Extrusion extrusion = ReplaceFreeFormExtrusion(familyDocument, orientedOutline, 1);
+                if (extrusion == null)
                     return false;
 
-                using (Transaction t = new Transaction(familyDocument, "Update Freeform Pile Foundation Footprint"))
-                {
-                    Extrusion extrusion = new FilteredElementCollector(familyDocument).OfClass(typeof(Extrusion)).Cast<Extrusion>().FirstOrDefault();
-                    if (extrusion == null)
-                        return false;
-
-                    t.Start();
-
-                    FamilyManager familyManager = familyDocument.FamilyManager;
-                    Parameter oldStartParam = extrusion.get_Parameter(BuiltInParameter.EXTRUSION_START_PARAM);
-                    FamilyParameter associatedStartParameter = oldStartParam != null
-                        ? familyManager.GetAssociatedFamilyParameter(oldStartParam)
-                        : null;
-
-                    Parameter endParam = extrusion.get_Parameter(BuiltInParameter.EXTRUSION_END_PARAM);
-                    if (endParam != null && !endParam.IsReadOnly)
-                        endParam.Set(0.0);
-
-                    if (associatedStartParameter != null)
-                    {
-                        Parameter newStartParam = extrusion.get_Parameter(BuiltInParameter.EXTRUSION_START_PARAM);
-                        familyManager.AssociateElementParameterToFamilyParameter(newStartParam, associatedStartParameter);
-                    }
-
-                    t.Commit();
-                }
-
+                extrusion.BindThicknessWithDimension();
                 return true;
             }
             catch
@@ -237,7 +202,66 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static bool PlaceNestedPiles(Document familyDocument, ExplicitLayout layout, double diameter)
+        private static Dimension BindThicknessWithDimension(this Extrusion extrusion)
+        {
+            Document doc = extrusion.Document;
+            Options options = new Options
+            {
+                ComputeReferences = true
+            };
+
+            PlanarFace topFace = null;
+            PlanarFace bottomFace = null;
+
+            List<Autodesk.Revit.DB.Face> faces = extrusion.Faces(options);
+            foreach (Autodesk.Revit.DB.Face face in faces)
+            {
+                if (!(face is PlanarFace planarFace))
+                    continue;
+
+                if (planarFace.FaceNormal.IsAlmostEqualTo(XYZ.BasisZ))
+                    topFace = planarFace;
+
+                if (planarFace.FaceNormal.IsAlmostEqualTo(-XYZ.BasisZ))
+                    bottomFace = planarFace;
+            }
+
+            if (topFace == null || bottomFace == null)
+            {
+                BH.Engine.Base.Compute.RecordError("Failed to find top and bottom faces of the extrusion.");
+                return null;
+            }
+
+            ReferenceArray references = new ReferenceArray();
+            references.Append(bottomFace.Reference);
+            references.Append(topFace.Reference);
+
+            double z1 = bottomFace.Origin.Z;
+            double z2 = topFace.Origin.Z;
+
+            // Vertical dimension line through (0,0)
+            Autodesk.Revit.DB.Line dimensionLine = Autodesk.Revit.DB.Line.CreateBound(new XYZ(0, 0, z1), new XYZ(0, 0, z2));
+
+            using (Transaction t = new Transaction(doc, "Create Thickness Dimension"))
+            {
+                t.Start();
+
+                View view = new FilteredElementCollector(doc).OfClass(typeof(ViewSection)).FirstOrDefault() as View;
+                Dimension dimension = doc.FamilyCreate.NewDimension(view, dimensionLine, references);
+                FamilyManager fm = doc.FamilyManager;
+
+                FamilyParameter thicknessParameter = fm.get_Parameter(BuiltInParameter.STRUCTURAL_FOUNDATION_THICKNESS);
+                if (thicknessParameter != null)
+                    dimension.FamilyLabel = thicknessParameter;
+
+                t.Commit();
+                return dimension;
+            }
+        }
+
+        /***************************************************/
+
+        private static bool SetPileLayout(Document familyDocument, ExplicitLayout layout)
         {
             List<FamilyInstance> templatePiles = new FilteredElementCollector(familyDocument).OfClass(typeof(FamilyInstance)).Cast<FamilyInstance>().ToList();
             if (templatePiles.Count == 0)
@@ -253,23 +277,16 @@ namespace BH.Revit.Engine.Core
                     BoundingBoxXYZ bbox = e.get_BoundingBox(null);
                     if (bbox == null)
                         return double.MaxValue;
+
                     XYZ c = (bbox.Min + bbox.Max) / 2.0;
                     return c.DistanceTo(new XYZ(pileOrigin.X, pileOrigin.Y, c.Z));
-                })
-                .FirstOrDefault();
+                }).FirstOrDefault();
 
             try
             {
                 using (Transaction t = new Transaction(familyDocument, "Place Nested Piles"))
                 {
                     t.Start();
-
-                    FamilySymbol nestType = NestedPileSymbol(templatePile.Symbol, diameter);
-                    if (nestType == null)
-                    {
-                        t.RollBack();
-                        return false;
-                    }
 
                     if (templatePiles.Count > 1)
                         familyDocument.Delete(templatePiles.Skip(1).Select(x => x.Id).ToList());
@@ -305,17 +322,6 @@ namespace BH.Revit.Engine.Core
                     if (templateVoidExtrusion != null)
                         familyDocument.Delete(templateVoidExtrusion.Id);
 
-                    foreach (FamilyInstance pile in placedPiles)
-                    {
-                        if (pile.Symbol.Id != nestType.Id && pile.IsValidType(nestType.Id))
-                            pile.ChangeTypeId(nestType.Id);
-                    }
-
-                    FamilyManager fm = familyDocument.FamilyManager;
-                    FamilyParameter radiusParam = fm.get_Parameter("Radius");
-                    if (radiusParam != null)
-                        fm.Set(radiusParam, (diameter / 2.0).FromSI(SpecTypeId.Length));
-
                     Extrusion cap = new FilteredElementCollector(familyDocument).OfClass(typeof(Extrusion)).Cast<Extrusion>().FirstOrDefault(e => e.IsSolid);
                     if (cap != null)
                     {
@@ -343,30 +349,6 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static FamilySymbol NestedPileSymbol(FamilySymbol pileSymbol, double diameter)
-        {
-            if (pileSymbol == null || diameter <= 0)
-                return pileSymbol;
-
-            string typeName = $"Ø{(long)Math.Round(diameter * 1000.0)}";
-            FamilySymbol nestSymbol = pileSymbol.Family.GetFamilySymbolIds().Select(id => pileSymbol.Document.GetElement(id) as FamilySymbol).FirstOrDefault(s => s != null && s.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase));
-
-            if (nestSymbol == null)
-                nestSymbol = pileSymbol.Duplicate(typeName) as FamilySymbol;
-
-            if (nestSymbol == null)
-                return null;
-
-            nestSymbol.SetParameter("Radius", diameter / 2.0);
-
-            if (!nestSymbol.IsActive)
-                nestSymbol.Activate();
-
-            return nestSymbol;
-        }
-
-        /***************************************************/
-
         private static FamilySymbol FindOrCreateTypeWithDimensions(this Family family, double thickness, double diameter)
         {
             List<FamilySymbol> symbols = family.GetFamilySymbolIds().Select(id => family.Document.GetElement(id) as FamilySymbol).Where(s => s != null).ToList();
@@ -383,10 +365,56 @@ namespace BH.Revit.Engine.Core
                 else
                     result = symbols[0].Duplicate(typeName) as FamilySymbol;
 
-                result.SetParameter("Depth", thickness);
+                Parameter depthParam = result.Parameters.Cast<Parameter>().FirstOrDefault(x => !x.IsReadOnly && x.Definition.Name.EndsWith("Depth") && !x.Definition.Name.Contains("Pile"));
+                if (depthParam != null)
+                    depthParam.Set(thickness.FromSI(depthParam.Definition.GetDataType()));
+                else
+                    BH.Engine.Base.Compute.RecordError($"Pile foundation thickness could not be set. {family.Name} : {typeName}");
+
+                Parameter diameterParam = result.Parameters.Cast<Parameter>().FirstOrDefault(x => !x.IsReadOnly && x.Definition.Name.EndsWith("Diameter"));
+                if (diameterParam != null)
+                    diameterParam.Set(diameter.FromSI(diameterParam.Definition.GetDataType()));
+                else
+                    BH.Engine.Base.Compute.RecordError($"Pile diameter could not be set. {family.Name} : {typeName}");
+
+                Parameter pileTypeParam = result.Parameters.Cast<Parameter>().FirstOrDefault(x => !x.IsReadOnly && x.Definition.Name.EndsWith("Pile Type"));
+                ElementId currentPileTypeId = pileTypeParam?.AsElementId() ?? ElementId.InvalidElementId;
+                Family pileFamily = (family.Document.GetElement(currentPileTypeId) as FamilySymbol)?.Family;
+                FamilySymbol pileType = NestedPileSymbol(pileFamily, diameter);
+                if (pileType != null)
+                    pileTypeParam.Set(pileType.Id);
+                else
+                    BH.Engine.Base.Compute.RecordError($"Pile type could not be set. {family.Name} : {typeName}");
             }
 
             result?.Activate();
+            return result;
+        }
+
+        /***************************************************/
+
+        private static FamilySymbol NestedPileSymbol(Family pileFamily, double diameter)
+        {
+            if (pileFamily == null || diameter <= 0)
+                return null;
+
+            string typeName = $"Ø{(long)Math.Round(diameter * 1000.0)}";
+            FamilySymbol result = pileFamily.GetFamilySymbolIds().Select(id => pileFamily.Document.GetElement(id) as FamilySymbol).FirstOrDefault(s => s != null && s.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase));
+
+            if (result == null)
+            {
+                result = (pileFamily.Document.GetElement(pileFamily.GetFamilySymbolIds().FirstOrDefault()) as FamilySymbol)?.Duplicate(typeName) as FamilySymbol;
+                if (result == null)
+                    return null;
+
+                Parameter radiusParam = result.Parameters.Cast<Parameter>().FirstOrDefault(x => !x.IsReadOnly && x.Definition.Name.EndsWith("Radius"));
+                if (radiusParam != null)
+                    radiusParam.Set((diameter / 2.0).FromSI(radiusParam.Definition.GetDataType()));
+            }
+
+            if (!result.IsActive)
+                result.Activate();
+
             return result;
         }
 
