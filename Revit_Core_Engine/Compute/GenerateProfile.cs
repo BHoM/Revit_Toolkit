@@ -321,12 +321,13 @@ namespace BH.Revit.Engine.Core
             else
                 return false;
 
-            Category subCategory = familyDocument.OwnerFamily.FamilyCategory.SubCategories.Cast<Category>().FirstOrDefault(x => x.Name.EndsWith(keyword));
+            Category subCategory = familyDocument.OwnerFamily.FamilyCategory.SubCategories.Cast<Category>().Where(x => x.Name.EndsWith(keyword)).OrderBy(x => x.Name).FirstOrDefault();
             if (subCategory != null)
             {
                 foreach (GenericForm gf in new FilteredElementCollector(familyDocument).OfClass(typeof(GenericForm)))
                 {
-                    gf.Subcategory = subCategory;
+                    if (gf.IsSolid)
+                        gf.Subcategory = subCategory;
                 }
 
                 return true;
