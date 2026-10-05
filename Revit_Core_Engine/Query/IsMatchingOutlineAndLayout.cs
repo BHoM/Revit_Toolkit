@@ -39,6 +39,7 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("10.0", "BH.Revit.Engine.Core.Query.IsMatchingOutlineAndLayout(Autodesk.Revit.DB.Family, BH.oM.Geometry.Polyline, BH.oM.Spatial.Layouts.ExplicitLayout, System.Double, BH.oM.Adapters.Revit.Settings.RevitSettings)")]
         [Description("Checks whether a pile foundation family matches the pile-cap outline, pile layout and pile diameter.")]
         [Input("family", "Revit pile foundation family to compare.")]
         [Input("orientedOutline", "Oriented pile-cap outline.")]
