@@ -27,7 +27,6 @@ using BH.oM.Adapters.Revit.Settings;
 using BH.oM.Base.Attributes;
 using BH.oM.Geometry;
 using BH.oM.Spatial.Layouts;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -40,16 +39,16 @@ namespace BH.Revit.Engine.Core
         /****              Public methods               ****/
         /***************************************************/
 
+        [PreviousVersion("10.0", "BH.Revit.Engine.Core.Query.IsMatchingOutlineAndLayout(Autodesk.Revit.DB.Family, BH.oM.Geometry.Polyline, BH.oM.Spatial.Layouts.ExplicitLayout, System.Double, BH.oM.Adapters.Revit.Settings.RevitSettings)")]
         [Description("Checks whether a pile foundation family matches the pile-cap outline, pile layout and pile diameter.")]
         [Input("family", "Revit pile foundation family to compare.")]
         [Input("orientedOutline", "Oriented pile-cap outline.")]
         [Input("layout", "Explicit pile layout points.")]
-        [Input("diameter", "Pile diameter to match against the family.")]
         [Input("settings", "Revit adapter settings.")]
         [Output("matches", "True if outline, layout and diameter all match.")]
-        public static bool IsMatchingOutlineAndLayout(this Family family, Polyline orientedOutline, ExplicitLayout layout, double diameter, RevitSettings settings)
+        public static bool IsMatchingOutlineAndLayout(this Family family, Polyline orientedOutline, ExplicitLayout layout, RevitSettings settings)
         {
-            if (family == null || orientedOutline == null || layout?.Points == null || diameter <= 0)
+            if (family == null || orientedOutline == null || layout?.Points == null)
                 return false;
 
             settings = settings.DefaultIfNull();
@@ -59,9 +58,6 @@ namespace BH.Revit.Engine.Core
                 return false;
 
             if (!family.IsMatchingPileLayout(layout, tol))
-                return false;
-
-            if (!family.IsMatchingPileDiameter(diameter, tol))
                 return false;
 
             return true;
@@ -85,27 +81,6 @@ namespace BH.Revit.Engine.Core
             }
 
             return true;
-        }
-
-        /***************************************************/
-
-        private static bool IsMatchingPileDiameter(this Family family, double diameter, double tol)
-        {
-            Document doc = family.Document;
-            FamilyInstance host = new FilteredElementCollector(doc).OfClass(typeof(FamilyInstance)).Cast<FamilyInstance>().FirstOrDefault(fi => fi.Symbol?.Family?.Id == family.Id);
-            if (host == null)
-                return false;
-            FamilyInstance nest = host.GetSubComponentIds().Select(id => doc.GetElement(id) as FamilyInstance).FirstOrDefault(fi => fi != null);
-            FamilySymbol nestSymbol = nest?.Symbol;
-            if (nestSymbol == null)
-                return false;
-            double radius = nestSymbol.LookupParameterDouble("Radius");
-            if (!double.IsNaN(radius))
-                return Math.Abs(radius * 2.0 - diameter) <= tol;
-            double nestDiameter = nestSymbol.LookupParameterDouble("Diameter");
-            if (!double.IsNaN(nestDiameter))
-                return Math.Abs(nestDiameter - diameter) <= tol;
-            return false;
         }
 
         /***************************************************/

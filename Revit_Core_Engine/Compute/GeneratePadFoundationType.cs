@@ -188,7 +188,7 @@ namespace BH.Revit.Engine.Core
 
             try
             {
-                if (!ReplaceFreeFormExtrusion(familyDocument, orientedOutline, thickness))
+                if (ReplaceFreeFormExtrusion(familyDocument, orientedOutline, thickness) == null)
                     return null;
 
                 return SaveAndLoadFamily(document, familyDocument, $"{Path.GetFileNameWithoutExtension(templatePath)}_{index}");
@@ -206,28 +206,34 @@ namespace BH.Revit.Engine.Core
 
         /***************************************************/
 
-        private static bool ReplaceFreeFormExtrusion(Document familyDocument, Polyline orientedOutline, double thickness)
+        private static Extrusion ReplaceFreeFormExtrusion(Document familyDocument, Polyline orientedOutline, double thickness)
         {
+            Extrusion result = null;
             try
             {
                 Extrusion extrusion = new FilteredElementCollector(familyDocument).OfClass(typeof(Extrusion)).FirstOrDefault() as Extrusion;
                 CurveArrArray profile = new CurveArrArray();
                 profile.Append(orientedOutline.ToRevitCurveArray());
+                Category subcategory = extrusion.Subcategory;
 
                 using (Transaction t = new Transaction(familyDocument, "Update Freeform Pad Foundation Footprint"))
                 {
                     t.Start();
-                    familyDocument.FamilyCreate.NewExtrusion(true, profile, extrusion.Sketch.SketchPlane, -FreeformExtrusionDepth(thickness));
+                    result = familyDocument.FamilyCreate.NewExtrusion(true, profile, extrusion.Sketch.SketchPlane, -thickness.FromSI(SpecTypeId.Length));
+
+                    if (subcategory != null)
+                        result.Subcategory = subcategory;
+
                     familyDocument.Delete(extrusion.Id);
                     t.Commit();
                 }
             }
             catch
             {
-                return false;
+                return null;
             }
 
-            return true;
+            return result;
         }
 
         /***************************************************/
