@@ -22,7 +22,6 @@
 
 using Autodesk.Revit.DB;
 using BH.oM.Base.Attributes;
-using BH.oM.Physical.Elements;
 using System.ComponentModel;
 using System.Linq;
 
@@ -44,13 +43,6 @@ namespace BH.Revit.Engine.Core
                     .OfClass(typeof(Material))
                     .FirstOrDefault(ps =>
                     ps.Name == materialName) as Material;
-        }
-
-        /***************************************************/
-
-        public static BH.oM.Physical.Materials.Material Material(this PadFoundation padFoundation)
-        {
-            return (padFoundation?.Construction as oM.Physical.Constructions.Construction)?.Layers?.FirstOrDefault()?.Material;
         }
 
         /***************************************************/
