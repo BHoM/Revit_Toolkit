@@ -73,6 +73,7 @@ namespace BH.Revit.Engine.Core
             }
 
             List<XYZ> points = new List<XYZ>();
+#if REVIT2023 || REVIT2024 || REVIT2025 || REVIT2026
             curve1.Intersect(curve2, out IntersectionResultArray intersectionResultArray);
 
             if (intersectionResultArray == null)
@@ -85,6 +86,19 @@ namespace BH.Revit.Engine.Core
                 XYZ intersectionPoint = intersectionResult.XYZPoint;
                 points.Add(intersectionPoint);
             }
+#else
+            CurveIntersectResult intersectResult = curve1.Intersect(curve2, CurveIntersectResultOption.Detailed);
+
+            if (intersectResult == null)
+            {
+                return points;
+            }
+
+            foreach (CurveOverlapPoint overlapPoint in intersectResult.GetOverlaps())
+            {
+                points.Add(overlapPoint.Point);
+            }
+#endif
 
             return points;
         }
@@ -126,6 +140,7 @@ namespace BH.Revit.Engine.Core
             }
 
             List<UV> uvPoints = new List<UV>();
+#if REVIT2023 || REVIT2024 || REVIT2025 || REVIT2026
             curve1.Intersect(curve2, out IntersectionResultArray intersectionResultArray);
 
             if (intersectionResultArray == null)
@@ -138,6 +153,19 @@ namespace BH.Revit.Engine.Core
                 UV intersectionPoint = intersectionResult.UVPoint;
                 uvPoints.Add(intersectionPoint);
             }
+#else
+            CurveIntersectResult intersectResult = curve1.Intersect(curve2, CurveIntersectResultOption.Detailed);
+
+            if (intersectResult == null)
+            {
+                return uvPoints;
+            }
+
+            foreach (CurveOverlapPoint overlapPoint in intersectResult.GetOverlaps())
+            {
+                uvPoints.Add(new UV(overlapPoint.FirstParameter, overlapPoint.SecondParameter));
+            }
+#endif
 
             return uvPoints;
         }

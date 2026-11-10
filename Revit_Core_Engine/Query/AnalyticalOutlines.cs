@@ -48,26 +48,6 @@ namespace BH.Revit.Engine.Core
             settings = settings.DefaultIfNull();
             List<ICurve> result = new List<ICurve>();
 
-#if REVIT2022
-            AnalyticalModel analyticalModel = hostObject.GetAnalyticalModel();
-            if (analyticalModel == null)
-                return null;
-
-            foreach (Curve curve in analyticalModel.GetCurves(AnalyticalCurveType.ActiveCurves))
-            {
-                ICurve converted = curve.IFromRevit();
-                if (converted is NurbsCurve)
-                {
-                    BH.Engine.Base.Compute.RecordWarning("At least one of the analytical outline curves has a nurbs form - it has been simplified to a polyline.");
-                    converted = new Polyline { ControlPoints = curve.Tessellate().Select(x => x.PointFromRevit()).ToList() };
-                }
-
-                result.Add(converted);
-            }
-
-            result = BH.Engine.Geometry.Compute.IJoin(result, BH.oM.Adapters.Revit.Tolerance.ShortCurve).ConvertAll(c => c as ICurve);
-
-#else
             Document doc = hostObject.Document;
             AnalyticalToPhysicalAssociationManager manager = AnalyticalToPhysicalAssociationManager.GetAnalyticalToPhysicalAssociationManager(doc);
 
@@ -104,7 +84,6 @@ namespace BH.Revit.Engine.Core
                     result.Add(convertedLoop);
                 }
             }
-#endif
             if (result.Any(x => !x.IIsClosed(BH.oM.Adapters.Revit.Tolerance.ShortCurve)))
             {
                 hostObject.NonClosedOutlineWarning();

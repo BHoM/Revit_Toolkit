@@ -48,47 +48,6 @@ namespace BH.Revit.Engine.Core
         [Output("definition", "Revit parameter Definition created based on the input properties.")]
         public static Definition Parameter(Document document, string parameterName, string typeName, string groupName, bool instance, IEnumerable<string> categoryNames, bool shared, string discipline = "")
         {
-#if REVIT2022
-            List<ParameterType> parameterTypes = new List<ParameterType>();
-            foreach (ParameterType pt in Enum.GetValues(typeof(ParameterType)))
-            {
-                try
-                {
-                    if (LabelUtils.GetLabelFor(pt) == typeName)
-                        parameterTypes.Add(pt);
-                }
-                catch
-                {
-
-                }
-            }
-
-            ParameterType parameterType = ParameterType.Invalid;
-
-            if (parameterTypes.Count == 0)
-            {
-                BH.Engine.Base.Compute.RecordError($"Parameter type named {typeName} does not exist.");
-                return null;
-            }
-            else if (parameterTypes.Count == 1)
-                parameterType = parameterTypes[0];
-            else
-            {
-                if (discipline == "Common")
-                {
-                    string[] forbidden = { "Electrical", "HVAC", "Piping", "Structural" };
-                    parameterType = parameterTypes.FirstOrDefault(x => forbidden.All(y => !x.ToString().StartsWith(y)));
-                }
-                else if (!string.IsNullOrWhiteSpace(discipline))
-                    parameterType = parameterTypes.FirstOrDefault(x => x.ToString().StartsWith(discipline));
-
-                if (parameterType == ParameterType.Invalid)
-                {
-                    BH.Engine.Base.Compute.RecordError("The parameter type with given name exists in more than one discipline, therefore the parameter could not be created. To successfully create the parameter, please specify it using one of the following: HVAC, Piping, Electrical, Structural.");
-                    return null;
-                }
-            }
-#else
             List<ForgeTypeId> parameterTypes = new List<ForgeTypeId>();
             ForgeTypeId parameterType = typeof(SpecTypeId).GetProperties().FirstOrDefault(x => x.Name == typeName)?.GetValue(null) as ForgeTypeId;
             if (parameterType == null)
@@ -96,7 +55,6 @@ namespace BH.Revit.Engine.Core
                 BH.Engine.Base.Compute.RecordError($"Parameter type named {typeName} does not exist.");
                 return null;
             }
-#endif
 
             List<string> distinctCategoryNames = categoryNames.Distinct().ToList();
             List<Category> categories = new List<Category>();
@@ -117,7 +75,7 @@ namespace BH.Revit.Engine.Core
                 return Create.SharedParameter(document, parameterName, parameterType, groupName, instance, categories);
             else
             {
-#if REVIT2022 || REVIT2023 || REVIT2024
+#if REVIT2023 || REVIT2024
                 BuiltInParameterGroup parameterGroup = groupName.GroupFromName();
                 if (parameterGroup == BuiltInParameterGroup.INVALID)
 #else

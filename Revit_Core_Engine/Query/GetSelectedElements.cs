@@ -44,19 +44,6 @@ namespace BH.Revit.Engine.Core
             if (uiDocument?.Selection == null)
                 return new List<Element>();
 
-#if REVIT2022
-            var selectedIds = uiDocument.Selection.GetElementIds();
-            if (selectedIds == null || selectedIds.Count == 0)
-                return new List<Element>();
-
-            List<Element> selectedElements = new List<Element>();
-            foreach (var id in selectedIds)
-            {
-                Element element = uiDocument.Document.GetElement(id);
-                if (element != null)
-                    selectedElements.Add(element);
-            }
-#else
             var selectedReferences = uiDocument.Selection.GetReferences();
             if (selectedReferences == null || selectedReferences.Count == 0)
                 return new List<Element>();
@@ -91,7 +78,6 @@ namespace BH.Revit.Engine.Core
                     BH.Engine.Base.Compute.RecordError($"Error processing selected element: {ex.Message}");
                 }
             }
-#endif
 
             return selectedElements;
         }
