@@ -77,30 +77,6 @@ namespace BH.oM.Revit.Enums
         [CategoryType("Annotation")]
         [CategoryDiscipline("Infrastructure")]
         OST_Alignments = -2001012,
-        [DisplayText("Analytical Beam Tags")]
-        [CategoryType("Annotation")]
-        [CategoryDiscipline("Structure")]
-        OST_BeamAnalyticalTags = -2009649,
-        [DisplayText("Analytical Beams")]
-        [CategoryType("Analytical")]
-        [CategoryDiscipline("Structure")]
-        OST_BeamAnalytical = -2009630,
-        [DisplayText("Analytical Brace Tags")]
-        [CategoryType("Annotation")]
-        [CategoryDiscipline("Structure")]
-        OST_BraceAnalyticalTags = -2009650,
-        [DisplayText("Analytical Braces")]
-        [CategoryType("Analytical")]
-        [CategoryDiscipline("Structure")]
-        OST_BraceAnalytical = -2009633,
-        [DisplayText("Analytical Column Tags")]
-        [CategoryType("Annotation")]
-        [CategoryDiscipline("Structure")]
-        OST_ColumnAnalyticalTags = -2009651,
-        [DisplayText("Analytical Columns")]
-        [CategoryType("Analytical")]
-        [CategoryDiscipline("Structure")]
-        OST_ColumnAnalytical = -2009636,
         [DisplayText("Analytical Duct Segment Tags")]
         [CategoryType("Annotation")]
         [CategoryDiscipline("Mechanical")]
@@ -109,26 +85,6 @@ namespace BH.oM.Revit.Enums
         [CategoryType("Analytical")]
         [CategoryDiscipline("Mechanical")]
         OST_DuctAnalyticalSegments = -2001115,
-        [DisplayText("Analytical Floor Tags")]
-        [CategoryType("Annotation")]
-        [CategoryDiscipline("Structure")]
-        OST_FloorAnalyticalTags = -2009652,
-        [DisplayText("Analytical Floors")]
-        [CategoryType("Analytical")]
-        [CategoryDiscipline("Structure")]
-        OST_FloorAnalytical = -2009639,
-        [DisplayText("Analytical Foundation Slabs")]
-        [CategoryType("Analytical")]
-        [CategoryDiscipline("Structure")]
-        OST_FoundationSlabAnalytical = -2009643,
-        [DisplayText("Analytical Isolated Foundation Tags")]
-        [CategoryType("Annotation")]
-        [CategoryDiscipline("Structure")]
-        OST_IsolatedFoundationAnalyticalTags = -2009654,
-        [DisplayText("Analytical Isolated Foundations")]
-        [CategoryType("Analytical")]
-        [CategoryDiscipline("Structure")]
-        OST_IsolatedFoundationAnalytical = -2009641,
         [DisplayText("Analytical Link Tags")]
         [CategoryType("Annotation")]
         [CategoryDiscipline("Structure")]
@@ -181,10 +137,6 @@ namespace BH.oM.Revit.Enums
         [CategoryType("Analytical")]
         [CategoryDiscipline("Piping")]
         OST_PipeAnalyticalSegments = -2001113,
-        [DisplayText("Analytical Slab Foundation Tags")]
-        [CategoryType("Annotation")]
-        [CategoryDiscipline("Structure")]
-        OST_FoundationSlabAnalyticalTags = -2009656,
         [DisplayText("Analytical Spaces")]
         [CategoryType("Analytical")]
         [CategoryDiscipline("Architecture", "Mechanical")]
@@ -193,22 +145,6 @@ namespace BH.oM.Revit.Enums
         [CategoryType("Analytical")]
         [CategoryDiscipline("Architecture", "Mechanical")]
         OST_AnalyticSurfaces = -2008186,
-        [DisplayText("Analytical Wall Foundation Tags")]
-        [CategoryType("Annotation")]
-        [CategoryDiscipline("Structure")]
-        OST_WallFoundationAnalyticalTags = -2009655,
-        [DisplayText("Analytical Wall Foundations")]
-        [CategoryType("Analytical")]
-        [CategoryDiscipline("Structure")]
-        OST_WallFoundationAnalytical = -2009642,
-        [DisplayText("Analytical Wall Tags")]
-        [CategoryType("Annotation")]
-        [CategoryDiscipline("Structure")]
-        OST_WallAnalyticalTags = -2009653,
-        [DisplayText("Analytical Walls")]
-        [CategoryType("Analytical")]
-        [CategoryDiscipline("Structure")]
-        OST_WallAnalytical = -2009640,
         [DisplayText("Anchor Tags")]
         [CategoryType("Annotation")]
         [CategoryDiscipline("Structure")]
@@ -221,6 +157,10 @@ namespace BH.oM.Revit.Enums
         [CategoryType("Annotation")]
         [CategoryDiscipline("Electrical")]
         OST_ELECTRICAL_AreaBasedLoads_Tags = -2001078,
+        [DisplayText("Area Boundary Conditions Tags")]
+        [CategoryType("Annotation")]
+        [CategoryDiscipline("Structure")]
+        OST_AreaBoundaryConditionsTags = -2005307,
         [DisplayText("Area Load Tags")]
         [CategoryType("Annotation")]
         [CategoryDiscipline("Structure")]
@@ -685,6 +625,10 @@ namespace BH.oM.Revit.Enums
         [CategoryType("Model")]
         [CategoryDiscipline("Architecture", "Electrical", "Infrastructure")]
         OST_LightingFixtures = -2001120,
+        [DisplayText("Line Boundary Conditions Tags")]
+        [CategoryType("Annotation")]
+        [CategoryDiscipline("Structure")]
+        OST_LineBoundaryConditionsTags = -2005306,
         [DisplayText("Line Load Tags")]
         [CategoryType("Annotation")]
         [CategoryDiscipline("Structure")]
@@ -771,11 +715,11 @@ namespace BH.oM.Revit.Enums
         OST_FabricationDuctworkStiffeners = -2008228,
         [DisplayText("MEP Fabrication Ductwork Tags")]
         [CategoryType("Annotation")]
-        [CategoryDiscipline("Mechanical", "Piping")]
+        [CategoryDiscipline("Mechanical")]
         OST_FabricationDuctworkTags = -2008194,
         [DisplayText("MEP Fabrication Ductwork")]
         [CategoryType("Model")]
-        [CategoryDiscipline("Mechanical", "Piping")]
+        [CategoryDiscipline("Mechanical")]
         OST_FabricationDuctwork = -2008193,
         [DisplayText("MEP Fabrication Hanger Tags")]
         [CategoryType("Annotation")]
@@ -953,6 +897,10 @@ namespace BH.oM.Revit.Enums
         [CategoryType("Model")]
         [CategoryDiscipline("Architecture", "Piping")]
         OST_PlumbingFixtures = -2001160,
+        [DisplayText("Point Boundary Conditions Tags")]
+        [CategoryType("Annotation")]
+        [CategoryDiscipline("Structure")]
+        OST_PointBoundaryConditionsTags = -2005305,
         [DisplayText("Point Load Tags")]
         [CategoryType("Annotation")]
         [CategoryDiscipline("Structure")]
