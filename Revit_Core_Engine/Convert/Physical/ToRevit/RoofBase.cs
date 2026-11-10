@@ -96,7 +96,7 @@ namespace BH.Revit.Engine.Core
                 {
                     try
                     {
-#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
+#if REVIT2023 || REVIT2024 || REVIT2025
                         SlabShapeEditor slabShapeEditor = roofBase.SlabShapeEditor;
                         slabShapeEditor.ResetSlabShape();
 

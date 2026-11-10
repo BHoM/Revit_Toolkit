@@ -61,22 +61,12 @@ namespace BH.Revit.Engine.Core
 
             // Get bar curve
             List<oM.Geometry.ICurve> locationCurves = null;
-#if REVIT2022
-            AnalyticalModelStick analyticalModel = familyInstance.GetAnalyticalModel() as AnalyticalModelStick;
-            if (analyticalModel != null)
-            {
-                IList<Curve> curves = analyticalModel.GetCurves(AnalyticalCurveType.ActiveCurves);
-                if (curves != null && curves.Count != 0)
-                    locationCurves = curves.Select(x => x.IFromRevit()).ToList();
-            }
-#else
             Document doc = familyInstance.Document;
             AnalyticalToPhysicalAssociationManager manager = AnalyticalToPhysicalAssociationManager.GetAnalyticalToPhysicalAssociationManager(doc);
             AnalyticalMember analyticalMember = doc.GetElement(manager.GetAssociatedElementId(familyInstance.Id)) as AnalyticalMember;
             Curve curve = analyticalMember?.GetCurve();
             if (curve != null)
                 locationCurves = new List<ICurve> { curve.IFromRevit() };
-#endif
 
             if (locationCurves != null)
                 familyInstance.AnalyticalPullWarning();
