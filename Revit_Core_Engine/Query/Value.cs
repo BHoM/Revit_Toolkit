@@ -37,7 +37,7 @@ namespace BH.Revit.Engine.Core
         [Output("value", "The integer value of the provided ElementId.")]
         public static long Value(this ElementId id)
         {
-#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
+#if REVIT2023 || REVIT2024 || REVIT2025
             return id.IntegerValue;
 #else
             return id.Value;

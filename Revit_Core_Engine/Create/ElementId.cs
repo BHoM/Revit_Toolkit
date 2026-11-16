@@ -47,7 +47,7 @@ namespace BH.Revit.Engine.Core
         [Output("elementId", "ElementId created from the provided long integer value.")]
         public static ElementId ElementId(long id)
         {
-#if REVIT2022 || REVIT2023
+#if REVIT2023
             return new ElementId((int)id);
 #else
             return new ElementId(id);

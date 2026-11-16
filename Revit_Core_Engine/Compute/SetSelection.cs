@@ -45,10 +45,6 @@ namespace BH.Revit.Engine.Core
 
             elements = elements.Where(x => x != null).ToList();
 
-#if REVIT2022
-            List<Element> hostElements = elements.Where(x => !x.Document.IsLinked).ToList();
-            uiDoc.Selection.SetElementIds(hostElements.Select(x => x.Id).ToList());
-#else
             List<Reference> references = new List<Reference>();
 
             foreach (Element element in elements)
@@ -72,7 +68,6 @@ namespace BH.Revit.Engine.Core
             }
 
             uiDoc.Selection.SetReferences(references);
-#endif
         }
 
         /***************************************************/

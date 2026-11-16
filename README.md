@@ -8,11 +8,11 @@ A set of tools enabling exchange of information between BHoM and [Revit](https:/
 - a set of utility methods supporting conversion and processing of Revit elements
 
 ### Known Versions of Software Supported
-Autodesk Revit 2022  
 Autodesk Revit 2023  
 Autodesk Revit 2024  
 Autodesk Revit 2025  
 Autodesk Revit 2026  
+Autodesk Revit 2027  
 
 ### Documentation
 For more information about functionality see [Revit_Toolkit Wiki](https://github.com/BHoM/Revit_Toolkit/wiki).
@@ -30,19 +30,19 @@ If you want to build the BHoM and the Toolkits from source, it's hopefully easy!
 Do take a look at our specific wiki pages here: [Getting Started for Developers](https://bhom.xyz/documentation/Guides-and-Tutorials/Coding-with-BHoM/)
 
 You will need the following to build Revit_Toolkit:
-- Microsoft Visual Studio 2015 or higher
-- Microsoft .NET Framework 4.8
+- Microsoft Visual Studio 2026 or higher
+- Microsoft .NET Framework 4.8, .NET 8 SDK and .NET 10 SDK
 - [BHoM](https://github.com/BHoM/BHoM)
 - [BHoM_Engine](https://github.com/BHoM/BHoM_Engine)
 - [BHoM_Adapter](https://github.com/BHoM/BHoM_Adapter)
 - [Socket_Toolkit](https://github.com/BHoM/Socket_Toolkit)
 
 Revit_Toolkit needs to be built separately for each version of Revit. To switch between version and specific Revit_Toolkit configurations use Configuration Manager:  
-Debug2022 -> Revit 2022  
 Debug2023 -> Revit 2023  
 Debug2024 -> Revit 2024  
 Debug2025 -> Revit 2025  
 Debug2026 -> Revit 2026  
+Debug2027 -> Revit 2027  
 
 
 ## Want to Contribute? ##

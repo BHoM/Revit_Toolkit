@@ -132,7 +132,13 @@ namespace BH.Revit.Engine.Core
             foreach (List<Curve> list in curves)                                                    // List<List<Curve>> -> IList<IList<Curve>>
                 iListCurves.Add(list);                                                              //
 
+#if REVIT2023 || REVIT2024 || REVIT2025 || REVIT2026
             rebar = Rebar.CreateFreeForm(document, barType, host, iListCurves, out rffvr);
+#else
+            RebarFreeFormCreationResult creationResult = Rebar.CreateFreeForm(document, barType, host, iListCurves, RebarStyle.Standard);
+            rffvr = creationResult.Error;
+            rebar = creationResult.Rebar;
+#endif
 
             //setting hooks
             if (bar.GetType() == typeof(Stirrup))
@@ -140,8 +146,13 @@ namespace BH.Revit.Engine.Core
                 RebarHookType rht = new FilteredElementCollector(document).OfClass(typeof(RebarHookType)).Where(x => x.Name == "Standard - 90 deg.").FirstOrDefault() as RebarHookType;
                 rebar.SetHookTypeId(0, rht.Id);
                 rebar.SetHookTypeId(1, rht.Id);
+#if REVIT2023 || REVIT2024 || REVIT2025 || REVIT2026
                 rebar.SetHookOrientation(0, RebarHookOrientation.Left);
                 rebar.SetHookOrientation(1, RebarHookOrientation.Left);
+#else
+                rebar.SetTerminationOrientation(0, RebarTerminationOrientation.Left);
+                rebar.SetTerminationOrientation(1, RebarTerminationOrientation.Left);
+#endif
             }
 
             rebar.CopyParameters(bar, settings);

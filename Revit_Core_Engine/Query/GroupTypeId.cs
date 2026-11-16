@@ -28,7 +28,7 @@ namespace BH.Revit.Engine.Core
 {
     public static partial class Query
     {
-#if REVIT2022 || REVIT2023 || REVIT2024
+#if REVIT2023 || REVIT2024
         [Description("Gets the BuiltInParameterGroup of a Revit parameter definition.")]
         [Input("def", "A Revit parameter definition to get BuiltInParameterGroup for.")]
         [Output("parameterGroup", "BuiltInParameterGroup of a Revit parameter definition.")]

@@ -40,11 +40,7 @@ namespace BH.Revit.Engine.Core
             if (geometryInstance == null)
                 return null;
 
-#if REVIT2022
-            return geometryInstance.Symbol;
-#else
             return geometryInstance.GetDocument().GetElement(geometryInstance.GetSymbolGeometryId().SymbolId);
-#endif
         }
 
         /***************************************************/
