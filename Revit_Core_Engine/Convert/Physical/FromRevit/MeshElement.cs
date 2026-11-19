@@ -57,11 +57,22 @@ namespace BH.Revit.Engine.Core
             Options meshOptions = Create.Options(ViewDetailLevel.Medium, false, false);
 
             meshElement = new MeshElement { Name = element.Name };
+
             if (element.Location != null)
             {
                 try
                 {
                     meshElement.Mesh = element.MeshedGeometry(meshOptions, settings)?.Join(false);
+
+                    // Visible geometry came back empty (e.g. void-only openings), retry including non-visible objects.
+                    if (IsEmptyMesh(meshElement.Mesh))
+                    {
+                        Options nonVisibleOptions = Create.Options(ViewDetailLevel.Fine, true, false);
+                        meshElement.Mesh = element.MeshedGeometry(nonVisibleOptions, settings)?.Join(false);
+                    }
+
+                    if (IsEmptyMesh(meshElement.Mesh))
+                        BH.Engine.Base.Compute.RecordWarning($"No mesh geometry could be extracted from element {element.Name}, ElementId: {element.Id}.");
                 }
                 catch
                 {
@@ -77,6 +88,15 @@ namespace BH.Revit.Engine.Core
             refObjects.AddOrReplace(element.Id, meshElement);
 
             return meshElement;
+        }
+
+        /***************************************************/
+        /****              Private Methods              ****/
+        /***************************************************/
+
+        private static bool IsEmptyMesh(BH.oM.Geometry.Mesh mesh)
+        {
+            return mesh == null || mesh.Vertices == null || mesh.Vertices.Count == 0;
         }
 
         /***************************************************/
