@@ -34,8 +34,9 @@ namespace BH.Revit.Engine.Core
 
         [Description("Extracts value from Revit parameter and converts it to BHoM-compliant form.")]
         [Input("parameter", "Revit parameter to extract.")]
+        [Input("convertUnits", "If true, numbers with a unit are converted from internal Revit units to SI, as BHoM expects. If false, they are returned in internal Revit units.")]
         [Output("value", "Value extracted from Revit parameter and aligned to BHoM convention.")]
-        public static object ParameterValue(this Parameter parameter)
+        public static object ParameterValue(this Parameter parameter, bool convertUnits = true)
         {
             if (parameter == null)
                 return null;
@@ -43,7 +44,7 @@ namespace BH.Revit.Engine.Core
             switch (parameter.StorageType)
             {
                 case StorageType.Double:
-                    return parameter.AsDouble().ToSI(parameter.Definition.GetDataType());
+                    return convertUnits ? parameter.AsDouble().ToSI(parameter.Definition.GetDataType()) : parameter.AsDouble();
                 case StorageType.ElementId:
                     return parameter.AsElementId()?.Value();
                 case StorageType.Integer:
@@ -67,6 +68,18 @@ namespace BH.Revit.Engine.Core
             }
 
             return null;
+        }
+
+        /***************************************************/
+
+        [Description("Extracts value of the parameter of a given name from a Revit element and converts it to BHoM-compliant form. If the element has no such parameter, the parameter of its type is taken.")]
+        [Input("element", "Revit element to extract the parameter value from.")]
+        [Input("parameterName", "Name of the parameter to extract.")]
+        [Input("convertUnits", "If true, numbers with a unit are converted from internal Revit units to SI, as BHoM expects. If false, they are returned in internal Revit units.")]
+        [Output("value", "Value extracted from the Revit parameter and aligned to BHoM convention, null if the element and its type have no such parameter.")]
+        public static object ParameterValue(this Element element, string parameterName, bool convertUnits = true)
+        {
+            return element.LookupParameter(parameterName, true).ParameterValue(convertUnits);
         }
 
         /***************************************************/
